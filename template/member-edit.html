@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+		<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css" />
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+		<link rel="stylesheet" href="/static/css/member.css" />
+	</head>
+	<body>
+		<header class="navbar">
+			<div class="container">
+				<h1>
+					<a href="#" class="navbar-logo">
+						<img src="https://fakeimg.pl/300x80/" alt="南投縣營建工地空汙費線上申報系統" />
+					</a>
+					<b class="visually-hidden">南投縣營建工地空汙費線上申報系統</b>
+				</h1>
+				<input id="menuToggle" type="checkbox" />
+				<label class="hamburger" for="menuToggle">
+					<span>選單按鈕</span>
+				</label>
+				<ul class="navbar-menu">
+					<li>
+						<a href="#">首頁</a>
+					</li>
+					<li>
+						<a href="#">最新消息</a>
+					</li>
+					<li>
+						<a href="#">營建空污費試算</a>
+					</li>
+					<li>
+						<a href="#">營建空污費申報</a>
+					</li>
+					<li>
+						<a href="#">進度查詢</a>
+					</li>
+					<li class="dropdown">
+						<a href="javascript:;">會員中心 <i class="fa fa-angle-down"></i></a>
+						<ul class="dropdown-menu">
+							<li>
+								<a href="#">營建業主資料管理</a>
+							</li>
+							<li>
+								<a href="#">密碼修改</a>
+							</li>
+							<li>
+								<a href="#">登出</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+			</div>
+		</header>
+
+		<div class="main-container">
+			<div class="main-wrap">
+				<h1>營建業主資料管理</h1>
+				<div class="form-inline align-items-center">
+					<div class="form-group">
+						<label for="filterCompanyID">統一編號</label>
+						<input type="text" class="form-control" id="filterCompanyID" />
+					</div>
+					<div class="form-group">
+						<label for="filterCompanyName">營建業主名稱</label>
+						<input type="text" class="form-control" id="filterCompanyName" />
+					</div>
+					<div class="form-group">
+						<label for="filterOwnerName">負責人姓名</label>
+						<input type="text" class="form-control" id="filterOwnerName" />
+					</div>
+					<div class="form-group">
+						<label for="filterContactName">聯絡人姓名</label>
+						<input type="text" class="form-control" id="filterContactName" />
+					</div>
+					<div class="form-group">
+						<button type="button" class="btn btn-primary">查詢</button>
+					</div>
+					<div class="form-group">
+						<button type="button" class="btn btn-primary">新增</button>
+					</div>
+				</div>
+				<table class="table table-bordered">
+					<thead>
+						<tr>
+							<th>#</th>
+							<th>統一編號</th>
+							<th>營建業主名稱</th>
+							<th>聯絡電話</th>
+							<th>負責人</th>
+							<th>聯絡人</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<th>
+								<button type="button" class="btn-circle" data-toggle="modal" data-target="#editModal"><i class="fa fa-search"></i></button>
+							</th>
+							<td>xxx</td>
+							<td>xxx</td>
+							<td>xxx</td>
+							<td>xxx</td>
+							<td>xxx</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<div class="modal fade" id="editModal" tabindex="-1">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="exampleModalLabel">標題</h5>
+						<button type="button" class="close" data-dismiss="modal">
+							<span>&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<div class="form-group">
+							<label for="companyName">公司名稱</label>
+							<input type="text" id="companyName" class="form-control" />
+						</div>
+						<div class="form-group">
+							<label for="companyID">統一編號</label>
+							<input type="text" id="companyID" class="form-control" />
+						</div>
+						<div class="form-group">
+							<label for="address">營業地址</label>
+							<input type="text" id="address" class="form-control" />
+						</div>
+						<div class="form-group">
+							<label for="phone">連絡電話</label>
+							<input type="text" id="phone" class="form-control" />
+						</div>
+						<div class="form-group">
+							<label for="address">聯絡地址</label>
+							<input type="text" id="address" class="form-control" />
+						</div>
+						<div class="form-group">
+							<label for="ownerName">負責人姓名</label>
+							<input type="text" id="ownerName" class="form-control" />
+						</div>
+						<div class="form-group">
+							<label for="ownerJobTitle">負責人職稱</label>
+							<input type="text" id="ownerJobTitle" class="form-control" />
+						</div>
+						<div class="form-group">
+							<label for="ownerID">負責人身分證字號</label>
+							<input type="text" id="ownerID" class="form-control" />
+						</div>
+						<div class="form-group">
+							<label for="ownerBirthday">負責人出生日期</label>
+							<input type="text" id="ownerBirthday" class="form-control" />
+						</div>
+						<div class="form-group">
+							<label for="contactName">聯絡人姓名</label>
+							<input type="text" id="contactName" class="form-control" />
+						</div>
+						<div class="form-group">
+							<label for="contactJobTitle">聯絡人職稱</label>
+							<input type="text" id="contactJobTitle" class="form-control" />
+						</div>
+						<div class="form-group">
+							<label for="contactID">聯絡人身分證字號</label>
+							<input type="text" id="contactID" class="form-control" />
+						</div>
+						<div class="form-group">
+							<label for="contactPhone">聯絡人聯絡電話</label>
+							<input type="text" id="contactPhone" class="form-control" />
+						</div>
+						<div class="form-group">
+							<label for="contactAddress">聯絡人地址</label>
+							<input type="text" id="contactAddress" class="form-control" />
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+						<button type="button" class="btn btn-primary">儲存</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="static/js/main.js"></script>
+	</body>
+</html>
