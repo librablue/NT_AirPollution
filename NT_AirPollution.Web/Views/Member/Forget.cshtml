@@ -1,4 +1,5 @@
-﻿@{
+﻿@using hbehr.recaptcha;
+@{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -18,25 +19,28 @@
         </div>
         <div class="side-form">
             <h1>忘記密碼</h1>
-            <el-form>
-                <el-form-item label="Email">
+            <el-form :rules="rules" ref="form" :model="form">
+                <el-form-item prop="Email" label="Email">
                     <el-input type="email" v-model="form.Email">
-                        <el-button slot="append" type="primary" class="btn-append">驗證</el-button>
+                        <el-button slot="append" type="primary" class="btn-append" @@click="sendCode" :disabled="btnSendCodeDisabled">{{btnSendCodeText}}</el-button>
                     </el-input>
                     <small class="prompt-text">請至您的電子郵件信箱查看信箱驗證碼</small>
                 </el-form-item>
-                <el-form-item label="信箱驗證碼">
-                    <el-input type="text" inputmode="numeric" v-model="form.Code"></el-input>
+                <el-form-item prop="ActiveCode" label="信箱驗證碼">
+                    <el-input type="text" inputmode="numeric" v-model="form.ActiveCode"></el-input>
                 </el-form-item>
-                <el-form-item label="重設密碼">
+                <el-form-item prop="Password" label="重設密碼">
                     <el-input type="password" v-model="form.Password"></el-input>
-                    <small class="prompt-text">密碼須為6碼~12碼，且須使用英文+數字組合。</small>
+                    <small class="prompt-text">密碼須為 6 ~ 20 字，且須使用大、小寫英文 + 數字組合</small>
                 </el-form-item>
-                <el-form-item label="確認密碼">
+                <el-form-item prop="Password2" label="確認密碼">
                     <el-input type="password" v-model="form.Password2"></el-input>
                 </el-form-item>
+                <el-form-item prop="Captcha">
+                    @ReCaptcha.GetCaptcha()
+                </el-form-item>
                 <el-form-item>
-                    <el-button type="primary">確認送出</el-button>
+                    <el-button type="primary" class="btn-block" @@click="sendForm">確認送出</el-button>
                 </el-form-item>
             </el-form>
             <div class="oth-links">

@@ -64,7 +64,7 @@
                     }
 
                     axios
-                        .post('/Member/SendCode', this.form)
+                        .post('/Member/SendSignUpCode', this.form)
                         .then(res => {
                             if (!res.data.Status) {
                                 alert(res.data.Message);
@@ -111,7 +111,7 @@
                                 return;
                             }
 
-                            alert('註冊完成，請重新登入');
+                            alert('註冊成功，請重新登入');
                             location.href = 'SignIn';
                         })
                         .catch(err => {

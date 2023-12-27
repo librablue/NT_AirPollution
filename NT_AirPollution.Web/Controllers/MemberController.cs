@@ -73,7 +73,7 @@ namespace NT_AirPollution.Web.Controllers
         }
 
         [HttpPost]
-        public JsonResult SendCode(VerifyLog verify)
+        public JsonResult SendSignUpCode(VerifyLog verify)
         {
             try
             {
@@ -166,6 +166,97 @@ namespace NT_AirPollution.Web.Controllers
         public ActionResult Forget()
         {
             return View();
+        }
+
+        [HttpPost]
+        public JsonResult SendForgetCode(VerifyLog verify)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    string firstError = ModelState.Values.SelectMany(o => o.Errors).First().ErrorMessage;
+                    throw new Exception(firstError);
+                }
+
+                var existUser = _clientUserService.GetExistClientUser(verify.Email);
+                if (existUser == null)
+                    throw new Exception("查無此 Email 帳號。");
+
+                var sendbox = _sendBoxService.CheckSendBoxFrequency(verify.Email);
+                if (sendbox != null && sendbox.CreateDate > DateTime.Now.AddMinutes(-3))
+                    throw new Exception("寄送次數太頻繁，請 3 分鐘後再試。");
+
+                // 產生5碼亂數
+                string code = "";
+                Random rnd = new Random();
+                for (int i = 0; i < 5; i++)
+                {
+                    code += rnd.Next(0, 9);
+                }
+
+                // 驗證信
+                string template = ($@"{HostingEnvironment.ApplicationPhysicalPath}/App_Data/Template/VerifyCode.txt");
+                using (StreamReader sr = new StreamReader(template))
+                {
+                    string content = sr.ReadToEnd();
+                    string body = string.Format(content, code);
+                    _sendBoxService.AddSendBox(new SendBox
+                    {
+                        Address = verify.Email,
+                        Subject = "南投縣環保局營建工程空氣污染防制費網路申報系統 - Email驗證碼",
+                        Body = body,
+                        FailTimes = 0,
+                        CreateDate = DateTime.Now
+                    });
+                }
+
+                verify.ActiveCode = code;
+                verify.CreateDate = DateTime.Now;
+                _clientUserService.AddVerifyLog(verify);
+
+                return Json(new AjaxResult { Status = true, Message = "已發送驗證碼到您申請的信箱，請在5分鐘內收取驗證碼進行驗證。" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new AjaxResult { Status = false, Message = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public JsonResult Forget(ClientUser user)
+        {
+            try
+            {
+                if (user.Captcha == null || !ReCaptcha.ValidateCaptcha(user.Captcha))
+                    throw new Exception("請勾選我不是機器人。");
+
+                if (!ModelState.IsValid)
+                {
+                    string firstError = ModelState.Values.SelectMany(o => o.Errors).First().ErrorMessage;
+                    throw new Exception(firstError);
+                }
+
+                var verifyLog = _clientUserService.CheckVerifyLog(user.Email);
+                if (verifyLog == null || verifyLog.ActiveCode != user.ActiveCode)
+                    throw new Exception("驗證碼錯誤。");
+
+                verifyLog.ActiveDate = DateTime.Now;
+                _clientUserService.UpdateVerifyLog(verifyLog);
+
+                var userInDB = _clientUserService.GetUserByEmail(user.Email);
+                if(userInDB == null)
+                    throw new Exception("查無此 Email 帳號。");
+
+                userInDB.Password = user.Password;
+                _clientUserService.UpdateUser(userInDB);
+
+                return Json(new AjaxResult { Status = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new AjaxResult { Status = false, Message = ex.Message });
+            }
         }
     }
 }

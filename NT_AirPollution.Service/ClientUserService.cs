@@ -97,6 +97,23 @@ namespace NT_AirPollution.Service
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
+        public ClientUser GetUserByEmail(string email)
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                var result = cn.QueryFirstOrDefault<ClientUser>(@"
+                    SELECT * FROM ClientUser
+                    WHERE Email=@Email
+                        AND DeleteDate IS NULL", new { Email = email });
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// 新增使用者
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
         public bool AddUser(ClientUser user)
         {
             using (var cn = new SqlConnection(connStr))
