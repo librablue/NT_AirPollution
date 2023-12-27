@@ -1,4 +1,6 @@
-﻿using NT_AirPollution.Model.Domain;
+﻿using hbehr.recaptcha;
+using Newtonsoft.Json;
+using NT_AirPollution.Model.Domain;
 using NT_AirPollution.Service;
 using NT_AirPollution.Web.Models;
 using System;
@@ -8,6 +10,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Hosting;
 using System.Web.Mvc;
+using System.Web.Security;
 
 namespace NT_AirPollution.Web.Controllers
 {
@@ -26,12 +29,45 @@ namespace NT_AirPollution.Web.Controllers
             return View();
         }
 
-        public ActionResult SignUp()
+        [HttpPost]
+        public JsonResult SignIn(ClientUser user)
         {
-            return View();
+            try
+            {
+                if (user.Captcha == null || !ReCaptcha.ValidateCaptcha(user.Captcha))
+                    throw new Exception("請勾選我不是機器人。");
+
+                if (string.IsNullOrEmpty(user.Email) || string.IsNullOrEmpty(user.Password))
+                    throw new Exception("欄位驗證錯誤。");
+
+                var result = _clientUserService.SignIn(user);
+                if (result == null)
+                    throw new Exception("登入失敗，帳號或密碼錯誤。");
+
+                FormsAuthenticationTicket ticket = new FormsAuthenticationTicket(1,
+                        result.Email,
+                        DateTime.Now,
+                        DateTime.Now.AddHours(8),
+                        true,
+                        JsonConvert.SerializeObject(new UserData
+                        {
+                            ID = result.ID,
+                            Email = result.Email
+                        }),
+                        FormsAuthentication.FormsCookiePath);
+
+                string encTicket = FormsAuthentication.Encrypt(ticket);
+                Response.Cookies.Add(new HttpCookie(FormsAuthentication.FormsCookieName, encTicket));
+
+                return Json(new AjaxResult { Status = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new AjaxResult { Status = false, Message = ex.Message });
+            }
         }
 
-        public ActionResult Forget()
+        public ActionResult SignUp()
         {
             return View();
         }
@@ -96,11 +132,25 @@ namespace NT_AirPollution.Web.Controllers
         {
             try
             {
+                if (user.Captcha == null || !ReCaptcha.ValidateCaptcha(user.Captcha))
+                    throw new Exception("請勾選我不是機器人。");
+
                 if (!ModelState.IsValid)
                 {
                     string firstError = ModelState.Values.SelectMany(o => o.Errors).First().ErrorMessage;
                     throw new Exception(firstError);
                 }
+
+                var existUser = _clientUserService.GetExistClientUser(user.Email);
+                if (existUser != null)
+                    throw new Exception("相同 Email 已存在。");
+
+                var verifyLog = _clientUserService.CheckVerifyLog(user.Email);
+                if (verifyLog == null || verifyLog.ActiveCode != user.ActiveCode)
+                    throw new Exception("驗證碼錯誤。");
+
+                verifyLog.ActiveDate = DateTime.Now;
+                _clientUserService.UpdateVerifyLog(verifyLog);
 
                 user.CreateDate = DateTime.Now;
                 _clientUserService.AddUser(user);
@@ -111,6 +161,11 @@ namespace NT_AirPollution.Web.Controllers
             {
                 return Json(new AjaxResult { Status = false, Message = ex.Message });
             }
+        }
+
+        public ActionResult Forget()
+        {
+            return View();
         }
     }
 }

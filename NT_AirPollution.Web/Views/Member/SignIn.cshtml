@@ -1,4 +1,5 @@
-﻿@{
+﻿@using hbehr.recaptcha;
+@{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -18,15 +19,18 @@
         </div>
         <div class="side-form">
             <h1>帳號登入</h1>
-            <el-form>
-                <el-form-item label="Email">
+            <el-form :rules="rules" ref="form" :model="form">
+                <el-form-item prop="Email" label="Email">
                     <el-input type="email" v-model="form.Email"></el-input>
                 </el-form-item>
-                <el-form-item label="密碼">
+                <el-form-item prop="Password" label="密碼">
                     <el-input type="password" v-model="form.Password"></el-input>
                 </el-form-item>
-                <el-form-item>
-                    <el-button type="primary">登入</el-button>
+                <el-form-item prop="Captcha">
+                    @ReCaptcha.GetCaptcha()
+                </el-form-item>
+                <el-form-item class="text-right">
+                    <el-button type="primary" class="btn-block" @@click="signIn">登入</el-button>
                 </el-form-item>
             </el-form>
             <div class="oth-links">

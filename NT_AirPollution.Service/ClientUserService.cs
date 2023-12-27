@@ -35,6 +35,47 @@ namespace NT_AirPollution.Service
         }
 
         /// <summary>
+        /// 註冊檢查驗證碼
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
+        public VerifyLog CheckVerifyLog(string email)
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                var result = cn.QueryFirstOrDefault<VerifyLog>(@"
+                    SELECT TOP 1 * FROM VerifyLog
+                    WHERE Email=@Email
+                        AND ActiveDate IS NULL
+                    ORDER BY CreateDate DESC",
+                    new { Email = email });
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// 修改驗證碼記錄
+        /// </summary>
+        /// <param name="log"></param>
+        /// <returns></returns>
+        public bool UpdateVerifyLog(VerifyLog log)
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                try
+                {
+                    cn.Update(log);
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex.Message);
+                    throw new Exception("系統發生未預期錯誤");
+                }
+            }
+        }
+
+        /// <summary>
         /// 檢查Email帳號是否存在
         /// </summary>
         /// <param name="email">Email</param>
@@ -109,8 +150,7 @@ namespace NT_AirPollution.Service
 					SELECT * FROM ClientUser 
 					WHERE Email=@Email 
 						AND Password=@Password
-                        AND ActiveDate IS NOT NULL
-                        AND DeleteDate IS NOT NULL",
+                        AND DeleteDate IS NULL",
                     new
                     {
                         Email = user.Email,

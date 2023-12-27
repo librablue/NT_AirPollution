@@ -21,5 +21,9 @@ namespace NT_AirPollution.Model.Domain
         public string Password { get; set; }
         public DateTime CreateDate { get; set; }
         public DateTime? DeleteDate { get; set; }
+        [Computed]
+        public string ActiveCode { get; set; }
+        [Computed]
+        public string Captcha { get; set; }
     }
 }

@@ -25,7 +25,13 @@
             };
             const checkPassword2 = (rule, value, callback) => {
                 if (this.step === 'SUBMIT' && value !== this.form.Password) {
-                    callback(new Error('二次密碼輸入不相等'));
+                    callback(new Error('二次輸入的密碼不一致'));
+                }
+                callback();
+            };
+            const checkCaptcha = (rule, value, callback) => {
+                if (this.step === 'SUBMIT' && !value) {
+                    callback(new Error('請勾選我不是機器人'));
                 }
                 callback();
             };
@@ -44,7 +50,8 @@
                     Email: [{ validator: checkEmail }],
                     ActiveCode: [{ validator: checkActiveCode }],
                     Password: [{ validator: checkPassword }],
-                    Password2: [{ validator: checkPassword2 }]
+                    Password2: [{ validator: checkPassword2 }],
+                    Captcha: [{ validator: checkCaptcha }]
                 })
             };
         },
@@ -87,16 +94,19 @@
             },
             signUp() {
                 this.step = 'SUBMIT';
+                this.form.Captcha = grecaptcha.getResponse();
                 this.$refs.form.validate(valid => {
                     if (!valid) {
                         return false;
                     }
-
+                    
                     if (!confirm('是否確認送出?')) return;
                     axios
                         .post('/Member/SignUp', this.form)
                         .then(res => {
                             if (!res.data.Status) {
+                                grecaptcha.reset();
+                                this.form.Captcha = '';
                                 alert(res.data.Message);
                                 return;
                             }
@@ -105,7 +115,9 @@
                             location.href = 'SignIn';
                         })
                         .catch(err => {
-                            console.log(err.response.data.ExceptionMessage);
+                            console.log(err);
+                            grecaptcha.reset();
+                            this.form.Captcha = '';
                             alert('系統發生未預期錯誤');
                         });
                 });
