@@ -1,0 +1,48 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section styles {
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css" />
+    <link rel="stylesheet" href="@Url.Content("~/static/css/member.css")" />
+}
+@section scripts {
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="@Url.Content("~/static/js/member/signup.js")"></script>
+}
+
+<div id="app" class="container main">
+    <div class="entry-wrap">
+        <div class="aside">
+            <img class="w100p" src="/static/image/illu-access.svg" />
+        </div>
+        <div class="side-form">
+            <h1>註冊帳號</h1>
+            <el-form>
+                <el-form-item label="Email">
+                    <el-input type="email" v-model="form.Email">
+                        <el-button slot="append" type="primary" class="btn-append">驗證</el-button>
+                    </el-input>
+                    <small class="prompt-text">請至您的電子郵件信箱查看信箱驗證碼</small>
+                </el-form-item>
+                <el-form-item label="信箱驗證碼">
+                    <el-input type="text" inputmode="numeric" v-model="form.Code"></el-input>
+                </el-form-item>
+                <el-form-item label="密碼">
+                    <el-input type="password" v-model="form.Password"></el-input>
+                    <small class="prompt-text">密碼須為6碼~12碼，且須使用英文+數字組合。</small>
+                </el-form-item>
+                <el-form-item label="確認密碼">
+                    <el-input type="password" v-model="form.Password2"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary">確認送出</el-button>
+                </el-form-item>
+            </el-form>
+            <div class="oth-links">
+                <a href="@Url.Content("~/Member/SignIn")">帳號登入</a>
+                <a href="@Url.Content("~/Member/Forget")">忘記密碼</a>
+            </div>
+        </div>
+    </div>
+</div>

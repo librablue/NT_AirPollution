@@ -13,6 +13,45 @@ namespace NT_AirPollution.Service
     public class ClientUserService : BaseService
     {
         /// <summary>
+        /// 新增驗證碼記錄
+        /// </summary>
+        /// <param name="log"></param>
+        /// <returns></returns>
+        public bool AddVerifyLog(VerifyLog log)
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                try
+                {
+                    cn.Insert(log);
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex.Message);
+                    throw new Exception("系統發生未預期錯誤");
+                }
+            }
+        }
+
+        /// <summary>
+        /// 檢查Email帳號是否存在
+        /// </summary>
+        /// <param name="email">Email</param>
+        /// <returns></returns>
+        public ClientUser GetExistClientUser(string email)
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                var user = cn.QueryFirstOrDefault<ClientUser>(@"
+					SELECT * FROM dbo.ClientUser WHERE Email=@Email",
+                    new { Email = email });
+
+                return user;
+            }
+        }
+
+        /// <summary>
         /// 新增使用者
         /// </summary>
         /// <param name="user"></param>

@@ -38,6 +38,7 @@
       <HintPath>..\packages\Dapper.Contrib.2.0.78\lib\net461\Dapper.Contrib.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -47,11 +48,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Domain\Attachment.cs" />
     <Compile Include="Domain\SendBox.cs" />
     <Compile Include="Domain\Form.cs" />
     <Compile Include="Domain\ClientUserContractor.cs" />
     <Compile Include="Domain\ClientUserCompany.cs" />
     <Compile Include="Domain\ClientUser.cs" />
+    <Compile Include="Domain\VerifyLog.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="View\FormFIlter.cs" />
     <Compile Include="View\FormView.cs" />

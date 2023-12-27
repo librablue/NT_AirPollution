@@ -6,8 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Net.Mail;
-using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,6 +13,11 @@ namespace NT_AirPollution.Service
 {
     public class FormService : BaseService
     {
+        /// <summary>
+        /// 取得用戶的申請單
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
         public List<FormView> GetFormsByUser(FormFilter filter)
         {
             using (var cn = new SqlConnection(connStr))
@@ -44,19 +47,19 @@ namespace NT_AirPollution.Service
                         ClientUserID = BaseService.CurrentUser.ID
                     }).ToList();
 
-                //if (result != null)
-                //{
-                //    result.Attachments = cn.Query<Attachment>(@"
-                //    SELECT * FROM Attachment WHERE FormID=@FormID",
-                //        new { FormID = result.ID }).ToList();
-                //}
+                foreach (var item in result)
+                {
+                    item.Attachments = cn.Query<Attachment>(@"
+                        SELECT * FROM Attachment WHERE FormID=@FormID",
+                        new { FormID = item.ID }).ToList();
+                }
 
                 return result;
             }
         }
 
         /// <summary>
-        /// 新增空污表單
+        /// 新增申請單
         /// </summary>
         /// <param name="form"></param>
         /// <returns></returns>

@@ -44,6 +44,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -89,13 +90,29 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
+    <Content Include="static\css\index.css" />
+    <Content Include="static\css\member.css" />
+    <Content Include="static\image\bg-dots.png" />
+    <Content Include="static\image\illu-access.svg" />
+    <Content Include="static\image\illu-building.svg" />
+    <Content Include="static\image\illu-news.svg" />
+    <Content Include="static\image\logo.png" />
+    <Content Include="static\js\main.js" />
+    <Content Include="static\js\member\forget.js" />
+    <Content Include="static\js\member\signup.js" />
+    <Content Include="static\js\member\signin.js" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\BaseController.cs" />
+    <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\MemberController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helper\JsonNetResult.cs" />
+    <Compile Include="Models\AjaxResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -107,6 +124,22 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="packages.config" />
+    <Content Include="Views\Shared\Error.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="static\css\index.css.map" />
+    <Content Include="static\css\member.css.map" />
+    <Content Include="static\scss\index.scss" />
+    <Content Include="static\scss\member.scss" />
+    <Content Include="static\scss\_config.scss" />
+    <Content Include="static\scss\_footer.scss" />
+    <Content Include="static\scss\_form.scss" />
+    <Content Include="static\scss\_navbar.scss" />
+    <Content Include="static\scss\_shared.scss" />
+    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Member\Index.cshtml" />
+    <Content Include="Views\Member\SignIn.cshtml" />
+    <Content Include="Views\Member\SignUp.cshtml" />
+    <Content Include="Views\Member\Forget.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -116,8 +149,17 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\Upload\" />
-    <Folder Include="Controllers\" />
-    <Folder Include="Models\" />
+    <Folder Include="Views\Base\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NT_AirPollution.Model\NT_AirPollution.Model.csproj">
+      <Project>{4a0d9c90-215e-49de-b26f-72f78c875d0f}</Project>
+      <Name>NT_AirPollution.Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NT_AirPollution.Service\NT_AirPollution.Service.csproj">
+      <Project>{7750f50b-9b37-442f-a855-e44648b86199}</Project>
+      <Name>NT_AirPollution.Service</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

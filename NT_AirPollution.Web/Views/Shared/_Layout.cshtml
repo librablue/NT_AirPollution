@@ -1,0 +1,98 @@
+﻿@{
+    var controllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    var actionName = this.ViewContext.RouteData.Values["action"].ToString();
+    string path = string.Format("{0}/{1}", controllerName, actionName);
+}
+
+<!DOCTYPE html>
+<html lang="zh-tw">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="@Url.Content("~/static/css/index.css")" />
+    @RenderSection("styles", required: false)
+</head>
+<body>
+    <header class="navbar">
+        <div class="container">
+            <h1>
+                <a href="#" class="navbar-logo">
+                    <img src="@Url.Content("~/static/image/logo.png")" alt="南投縣政府環境保護局" />
+                </a>
+                <b class="visually-hidden">南投縣政府環境保護局</b>
+            </h1>
+            <input id="menuToggle" type="checkbox" />
+            <label class="hamburger" for="menuToggle">
+                <span>選單按鈕</span>
+            </label>
+            <ul class="navbar-menu">
+                <li>
+                    <a href="#">首頁</a>
+                </li>
+                <li>
+                    <a href="#">最新消息</a>
+                </li>
+                <li>
+                    <a href="#">營建空污費試算</a>
+                </li>
+                <li>
+                    <a href="#">營建空污費申報</a>
+                </li>
+                <li>
+                    <a href="#">進度查詢</a>
+                </li>
+                <li class="dropdown">
+                    <a href="javascript:;">會員中心 <i class="fa fa-angle-down"></i></a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="#">營建業主資料管理</a>
+                        </li>
+                        <li>
+                            <a href="#">密碼修改</a>
+                        </li>
+                        <li>
+                            <a href="#">登出</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </header>
+
+    @RenderBody()
+
+    <footer>
+        <div class="contact-row">
+            <ul>
+                <li><div class="office">南投縣政府環境保護局辦公室</div></li>
+                <li>地址：540225南投縣南投市中興路660號c棟2、3樓</li>
+                <li>TEL：(049)223-7530</li>
+                <li>FAX：(049)223-8684</li>
+            </ul>
+            <ul>
+                <li><div class="office">空氣汙染防制科辦公室(南投縣立體育場)</div></li>
+                <li>地址：540011南投縣南投市南崗一路300號</li>
+                <li>TEL：(049)223-3753</li>
+                <li>FAX：(049)220-1687</li>
+            </ul>
+            <ul>
+                <li>陳情專線：(049)223-4685 或 (049)222-3763</li>
+                <li>傳真電話：(049)223-8684</li>
+                <li>聯絡信箱：<a href="mailto:service@mail.ntepb.gov.tw">service@mail.ntepb.gov.tw</a></li>
+            </ul>
+        </div>
+        <div class="bottom">
+            <ul>
+                <li>建議瀏覽器：Microsoft Edge以上、Firefox、Chrome</li>
+                <li>Copyright©2024南投縣政府環境保護局版權所有</li>
+            </ul>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.7.16/vue.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.3/axios.min.js"></script>
+    @RenderSection("scripts", required: false)
+</body>
+</html>
+

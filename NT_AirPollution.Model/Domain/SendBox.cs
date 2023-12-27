@@ -12,7 +12,7 @@ namespace NT_AirPollution.Model.Domain
     {
         [Key]
         public long ID { get; set; }
-        public long FormID { get; set; }
+        public string Address { get; set; }
         public string Subject { get; set; }
         public string Body { get; set; }
         public string Attachment { get; set; }

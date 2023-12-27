@@ -10,6 +10,6 @@ namespace NT_AirPollution.Model.View
 {
     public class FormView : Form
     {
-
+        public List<Attachment> Attachments { get; set; }
     }
 }

@@ -1,0 +1,38 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section styles {
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css" />
+    <link rel="stylesheet" href="@Url.Content("~/static/css/member.css")" />
+}
+@section scripts {
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="@Url.Content("~/static/js/member/signin.js")"></script>
+}
+
+<div id="app" class="container main">
+    <div class="entry-wrap">
+        <div class="aside">
+            <img class="w100p" src="/static/image/illu-access.svg" />
+        </div>
+        <div class="side-form">
+            <h1>帳號登入</h1>
+            <el-form>
+                <el-form-item label="Email">
+                    <el-input type="email" v-model="form.Email"></el-input>
+                </el-form-item>
+                <el-form-item label="密碼">
+                    <el-input type="password" v-model="form.Password"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary">登入</el-button>
+                </el-form-item>
+            </el-form>
+            <div class="oth-links">
+                <a href="@Url.Content("~/Member/Forget")">忘記密碼</a>
+                <a href="@Url.Content("~/Member/SignUp")">註冊帳號</a>
+            </div>
+        </div>
+    </div>
+</div>

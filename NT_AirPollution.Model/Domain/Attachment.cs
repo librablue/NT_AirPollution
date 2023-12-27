@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace NT_AirPollution.Model.Domain
 {
-    [Table("ClientUser")]
-    public class ClientUser
+    [Table("Attachment")]
+    public class Attachment
     {
         [Key]
         public long ID { get; set; }
-        public string Email { get; set; }
-        public string Password { get; set; }
+        public long FormID { get; set; }
+        public string FileName { get; set; }
+        public string DisplayName { get; set; }
         public DateTime CreateDate { get; set; }
-        public DateTime? DeleteDate { get; set; }
     }
 }
