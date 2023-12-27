@@ -56,7 +56,7 @@ namespace NT_AirPollution.Web.Controllers
                     throw new Exception("寄送次數太頻繁，請 3 分鐘後再試。");
 
                 // 產生5碼亂數
-                string code = ""; ;
+                string code = "";
                 Random rnd = new Random();
                 for (int i = 0; i < 5; i++)
                 {
@@ -84,6 +84,28 @@ namespace NT_AirPollution.Web.Controllers
                 _clientUserService.AddVerifyLog(verify);
 
                 return Json(new AjaxResult { Status = true, Message = "已發送驗證碼到您申請的信箱，請在5分鐘內收取驗證碼進行驗證。" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new AjaxResult { Status = false, Message = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public JsonResult SignUp(ClientUser user)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    string firstError = ModelState.Values.SelectMany(o => o.Errors).First().ErrorMessage;
+                    throw new Exception(firstError);
+                }
+
+                user.CreateDate = DateTime.Now;
+                _clientUserService.AddUser(user);
+
+                return Json(new AjaxResult { Status = true });
             }
             catch (Exception ex)
             {

@@ -21,7 +21,7 @@
             <el-form :rules="rules" ref="form" :model="form">
                 <el-form-item prop="Email" label="Email">
                     <el-input type="email" v-model="form.Email">
-                        <el-button slot="append" type="primary" class="btn-append" @@click="sendCode">{{btnSendCodeText}}</el-button>
+                        <el-button slot="append" type="primary" class="btn-append" @@click="sendCode" :disabled="btnSendCodeDisabled">{{btnSendCodeText}}</el-button>
                     </el-input>
                     <small class="prompt-text">請至您的電子郵件信箱查看信箱驗證碼</small>
                 </el-form-item>
@@ -36,7 +36,7 @@
                     <el-input type="password" v-model="form.Password2"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary">確認送出</el-button>
+                    <el-button type="primary" @@click="signUp">確認送出</el-button>
                 </el-form-item>
             </el-form>
             <div class="oth-links">
