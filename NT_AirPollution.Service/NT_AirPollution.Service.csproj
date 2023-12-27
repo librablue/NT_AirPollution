@@ -60,6 +60,7 @@
     <Compile Include="ClientUserService.cs" />
     <Compile Include="BaseService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SendBoxService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

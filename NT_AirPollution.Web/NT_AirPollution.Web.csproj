@@ -89,6 +89,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\Template\VerifyCode.txt" />
     <Content Include="Global.asax" />
     <Content Include="static\css\index.css" />
     <Content Include="static\css\member.css" />

@@ -51,6 +51,10 @@ namespace NT_AirPollution.Web.Controllers
                 if (existUser != null)
                     throw new Exception("相同 Email 已存在。");
 
+                var sendbox = _sendBoxService.CheckSendBoxFrequency(verify.Email);
+                if (sendbox != null && sendbox.CreateDate > DateTime.Now.AddMinutes(-3))
+                    throw new Exception("寄送次數太頻繁，請 3 分鐘後再試。");
+
                 // 產生5碼亂數
                 string code = ""; ;
                 Random rnd = new Random();
@@ -60,7 +64,7 @@ namespace NT_AirPollution.Web.Controllers
                 }
 
                 // 驗證信
-                string template = ($@"{HostingEnvironment.ApplicationPhysicalPath}/App_Data/MailTemplate/VerifyCode.txt");
+                string template = ($@"{HostingEnvironment.ApplicationPhysicalPath}/App_Data/Template/VerifyCode.txt");
                 using (StreamReader sr = new StreamReader(template))
                 {
                     string content = sr.ReadToEnd();
@@ -79,7 +83,7 @@ namespace NT_AirPollution.Web.Controllers
                 verify.CreateDate = DateTime.Now;
                 _clientUserService.AddVerifyLog(verify);
 
-                return Json(new AjaxResult { Status = true });
+                return Json(new AjaxResult { Status = true, Message = "已發送驗證碼到您申請的信箱，請在5分鐘內收取驗證碼進行驗證。" });
             }
             catch (Exception ex)
             {
