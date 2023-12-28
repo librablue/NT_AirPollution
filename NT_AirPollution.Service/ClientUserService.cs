@@ -159,7 +159,7 @@ namespace NT_AirPollution.Service
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public ClientUser SignIn(ClientUser user)
+        public ClientUser Login(ClientUser user)
         {
             using (var cn = new SqlConnection(connStr))
             {

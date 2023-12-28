@@ -112,7 +112,7 @@
                             }
 
                             alert('密碼重設成功，請重新登入');
-                            location.href = 'SignIn';
+                            location.href = 'Login';
                         })
                         .catch(err => {
                             console.log(err);

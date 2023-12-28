@@ -24,13 +24,13 @@ namespace NT_AirPollution.Web.Controllers
             return View();
         }
 
-        public ActionResult SignIn()
+        public ActionResult Login()
         {
             return View();
         }
 
         [HttpPost]
-        public JsonResult SignIn(ClientUser user)
+        public JsonResult Login(ClientUser user)
         {
             try
             {
@@ -40,7 +40,7 @@ namespace NT_AirPollution.Web.Controllers
                 if (string.IsNullOrEmpty(user.Email) || string.IsNullOrEmpty(user.Password))
                     throw new Exception("欄位驗證錯誤。");
 
-                var result = _clientUserService.SignIn(user);
+                var result = _clientUserService.Login(user);
                 if (result == null)
                     throw new Exception("登入失敗，帳號或密碼錯誤。");
 
@@ -67,13 +67,13 @@ namespace NT_AirPollution.Web.Controllers
             }
         }
 
-        public ActionResult SignUp()
+        public ActionResult Regist()
         {
             return View();
         }
 
         [HttpPost]
-        public JsonResult SendSignUpCode(VerifyLog verify)
+        public JsonResult SendRegistCode(VerifyLog verify)
         {
             try
             {
@@ -128,7 +128,7 @@ namespace NT_AirPollution.Web.Controllers
         }
 
         [HttpPost]
-        public JsonResult SignUp(ClientUser user)
+        public JsonResult Regist(ClientUser user)
         {
             try
             {

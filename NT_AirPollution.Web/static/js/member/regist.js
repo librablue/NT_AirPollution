@@ -64,7 +64,7 @@
                     }
 
                     axios
-                        .post('/Member/SendSignUpCode', this.form)
+                        .post('/Member/SendRegistCode', this.form)
                         .then(res => {
                             if (!res.data.Status) {
                                 alert(res.data.Message);
@@ -92,7 +92,7 @@
                         });
                 });
             },
-            signUp() {
+            regist() {
                 this.step = 'SUBMIT';
                 this.form.Captcha = grecaptcha.getResponse();
                 this.$refs.form.validate(valid => {
@@ -102,7 +102,7 @@
                     
                     if (!confirm('是否確認送出?')) return;
                     axios
-                        .post('/Member/SignUp', this.form)
+                        .post('/Member/Regist', this.form)
                         .then(res => {
                             if (!res.data.Status) {
                                 grecaptcha.reset();
@@ -112,7 +112,7 @@
                             }
 
                             alert('註冊成功，請重新登入');
-                            location.href = 'SignIn';
+                            location.href = 'Login';
                         })
                         .catch(err => {
                             console.log(err);

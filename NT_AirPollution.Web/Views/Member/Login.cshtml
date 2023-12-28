@@ -9,7 +9,7 @@
 }
 @section scripts {
     <script src="https://unpkg.com/element-ui/lib/index.js"></script>
-    <script src="@Url.Content("~/static/js/member/signin.js")"></script>
+    <script src="@Url.Content("~/static/js/member/login.js")"></script>
 }
 
 <div id="app" class="container main">
@@ -30,12 +30,12 @@
                     @ReCaptcha.GetCaptcha()
                 </el-form-item>
                 <el-form-item class="text-right">
-                    <el-button type="primary" class="btn-block" @@click="signIn">登入</el-button>
+                    <el-button type="primary" class="btn-block" @@click="login">登入</el-button>
                 </el-form-item>
             </el-form>
             <div class="oth-links">
                 <a href="@Url.Content("~/Member/Forget")">忘記密碼</a>
-                <a href="@Url.Content("~/Member/SignUp")">註冊帳號</a>
+                <a href="@Url.Content("~/Member/Regist")">註冊帳號</a>
             </div>
         </div>
     </div>

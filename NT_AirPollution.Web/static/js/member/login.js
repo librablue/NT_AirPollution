@@ -16,7 +16,7 @@
             };
         },
         methods: {
-            signIn() {
+            login() {
                 this.form.Captcha = grecaptcha.getResponse();
                 this.$refs.form.validate(valid => {
                     if (!valid) {
@@ -24,7 +24,7 @@
                     }
 
                     axios
-                        .post('/Member/SignIn', this.form)
+                        .post('/Member/Login', this.form)
                         .then(res => {
                             if (!res.data.Status) {
                                 grecaptcha.reset();
