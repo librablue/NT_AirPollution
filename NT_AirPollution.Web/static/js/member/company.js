@@ -58,8 +58,13 @@
 				axios
 					.post(`/Member/${this.mode}Company`, this.selectRow)
 					.then(res => {
-						alert('畫面資料已儲存。');
+                        if (!res.data.Status) {
+                            alert(res.data.Message);
+                            return;
+                        }
+
 						this.getCompanies();
+						alert('畫面資料已儲存。');
 						this.dialogVisible = false;
 					})
 					.catch(err => {

@@ -354,6 +354,12 @@ namespace NT_AirPollution.Service
                             ClientUserID = filter.ClientUserID
                         }).ToList();
 
+                foreach (var item in result)
+                {
+                    if (!string.IsNullOrEmpty(item.R_B_BDATE))
+                        item.R_B_BDATE2 = Convert.ToDateTime($"{Convert.ToInt32(item.R_B_BDATE.Substring(0, 3)) + 1911}-{item.R_B_BDATE.Substring(3, 2)}-{item.R_B_BDATE.Substring(5, 2)}");
+                }
+
                 return result;
             }
         }

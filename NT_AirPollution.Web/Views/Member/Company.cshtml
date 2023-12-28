@@ -50,8 +50,8 @@
         </el-table>
     </div>
 
-    <el-dialog title="建立營建業主資料" :visible.sync="dialogVisible" width="30%" :close-on-click-modal="false">
-        <el-form label-width="160px">
+    <el-dialog title="建立營建業主資料" :visible.sync="dialogVisible" width="33%" :close-on-click-modal="false">
+        <el-form label-width="120px">
             <el-form-item label="營建業主名稱">
                 <el-input v-model="selectRow.S_NAME" maxlength="80"></el-input>
             </el-form-item>
@@ -73,7 +73,7 @@
             <el-form-item label="負責人職稱">
                 <el-input v-model="selectRow.S_B_TIT" maxlength="20"></el-input>
             </el-form-item>
-            <el-form-item label="負責人身分證字號">
+            <el-form-item label="負責人身分證">
                 <el-input v-model="selectRow.S_B_ID" maxlength="20"></el-input>
             </el-form-item>
             <el-form-item label="負責人生日">
@@ -85,7 +85,7 @@
             <el-form-item label="聯絡人職稱">
                 <el-input v-model="selectRow.S_C_TIT" maxlength="20"></el-input>
             </el-form-item>
-            <el-form-item label="聯絡人身分證字號">
+            <el-form-item label="聯絡人身分證">
                 <el-input v-model="selectRow.S_C_ID" maxlength="20"></el-input>
             </el-form-item>
             <el-form-item label="聯絡人地址">

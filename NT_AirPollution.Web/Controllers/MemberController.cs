@@ -321,8 +321,8 @@ namespace NT_AirPollution.Web.Controllers
             try
             {
                 company.ClientUserID = BaseService.CurrentUser.ID;
-                company.S_B_ID = company.S_B_ID.ToUpper();
-                company.S_C_ID = company.S_C_ID.ToUpper();
+                company.S_B_ID = company.S_B_ID?.ToUpper();
+                company.S_C_ID = company.S_C_ID?.ToUpper();
                 company.S_B_BDATE = company.S_B_BDATE2?.AddYears(-1911).ToString("yyyMMdd");
                 company.CreateDate = DateTime.Now;
                 company.ModifyDate = DateTime.Now;
@@ -347,8 +347,8 @@ namespace NT_AirPollution.Web.Controllers
                     throw new Exception("查無資料。");
 
                 company.ClientUserID = BaseService.CurrentUser.ID;
-                company.S_B_ID = company.S_B_ID.ToUpper();
-                company.S_C_ID = company.S_C_ID.ToUpper();
+                company.S_B_ID = company.S_B_ID?.ToUpper();
+                company.S_C_ID = company.S_C_ID?.ToUpper();
                 company.S_B_BDATE = company.S_B_BDATE2?.AddYears(-1911).ToString("yyyMMdd");
                 company.ModifyDate = DateTime.Now;
                 _clientUserService.UpdateCompany(company);
@@ -383,11 +383,76 @@ namespace NT_AirPollution.Web.Controllers
 
         [Authorize]
         [HttpPost]
-        public JsonResult GetGetMyContractor(ClientUserContractor filter)
+        public JsonResult GetMyContractor(ClientUserContractor filter)
         {
             filter.ClientUserID = BaseService.CurrentUser.ID;
             var result = _clientUserService.GetContractorByUser(filter);
             return Json(result);
+        }
+
+        [Authorize]
+        [HttpPost]
+        public JsonResult AddContractor(ClientUserContractor contractor)
+        {
+            try
+            {
+                contractor.ClientUserID = BaseService.CurrentUser.ID;
+                contractor.R_B_ID = contractor.R_B_ID?.ToUpper();
+                contractor.R_B_BDATE = contractor.R_B_BDATE2?.AddYears(-1911).ToString("yyyMMdd");
+                contractor.CreateDate = DateTime.Now;
+                contractor.ModifyDate = DateTime.Now;
+                _clientUserService.AddContractor(contractor);
+                return Json(new AjaxResult { Status = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new AjaxResult { Status = false, Message = ex.Message });
+            }
+        }
+
+        [Authorize]
+        [HttpPost]
+        public JsonResult UpdateContractor(ClientUserContractor contractor)
+        {
+            try
+            {
+                // 檢查是否為真實的資料
+                var contractorInDB = _clientUserService.GetContractorByID(contractor.ID);
+                if (contractorInDB == null || contractorInDB.ClientUserID != BaseService.CurrentUser.ID)
+                    throw new Exception("查無資料。");
+
+                contractor.ClientUserID = BaseService.CurrentUser.ID;
+                contractor.R_B_ID = contractor.R_B_ID?.ToUpper();
+                contractor.R_B_BDATE = contractor.R_B_BDATE2?.AddYears(-1911).ToString("yyyMMdd");
+                contractor.ModifyDate = DateTime.Now;
+                _clientUserService.UpdateContractor(contractor);
+                return Json(new AjaxResult { Status = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new AjaxResult { Status = false, Message = ex.Message });
+            }
+        }
+
+        [Authorize]
+        [HttpPost]
+        public JsonResult DeleteContractor(ClientUserContractor contractor)
+        {
+            try
+            {
+                // 檢查是否為真實的資料
+                var contractorInDB = _clientUserService.GetContractorByID(contractor.ID);
+                if (contractorInDB == null || contractorInDB.ClientUserID != BaseService.CurrentUser.ID)
+                    throw new Exception("查無資料。");
+
+                contractor.ClientUserID = BaseService.CurrentUser.ID;
+                _clientUserService.DeleteContractor(contractor);
+                return Json(new AjaxResult { Status = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new AjaxResult { Status = false, Message = ex.Message });
+            }
         }
     }
 }

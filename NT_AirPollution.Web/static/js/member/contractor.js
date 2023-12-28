@@ -12,7 +12,7 @@
 					R_M_NAM: '',
 					R_C_NAM: ''
 				},
-				contractor: [],
+				contractors: [],
 				selectRow: {},
 				dialogVisible: false
 			};
@@ -23,7 +23,7 @@
 				axios
 					.post('/Member/GetMyContractor', this.filter)
 					.then(res => {
-						this.contractor = res.data;
+						this.contractors = res.data;
 						this.loading = false;
 					})
 					.catch(err => {
@@ -47,7 +47,7 @@
 					.post(`/Member/DeleteContractor`, row)
 					.then(res => {
 						alert('畫面資料已儲存。');
-						this.getCompanies();
+						this.getContractor();
 					})
 					.catch(err => {
 						alert('系統發生未預期錯誤');
@@ -59,8 +59,13 @@
 				axios
 					.post(`/Member/${this.mode}Contractor`, this.selectRow)
 					.then(res => {
-						alert('畫面資料已儲存。');
+                        if (!res.data.Status) {
+                            alert(res.data.Message);
+                            return;
+                        }
+
 						this.getContractor();
+						alert('畫面資料已儲存。');
 						this.dialogVisible = false;
 					})
 					.catch(err => {

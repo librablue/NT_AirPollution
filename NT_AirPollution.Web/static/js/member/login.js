@@ -33,7 +33,7 @@
                                 return;
                             }
 
-                            location.href = 'Index';
+                            location.href = '/Member/Index';
                         })
                         .catch(err => {
                             console.log(err);

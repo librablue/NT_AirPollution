@@ -25,6 +25,7 @@ namespace NT_AirPollution.Model.Domain
         /// <summary>
         /// 西元年
         /// </summary>
+        [Computed]
         public DateTime? R_B_BDATE2 { get; set; }
         public string R_ADDR3 { get; set; }
         public string R_TEL1 { get; set; }
