@@ -22,6 +22,10 @@ namespace NT_AirPollution.Model.Domain
         public string R_B_TIT { get; set; }
         public string R_B_ID { get; set; }
         public string R_B_BDATE { get; set; }
+        /// <summary>
+        /// 西元年
+        /// </summary>
+        public DateTime? R_B_BDATE2 { get; set; }
         public string R_ADDR3 { get; set; }
         public string R_TEL1 { get; set; }
         public string R_M_NAM { get; set; }

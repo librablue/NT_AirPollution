@@ -179,6 +179,26 @@ namespace NT_AirPollution.Service
         }
 
         /// <summary>
+        /// 取得營建業主 ByID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public ClientUserCompany GetCompanyByID(long id)
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                var result = cn.QueryFirstOrDefault<ClientUserCompany>(@"
+                    SELECT * FROM ClientUserCompany WHERE ID=@ID",
+                    new { ID = id });
+
+                if (!string.IsNullOrEmpty(result.S_B_BDATE))
+                    result.S_B_BDATE2 = Convert.ToDateTime($"{Convert.ToInt32(result.S_B_BDATE.Substring(0, 3)) + 1911}-{result.S_B_BDATE.Substring(3, 2)}-{result.S_B_BDATE.Substring(5, 2)}");
+
+                return result;
+            }
+        }
+
+        /// <summary>
         /// 取得使用者所有的營建業主
         /// </summary>
         /// <param name="company"></param>
@@ -272,7 +292,10 @@ namespace NT_AirPollution.Service
             {
                 try
                 {
-                    cn.Delete(company);
+                    cn.Execute(@"
+                        DELETE FROM ClientUserCompany
+                        WHERE ID=@ID AND ClientUserID=@ClientUserID",
+                        new { ID = company.ID, ClientUserID = company.ClientUserID });
                     return true;
                 }
                 catch (Exception ex)
@@ -280,6 +303,26 @@ namespace NT_AirPollution.Service
                     Logger.Error(ex.Message);
                     throw new Exception("系統發生未預期錯誤");
                 }
+            }
+        }
+
+        /// <summary>
+        /// 取得承包商 ByID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public ClientUserContractor GetContractorByID(long id)
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                var result = cn.QueryFirstOrDefault<ClientUserContractor>(@"
+                    SELECT * FROM ClientUserContractor WHERE ID=@ID",
+                    new { ID = id });
+
+                if (!string.IsNullOrEmpty(result.R_B_BDATE))
+                    result.R_B_BDATE2 = Convert.ToDateTime($"{Convert.ToInt32(result.R_B_BDATE.Substring(0, 3)) + 1911}-{result.R_B_BDATE.Substring(3, 2)}-{result.R_B_BDATE.Substring(5, 2)}");
+
+                return result;
             }
         }
 
@@ -298,6 +341,7 @@ namespace NT_AirPollution.Service
                     WHERE (@R_G_NO='' OR R_G_NO=@R_G_NO)
                         AND (@R_NAME='' OR R_NAME LIKE '%'+@R_NAME+'%')
                         AND (@R_B_NAM='' OR R_B_NAM LIKE '%'+@R_B_NAM+'%')
+                        AND (@R_M_NAM='' OR R_M_NAM LIKE '%'+@R_M_NAM+'%')
                         AND (@R_C_NAM='' OR R_C_NAM LIKE '%'+@R_C_NAM+'%')
                         AND ClientUserID=@ClientUserID",
                         new
@@ -305,6 +349,7 @@ namespace NT_AirPollution.Service
                             R_G_NO = filter.R_G_NO ?? "",
                             R_NAME = filter.R_NAME ?? "",
                             R_B_NAM = filter.R_B_NAM ?? "",
+                            R_M_NAM = filter.R_M_NAM ?? "",
                             R_C_NAM = filter.R_C_NAM ?? "",
                             ClientUserID = filter.ClientUserID
                         }).ToList();
@@ -371,7 +416,10 @@ namespace NT_AirPollution.Service
             {
                 try
                 {
-                    cn.Delete(contractor);
+                    cn.Execute(@"
+                        DELETE FROM ClientUserContractor
+                        WHERE ID=@ID AND ClientUserID=@ClientUserID",
+                        new { ID = contractor.ID, ClientUserID = contractor.ClientUserID });
                     return true;
                 }
                 catch (Exception ex)

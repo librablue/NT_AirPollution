@@ -57,6 +57,12 @@ namespace NT_AirPollution.Web.Controllers
             return View();
         }
 
+        [Authorize]
+        public ActionResult Contractor()
+        {
+            return View();
+        }
+
         [HttpPost]
         public JsonResult Login(ClientUser user)
         {
@@ -335,6 +341,11 @@ namespace NT_AirPollution.Web.Controllers
         {
             try
             {
+                // 檢查是否為真實的資料
+                var companyInDB = _clientUserService.GetCompanyByID(company.ID);
+                if (companyInDB == null || companyInDB.ClientUserID != BaseService.CurrentUser.ID)
+                    throw new Exception("查無資料。");
+
                 company.ClientUserID = BaseService.CurrentUser.ID;
                 company.S_B_ID = company.S_B_ID.ToUpper();
                 company.S_C_ID = company.S_C_ID.ToUpper();
@@ -347,6 +358,36 @@ namespace NT_AirPollution.Web.Controllers
             {
                 return Json(new AjaxResult { Status = false, Message = ex.Message });
             }
+        }
+
+        [Authorize]
+        [HttpPost]
+        public JsonResult DeleteCompany(ClientUserCompany company)
+        {
+            try
+            {
+                // 檢查是否為真實的資料
+                var companyInDB = _clientUserService.GetCompanyByID(company.ID);
+                if (companyInDB == null || companyInDB.ClientUserID != BaseService.CurrentUser.ID)
+                    throw new Exception("查無資料。");
+
+                company.ClientUserID = BaseService.CurrentUser.ID;
+                _clientUserService.DeleteCompany(company);
+                return Json(new AjaxResult { Status = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new AjaxResult { Status = false, Message = ex.Message });
+            }
+        }
+
+        [Authorize]
+        [HttpPost]
+        public JsonResult GetGetMyContractor(ClientUserContractor filter)
+        {
+            filter.ClientUserID = BaseService.CurrentUser.ID;
+            var result = _clientUserService.GetContractorByUser(filter);
+            return Json(result);
         }
     }
 }

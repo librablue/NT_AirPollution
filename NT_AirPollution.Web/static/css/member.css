@@ -286,6 +286,10 @@ ul {
     display: none;
   }
 }
+#app {
+  min-height: calc(100vh - 231px - 72px);
+}
+
 h1, h2 {
   font-size: 24px;
   font-weight: 700;

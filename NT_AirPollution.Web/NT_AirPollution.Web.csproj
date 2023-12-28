@@ -154,6 +154,7 @@
     <Content Include="Views\Member\Company.cshtml" />
     <Content Include="static\js\plugin\element-ui\fonts\element-icons.ttf" />
     <Content Include="static\js\plugin\element-ui\fonts\element-icons.woff" />
+    <Content Include="Views\Member\Contractor.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

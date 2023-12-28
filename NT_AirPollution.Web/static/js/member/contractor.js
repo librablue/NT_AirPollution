@@ -6,23 +6,24 @@
 				mode: '',
 				loading: false,
 				filter: {
-					S_G_NO: '',
-					S_NAME: '',
-					S_B_NAM: '',
-					S_C_NAM: ''
+					R_G_NO: '',
+					R_NAME: '',
+					R_B_NAM: '',
+					R_M_NAM: '',
+					R_C_NAM: ''
 				},
-				companies: [],
+				contractor: [],
 				selectRow: {},
 				dialogVisible: false
 			};
 		},
 		methods: {
-			getCompanies() {
+			getContractor() {
 				this.loading = true;
 				axios
-					.post('/Member/GetMyCompanies', this.filter)
+					.post('/Member/GetMyContractor', this.filter)
 					.then(res => {
-						this.companies = res.data;
+						this.contractor = res.data;
 						this.loading = false;
 					})
 					.catch(err => {
@@ -30,7 +31,7 @@
 						console.log(err);
 					});
 			},
-			addCompany() {
+			addContractor() {
 				this.mode = 'Add';
 				this.selectRow = {};
 				this.dialogVisible = true;
@@ -40,10 +41,10 @@
 				this.selectRow = JSON.parse(JSON.stringify(row));
 				this.dialogVisible = true;
 			},
-			deleteCompany(row) {
+			deleteContractor(row) {
 				if (!confirm('是否確認刪除?')) return false;
 				axios
-					.post(`/Member/DeleteCompany`, row)
+					.post(`/Member/DeleteContractor`, row)
 					.then(res => {
 						alert('畫面資料已儲存。');
 						this.getCompanies();
@@ -56,10 +57,10 @@
 			saveForm() {
 				if (!confirm('是否確認繼續?')) return false;
 				axios
-					.post(`/Member/${this.mode}Company`, this.selectRow)
+					.post(`/Member/${this.mode}Contractor`, this.selectRow)
 					.then(res => {
 						alert('畫面資料已儲存。');
-						this.getCompanies();
+						this.getContractor();
 						this.dialogVisible = false;
 					})
 					.catch(err => {

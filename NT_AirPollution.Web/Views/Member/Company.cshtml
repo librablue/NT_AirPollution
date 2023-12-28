@@ -16,20 +16,20 @@
             <el-form-item label="統一編號">
                 <el-input v-model="filter.S_G_NO"></el-input>
             </el-form-item>
-            <el-form-item label="營建業主名稱">
+            <el-form-item label="營建業主">
                 <el-input v-model="filter.S_NAME"></el-input>
             </el-form-item>
-            <el-form-item label="負責人姓名">
+            <el-form-item label="負責人">
                 <el-input v-model="filter.S_B_NAM"></el-input>
             </el-form-item>
-            <el-form-item label="聯絡人姓名">
+            <el-form-item label="聯絡人">
                 <el-input v-model="filter.S_C_NAM"></el-input>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" icon="el-icon-search" @@click="getCompanies">查 詢</el-button>
             </el-form-item>
             <el-form-item>
-                <el-button type="success" icon="el-icon-plus" @@click="addCompnay">新 增</el-button>
+                <el-button type="success" icon="el-icon-plus" @@click="addCompany">新 增</el-button>
             </el-form-item>
         </el-form>
 
@@ -53,46 +53,46 @@
     <el-dialog title="建立營建業主資料" :visible.sync="dialogVisible" width="30%" :close-on-click-modal="false">
         <el-form label-width="160px">
             <el-form-item label="營建業主名稱">
-                <el-input v-model="selectCompany.S_NAME" maxlength="80"></el-input>
+                <el-input v-model="selectRow.S_NAME" maxlength="80"></el-input>
             </el-form-item>
             <el-form-item label="統一編號">
-                <el-input type="text" inputmode="numeric" v-model="selectCompany.S_G_NO" maxlength="10"></el-input>
+                <el-input type="text" inputmode="numeric" v-model="selectRow.S_G_NO" maxlength="10"></el-input>
             </el-form-item>
-            <el-form-item label="營建業主地址">
-                <el-input v-model="selectCompany.S_ADDR1" maxlength="50"></el-input>
+            <el-form-item label="營業地址">
+                <el-input v-model="selectRow.S_ADDR1" maxlength="50"></el-input>
             </el-form-item>
-            <el-form-item label="業主聯絡地址">
-                <el-input v-model="selectCompany.S_ADDR2" maxlength="50"></el-input>
+            <el-form-item label="聯絡電話">
+                <el-input type="tel" v-model="selectRow.S_TEL" maxlength="30"></el-input>
             </el-form-item>
-            <el-form-item label="業主電話">
-                <el-input type="tel" v-model="selectCompany.S_TEL" maxlength="30"></el-input>
+            <el-form-item label="聯絡地址">
+                <el-input v-model="selectRow.S_ADDR2" maxlength="50"></el-input>
             </el-form-item>
-            <el-form-item label="業主負責人">
-                <el-input v-model="selectCompany.S_B_NAM" maxlength="20"></el-input>
+            <el-form-item label="負責人">
+                <el-input v-model="selectRow.S_B_NAM" maxlength="20"></el-input>
             </el-form-item>
-            <el-form-item label="業主負責人職稱">
-                <el-input v-model="selectCompany.S_B_TIT" maxlength="20"></el-input>
+            <el-form-item label="負責人職稱">
+                <el-input v-model="selectRow.S_B_TIT" maxlength="20"></el-input>
             </el-form-item>
-            <el-form-item label="業主負責人身分證字號">
-                <el-input v-model="selectCompany.S_B_ID" maxlength="20"></el-input>
+            <el-form-item label="負責人身分證字號">
+                <el-input v-model="selectRow.S_B_ID" maxlength="20"></el-input>
             </el-form-item>
-            <el-form-item label="業主負責人生日">
-                <el-date-picker class="w100p" v-model="selectCompany.S_B_BDATE2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
+            <el-form-item label="負責人生日">
+                <el-date-picker class="w100p" v-model="selectRow.S_B_BDATE2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
             </el-form-item>
-            <el-form-item label="業主聯絡人">
-                <el-input v-model="selectCompany.S_C_NAM" maxlength="20"></el-input>
+            <el-form-item label="聯絡人">
+                <el-input v-model="selectRow.S_C_NAM" maxlength="20"></el-input>
             </el-form-item>
-            <el-form-item label="業主聯絡人職稱">
-                <el-input v-model="selectCompany.S_C_TIT" maxlength="20"></el-input>
+            <el-form-item label="聯絡人職稱">
+                <el-input v-model="selectRow.S_C_TIT" maxlength="20"></el-input>
             </el-form-item>
-            <el-form-item label="業主聯絡人身分證字號">
-                <el-input v-model="selectCompany.S_C_ID" maxlength="20"></el-input>
+            <el-form-item label="聯絡人身分證字號">
+                <el-input v-model="selectRow.S_C_ID" maxlength="20"></el-input>
             </el-form-item>
-            <el-form-item label="業主聯絡人地址">
-                <el-input v-model="selectCompany.S_C_ADDR" maxlength="50"></el-input>
+            <el-form-item label="聯絡人地址">
+                <el-input v-model="selectRow.S_C_ADDR" maxlength="50"></el-input>
             </el-form-item>
-            <el-form-item label="業主聯絡人電話">
-                <el-input type="tel" v-model="selectCompany.S_C_TEL" maxlength="30"></el-input>
+            <el-form-item label="聯絡人電話">
+                <el-input type="tel" v-model="selectRow.S_C_TEL" maxlength="30"></el-input>
             </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
