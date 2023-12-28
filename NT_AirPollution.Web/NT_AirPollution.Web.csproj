@@ -102,9 +102,14 @@
     <Content Include="static\image\illu-news.svg" />
     <Content Include="static\image\logo.png" />
     <Content Include="static\js\main.js" />
+    <Content Include="static\js\member\company.js" />
     <Content Include="static\js\member\forget.js" />
+    <Content Include="static\js\member\edit.js" />
     <Content Include="static\js\member\login.js" />
     <Content Include="static\js\member\regist.js" />
+    <Content Include="static\js\plugin\element-ui\index.css" />
+    <Content Include="static\js\plugin\element-ui\index.js" />
+    <Content Include="static\js\plugin\element-ui\zh-TW.min.js" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -145,6 +150,10 @@
     <Content Include="Views\Member\Login.cshtml" />
     <Content Include="Views\Member\Regist.cshtml" />
     <Content Include="Views\Member\Forget.cshtml" />
+    <Content Include="Views\Member\Edit.cshtml" />
+    <Content Include="Views\Member\Company.cshtml" />
+    <Content Include="static\js\plugin\element-ui\fonts\element-icons.ttf" />
+    <Content Include="static\js\plugin\element-ui\fonts\element-icons.woff" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

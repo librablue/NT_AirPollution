@@ -4,11 +4,9 @@
 }
 
 @section styles {
-    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css" />
     <link rel="stylesheet" href="@Url.Content("~/static/css/member.css")" />
 }
 @section scripts {
-    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
     <script src="@Url.Content("~/static/js/member/login.js")"></script>
 }
 
@@ -24,14 +22,12 @@
                     <el-input type="email" v-model="form.Email"></el-input>
                 </el-form-item>
                 <el-form-item prop="Password" label="密碼">
-                    <el-input type="password" v-model="form.Password"></el-input>
+                    <el-input type="password" v-model="form.Password" maxlength="20"></el-input>
                 </el-form-item>
                 <el-form-item prop="Captcha">
                     @ReCaptcha.GetCaptcha()
                 </el-form-item>
-                <el-form-item class="text-right">
-                    <el-button type="primary" class="btn-block" @@click="login">登入</el-button>
-                </el-form-item>
+                <el-button type="primary" class="btn-block" @@click="login">登入</el-button>
             </el-form>
             <div class="oth-links">
                 <a href="@Url.Content("~/Member/Forget")">忘記密碼</a>

@@ -137,7 +137,7 @@ namespace NT_AirPollution.Service
         /// <param name="user"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public bool UpdateUser(ClientUser user)
+        public bool UpdateClientUser(ClientUser user)
         {
             using (var cn = new SqlConnection(connStr))
             {
@@ -183,7 +183,7 @@ namespace NT_AirPollution.Service
         /// </summary>
         /// <param name="company"></param>
         /// <returns></returns>
-        public List<ClientUserCompany> GetCompanyByUser(ClientUserCompany company)
+        public List<ClientUserCompany> GetCompanyByUser(ClientUserCompany filter)
         {
             using (var cn = new SqlConnection(connStr))
             {
@@ -197,12 +197,18 @@ namespace NT_AirPollution.Service
                         AND ClientUserID=@ClientUserID",
                         new
                         {
-                            S_G_NO = company.S_G_NO ?? "",
-                            S_NAME = company.S_NAME ?? "",
-                            S_B_NAM = company.S_B_NAM ?? "",
-                            S_C_NAM = company.S_C_NAM ?? "",
-                            ClientUserID = BaseService.CurrentUser.ID
+                            S_G_NO = filter.S_G_NO ?? "",
+                            S_NAME = filter.S_NAME ?? "",
+                            S_B_NAM = filter.S_B_NAM ?? "",
+                            S_C_NAM = filter.S_C_NAM ?? "",
+                            ClientUserID = filter.ClientUserID
                         }).ToList();
+
+                foreach (var item in result)
+                {
+                    if (!string.IsNullOrEmpty(item.S_B_BDATE))
+                        item.S_B_BDATE2 = Convert.ToDateTime($"{Convert.ToInt32(item.S_B_BDATE.Substring(0, 3)) + 1911}-{item.S_B_BDATE.Substring(3, 2)}-{item.S_B_BDATE.Substring(5, 2)}");
+                }
 
                 return result;
             }
@@ -282,7 +288,7 @@ namespace NT_AirPollution.Service
         /// </summary>
         /// <param name="contractor"></param>
         /// <returns></returns>
-        public List<ClientUserContractor> GetContractorByUser(ClientUserContractor contractor)
+        public List<ClientUserContractor> GetContractorByUser(ClientUserContractor filter)
         {
             using (var cn = new SqlConnection(connStr))
             {
@@ -296,11 +302,11 @@ namespace NT_AirPollution.Service
                         AND ClientUserID=@ClientUserID",
                         new
                         {
-                            R_G_NO = contractor.R_G_NO ?? "",
-                            R_NAME = contractor.R_NAME ?? "",
-                            R_B_NAM = contractor.R_B_NAM ?? "",
-                            R_C_NAM = contractor.R_C_NAM ?? "",
-                            ClientUserID = BaseService.CurrentUser.ID
+                            R_G_NO = filter.R_G_NO ?? "",
+                            R_NAME = filter.R_NAME ?? "",
+                            R_B_NAM = filter.R_B_NAM ?? "",
+                            R_C_NAM = filter.R_C_NAM ?? "",
+                            ClientUserID = filter.ClientUserID
                         }).ToList();
 
                 return result;

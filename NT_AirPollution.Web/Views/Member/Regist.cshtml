@@ -4,11 +4,9 @@
 }
 
 @section styles {
-    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css" />
     <link rel="stylesheet" href="@Url.Content("~/static/css/member.css")" />
 }
 @section scripts {
-    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
     <script src="@Url.Content("~/static/js/member/regist.js")"></script>
 }
 
@@ -21,7 +19,7 @@
             <h1>註冊帳號</h1>
             <el-form :rules="rules" ref="form" :model="form">
                 <el-form-item prop="Email" label="Email">
-                    <el-input type="email" v-model="form.Email">
+                    <el-input type="email" v-model="form.Email" maxlength="50">
                         <el-button slot="append" type="primary" class="btn-append" @@click="sendCode" :disabled="btnSendCodeDisabled">{{btnSendCodeText}}</el-button>
                     </el-input>
                     <small class="prompt-text">請至您的電子郵件信箱查看信箱驗證碼</small>
@@ -30,11 +28,11 @@
                     <el-input type="text" inputmode="numeric" v-model="form.ActiveCode"></el-input>
                 </el-form-item>
                 <el-form-item prop="Password" label="密碼">
-                    <el-input type="password" v-model="form.Password"></el-input>
+                    <el-input type="password" v-model="form.Password" maxlength="20"></el-input>
                     <small class="prompt-text">密碼須為 6 ~ 20 字，且須使用大、小寫英文 + 數字組合</small>
                 </el-form-item>
                 <el-form-item prop="Password2" label="確認密碼">
-                    <el-input type="password" v-model="form.Password2"></el-input>
+                    <el-input type="password" v-model="form.Password2" maxlength="20"></el-input>
                 </el-form-item>
                 <el-form-item prop="Captcha">
                     @ReCaptcha.GetCaptcha()

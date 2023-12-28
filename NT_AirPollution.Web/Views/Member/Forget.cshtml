@@ -4,11 +4,9 @@
 }
 
 @section styles {
-    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css" />
     <link rel="stylesheet" href="@Url.Content("~/static/css/member.css")" />
 }
 @section scripts {
-    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
     <script src="@Url.Content("~/static/js/member/forget.js")"></script>
 }
 
@@ -30,10 +28,10 @@
                     <el-input type="text" inputmode="numeric" v-model="form.ActiveCode"></el-input>
                 </el-form-item>
                 <el-form-item prop="Password" label="重設密碼">
-                    <el-input type="password" v-model="form.Password"></el-input>
+                    <el-input type="password" v-model="form.Password" maxlength="20"></el-input>
                     <small class="prompt-text">密碼須為 6 ~ 20 字，且須使用大、小寫英文 + 數字組合</small>
                 </el-form-item>
-                <el-form-item prop="Password2" label="確認密碼">
+                <el-form-item prop="Password2" label="確認密碼" maxlength="20">
                     <el-input type="password" v-model="form.Password2"></el-input>
                 </el-form-item>
                 <el-form-item prop="Captcha">
@@ -44,8 +42,8 @@
                 </el-form-item>
             </el-form>
             <div class="oth-links">
-                <a href="login.html">帳號登入</a>
-                <a href="regist.html">註冊帳號</a>
+                <a href="@Url.Content("~/Member/Login")">帳號登入</a>
+                <a href="@Url.Content("~/Member/Regist")">註冊帳號</a>
             </div>
         </div>
     </div>

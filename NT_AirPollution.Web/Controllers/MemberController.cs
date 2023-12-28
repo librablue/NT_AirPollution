@@ -24,7 +24,35 @@ namespace NT_AirPollution.Web.Controllers
             return View();
         }
 
+        public ActionResult Regist()
+        {
+            return View();
+        }
+
         public ActionResult Login()
+        {
+            return View();
+        }
+
+        public ActionResult Forget()
+        {
+            return View();
+        }
+
+        public ActionResult Logout()
+        {
+            Response.Cookies[FormsAuthentication.FormsCookieName].Expires = DateTime.Now.AddYears(-1);
+            return RedirectToAction("Index", "Home");
+        }
+
+        [Authorize]
+        public ActionResult Edit()
+        {
+            return View();
+        }
+
+        [Authorize]
+        public ActionResult Company()
         {
             return View();
         }
@@ -65,11 +93,6 @@ namespace NT_AirPollution.Web.Controllers
             {
                 return Json(new AjaxResult { Status = false, Message = ex.Message });
             }
-        }
-
-        public ActionResult Regist()
-        {
-            return View();
         }
 
         [HttpPost]
@@ -163,11 +186,6 @@ namespace NT_AirPollution.Web.Controllers
             }
         }
 
-        public ActionResult Forget()
-        {
-            return View();
-        }
-
         [HttpPost]
         public JsonResult SendForgetCode(VerifyLog verify)
         {
@@ -245,12 +263,84 @@ namespace NT_AirPollution.Web.Controllers
                 _clientUserService.UpdateVerifyLog(verifyLog);
 
                 var userInDB = _clientUserService.GetUserByEmail(user.Email);
-                if(userInDB == null)
+                if (userInDB == null)
                     throw new Exception("查無此 Email 帳號。");
 
                 userInDB.Password = user.Password;
-                _clientUserService.UpdateUser(userInDB);
+                _clientUserService.UpdateClientUser(userInDB);
 
+                return Json(new AjaxResult { Status = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new AjaxResult { Status = false, Message = ex.Message });
+            }
+        }
+
+        [Authorize]
+        [HttpPost]
+        public JsonResult Edit(ClientUser user)
+        {
+            try
+            {
+                user.Email = BaseService.CurrentUser.Email;
+                if (!ModelState.IsValid)
+                {
+                    string firstError = ModelState.Values.SelectMany(o => o.Errors).First().ErrorMessage;
+                    throw new Exception(firstError);
+                }
+
+                _clientUserService.UpdateClientUser(user);
+                return Json(new AjaxResult { Status = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new AjaxResult { Status = false, Message = ex.Message });
+            }
+        }
+
+        [Authorize]
+        [HttpPost]
+        public JsonResult GetMyCompanies(ClientUserCompany filter)
+        {
+            filter.ClientUserID = BaseService.CurrentUser.ID;
+            var result = _clientUserService.GetCompanyByUser(filter);
+            return Json(result);
+        }
+
+        [Authorize]
+        [HttpPost]
+        public JsonResult AddCompany(ClientUserCompany company)
+        {
+            try
+            {
+                company.ClientUserID = BaseService.CurrentUser.ID;
+                company.S_B_ID = company.S_B_ID.ToUpper();
+                company.S_C_ID = company.S_C_ID.ToUpper();
+                company.S_B_BDATE = company.S_B_BDATE2?.AddYears(-1911).ToString("yyyMMdd");
+                company.CreateDate = DateTime.Now;
+                company.ModifyDate = DateTime.Now;
+                _clientUserService.AddCompany(company);
+                return Json(new AjaxResult { Status = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new AjaxResult { Status = false, Message = ex.Message });
+            }
+        }
+
+        [Authorize]
+        [HttpPost]
+        public JsonResult UpdateCompany(ClientUserCompany company)
+        {
+            try
+            {
+                company.ClientUserID = BaseService.CurrentUser.ID;
+                company.S_B_ID = company.S_B_ID.ToUpper();
+                company.S_C_ID = company.S_C_ID.ToUpper();
+                company.S_B_BDATE = company.S_B_BDATE2?.AddYears(-1911).ToString("yyyMMdd");
+                company.ModifyDate = DateTime.Now;
+                _clientUserService.UpdateCompany(company);
                 return Json(new AjaxResult { Status = true });
             }
             catch (Exception ex)

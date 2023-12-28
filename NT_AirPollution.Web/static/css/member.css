@@ -58,7 +58,7 @@ ul {
 }
 
 .w100p {
-  width: 100%;
+  width: 100% !important;
 }
 
 .text-left {
@@ -286,16 +286,10 @@ ul {
     display: none;
   }
 }
-h1 {
+h1, h2 {
   font-size: 24px;
   font-weight: 700;
   margin-bottom: 20px;
-}
-
-h2 {
-  font-size: 20px;
-  color: #7691a4;
-  font-weight: 700;
 }
 
 .entry-wrap {
@@ -304,7 +298,6 @@ h2 {
   border: 1px solid #ccc;
   border-radius: 10px;
   box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
-  margin: 0 auto;
   padding: 40px 20px;
   margin: 40px auto;
 }
@@ -337,9 +330,9 @@ h2 {
   }
 }
 .main-wrap {
-  position: relative;
-  margin: 0 auto;
-  padding: 20px 0;
+  max-width: 1170px;
+  padding: 40px 20px;
+  margin: 40px auto;
 }
 
 footer {

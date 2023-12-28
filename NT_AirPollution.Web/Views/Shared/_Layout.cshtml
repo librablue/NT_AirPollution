@@ -1,7 +1,10 @@
-﻿@{
+﻿@using System.Configuration;
+@using NT_AirPollution.Service;
+@{
     var controllerName = this.ViewContext.RouteData.Values["controller"].ToString();
     var actionName = this.ViewContext.RouteData.Values["action"].ToString();
     string path = string.Format("{0}/{1}", controllerName, actionName);
+    var _domain = ConfigurationManager.AppSettings["Domain"].ToString();
 }
 
 <!DOCTYPE html>
@@ -9,7 +12,10 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="@_domain">
     <title>南投縣環保局-營建工程空氣污染防制費網路申報系統</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="@Url.Content("~/static/js/plugin/element-ui/index.css")" />
     <link rel="stylesheet" href="@Url.Content("~/static/css/index.css")" />
     @RenderSection("styles", required: false)
 </head>
@@ -42,20 +48,29 @@
                 <li>
                     <a href="#">進度查詢</a>
                 </li>
-                <li class="dropdown">
-                    <a href="javascript:;">會員中心 <i class="fa fa-angle-down"></i></a>
-                    <ul class="dropdown-menu">
-                        <li>
-                            <a href="#">營建業主資料管理</a>
-                        </li>
-                        <li>
-                            <a href="#">密碼修改</a>
-                        </li>
-                        <li>
-                            <a href="#">登出</a>
-                        </li>
-                    </ul>
-                </li>
+                @if (BaseService.CurrentUser == null)
+                {
+                    <li>
+                        <a href="@Url.Content("~/Member/Login")">會員中心</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="dropdown">
+                        <a href="javascript:;">會員中心 <i class="fa fa-angle-down"></i></a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="@Url.Content("~/Member/Company")">營建業主資料管理</a>
+                            </li>
+                            <li>
+                                <a href="@Url.Content("~/Member/Edit")">密碼修改</a>
+                            </li>
+                            <li>
+                                <a href="@Url.Content("~/Member/Logout")">登出</a>
+                            </li>
+                        </ul>
+                    </li>
+                }
             </ul>
         </div>
     </header>
@@ -91,7 +106,12 @@
     </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.7.16/vue.min.js"></script>
+    <script src="@Url.Content("~/static/js/plugin/element-ui/index.js")"></script>
+    <script src="@Url.Content("~/static/js/plugin/element-ui/zh-TW.min.js")"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.3/axios.min.js"></script>
+    <script>
+        ELEMENT.locale(ELEMENT.lang.zhTW);
+    </script>
     @RenderSection("scripts", required: false)
 </body>
 </html>

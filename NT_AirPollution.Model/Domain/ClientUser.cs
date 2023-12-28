@@ -15,6 +15,7 @@ namespace NT_AirPollution.Model.Domain
         public long ID { get; set; }
         [Required(ErrorMessage = "Email 格式錯誤")]
         [EmailAddress(ErrorMessage = "Email 格式錯誤")]
+        [MaxLength(50, ErrorMessage = "Email 格式錯誤")]
         public string Email { get; set; }
         [Required(ErrorMessage = "密碼格式錯誤")]
         [RegularExpression(@"^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$", ErrorMessage = "密碼格式錯誤")]
