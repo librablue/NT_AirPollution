@@ -1,0 +1,124 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section styles {
+    <link rel="stylesheet" href="@Url.Content("~/static/css/member.css")" />
+}
+@section scripts {
+    <script src="@Url.Content("~/static/js/member/form.js")"></script>
+}
+
+<div id="app">
+    <div class="main-wrap">
+        <h2>已申報案件管理</h2>
+        <el-form inline>
+            <el-form-item label="管制編號">
+                <el-input v-model="filter.C_NO"></el-input>
+            </el-form-item>
+            <el-form-item label="申報日期">
+                <el-date-picker v-model="filter.StartDate" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
+                ~
+                <el-date-picker v-model="filter.EndDate" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
+            </el-form-item>
+            <el-form-item label="營建業主名稱">
+                <el-input v-model="filter.S_NAME"></el-input>
+            </el-form-item>
+            <el-form-item label="營建業主統編">
+                <el-input v-model="filter.S_G_NO"></el-input>
+            </el-form-item>
+            <el-form-item label="承包(造)名稱">
+                <el-input v-model="filter.R_NAME"></el-input>
+            </el-form-item>
+            <el-form-item label="承包(造)統編">
+                <el-input v-model="filter.R_G_NO"></el-input>
+            </el-form-item>
+            <el-form-item label="工程名稱">
+                <el-input v-model="filter.COMP_NAM"></el-input>
+            </el-form-item>
+            <el-form-item label="工程地址">
+                <el-input v-model="filter.ADDR"></el-input>
+            </el-form-item>
+            <el-form-item label="建照字號">
+                <el-input v-model="filter.B_SERNO"></el-input>
+            </el-form-item>
+            <el-form-item label="案件狀態">
+                <el-select v-model="filter.Status"></el-select>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" icon="el-icon-search" @@click="getForms">查 詢</el-button>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="success" icon="el-icon-plus" @@click="addForm">新 增</el-button>
+            </el-form-item>
+        </el-form>
+
+        <el-table :data="forms" :loading="loading" border stripe>
+            <el-table-column label="功能" width="100" align="center" fixed>
+                <template v-slot="{ row }">
+                    <el-button type="primary" size="mini" icon="el-icon-edit" circle title="編輯" @@click="showEditModal(row)"></el-button>
+                    <el-button type="danger" size="mini" icon="el-icon-delete" circle title="刪除" @@click="deleteCompany(row)"></el-button>
+                </template>
+            </el-table-column>
+            <el-table-column prop="C_NO" label="管制編號" align="center"></el-table-column>
+            <el-table-column prop="B_SERNO" label="建照字號" align="center"></el-table-column>
+            <el-table-column prop="COMP_NAM" label="工程名稱" align="center"></el-table-column>
+            <el-table-column prop="AP_DATE" label="申報日期" align="center"></el-table-column>
+            <el-table-column prop="Status" label="案件狀態" align="center"></el-table-column>
+            <el-table-column prop="S_NAME" label="營建業主名稱" align="center"></el-table-column>
+            <el-table-column prop="R_NAME" label="承包(造)名稱" align="center"></el-table-column>
+            <el-table-column prop="ADDR" label="工程地址"></el-table-column>
+        </el-table>
+    </div>
+
+    <el-dialog title="建立空污費申報" :visible.sync="dialogVisible" width="100%" :close-on-click-modal="false">
+        <el-form>
+            <el-form-item label="營建業主名稱">
+                <el-input v-model="selectRow.S_NAME" maxlength="80"></el-input>
+            </el-form-item>
+            <el-form-item label="統一編號">
+                <el-input type="text" inputmode="numeric" v-model="selectRow.S_G_NO" maxlength="10"></el-input>
+            </el-form-item>
+            <el-form-item label="營業地址">
+                <el-input v-model="selectRow.S_ADDR1" maxlength="50"></el-input>
+            </el-form-item>
+            <el-form-item label="聯絡電話">
+                <el-input type="tel" v-model="selectRow.S_TEL" maxlength="30"></el-input>
+            </el-form-item>
+            <el-form-item label="聯絡地址">
+                <el-input v-model="selectRow.S_ADDR2" maxlength="50"></el-input>
+            </el-form-item>
+            <el-form-item label="負責人">
+                <el-input v-model="selectRow.S_B_NAM" maxlength="20"></el-input>
+            </el-form-item>
+            <el-form-item label="負責人職稱">
+                <el-input v-model="selectRow.S_B_TIT" maxlength="20"></el-input>
+            </el-form-item>
+            <el-form-item label="負責人身分證">
+                <el-input v-model="selectRow.S_B_ID" maxlength="20"></el-input>
+            </el-form-item>
+            <el-form-item label="負責人生日">
+                <el-date-picker class="w100p" v-model="selectRow.S_B_BDATE2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
+            </el-form-item>
+            <el-form-item label="聯絡人">
+                <el-input v-model="selectRow.S_C_NAM" maxlength="20"></el-input>
+            </el-form-item>
+            <el-form-item label="聯絡人職稱">
+                <el-input v-model="selectRow.S_C_TIT" maxlength="20"></el-input>
+            </el-form-item>
+            <el-form-item label="聯絡人身分證">
+                <el-input v-model="selectRow.S_C_ID" maxlength="20"></el-input>
+            </el-form-item>
+            <el-form-item label="聯絡人地址">
+                <el-input v-model="selectRow.S_C_ADDR" maxlength="50"></el-input>
+            </el-form-item>
+            <el-form-item label="聯絡人電話">
+                <el-input type="tel" v-model="selectRow.S_C_TEL" maxlength="30"></el-input>
+            </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+            <el-button @@click="dialogVisible = false">取 消</el-button>
+            <el-button type="primary" @@click="saveForm">儲 存</el-button>
+        </span>
+    </el-dialog>
+</div>

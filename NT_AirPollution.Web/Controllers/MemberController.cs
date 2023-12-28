@@ -63,6 +63,12 @@ namespace NT_AirPollution.Web.Controllers
             return View();
         }
 
+        [Authorize]
+        public ActionResult Form()
+        {
+            return View();
+        }
+
         [HttpPost]
         public JsonResult Login(ClientUser user)
         {
