@@ -41,7 +41,7 @@
 				dialogVisible: false,
 				rules: Object.freeze({
 					PUB_COMP: [{ required: true, message: '請選擇案件類型', trigger: 'change' }],
-					COUNTRY: [{ required: true, message: '請選擇鄉鎮分類', trigger: 'change' }],
+					TOWN_NO: [{ required: true, message: '請選擇鄉鎮分類', trigger: 'change' }],
 					CreateUserName: [{ required: true, message: '請輸入申請人姓名', trigger: 'blur' }],
 					CreateUserEmail: [{ required: true, message: '請輸入申請人電子信箱', trigger: 'blur' }],
 					COMP_NAM: [{ required: true, message: '請輸入工程名稱', trigger: 'blur' }],

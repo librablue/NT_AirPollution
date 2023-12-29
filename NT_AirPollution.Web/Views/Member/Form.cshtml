@@ -78,8 +78,8 @@
                             <td>{{selectRow.SER_NO || '1'}}</td>
                             <th style="width:180px">鄉鎮分類</th>
                             <td>
-                                <el-form-item prop="COUNTRY">
-                                    <el-select v-model="selectRow.COUNTRY">
+                                <el-form-item prop="TOWN_NO">
+                                    <el-select v-model="selectRow.TOWN_NO">
                                         <el-option label="請選擇" :value="undefined"></el-option>
                                         <el-option v-for="item in district" :key="item.Code" :label="item.Name" :value="item.Code"></el-option>
                                     </el-select>

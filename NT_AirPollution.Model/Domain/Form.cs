@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,7 +12,7 @@ namespace NT_AirPollution.Model.Domain
     [Table("Form")]
     public class Form
     {
-        [Key]
+        [Dapper.Contrib.Extensions.Key]
         public long ID { get; set; }
 
         /// <summary>
@@ -25,18 +26,14 @@ namespace NT_AirPollution.Model.Domain
         public int SER_NO { get; set; }
 
         /// <summary>
-        /// Description
-        /// </summary>
-        public string Description { get; set; }
-
-        /// <summary>
         /// 縣市代碼
         /// </summary>
-        public string COUNTRY { get; set; }
+        public string COUNTRY { get; set; } = "M";
 
         /// <summary>
         /// 鄉鎮代碼
         /// </summary>
+        [Required(ErrorMessage = "請選擇鄉鎮代碼")]
         public string TOWN_NO { get; set; }
 
         /// <summary>
@@ -62,16 +59,19 @@ namespace NT_AirPollution.Model.Domain
         /// <summary>
         /// 建照字號或合約編號
         /// </summary>
+        [Required(ErrorMessage = "請輸入建照字號或合約編號")]
         public string B_SERNO { get; set; }
 
         /// <summary>
         /// 是否公共工程
         /// </summary>
+        [Required(ErrorMessage = "請選擇是否公共工程")]
         public bool PUB_COMP { get; set; }
 
         /// <summary>
         /// 營建業主名稱
         /// </summary>
+        [Required(ErrorMessage = "請輸入營建業主名稱")]
         public string S_NAME { get; set; }
 
         /// <summary>
