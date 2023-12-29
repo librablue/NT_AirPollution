@@ -39,12 +39,14 @@
 					BUD_DOC2: '無'
 				},
 				dialogVisible: false,
+                activeTab: 'first',
 				rules: Object.freeze({
 					PUB_COMP: [{ required: true, message: '請選擇案件類型', trigger: 'change' }],
 					TOWN_NO: [{ required: true, message: '請選擇鄉鎮分類', trigger: 'change' }],
 					CreateUserName: [{ required: true, message: '請輸入申請人姓名', trigger: 'blur' }],
 					CreateUserEmail: [{ required: true, message: '請輸入申請人電子信箱', trigger: 'blur' }],
 					COMP_NAM: [{ required: true, message: '請輸入工程名稱', trigger: 'blur' }],
+                    ProjectCode: [{ required: true, message: '請選擇工程類別', trigger: 'change' }],
 					ADDR: [{ required: true, message: '請輸入工地地址或地號', trigger: 'blur' }],
 					B_SERNO: [{ required: true, message: '請輸入建照字號或合約編號', trigger: 'blur' }],
 					UTME: [{ required: true, message: '請輸入座標X', trigger: 'blur' }],
