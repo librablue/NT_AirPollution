@@ -113,6 +113,8 @@ namespace NT_AirPollution.Model.Domain
         /// 業主負責人生日
         /// </summary>
         public string S_B_BDATE { get; set; }
+        [Computed]
+        public DateTime? S_B_BDATE2 { get; set; }
 
         /// <summary>
         /// 業主聯絡人
@@ -183,6 +185,8 @@ namespace NT_AirPollution.Model.Domain
         /// 承包商負責人生日
         /// </summary>
         public string R_B_BDATE { get; set; }
+        [Computed]
+        public DateTime? R_B_BDATE2 { get; set; }
 
         /// <summary>
         /// 工務所地址
@@ -522,6 +526,10 @@ namespace NT_AirPollution.Model.Domain
         /// <summary>
         /// 申請人Email(非會員用)
         /// </summary>
-        public string Email { get; set; }
+        public string CreateUserEmail { get; set; }
+        /// <summary>
+        /// 申請人姓名
+        /// </summary>
+        public string CreateUserName { get; set; }
     }
 }

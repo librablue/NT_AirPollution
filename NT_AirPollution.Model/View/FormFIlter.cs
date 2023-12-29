@@ -12,12 +12,9 @@ namespace NT_AirPollution.Model.View
     public class FormFilter
     {
         public string C_NO { get; set; }
-        public string S_NAME { get; set; }
-        public string S_G_NO { get; set; }
-        public string R_NAME { get; set; }
-        public string R_G_NO { get; set; }
-        public string B_SERNO { get; set; }
-        public string R_ADDR3 { get; set; }
+        public bool? PUB_COMP { get; set; }
+        public string COMP_NAM { get; set; }
+        public string CreateUserName { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
     }

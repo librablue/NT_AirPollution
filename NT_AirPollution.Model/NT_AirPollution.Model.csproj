@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Domain\Attachment.cs" />
+    <Compile Include="Domain\District.cs" />
     <Compile Include="Domain\SendBox.cs" />
     <Compile Include="Domain\Form.cs" />
     <Compile Include="Domain\ClientUserContractor.cs" />

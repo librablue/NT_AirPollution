@@ -2,6 +2,7 @@
 @import './shared';
 @import './form';
 @import './navbar';
+@import './table';
 
 #app {
 	min-height: calc(100vh - 231px - 72px);
@@ -32,6 +33,7 @@ h1,h2 {
 	}
 	.oth-links {
 		text-align: right;
+		margin-top: 10px;
 		a {
 			& ~ a {
 				&:before {

@@ -20,6 +20,7 @@ namespace NT_AirPollution.Model.Domain
         [Required(ErrorMessage = "密碼格式錯誤")]
         [RegularExpression(@"^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$", ErrorMessage = "密碼格式錯誤")]
         public string Password { get; set; }
+        public string UserName { get; set; }
         public DateTime CreateDate { get; set; }
         public DateTime? DeleteDate { get; set; }
         [Computed]

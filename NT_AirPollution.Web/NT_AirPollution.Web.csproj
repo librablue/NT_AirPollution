@@ -120,6 +120,7 @@
     <Compile Include="Controllers\FormController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MemberController.cs" />
+    <Compile Include="Controllers\OptionController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -170,6 +171,7 @@
     <Folder Include="App_Data\Upload\" />
     <Folder Include="Views\Base\" />
     <Folder Include="Views\Form\" />
+    <Folder Include="Views\Option\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NT_AirPollution.Model\NT_AirPollution.Model.csproj">

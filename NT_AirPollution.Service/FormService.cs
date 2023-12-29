@@ -25,23 +25,17 @@ namespace NT_AirPollution.Service
                 var result = cn.Query<FormView>(@"
                     SELECT * FROM Form 
                     WHERE (@C_NO='' OR C_NO=@C_NO)
-                        AND (@S_NAME='' OR S_NAME LIKE '%'+@S_NAME+'%')
-                        AND (@S_G_NO='' OR S_G_NO=@S_G_NO)
-                        AND (@R_NAME='' OR R_NAME LIKE '%'+@R_NAME+'%')
-                        AND (@R_G_NO='' OR R_G_NO=@R_G_NO)
-                        AND (@B_SERNO='' OR B_SERNO=@B_SERNO)
-                        AND (@R_ADDR3='' OR R_ADDR3 LIKE '%'+@R_ADDR3+'%')
+                        AND (@PUB_COMP=null OR PUB_COMP=@PUB_COMP)
+                        AND (@COMP_NAM='' OR COMP_NAM LIKE '%'+@COMP_NAM+'%')
+                        AND (@CreateUserName='' OR CreateUserName=@CreateUserName)
                         AND AP_DATE BETWEEN @StartDate AND @EndDate
                         AND ClientUserID=@ClientUserID",
                     new
                     {
                         C_NO = filter.C_NO ?? "",
-                        S_NAME = filter.S_NAME ?? "",
-                        S_G_NO = filter.S_G_NO ?? "",
-                        R_NAME = filter.R_NAME ?? "",
-                        R_G_NO = filter.R_G_NO ?? "",
-                        B_SERNO = filter.B_SERNO ?? "",
-                        R_ADDR3 = filter.R_ADDR3 ?? "",
+                        PUB_COMP = filter.PUB_COMP,
+                        COMP_NAM = filter.COMP_NAM ?? "",
+                        CreateUserName = filter.CreateUserName ?? "",
                         StartDate = filter.StartDate,
                         EndDate = filter.EndDate.ToString("yyyy-MM-dd 23:59:59"),
                         ClientUserID = BaseService.CurrentUser.ID

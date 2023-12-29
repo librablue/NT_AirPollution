@@ -56,6 +56,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="OptionService.cs" />
     <Compile Include="FormService.cs" />
     <Compile Include="ClientUserService.cs" />
     <Compile Include="BaseService.cs" />

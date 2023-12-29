@@ -33,7 +33,12 @@
                                 return;
                             }
 
-                            location.href = '/Member/Index';
+                            const url = new URL(location.href);
+                            const returnUrl = url.searchParams.get('ReturnUrl');
+                            if(returnUrl)
+                                location.href = returnUrl;
+                            else
+                                location.href = '/Member/Index';
                         })
                         .catch(err => {
                             console.log(err);

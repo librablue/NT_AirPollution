@@ -10,6 +10,7 @@
 			};
 			return {
 				form: {
+					UserName: '',
 					Password: '',
 					Password2: ''
 				},

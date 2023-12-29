@@ -13,37 +13,27 @@
     <div class="main-wrap">
         <h2>已申報案件管理</h2>
         <el-form inline>
-            <el-form-item label="管制編號">
-                <el-input v-model="filter.C_NO"></el-input>
-            </el-form-item>
+
             <el-form-item label="申報日期">
                 <el-date-picker v-model="filter.StartDate" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
                 ~
                 <el-date-picker v-model="filter.EndDate" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
             </el-form-item>
-            <el-form-item label="營建業主名稱">
-                <el-input v-model="filter.S_NAME"></el-input>
+            <el-form-item label="申請人">
+                <el-input v-model="filter.CreateUserName"></el-input>
             </el-form-item>
-            <el-form-item label="營建業主統編">
-                <el-input v-model="filter.S_G_NO"></el-input>
+            <el-form-item label="管制編號">
+                <el-input v-model="filter.C_NO"></el-input>
             </el-form-item>
-            <el-form-item label="承包(造)名稱">
-                <el-input v-model="filter.R_NAME"></el-input>
-            </el-form-item>
-            <el-form-item label="承包(造)統編">
-                <el-input v-model="filter.R_G_NO"></el-input>
+            <el-form-item label="案件類型">
+                <el-select v-model="filter.PUB_COMP">
+                    <el-option label="請選擇" :value="null"></el-option>
+                    <el-option label="一般工程" :value="false"></el-option>
+                    <el-option label="公共工程" :value="true"></el-option>
+                </el-select>
             </el-form-item>
             <el-form-item label="工程名稱">
                 <el-input v-model="filter.COMP_NAM"></el-input>
-            </el-form-item>
-            <el-form-item label="工程地址">
-                <el-input v-model="filter.ADDR"></el-input>
-            </el-form-item>
-            <el-form-item label="建照字號">
-                <el-input v-model="filter.B_SERNO"></el-input>
-            </el-form-item>
-            <el-form-item label="案件狀態">
-                <el-select v-model="filter.Status"></el-select>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" icon="el-icon-search" @@click="getForms">查 詢</el-button>
@@ -56,65 +46,435 @@
         <el-table :data="forms" :loading="loading" border stripe>
             <el-table-column label="功能" width="100" align="center" fixed>
                 <template v-slot="{ row }">
-                    <el-button type="primary" size="mini" icon="el-icon-edit" circle title="編輯" @@click="showEditModal(row)"></el-button>
-                    <el-button type="danger" size="mini" icon="el-icon-delete" circle title="刪除" @@click="deleteCompany(row)"></el-button>
+                    <el-button type="primary" size="mini" icon="el-icon-search" circle title="查看" @@click="showModal(row)"></el-button>
+                    <el-button type="success" size="mini" icon="el-icon-copy-document" circle title="複製" @@click="deleteCompany(row)"></el-button>
                 </template>
             </el-table-column>
             <el-table-column prop="C_NO" label="管制編號" align="center"></el-table-column>
-            <el-table-column prop="B_SERNO" label="建照字號" align="center"></el-table-column>
-            <el-table-column prop="COMP_NAM" label="工程名稱" align="center"></el-table-column>
             <el-table-column prop="AP_DATE" label="申報日期" align="center"></el-table-column>
+            <el-table-column prop="CreateUserName" label="申請人" align="center"></el-table-column>
+            <el-table-column prop="COMP_NAM" label="工程名稱" align="center"></el-table-column>
+            <el-table-column prop="PUB_COMP" label="案件類型" align="center"></el-table-column>
             <el-table-column prop="Status" label="案件狀態" align="center"></el-table-column>
-            <el-table-column prop="S_NAME" label="營建業主名稱" align="center"></el-table-column>
-            <el-table-column prop="R_NAME" label="承包(造)名稱" align="center"></el-table-column>
-            <el-table-column prop="ADDR" label="工程地址"></el-table-column>
         </el-table>
     </div>
 
-    <el-dialog title="建立空污費申報" :visible.sync="dialogVisible" width="100%" :close-on-click-modal="false">
+    <el-dialog title="建立空污費申報" :visible.sync="dialogVisible" width="90%" :close-on-click-modal="false">
         <el-form>
-            <el-form-item label="營建業主名稱">
-                <el-input v-model="selectRow.S_NAME" maxlength="80"></el-input>
+            <el-form-item label="案件類型">
+                <el-select v-model="selectRow.PUB_COMP">
+                    <el-option label="請選擇" :value="null"></el-option>
+                    <el-option label="一般工程" :value="false"></el-option>
+                    <el-option label="公共工程" :value="true"></el-option>
+                </el-select>
             </el-form-item>
-            <el-form-item label="統一編號">
-                <el-input type="text" inputmode="numeric" v-model="selectRow.S_G_NO" maxlength="10"></el-input>
-            </el-form-item>
-            <el-form-item label="營業地址">
-                <el-input v-model="selectRow.S_ADDR1" maxlength="50"></el-input>
-            </el-form-item>
-            <el-form-item label="聯絡電話">
-                <el-input type="tel" v-model="selectRow.S_TEL" maxlength="30"></el-input>
-            </el-form-item>
-            <el-form-item label="聯絡地址">
-                <el-input v-model="selectRow.S_ADDR2" maxlength="50"></el-input>
-            </el-form-item>
-            <el-form-item label="負責人">
-                <el-input v-model="selectRow.S_B_NAM" maxlength="20"></el-input>
-            </el-form-item>
-            <el-form-item label="負責人職稱">
-                <el-input v-model="selectRow.S_B_TIT" maxlength="20"></el-input>
-            </el-form-item>
-            <el-form-item label="負責人身分證">
-                <el-input v-model="selectRow.S_B_ID" maxlength="20"></el-input>
-            </el-form-item>
-            <el-form-item label="負責人生日">
-                <el-date-picker class="w100p" v-model="selectRow.S_B_BDATE2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
-            </el-form-item>
-            <el-form-item label="聯絡人">
-                <el-input v-model="selectRow.S_C_NAM" maxlength="20"></el-input>
-            </el-form-item>
-            <el-form-item label="聯絡人職稱">
-                <el-input v-model="selectRow.S_C_TIT" maxlength="20"></el-input>
-            </el-form-item>
-            <el-form-item label="聯絡人身分證">
-                <el-input v-model="selectRow.S_C_ID" maxlength="20"></el-input>
-            </el-form-item>
-            <el-form-item label="聯絡人地址">
-                <el-input v-model="selectRow.S_C_ADDR" maxlength="50"></el-input>
-            </el-form-item>
-            <el-form-item label="聯絡人電話">
-                <el-input type="tel" v-model="selectRow.S_C_TEL" maxlength="30"></el-input>
-            </el-form-item>
+            <div class="table-responsive">
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <th style="width:180px">管制編號</th>
+                            <td>{{selectRow.C_NO || '待取號'}}</td>
+                            <th style="width:180px">序號</th>
+                            <td>{{selectRow.SER_NO || '1'}}</td>
+                            <th style="width:180px">鄉鎮分類</th>
+                            <td>
+                                <el-form-item prop="COUNTRY">
+                                    <el-select v-model="selectRow.COUNTRY">
+                                        <el-option label="請選擇" :value="undefined"></el-option>
+                                        <el-option v-for="item in district" :key="item.Code" :label="item.Name" :value="item.Code"></el-option>
+                                    </el-select>
+                                </el-form-item>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>申請日期</th>
+                            <td>{{selectRow.AP_DAT | date}}</td>
+                            <th>申請人</th>
+                            <td>
+                                <el-form-item prop="CreateUserName">
+                                    <el-input v-model="selectRow.CreateUserName"></el-input>
+                                </el-form-item>
+                            </td>
+                            <th>申請人電子信箱</th>
+                            <td>
+                                <el-form-item prop="CreateUserEmail">
+                                    <el-input type="email" v-model="selectRow.CreateUserEmail"></el-input>
+                                </el-form-item>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>1.工程名稱</th>
+                            <td colspan="5">
+                                <el-form-item prop="COMP_NAM">
+                                    <el-input v-model="selectRow.COMP_NAM"></el-input>
+                                </el-form-item>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>3.工地地址或地號</th>
+                            <td colspan="3">
+                                <el-form-item prop="ADDR">
+                                    <el-input v-model="selectRow.ADDR"></el-input>
+                                </el-form-item>
+                            </td>
+                            <th>4.建照字號或合約編號</th>
+                            <td>
+                                <el-form-item prop="B_SERNO">
+                                    <el-input v-model="selectRow.B_SERNO"></el-input>
+                                </el-form-item>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>座標X</th>
+                            <td>
+                                <el-form-item prop="UTME">
+                                    <el-input v-model="selectRow.UTME"></el-input>
+                                </el-form-item>
+                            </td>
+                            <th>座標Y</th>
+                            <td>
+                                <el-form-item prop="UTMN">
+                                    <el-input v-model="selectRow.UTMN"></el-input>
+                                </el-form-item>
+                            </td>
+                            <th>座標(緯度、經度)</th>
+                            <td>
+                                <el-form-item prop="LATLNG">
+                                    <el-input v-model="selectRow.LATLNG"></el-input>
+                                </el-form-item>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>6.工程內容概述</th>
+                            <td colspan="5">
+                                <el-form-item prop="STATE">
+                                    <el-input v-model="selectRow.STATE"></el-input>
+                                </el-form-item>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>環評保護對策</th>
+                            <td colspan="5">
+                                <el-form-item prop="EIACOMMENTS">
+                                    <el-input v-model="selectRow.EIACOMMENTS"></el-input>
+                                </el-form-item>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>記錄註記</th>
+                            <td colspan="5">
+                                <el-form-item prop="RECCOMMENTS">
+                                    <el-input v-model="selectRow.RECCOMMENTS"></el-input>
+                                </el-form-item>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <th style="width:180px">7.營建業主名稱</th>
+                            <td colspan="3">
+                                <el-form-item prop="S_NAME">
+                                    <el-input v-model="selectRow.S_NAME"></el-input>
+                                </el-form-item>
+                            </td>
+                            <th style="width:180px">8.營利事業統一編號</th>
+                            <td>
+                                <el-form-item prop="S_G_NO">
+                                    <el-input v-model="selectRow.S_G_NO"></el-input>
+                                </el-form-item>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>9.營業地址</th>
+                            <td colspan="5">
+                                <el-form-item prop="S_ADDR1">
+                                    <el-input v-model="selectRow.S_ADDR1"></el-input>
+                                </el-form-item>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>10.聯絡地址</th>
+                            <td colspan="3">
+                                <el-form-item prop="S_ADDR2">
+                                    <el-input v-model="selectRow.S_ADDR2"></el-input>
+                                </el-form-item>
+                            </td>
+                            <th>11.連絡電話</th>
+                            <td>
+                                <el-form-item prop="S_TEL">
+                                    <el-input type="tel" v-model="selectRow.S_TEL"></el-input>
+                                </el-form-item>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>12.負責人姓名</th>
+                            <td>
+                                <el-form-item prop="S_B_NAM">
+                                    <el-input v-model="selectRow.S_B_NAM"></el-input>
+                                </el-form-item>
+                            </td>
+                            <th style="width:180px">13.職稱</th>
+                            <td>
+                                <el-form-item prop="S_B_TIT">
+                                    <el-input v-model="selectRow.S_B_TIT"></el-input>
+                                </el-form-item>
+                            </td>
+                            <th>14.身分證字號</th>
+                            <td>
+                                <el-form-item prop="S_B_ID">
+                                    <el-input v-model="selectRow.S_B_ID"></el-input>
+                                </el-form-item>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>生日</th>
+                            <td colspan="5">
+                                <el-form-item prop="S_B_BDATE2">
+                                    <el-date-picker class="w100p" v-model="selectRow.S_B_BDATE2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
+                                </el-form-item>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>15.聯絡人姓名</th>
+                            <td>
+                                <el-form-item prop="S_C_NAM">
+                                    <el-input v-model="selectRow.S_C_NAM"></el-input>
+                                </el-form-item>
+                            </td>
+                            <th>16.職稱</th>
+                            <td>
+                                <el-form-item prop="S_C_TIT">
+                                    <el-input v-model="selectRow.S_C_TIT"></el-input>
+                                </el-form-item>
+                            </td>
+                            <th>17.身分證字號</th>
+                            <td>
+                                <el-form-item prop="S_C_ID">
+                                    <el-input v-model="selectRow.S_C_ID"></el-input>
+                                </el-form-item>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>18.聯絡人地址</th>
+                            <td colspan="3">
+                                <el-form-item prop="S_C_ADDR">
+                                    <el-input v-model="selectRow.S_C_ADDR"></el-input>
+                                </el-form-item>
+                            </td>
+                            <th>19.電話</th>
+                            <td>
+                                <el-form-item prop="S_C_TEL">
+                                    <el-input type="tel" v-model="selectRow.S_C_TEL"></el-input>
+                                </el-form-item>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <th style="width:180px">20.承包(造)單位名稱</th>
+                            <td colspan="3">
+                                <el-form-item prop="R_NAME">
+                                    <el-input v-model="selectRow.R_NAME"></el-input>
+                                </el-form-item>
+                            </td>
+                            <th style="width:180px">21.營利事業統一編號</th>
+                            <td>
+                                <el-form-item prop="R_G_NO">
+                                    <el-input v-model="selectRow.R_G_NO"></el-input>
+                                </el-form-item>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>22.營業地址</th>
+                            <td colspan="5">
+                                <el-form-item prop="R_ADDR1">
+                                    <el-input v-model="selectRow.R_ADDR1"></el-input>
+                                </el-form-item>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>23.聯絡地址</th>
+                            <td colspan="3">
+                                <el-form-item prop="R_ADDR2">
+                                    <el-input v-model="selectRow.R_ADDR2"></el-input>
+                                </el-form-item>
+                            </td>
+                            <th>24.連絡電話</th>
+                            <td>
+                                <el-form-item prop="R_TEL">
+                                    <el-input type="tel" v-model="selectRow.R_TEL"></el-input>
+                                </el-form-item>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>25.負責人姓名</th>
+                            <td>
+                                <el-form-item prop="R_B_NAM">
+                                    <el-input v-model="selectRow.R_B_NAM"></el-input>
+                                </el-form-item>
+                            </td>
+                            <th style="width:180px">26.職稱</th>
+                            <td>
+                                <el-form-item prop="R_B_TIT">
+                                    <el-input v-model="selectRow.R_B_TIT"></el-input>
+                                </el-form-item>
+                            </td>
+                            <th>27.身分證字號</th>
+                            <td>
+                                <el-form-item prop="R_B_ID">
+                                    <el-input v-model="selectRow.R_B_ID"></el-input>
+                                </el-form-item>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>生日</th>
+                            <td colspan="5">
+                                <el-form-item prop="R_B_BDATE2">
+                                    <el-date-picker class="w100p" v-model="selectRow.R_B_BDATE2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
+                                </el-form-item>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>28.工務所地址</th>
+                            <td colspan="5">
+                                <el-form-item prop="R_ADDR3">
+                                    <el-input v-model="selectRow.R_ADDR3"></el-input>
+                                </el-form-item>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>29.工地主任姓名</th>
+                            <td>
+                                <el-form-item prop="R_M_NAM">
+                                    <el-input v-model="selectRow.R_M_NAM"></el-input>
+                                </el-form-item>
+                            </td>
+                            <th>30.工地環保負責人姓名</th>
+                            <td>
+                                <el-form-item prop="R_C_NAM">
+                                    <el-input v-model="selectRow.R_C_NAM"></el-input>
+                                </el-form-item>
+                            </td>
+                            <th>31.電話</th>
+                            <td>
+                                <el-form-item prop="R_TEL1">
+                                    <el-input type="tel" v-model="selectRow.R_TEL1"></el-input>
+                                </el-form-item>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <th style="width:180px">32.工程合約經費</th>
+                            <td>
+                                <el-form-item prop="MONEY">
+                                    <el-input type="number" v-model="selectRow.MONEY"></el-input>
+                                </el-form-item>
+                            </td>
+                            <th style="width:180px">33.工程環保經費</th>
+                            <td>
+                                <el-form-item prop="C_MONEY">
+                                    <el-input type="number" v-model="selectRow.C_MONEY"></el-input>
+                                </el-form-item>
+                            </td>
+                            <th style="width:180px">工程合約經費比例</th>
+                            <td>
+                                <el-form-item prop="PERCENT">
+                                    <el-input type="number" v-model="selectRow.PERCENT"></el-input>
+                                </el-form-item>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>基地面積</th>
+                            <td>
+                                <el-form-item prop="AREA_F">
+                                    <el-input type="number" v-model="selectRow.AREA_F"></el-input>
+                                </el-form-item>
+                            </td>
+                            <th>建築面積</th>
+                            <td>
+                                <el-form-item prop="AREA_B">
+                                    <el-input type="number" v-model="selectRow.AREA_B"></el-input>
+                                </el-form-item>
+                            </td>
+                            <th>總樓地板面積</th>
+                            <td>
+                                <el-form-item prop="AREA2">
+                                    <el-input type="number" v-model="selectRow.AREA2"></el-input>
+                                </el-form-item>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>遮蔽率</th>
+                            <td>
+                                <el-form-item prop="PERC_B">
+                                    <el-input type="number" v-model="selectRow.PERC_B"></el-input>
+                                </el-form-item>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>實方體積</th>
+                            <td>
+                                <el-form-item prop="PERC_B">
+                                </el-form-item>
+                            </td>
+                            <th>鬆方體積</th>
+                            <td colspan="3">
+                                <el-form-item prop="PERC_B">
+                                </el-form-item>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>34.預計施工開始日期</th>
+                            <td>
+                                <el-form-item prop="B_DATE">
+                                    <el-date-picker class="w100p" v-model="selectRow.B_DATE" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
+                                </el-form-item>
+                            </td>
+                            <th>預計施工完成日期</th>
+                            <td>
+                                <el-form-item prop="E_DATE">
+                                    <el-date-picker class="w100p" v-model="selectRow.E_DATE" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
+                                </el-form-item>
+                            </td>
+                            <th>預計施工天數</th>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <th>規定繳費方式</th>
+                            <td>
+                                <el-form-item prop="P_KIND">
+                                    <el-select v-model="selectRow.P_KIND">
+                                        <el-option label="一次全繳" value="一次全繳"></el-option>
+                                        <el-option label="分兩次繳清" value="分兩次繳清"></el-option>
+                                    </el-select>
+                                </el-form-item>
+                            </td>
+                            <th>空汙防制措施計畫書</th>
+                            <td>
+                                <el-form-item prop="BUD_DOC2">
+                                    <el-select v-model="selectRow.BUD_DOC2">
+                                        <el-option label="有" value="有"></el-option>
+                                        <el-option label="無" value="無"></el-option>
+                                    </el-select>
+                                </el-form-item>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </el-form>
         <span slot="footer" class="dialog-footer">
             <el-button @@click="dialogVisible = false">取 消</el-button>
