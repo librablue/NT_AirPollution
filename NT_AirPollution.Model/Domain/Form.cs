@@ -257,11 +257,15 @@ namespace NT_AirPollution.Model.Domain
         /// 預計施工期程(起日)
         /// </summary>
         public string B_DATE { get; set; }
+        [Computed]
+        public DateTime? B_DATE2 { get; set; }
 
         /// <summary>
         /// 預計施工期程(迄日)
         /// </summary>
         public string E_DATE { get; set; }
+        [Computed]
+        public DateTime? E_DATE2 { get; set; }
 
         /// <summary>
         /// 應繳總金額

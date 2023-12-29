@@ -60,7 +60,7 @@
     </div>
 
     <el-dialog title="建立空污費申報" :visible.sync="dialogVisible" width="90%" :close-on-click-modal="false">
-        <el-form>
+        <el-form :rules="rules" ref="form" :model="selectRow">
             <el-form-item label="案件類型">
                 <el-select v-model="selectRow.PUB_COMP">
                     <el-option label="請選擇" :value="null"></el-option>
@@ -439,18 +439,18 @@
                         <tr>
                             <th>34.預計施工開始日期</th>
                             <td>
-                                <el-form-item prop="B_DATE">
-                                    <el-date-picker class="w100p" v-model="selectRow.B_DATE" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
+                                <el-form-item prop="B_DATE2">
+                                    <el-date-picker class="w100p" v-model="selectRow.B_DATE2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
                                 </el-form-item>
                             </td>
                             <th>預計施工完成日期</th>
                             <td>
-                                <el-form-item prop="E_DATE">
-                                    <el-date-picker class="w100p" v-model="selectRow.E_DATE" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
+                                <el-form-item prop="E_DATE2">
+                                    <el-date-picker class="w100p" v-model="selectRow.E_DATE2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
                                 </el-form-item>
                             </td>
                             <th>預計施工天數</th>
-                            <td></td>
+                            <td>{{totalDays}}</td>
                         </tr>
                         <tr>
                             <th>規定繳費方式</th>
