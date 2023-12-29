@@ -26,9 +26,9 @@
 				district: Object.freeze([]),
 				forms: [],
 				selectRow: {
-                    P_KIND: '一次全繳',
-                    BUD_DOC2: '無'
-                },
+					P_KIND: '一次全繳',
+					BUD_DOC2: '無'
+				},
 				dialogVisible: false
 			};
 		},
@@ -56,7 +56,10 @@
 			},
 			addForm() {
 				this.mode = 'Add';
-				this.selectRow = {};
+				this.selectRow = {
+					P_KIND: '一次全繳',
+					BUD_DOC2: '無'
+				};
 				this.dialogVisible = true;
 			},
 			showModal(row) {

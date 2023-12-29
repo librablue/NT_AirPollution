@@ -234,7 +234,7 @@
                             <th>生日</th>
                             <td colspan="5">
                                 <el-form-item prop="S_B_BDATE2">
-                                    <el-date-picker class="w100p" v-model="selectRow.S_B_BDATE2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
+                                    <el-date-picker v-model="selectRow.S_B_BDATE2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
                                 </el-form-item>
                             </td>
                         </tr>
@@ -338,7 +338,7 @@
                             <th>生日</th>
                             <td colspan="5">
                                 <el-form-item prop="R_B_BDATE2">
-                                    <el-date-picker class="w100p" v-model="selectRow.R_B_BDATE2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
+                                    <el-date-picker v-model="selectRow.R_B_BDATE2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
                                 </el-form-item>
                             </td>
                         </tr>
@@ -455,21 +455,17 @@
                         <tr>
                             <th>規定繳費方式</th>
                             <td>
-                                <el-form-item prop="P_KIND">
-                                    <el-select v-model="selectRow.P_KIND">
-                                        <el-option label="一次全繳" value="一次全繳"></el-option>
-                                        <el-option label="分兩次繳清" value="分兩次繳清"></el-option>
-                                    </el-select>
-                                </el-form-item>
+                                <el-select v-model="selectRow.P_KIND">
+                                    <el-option label="一次全繳" value="一次全繳"></el-option>
+                                    <el-option label="分兩次繳清" value="分兩次繳清"></el-option>
+                                </el-select>
                             </td>
                             <th>空汙防制措施計畫書</th>
                             <td>
-                                <el-form-item prop="BUD_DOC2">
-                                    <el-select v-model="selectRow.BUD_DOC2">
-                                        <el-option label="有" value="有"></el-option>
-                                        <el-option label="無" value="無"></el-option>
-                                    </el-select>
-                                </el-form-item>
+                                <el-select v-model="selectRow.BUD_DOC2">
+                                    <el-option label="有" value="有"></el-option>
+                                    <el-option label="無" value="無"></el-option>
+                                </el-select>
                             </td>
                         </tr>
                     </tbody>
