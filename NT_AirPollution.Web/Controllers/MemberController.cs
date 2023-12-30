@@ -1,22 +1,28 @@
 ﻿using hbehr.recaptcha;
 using Newtonsoft.Json;
 using NT_AirPollution.Model.Domain;
+using NT_AirPollution.Model.Enum;
+using NT_AirPollution.Model.View;
 using NT_AirPollution.Service;
 using NT_AirPollution.Web.Models;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Hosting;
 using System.Web.Mvc;
 using System.Web.Security;
+using static System.Net.WebRequestMethods;
 
 namespace NT_AirPollution.Web.Controllers
 {
     public class MemberController : BaseController
     {
+        private readonly string _uploadPath = ConfigurationManager.AppSettings["UploadPath"].ToString();
         private readonly ClientUserService _clientUserService = new ClientUserService();
+        private readonly FormService _formService = new FormService();
         private readonly SendBoxService _sendBoxService = new SendBoxService();
 
         public ActionResult Index()
@@ -460,5 +466,81 @@ namespace NT_AirPollution.Web.Controllers
                 return Json(new AjaxResult { Status = false, Message = ex.Message });
             }
         }
+
+        [HttpPost]
+        public JsonResult AddForm(FormView form, HttpPostedFileBase file1, HttpPostedFileBase file2, HttpPostedFileBase file3, HttpPostedFileBase file4, HttpPostedFileBase file5, HttpPostedFileBase file6, HttpPostedFileBase file7, HttpPostedFileBase file8)
+        {
+            try
+            {
+                //if (!ReCaptcha.ValidateCaptcha(form.Captcha))
+                //    throw new Exception("請勾選驗證碼");
+
+                //if (!ModelState.IsValid)
+                //    throw new Exception("欄位驗證錯誤");
+
+                //if (form.B_DATE2 > form.E_DATE2)
+                //    throw new Exception("施工期程起始日期不能大於結束日期");
+
+                //if (file1 == null)
+                //    throw new Exception("未上傳空氣污染防制費申報表");
+                //if (file2 == null)
+                //    throw new Exception("未上傳建築執照影印本");
+                //if (file3 == null)
+                //    throw new Exception("未上傳營建業主身分證影本");
+                //if (file4 == null)
+                //    throw new Exception("未上傳簡易位置圖");
+                //if (file5 == null)
+                //    throw new Exception("未上傳承包商營利事業登記證");
+                //if (file6 == null)
+                //    throw new Exception("未上傳承包商負責人身分證影本");
+
+                var attachFile = new AttachmentFile();
+                attachFile.File1 = file1;
+                attachFile.File2 = file2;
+                attachFile.File3 = file3;
+                attachFile.File4 = file4;
+                attachFile.File5 = file5;
+                attachFile.File6 = file6;
+                attachFile.File7 = file7;
+                attachFile.File8 = file8;
+
+
+                // 設定資料夾
+                string absoluteDirPath = $"{_uploadPath}";
+                if (!Directory.Exists(absoluteDirPath))
+                    Directory.CreateDirectory(absoluteDirPath);
+
+                string absoluteFilePath = "";
+
+                for (int i = 1; i <= 8; i++)
+                {
+                    var file = (HttpPostedFileBase)attachFile[$"File{i}"];
+                    if (file != null)
+                    {
+                        // 生成檔名
+                        string fileName = $@"{Guid.NewGuid().ToString()}{Path.GetExtension(file.FileName)}";
+                        // 設定儲存路徑
+                        absoluteFilePath = absoluteDirPath + $@"\{fileName}";
+                        // 儲存檔案
+                        file.SaveAs(absoluteFilePath);
+                        form.Attachment[$"File{i}"] = fileName;
+                    }
+                }
+
+                var sn = _formService.GetSerialNumber();
+                form.SerialNo = sn + 1;
+                form.AutoFormID = DateTime.Now.ToString($"yyyyMMdd{(sn + 1).ToString().PadLeft(3, '0')}");
+                form.Status = Status.審理中;
+                form.C_DATE = DateTime.Now;
+                form.M_DATE = DateTime.Now;
+                var id = _formService.AddForm(form);
+                return Json(new AjaxResult { Status = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new AjaxResult { Status = false, Message = ex.Message });
+            }
+        }
+
     }
 }

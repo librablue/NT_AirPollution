@@ -43,12 +43,29 @@ namespace NT_AirPollution.Service
 
                 foreach (var item in result)
                 {
-                    item.Attachments = cn.Query<Attachment>(@"
+                    item.Attachment = cn.QueryFirstOrDefault<Attachment>(@"
                         SELECT * FROM Attachment WHERE FormID=@FormID",
-                        new { FormID = item.ID }).ToList();
+                        new { FormID = item.ID });
                 }
 
                 return result;
+            }
+        }
+
+        /// <summary>
+        /// 取得表單最新流水號
+        /// </summary>
+        /// <returns></returns>
+        public int GetSerialNumber()
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                int serialNo = cn.QuerySingleOrDefault<int>(@"
+                    SELECT ISNULL(MAX(SerialNo), 0) FROM Form 
+                    WHERE C_DATE>=@Today",
+                    new { Today = DateTime.Now.ToString("yyyy-MM-dd") });
+
+                return serialNo;
             }
         }
 
@@ -57,19 +74,26 @@ namespace NT_AirPollution.Service
         /// </summary>
         /// <param name="form"></param>
         /// <returns></returns>
-        public bool AddForm(Form form)
+        public bool AddForm(FormView form)
         {
             using (var cn = new SqlConnection(connStr))
             {
-                try
+                cn.Open();
+                using (var trans = cn.BeginTransaction())
                 {
-                    cn.Insert(form);
-                    return true;
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error(ex.Message);
-                    throw new Exception("系統發生未預期錯誤");
+                    try
+                    {
+                        cn.Insert(form, trans);
+                        cn.Insert(form.Attachment, trans);
+                        trans.Commit();
+                        return true;
+                    }
+                    catch (Exception ex)
+                    {
+                        trans.Rollback();
+                        Logger.Error(ex.Message);
+                        throw new Exception("系統發生未預期錯誤");
+                    }
                 }
             }
         }

@@ -10,6 +10,9 @@ namespace NT_AirPollution.Model.View
 {
     public class FormView : Form
     {
-        public List<Attachment> Attachments { get; set; }
+        [Computed]
+        public Attachment Attachment { get; set; } = new Attachment();
+        [Computed]
+        public string Captcha { get; set; }
     }
 }

@@ -10,6 +10,12 @@ namespace NT_AirPollution.Model.Domain
     [Table("Attachment")]
     public class Attachment
     {
+        public object this[string propertyName]
+        {
+            get { return this.GetType().GetProperty(propertyName).GetValue(this, null); }
+            set { this.GetType().GetProperty(propertyName).SetValue(this, value, null); }
+        }
+
         [Key]
         public long ID { get; set; }
         public long FormID { get; set; }

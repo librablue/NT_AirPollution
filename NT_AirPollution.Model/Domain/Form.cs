@@ -1,4 +1,5 @@
 ﻿using Dapper.Contrib.Extensions;
+using NT_AirPollution.Model.Enum;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -535,5 +536,17 @@ namespace NT_AirPollution.Model.Domain
         /// 申請人姓名
         /// </summary>
         public string CreateUserName { get; set; }
+        /// <summary>
+        /// 案件編號
+        /// </summary>
+        public string AutoFormID { get; set; }
+        /// <summary>
+        /// 流水號
+        /// </summary>
+        public int SerialNo { get; set; }
+        /// <summary>
+        /// 狀態
+        /// </summary>
+        public Status Status { get; set; }
     }
 }

@@ -46,7 +46,7 @@
             <el-table-column label="功能" width="100" align="center" fixed>
                 <template v-slot="{ row }">
                     <el-button type="primary" size="mini" icon="el-icon-search" circle title="查看" @@click="showModal(row)"></el-button>
-                    <el-button type="success" size="mini" icon="el-icon-copy-document" circle title="複製" @@click="deleteCompany(row)"></el-button>
+                    <el-button type="success" size="mini" icon="el-icon-copy-document" circle title="複製" @@click="copyRow(row)"></el-button>
                 </template>
             </el-table-column>
             <el-table-column prop="C_NO" label="管制編號" align="center"></el-table-column>
@@ -510,45 +510,60 @@
                                 <tr>
                                     <th>空氣污染防制費申報表</th>
                                     <td>建照起造人為公司行號請加蓋公司大小章，建照起造人為私人請加蓋個人私章</td>
-                                    <td></td>
+                                    <td>
+                                        <input type="file" id="file1" accept=".doc,.docx,.pdf" />
+                                    </td>
                                 </tr>
                                 <tr>
                                     <th>建築執照影印本</th>
                                     <td></td>
-                                    <td></td>
+                                    <td>
+                                        <input type="file" id="file2" accept=".doc,.docx,.pdf" />
+                                    </td>
                                 </tr>
                                 <tr>
                                     <th>營建業主身分證影本</th>
                                     <td>業主為建設公司檢附建設公司執照或營業事業登記證，若無營利事業登記證可用公司登記函取代</td>
-                                    <td></td>
+                                    <td>
+                                        <input type="file" id="file3" accept=".doc,.docx,.pdf" />
+                                    </td>
                                 </tr>
                                 <tr>
                                     <th>簡易位置圖</th>
                                     <td>附註路名或大地標</td>
-                                    <td></td>
+                                    <td>
+                                        <input type="file" id="file4" accept=".doc,.docx,.pdf" />
+                                    </td>
                                 </tr>
                                 <tr>
                                     <th>承包商營利事業登記證</th>
                                     <td>承包商第一次申報需檢附。若無營利事業登記證可用公司登記函取代</td>
-                                    <td></td>
+                                    <td>
+                                        <input type="file" id="file5" accept=".doc,.docx,.pdf" />
+                                    </td>
                                 </tr>
                                 <tr>
                                     <th>承包商負責人身分證影本</th>
                                     <td>承包商第一次申報需檢附。空污費二萬元以上，請配合本局辦理道路認養。</td>
-                                    <td></td>
+                                    <td>
+                                        <input type="file" id="file6" accept=".doc,.docx,.pdf" />
+                                    </td>
                                 </tr>
                                 <tr>
                                     <th>其它文件</th>
                                     <td></td>
-                                    <td></td>
+                                    <td>
+                                        <input type="file" id="file7" accept=".doc,.docx,.pdf" />
+                                    </td>
                                 </tr>
                                 <tr>
                                     <th>免徵案件證明</th>
                                     <td>免徵案件需上傳免徵證明</td>
-                                    <td></td>
+                                    <td>
+                                        <input type="file" id="file8" accept=".doc,.docx,.pdf" />
+                                    </td>
                                 </tr>
                             </tbody>
-
                         </table>
                     </div>
                 </el-tab-pane>
@@ -558,7 +573,7 @@
         </el-form>
         <span slot="footer" class="dialog-footer">
             <el-button @@click="dialogVisible = false">取 消</el-button>
-            <el-button type="primary" @@click="saveForm">儲 存</el-button>
+            <el-button type="primary" @@click="sendForm">儲 存</el-button>
         </span>
     </el-dialog>
 </div>
