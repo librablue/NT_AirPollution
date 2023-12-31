@@ -25,5 +25,18 @@ namespace NT_AirPollution.Service
                 return result;
             }
         }
+
+        /// <summary>
+        /// 取得工程類別清單
+        /// </summary>
+        /// <returns></returns>
+        public List<ProjectCode> GetProjectCode()
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                var result = cn.GetAll<ProjectCode>().ToList();
+                return result;
+            }
+        }
     }
 }

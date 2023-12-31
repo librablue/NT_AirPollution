@@ -23,6 +23,7 @@ namespace NT_AirPollution.Web.Controllers
         private readonly string _uploadPath = ConfigurationManager.AppSettings["UploadPath"].ToString();
         private readonly ClientUserService _clientUserService = new ClientUserService();
         private readonly FormService _formService = new FormService();
+        private readonly OptionService _optionService = new OptionService();
         private readonly SendBoxService _sendBoxService = new SendBoxService();
 
         public ActionResult Index()
@@ -467,19 +468,29 @@ namespace NT_AirPollution.Web.Controllers
             }
         }
 
+        [Authorize]
+        [HttpPost]
+        public JsonResult GetForms(FormFilter filter)
+        {
+            filter.ClientUserID = BaseService.CurrentUser.ID;
+            var result = _formService.GetFormsByUser(filter);
+            return Json(result);
+        }
+
+        [Authorize]
         [HttpPost]
         public JsonResult AddForm(FormView form, HttpPostedFileBase file1, HttpPostedFileBase file2, HttpPostedFileBase file3, HttpPostedFileBase file4, HttpPostedFileBase file5, HttpPostedFileBase file6, HttpPostedFileBase file7, HttpPostedFileBase file8)
         {
             try
             {
-                //if (!ReCaptcha.ValidateCaptcha(form.Captcha))
-                //    throw new Exception("請勾選驗證碼");
+                if (!ModelState.IsValid)
+                {
+                    string firstError = ModelState.Values.SelectMany(o => o.Errors).First().ErrorMessage;
+                    throw new Exception(firstError);
+                }
 
-                //if (!ModelState.IsValid)
-                //    throw new Exception("欄位驗證錯誤");
-
-                //if (form.B_DATE2 > form.E_DATE2)
-                //    throw new Exception("施工期程起始日期不能大於結束日期");
+                if (form.B_DATE2 > form.E_DATE2)
+                    throw new Exception("施工期程起始日期不能大於結束日期");
 
                 //if (file1 == null)
                 //    throw new Exception("未上傳空氣污染防制費申報表");
@@ -527,12 +538,22 @@ namespace NT_AirPollution.Web.Controllers
                     }
                 }
 
+                var allDists = _optionService.GetDistrict();
+                var allProjectCode = _optionService.GetProjectCode();
                 var sn = _formService.GetSerialNumber();
-                form.SerialNo = sn + 1;
-                form.AutoFormID = DateTime.Now.ToString($"yyyyMMdd{(sn + 1).ToString().PadLeft(3, '0')}");
-                form.Status = Status.審理中;
+                form.TOWN_NA = allDists.First(o => o.Code == form.TOWN_NO).Name;
+                form.KIND = allProjectCode.First(o => o.Code == form.KIND_NO).Name;
+                form.AP_DATE = DateTime.Now.AddYears(-1911).ToString("yyyMMdd");
+                form.B_DATE = form.B_DATE2.AddYears(-1911).ToString("yyyMMdd");
+                form.E_DATE = form.E_DATE2.AddYears(-1911).ToString("yyyMMdd");
+                form.S_B_BDATE = form.S_B_BDATE2.AddYears(-1911).ToString("yyyMMdd");
+                form.R_B_BDATE = form.R_B_BDATE2.AddYears(-1911).ToString("yyyMMdd");
                 form.C_DATE = DateTime.Now;
                 form.M_DATE = DateTime.Now;
+                form.SerialNo = sn + 1;
+                form.AutoFormID = DateTime.Now.ToString($"yyyyMMdd{(sn + 1).ToString().PadLeft(3, '0')}");
+                form.ClientUserID = BaseService.CurrentUser.ID;
+                form.Status = Status.審理中;
                 var id = _formService.AddForm(form);
                 return Json(new AjaxResult { Status = true });
             }
@@ -541,6 +562,5 @@ namespace NT_AirPollution.Web.Controllers
                 return Json(new AjaxResult { Status = false, Message = ex.Message });
             }
         }
-
     }
 }

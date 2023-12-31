@@ -1,6 +1,7 @@
 ﻿using NT_AirPollution.Service;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -9,11 +10,25 @@ namespace NT_AirPollution.Web.Controllers
 {
     public class OptionController : BaseController
     {
+        private readonly string _uploadPath = ConfigurationManager.AppSettings["UploadPath"].ToString();
         private readonly OptionService _optionService = new OptionService();
         public JsonResult GetDistrict()
         {
             var result = _optionService.GetDistrict();
             return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetProjectCode()
+        {
+            var result = _optionService.GetProjectCode();
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        public FileResult Download(string f)
+        {
+            string fileName = $@"{_uploadPath}\{f}";
+            byte[] fileBytes = System.IO.File.ReadAllBytes(fileName);
+            return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, f);
         }
     }
 }

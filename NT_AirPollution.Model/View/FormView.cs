@@ -8,11 +8,10 @@ using System.Threading.Tasks;
 
 namespace NT_AirPollution.Model.View
 {
+    [Table("Form")]
     public class FormView : Form
     {
         [Computed]
         public Attachment Attachment { get; set; } = new Attachment();
-        [Computed]
-        public string Captcha { get; set; }
     }
 }

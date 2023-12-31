@@ -17,5 +17,6 @@ namespace NT_AirPollution.Model.View
         public string CreateUserName { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
+        public long ClientUserID { get; set; }
     }
 }

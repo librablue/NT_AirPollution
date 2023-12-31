@@ -25,10 +25,10 @@ namespace NT_AirPollution.Service
                 var result = cn.Query<FormView>(@"
                     SELECT * FROM Form 
                     WHERE (@C_NO='' OR C_NO=@C_NO)
-                        AND (@PUB_COMP=null OR PUB_COMP=@PUB_COMP)
+                        AND (@PUB_COMP IS NULL OR PUB_COMP=@PUB_COMP)
                         AND (@COMP_NAM='' OR COMP_NAM LIKE '%'+@COMP_NAM+'%')
                         AND (@CreateUserName='' OR CreateUserName=@CreateUserName)
-                        AND AP_DATE BETWEEN @StartDate AND @EndDate
+                        AND C_DATE BETWEEN @StartDate AND @EndDate
                         AND ClientUserID=@ClientUserID",
                     new
                     {
@@ -38,7 +38,7 @@ namespace NT_AirPollution.Service
                         CreateUserName = filter.CreateUserName ?? "",
                         StartDate = filter.StartDate,
                         EndDate = filter.EndDate.ToString("yyyy-MM-dd 23:59:59"),
-                        ClientUserID = BaseService.CurrentUser.ID
+                        ClientUserID = filter.ClientUserID
                     }).ToList();
 
                 foreach (var item in result)
@@ -46,6 +46,15 @@ namespace NT_AirPollution.Service
                     item.Attachment = cn.QueryFirstOrDefault<Attachment>(@"
                         SELECT * FROM Attachment WHERE FormID=@FormID",
                         new { FormID = item.ID });
+
+                    if (!string.IsNullOrEmpty(item.B_DATE))
+                        item.B_DATE2 = Convert.ToDateTime($"{Convert.ToInt32(item.B_DATE.Substring(0, 3)) + 1911}-{item.B_DATE.Substring(3, 2)}-{item.B_DATE.Substring(5, 2)}");
+                    if (!string.IsNullOrEmpty(item.E_DATE))
+                        item.E_DATE2 = Convert.ToDateTime($"{Convert.ToInt32(item.E_DATE.Substring(0, 3)) + 1911}-{item.E_DATE.Substring(3, 2)}-{item.E_DATE.Substring(5, 2)}");
+                    if (!string.IsNullOrEmpty(item.S_B_BDATE))
+                        item.S_B_BDATE2 = Convert.ToDateTime($"{Convert.ToInt32(item.S_B_BDATE.Substring(0, 3)) + 1911}-{item.S_B_BDATE.Substring(3, 2)}-{item.S_B_BDATE.Substring(5, 2)}");
+                    if (!string.IsNullOrEmpty(item.R_B_BDATE))
+                        item.R_B_BDATE2 = Convert.ToDateTime($"{Convert.ToInt32(item.R_B_BDATE.Substring(0, 3)) + 1911}-{item.R_B_BDATE.Substring(3, 2)}-{item.R_B_BDATE.Substring(5, 2)}");
                 }
 
                 return result;
@@ -83,7 +92,8 @@ namespace NT_AirPollution.Service
                 {
                     try
                     {
-                        cn.Insert(form, trans);
+                        long id = cn.Insert(form, trans);
+                        form.Attachment.FormID = id;
                         cn.Insert(form.Attachment, trans);
                         trans.Commit();
                         return true;

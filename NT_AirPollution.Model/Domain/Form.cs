@@ -24,7 +24,7 @@ namespace NT_AirPollution.Model.Domain
         /// <summary>
         /// 序號
         /// </summary>
-        public int SER_NO { get; set; }
+        public int? SER_NO { get; set; }
 
         /// <summary>
         /// 縣市代碼
@@ -115,7 +115,7 @@ namespace NT_AirPollution.Model.Domain
         /// </summary>
         public string S_B_BDATE { get; set; }
         [Computed]
-        public DateTime? S_B_BDATE2 { get; set; }
+        public DateTime S_B_BDATE2 { get; set; }
 
         /// <summary>
         /// 業主聯絡人
@@ -187,7 +187,7 @@ namespace NT_AirPollution.Model.Domain
         /// </summary>
         public string R_B_BDATE { get; set; }
         [Computed]
-        public DateTime? R_B_BDATE2 { get; set; }
+        public DateTime R_B_BDATE2 { get; set; }
 
         /// <summary>
         /// 工務所地址
@@ -217,37 +217,37 @@ namespace NT_AirPollution.Model.Domain
         /// <summary>
         /// 工程面積
         /// </summary>
-        public float AREA { get; set; }
+        public double? AREA { get; set; }
 
         /// <summary>
         /// 外運土石鬆方
         /// </summary>
-        public float VOLUMEL { get; set; }
+        public double? VOLUMEL { get; set; }
 
         /// <summary>
         /// 鬆實方體積比值
         /// </summary>
-        public float RATIOLB { get; set; }
+        public double? RATIOLB { get; set; }
 
         /// <summary>
         /// 鬆方密度值
         /// </summary>
-        public float DENSITYL { get; set; }
+        public double? DENSITYL { get; set; }
 
         /// <summary>
         /// 合約經費
         /// </summary>
-        public float MONEY { get; set; }
+        public double? MONEY { get; set; }
 
         /// <summary>
         /// 工程環保經費
         /// </summary>
-        public float C_MONEY { get; set; }
+        public double? C_MONEY { get; set; }
 
         /// <summary>
         /// 環保經費佔總工程經費之比例％
         /// </summary>
-        public float PERCENT { get; set; }
+        public double? PERCENT { get; set; }
 
         /// <summary>
         /// 費率年度
@@ -259,19 +259,19 @@ namespace NT_AirPollution.Model.Domain
         /// </summary>
         public string B_DATE { get; set; }
         [Computed]
-        public DateTime? B_DATE2 { get; set; }
+        public DateTime B_DATE2 { get; set; }
 
         /// <summary>
         /// 預計施工期程(迄日)
         /// </summary>
         public string E_DATE { get; set; }
         [Computed]
-        public DateTime? E_DATE2 { get; set; }
+        public DateTime E_DATE2 { get; set; }
 
         /// <summary>
         /// 應繳總金額
         /// </summary>
-        public float S_AMT { get; set; }
+        public double? S_AMT { get; set; }
 
         /// <summary>
         /// 繳款方式
@@ -286,7 +286,7 @@ namespace NT_AirPollution.Model.Domain
         /// <summary>
         /// 每次應繳金額
         /// </summary>
-        public float P_AMT { get; set; }
+        public double? P_AMT { get; set; }
 
         /// <summary>
         /// 已完成結算繳費程序日期
@@ -366,17 +366,17 @@ namespace NT_AirPollution.Model.Domain
         /// <summary>
         /// 建築面積
         /// </summary>
-        public float AREA_B { get; set; }
+        public double? AREA_B { get; set; }
 
         /// <summary>
         /// 基地面積
         /// </summary>
-        public float AREA_F { get; set; }
+        public double? AREA_F { get; set; }
 
         /// <summary>
         /// 建蔽率
         /// </summary>
-        public float PERC_B { get; set; }
+        public double? PERC_B { get; set; }
 
         /// <summary>
         /// 工程名稱
@@ -396,12 +396,12 @@ namespace NT_AirPollution.Model.Domain
         /// <summary>
         /// UTM 座標_X
         /// </summary>
-        public float UTME { get; set; }
+        public double? UTME { get; set; }
 
         /// <summary>
         /// UTM 座標_Y
         /// </summary>
-        public float UTMN { get; set; }
+        public double? UTMN { get; set; }
 
         /// <summary>
         /// 座標( 緯度, 經度) 多筆分號(;)分隔
@@ -411,17 +411,17 @@ namespace NT_AirPollution.Model.Domain
         /// <summary>
         /// 管線道路隧道長度
         /// </summary>
-        public float AREA3 { get; set; }
+        public double? AREA3 { get; set; }
 
         /// <summary>
         /// 總樓地板面積
         /// </summary>
-        public float AREA2 { get; set; }
+        public double? AREA2 { get; set; }
 
         /// <summary>
         /// 工地外車流量
         /// </summary>
-        public float O_C_Q { get; set; }
+        public double? O_C_Q { get; set; }
 
         /// <summary>
         /// 棄土場名稱
@@ -441,12 +441,12 @@ namespace NT_AirPollution.Model.Domain
         /// <summary>
         /// 土方或砂石用量
         /// </summary>
-        public float ENG_STONE { get; set; }
+        public double? ENG_STONE { get; set; }
 
         /// <summary>
         /// 土方開挖
         /// </summary>
-        public float ENG_WRAP { get; set; }
+        public double? ENG_WRAP { get; set; }
 
         /// <summary>
         /// 監造單位

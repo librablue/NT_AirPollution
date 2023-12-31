@@ -25,18 +25,20 @@
                 mode: '',
                 loading: false,
                 filter: {
-                    StartDate: '',
-                    EndDate: '',
+                    StartDate: moment().format('YYYY-MM-01'),
+                    EndDate: moment().format('YYYY-MM-DD'),
                     C_NO: null,
                     PUB_COMP: null,
                     CreateUserName: null,
                     COMP_NAM: null
                 },
                 district: Object.freeze([]),
+                projectCode: Object.freeze([]),
                 forms: [],
                 selectRow: {
                     P_KIND: '一次全繳',
-                    BUD_DOC2: '無'
+                    BUD_DOC2: '無',
+                    Attachment: {}
                 },
                 dialogVisible: false,
                 activeTab: 'first',
@@ -46,7 +48,7 @@
                     CreateUserName: [{ required: true, message: '請輸入申請人姓名', trigger: 'blur' }],
                     CreateUserEmail: [{ required: true, message: '請輸入申請人電子信箱', trigger: 'blur' }],
                     COMP_NAM: [{ required: true, message: '請輸入工程名稱', trigger: 'blur' }],
-                    ProjectCode: [{ required: true, message: '請選擇工程類別', trigger: 'change' }],
+                    KIND_NO: [{ required: true, message: '請選擇工程類別', trigger: 'change' }],
                     ADDR: [{ required: true, message: '請輸入工地地址或地號', trigger: 'blur' }],
                     B_SERNO: [{ required: true, message: '請輸入建照字號或合約編號', trigger: 'blur' }],
                     UTME: [{ required: true, message: '請輸入座標X', trigger: 'blur' }],
@@ -95,6 +97,7 @@
         },
         mounted() {
             this.getDistrict();
+            this.getProjectCode();
         },
         computed: {
             totalDays() {
@@ -116,6 +119,11 @@
                     this.district = Object.freeze(res.data);
                 });
             },
+            getProjectCode() {
+                axios.get('/Option/GetProjectCode').then(res => {
+                    this.projectCode = Object.freeze(res.data);
+                });
+            },
             getForms() {
                 this.loading = true;
                 axios
@@ -133,7 +141,8 @@
                 this.mode = 'Add';
                 this.selectRow = {
                     P_KIND: '一次全繳',
-                    BUD_DOC2: '無'
+                    BUD_DOC2: '無',
+                    Attachment: {}
                 };
 
                 this.dialogVisible = true;
@@ -159,7 +168,8 @@
                     if (!confirm('是否確認繼續?')) return false;
                     const formData = new FormData();
                     for (const key in this.selectRow) {
-                        formData.append(key, this.selectRow[key]);
+                        if(typeof this.selectRow[key] !== 'object')
+                            formData.append(key, this.selectRow[key]);
                     }
                     // 附件
                     for (let i = 1; i <= 8; i++) {

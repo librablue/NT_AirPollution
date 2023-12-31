@@ -10,6 +10,7 @@ namespace NT_AirPollution.Model.Domain
     [Table("Attachment")]
     public class Attachment
     {
+        [Computed]
         public object this[string propertyName]
         {
             get { return this.GetType().GetProperty(propertyName).GetValue(this, null); }
