@@ -77,4 +77,10 @@ h3 {
     }
 }
 
+.multi-line-option {
+    .el-select-dropdown__item {
+        height: auto;
+    }
+}
+
 @import './footer';

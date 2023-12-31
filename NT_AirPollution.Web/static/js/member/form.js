@@ -34,6 +34,10 @@
                 },
                 district: Object.freeze([]),
                 projectCode: Object.freeze([]),
+                companies: Object.freeze([]),
+                selectCompany: null,
+                contractors: Object.freeze([]),
+                selectContractor: null,
                 forms: [],
                 selectRow: {
                     P_KIND: '一次全繳',
@@ -98,6 +102,8 @@
         mounted() {
             this.getDistrict();
             this.getProjectCode();
+            this.getCompanies();
+            this.getContractor();
         },
         computed: {
             totalDays() {
@@ -123,6 +129,22 @@
                 axios.get('/Option/GetProjectCode').then(res => {
                     this.projectCode = Object.freeze(res.data);
                 });
+            },
+            getCompanies() {
+                axios.post('/Member/GetMyCompanies', this.filter).then(res => {
+                    this.companies = Object.freeze(res.data);
+                });
+            },
+            selectCompanyChange() {
+
+            },
+            getContractor() {
+                axios.post('/Member/GetMyContractor', this.filter).then(res => {
+                    this.contractors = Object.freeze(res.data);
+                });
+            },
+            selectContractorChange() {
+
             },
             getForms() {
                 this.loading = true;
@@ -168,8 +190,7 @@
                     if (!confirm('是否確認繼續?')) return false;
                     const formData = new FormData();
                     for (const key in this.selectRow) {
-                        if(typeof this.selectRow[key] !== 'object')
-                            formData.append(key, this.selectRow[key]);
+                        if (typeof this.selectRow[key] !== 'object') formData.append(key, this.selectRow[key]);
                     }
                     // 附件
                     for (let i = 1; i <= 8; i++) {

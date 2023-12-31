@@ -383,6 +383,10 @@ h3 {
   min-width: 160px;
 }
 
+.multi-line-option .el-select-dropdown__item {
+  height: auto;
+}
+
 footer {
   background-color: #ebf5ff;
   padding: 20px 0 0;

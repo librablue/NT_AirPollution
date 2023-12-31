@@ -192,7 +192,16 @@
                     </tbody>
                 </table>
             </div>
+
             <h3>營建資料</h3>
+            <div style="margin-bottom: 4px">
+                <el-select class="w100p" popper-class="multi-line-option" placeholder="快速選取" v-model="selectCompany" @@change="selectCompanyChange">
+                    <el-option v-for="item in companies" :key="item.ID" :label="item.S_NAME" :value="item.S_G_NO">
+                        <span style="float: left">業主名稱: {{ item.S_NAME }}</span>
+                        <span style="float: right; color: #8492a6; font-size: 13px">{{ item.S_G_NO }}</span>
+                    </el-option>
+                </el-select>
+            </div>
             <div class="table-responsive">
                 <table class="table">
                     <tbody>
@@ -298,6 +307,14 @@
                 </table>
             </div>
             <h3>承包(造)資料</h3>
+            <div style="margin-bottom: 4px">
+                <el-select class="w100p" popper-class="multi-line-option" placeholder="快速選取" v-model="selectContractor" @@change="selectContractorChange">
+                    <el-option v-for="item in contractors" :key="item.ID" :label="item.R_NAME" :value="item.R_G_NO">
+                        <div>承包(造): {{ item.R_NAME }}</div>
+                        <div style="color: #8492a6; font-size: 13px">統編: {{ item.R_G_NO }}</div>
+                    </el-option>
+                </el-select>
+            </div>
             <div class="table-responsive">
                 <table class="table">
                     <tbody>
