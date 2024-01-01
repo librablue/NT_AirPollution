@@ -73,6 +73,7 @@ namespace NT_AirPollution.Web.Controllers
         [Authorize]
         public ActionResult Form()
         {
+            ViewBag.CurrentUser = _clientUserService.GetUserByID(BaseService.CurrentUser.ID);
             return View();
         }
 

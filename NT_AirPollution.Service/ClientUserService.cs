@@ -93,7 +93,24 @@ namespace NT_AirPollution.Service
         }
 
         /// <summary>
-        /// 新增使用者
+        /// 查詢使用者 by ID
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public ClientUser GetUserByID(long id)
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                var result = cn.QueryFirstOrDefault<ClientUser>(@"
+                    SELECT * FROM ClientUser
+                    WHERE ID=@ID
+                        AND DeleteDate IS NULL", new { ID = id });
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// 查詢使用者 by email
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>

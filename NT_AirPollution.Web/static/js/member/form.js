@@ -193,6 +193,7 @@
                 this.selectRow = {
                     P_KIND: '一次全繳',
                     BUD_DOC2: '無',
+                    CreateUserName: document.querySelector('#hfUserName').value,
                     Attachment: {}
                 };
 
@@ -206,7 +207,7 @@
                 });
             },
             showModal(row) {
-                this.mode = 'View';
+                this.mode = 'Update';
                 this.selectRow = JSON.parse(JSON.stringify(row));
                 this.dialogVisible = true;
             },
@@ -244,7 +245,23 @@
                         });
                 });
             },
-            copyRow() {}
+            copyRow(row) {
+                this.mode = 'Add';
+                this.selectRow = JSON.parse(JSON.stringify(row));
+                const clearAry = ['C_NO', 'SER_NO', 'AP_DATE', 'C_DATE', 'AutoFormID', 'SerialNo'];
+                for (const key in clearAry) {
+                    this.selectRow[key] = null;
+                }
+
+                this.dialogVisible = true;
+                this.$nextTick(() => {
+                    // 清空附件
+                    for (let i = 1; i <= 8; i++) {
+                        const file = document.querySelector(`#file${i}`);
+                        file.value = '';
+                    }
+                });
+            }
         }
     });
 });
