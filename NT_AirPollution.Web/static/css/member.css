@@ -383,8 +383,14 @@ h3 {
   min-width: 160px;
 }
 
-.multi-line-option .el-select-dropdown__item {
-  height: auto;
+.head-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.head-row h3 {
+  margin-bottom: 0;
+  margin-right: 10px;
 }
 
 footer {

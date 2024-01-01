@@ -136,7 +136,22 @@
                 });
             },
             selectCompanyChange() {
-
+                const result = this.companies.find(item => item.ID === this.selectCompany);
+                this.selectRow.S_NAME = result.S_NAME;
+                this.selectRow.S_G_NO = result.S_G_NO;
+                this.selectRow.S_ADDR1 = result.S_ADDR1;
+                this.selectRow.S_ADDR2 = result.S_ADDR2;
+                this.selectRow.S_TEL = result.S_TEL;
+                this.selectRow.S_B_NAM = result.S_B_NAM;
+                this.selectRow.S_B_TIT = result.S_B_TIT;
+                this.selectRow.S_B_ID = result.S_B_ID;
+                this.selectRow.S_B_BDATE = result.S_B_BDATE;
+                this.selectRow.S_B_BDATE2 = result.S_B_BDATE2;
+                this.selectRow.S_C_NAM = result.S_C_NAM;
+                this.selectRow.S_C_TIT = result.S_C_TIT;
+                this.selectRow.S_C_ID = result.S_C_ID;
+                this.selectRow.S_C_ADDR = result.S_C_ADDR;
+                this.selectRow.S_C_TEL = result.S_C_TEL;
             },
             getContractor() {
                 axios.post('/Member/GetMyContractor', this.filter).then(res => {
@@ -144,7 +159,21 @@
                 });
             },
             selectContractorChange() {
-
+                const result = this.contractors.find(item => item.ID === this.selectContractor);
+                this.selectRow.R_NAME = result.R_NAME;
+                this.selectRow.R_G_NO = result.R_G_NO;
+                this.selectRow.R_ADDR1 = result.R_ADDR1;
+                this.selectRow.R_ADDR2 = result.R_ADDR2;
+                this.selectRow.R_TEL = result.R_TEL;
+                this.selectRow.R_B_NAM = result.R_B_NAM;
+                this.selectRow.R_B_TIT = result.R_B_TIT;
+                this.selectRow.R_B_ID = result.R_B_ID;
+                this.selectRow.R_B_BDATE = result.R_B_BDATE;
+                this.selectRow.R_B_BDATE2 = result.R_B_BDATE2;
+                this.selectRow.R_ADDR3 = result.R_ADDR3;
+                this.selectRow.R_TEL1 = result.R_TEL1;
+                this.selectRow.R_M_NAM = result.R_M_NAM;
+                this.selectRow.R_C_NAM = result.R_C_NAM;
             },
             getForms() {
                 this.loading = true;
