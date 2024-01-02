@@ -13,5 +13,7 @@ namespace NT_AirPollution.Model.View
     {
         [Computed]
         public Attachment Attachment { get; set; } = new Attachment();
+        [Computed]
+        public string Captcha { get; set; }
     }
 }

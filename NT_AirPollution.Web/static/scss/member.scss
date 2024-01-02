@@ -71,7 +71,10 @@ h3 {
 	margin: 40px auto;
 }
 
-.table {
+.form-table {
+	th,td {
+		white-space: nowrap;
+	}
     td {
         min-width: 160px;
     }
@@ -85,6 +88,10 @@ h3 {
         margin-bottom: 0;
         margin-right: 10px;
     }
+}
+
+.el-tabs {
+	margin-bottom: 22px;
 }
 
 @import './footer';

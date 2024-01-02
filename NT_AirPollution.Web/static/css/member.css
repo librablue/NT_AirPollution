@@ -316,7 +316,6 @@ input[type=number] {
   padding: 8px;
   vertical-align: middle;
   line-height: 1.428571429;
-  white-space: nowrap;
 }
 
 #app {
@@ -379,7 +378,10 @@ h3 {
   margin: 40px auto;
 }
 
-.table td {
+.form-table th, .form-table td {
+  white-space: nowrap;
+}
+.form-table td {
   min-width: 160px;
 }
 
@@ -391,6 +393,10 @@ h3 {
 .head-row h3 {
   margin-bottom: 0;
   margin-right: 10px;
+}
+
+.el-tabs {
+  margin-bottom: 22px;
 }
 
 footer {

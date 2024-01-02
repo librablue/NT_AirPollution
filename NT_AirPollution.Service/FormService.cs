@@ -4,15 +4,20 @@ using NT_AirPollution.Model.Domain;
 using NT_AirPollution.Model.View;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Hosting;
 
 namespace NT_AirPollution.Service
 {
     public class FormService : BaseService
     {
+        protected readonly string _configDomain = ConfigurationManager.AppSettings["Domain"].ToString();
+
         /// <summary>
         /// 取得用戶的申請單
         /// </summary>

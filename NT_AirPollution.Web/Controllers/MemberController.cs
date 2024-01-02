@@ -52,25 +52,25 @@ namespace NT_AirPollution.Web.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        [Authorize]
+        [Authorize(Roles = "Member")]
         public ActionResult Edit()
         {
             return View();
         }
 
-        [Authorize]
+        [Authorize(Roles = "Member")]
         public ActionResult Company()
         {
             return View();
         }
 
-        [Authorize]
+        [Authorize(Roles = "Member")]
         public ActionResult Contractor()
         {
             return View();
         }
 
-        [Authorize]
+        [Authorize(Roles = "Member")]
         public ActionResult Form()
         {
             ViewBag.CurrentUser = _clientUserService.GetUserByID(BaseService.CurrentUser.ID);
@@ -100,7 +100,8 @@ namespace NT_AirPollution.Web.Controllers
                         JsonConvert.SerializeObject(new UserData
                         {
                             ID = result.ID,
-                            Email = result.Email
+                            Email = result.Email,
+                            Role = new string[] { "Member" }
                         }),
                         FormsAuthentication.FormsCookiePath);
 
@@ -297,7 +298,7 @@ namespace NT_AirPollution.Web.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Member")]
         [HttpPost]
         public JsonResult Edit(ClientUser user)
         {
@@ -319,7 +320,7 @@ namespace NT_AirPollution.Web.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Member")]
         [HttpPost]
         public JsonResult GetMyCompanies(ClientUserCompany filter)
         {
@@ -328,7 +329,7 @@ namespace NT_AirPollution.Web.Controllers
             return Json(result);
         }
 
-        [Authorize]
+        [Authorize(Roles = "Member")]
         [HttpPost]
         public JsonResult AddCompany(ClientUserCompany company)
         {
@@ -349,7 +350,7 @@ namespace NT_AirPollution.Web.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Member")]
         [HttpPost]
         public JsonResult UpdateCompany(ClientUserCompany company)
         {
@@ -374,7 +375,7 @@ namespace NT_AirPollution.Web.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Member")]
         [HttpPost]
         public JsonResult DeleteCompany(ClientUserCompany company)
         {
@@ -395,7 +396,7 @@ namespace NT_AirPollution.Web.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Member")]
         [HttpPost]
         public JsonResult GetMyContractor(ClientUserContractor filter)
         {
@@ -404,7 +405,7 @@ namespace NT_AirPollution.Web.Controllers
             return Json(result);
         }
 
-        [Authorize]
+        [Authorize(Roles = "Member")]
         [HttpPost]
         public JsonResult AddContractor(ClientUserContractor contractor)
         {
@@ -424,7 +425,7 @@ namespace NT_AirPollution.Web.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Member")]
         [HttpPost]
         public JsonResult UpdateContractor(ClientUserContractor contractor)
         {
@@ -448,7 +449,7 @@ namespace NT_AirPollution.Web.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Member")]
         [HttpPost]
         public JsonResult DeleteContractor(ClientUserContractor contractor)
         {
@@ -469,7 +470,7 @@ namespace NT_AirPollution.Web.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Member")]
         [HttpPost]
         public JsonResult GetForms(FormFilter filter)
         {
@@ -478,7 +479,7 @@ namespace NT_AirPollution.Web.Controllers
             return Json(result);
         }
 
-        [Authorize]
+        [Authorize(Roles = "Member")]
         [HttpPost]
         public JsonResult AddForm(FormView form, HttpPostedFileBase file1, HttpPostedFileBase file2, HttpPostedFileBase file3, HttpPostedFileBase file4, HttpPostedFileBase file5, HttpPostedFileBase file6, HttpPostedFileBase file7, HttpPostedFileBase file8)
         {
@@ -556,6 +557,7 @@ namespace NT_AirPollution.Web.Controllers
                 form.ClientUserID = BaseService.CurrentUser.ID;
                 form.Status = Status.審理中;
                 var id = _formService.AddForm(form);
+
                 return Json(new AjaxResult { Status = true });
             }
             catch (Exception ex)

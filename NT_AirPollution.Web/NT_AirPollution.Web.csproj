@@ -93,6 +93,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Data\Template\VerifyCode.txt" />
+    <Content Include="App_Data\Template\ActiveMail.txt" />
     <Content Include="Global.asax" />
     <Content Include="static\css\index.css" />
     <Content Include="static\css\member.css" />
@@ -101,6 +102,7 @@
     <Content Include="static\image\illu-building.svg" />
     <Content Include="static\image\illu-news.svg" />
     <Content Include="static\image\logo.png" />
+    <Content Include="static\js\form.js" />
     <Content Include="static\js\main.js" />
     <Content Include="static\js\member\form.js" />
     <Content Include="static\js\member\company.js" />
@@ -121,6 +123,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MemberController.cs" />
     <Compile Include="Controllers\OptionController.cs" />
+    <Compile Include="Controllers\VerifyController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -160,6 +163,7 @@
     <Content Include="static\js\plugin\element-ui\fonts\element-icons.woff" />
     <Content Include="Views\Member\Contractor.cshtml" />
     <Content Include="Views\Member\Form.cshtml" />
+    <Content Include="Views\Form\Create.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -170,8 +174,8 @@
   <ItemGroup>
     <Folder Include="App_Data\Upload\" />
     <Folder Include="Views\Base\" />
-    <Folder Include="Views\Form\" />
     <Folder Include="Views\Option\" />
+    <Folder Include="Views\Verify\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NT_AirPollution.Model\NT_AirPollution.Model.csproj">

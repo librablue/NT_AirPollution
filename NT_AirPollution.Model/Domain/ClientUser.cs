@@ -27,5 +27,7 @@ namespace NT_AirPollution.Model.Domain
         public string ActiveCode { get; set; }
         [Computed]
         public string Captcha { get; set; }
+        [Computed]
+        public string[] Role { get; set; }
     }
 }
