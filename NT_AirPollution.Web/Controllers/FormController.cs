@@ -33,8 +33,8 @@ namespace NT_AirPollution.Web.Controllers
         {
             try
             {
-                //if (!ReCaptcha.ValidateCaptcha(form.Captcha))
-                //    throw new Exception("請勾選驗證碼");
+                if (!ReCaptcha.ValidateCaptcha(form.Captcha))
+                    throw new Exception("請勾選驗證碼");
 
                 if (!ModelState.IsValid)
                     throw new Exception("欄位驗證錯誤");
