@@ -1,17 +1,17 @@
 @import './config';
 @import './shared';
-@import './form';
 @import './navbar';
 @import './table';
 
 #app {
-	min-height: calc(100vh - 231px - 72px);
+    min-height: calc(100vh - 231px - 72px);
 }
 
-h1,h2 {
-	font-size: 24px;
-	font-weight: 700;
-	margin-bottom: 20px;
+h1,
+h2 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 20px;
 }
 
 h3 {
@@ -21,60 +21,61 @@ h3 {
 }
 
 .entry-wrap {
-	display: flex;
-	align-items: flex-start;
-	border: 1px solid #ccc;
-	border-radius: 10px;
-	box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
-	padding: 40px 20px;
-	margin: 40px auto;
-	.aside,
-	.side-form {
-		width: 100%;
-		padding: 0;
-	}
-	.aside {
-		display: none;
-		align-self: center;
-	}
-	.oth-links {
-		text-align: right;
-		margin-top: 10px;
-		a {
-			& ~ a {
-				&:before {
-					content: '|';
-					display: inline-block;
-					margin: 0 6px;
-				}
-			}
-		}
-	}
+    display: flex;
+    align-items: flex-start;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    padding: 40px 20px;
+    margin: 40px auto;
+    .aside,
+    .side-form {
+        width: 100%;
+        padding: 0;
+    }
+    .aside {
+        display: none;
+        align-self: center;
+    }
+    .oth-links {
+        text-align: right;
+        margin-top: 10px;
+        a {
+            & ~ a {
+                &:before {
+                    content: '|';
+                    display: inline-block;
+                    margin: 0 6px;
+                }
+            }
+        }
+    }
 }
 
 @media (min-width: 768px) {
-	.entry-wrap {
-		.aside,
-		.side-form {
-			width: 50%;
-			padding: 0 20px;
-		}
-		.aside {
-			display: block;
-		}
-	}
+    .entry-wrap {
+        .aside,
+        .side-form {
+            width: 50%;
+            padding: 0 20px;
+        }
+        .aside {
+            display: block;
+        }
+    }
 }
 
 .main-wrap {
-	max-width: 1170px;
-	padding: 40px 20px;
-	margin: 40px auto;
+    max-width: 1170px;
+    padding: 40px 20px;
+    margin: 40px auto;
 }
 
 .form-table {
-	th,td {
-		white-space: nowrap;
-	}
+    th,
+    td {
+        white-space: nowrap;
+    }
     td {
         min-width: 160px;
     }
@@ -91,7 +92,7 @@ h3 {
 }
 
 .el-tabs {
-	margin-bottom: 22px;
+    margin-bottom: 22px;
 }
 
 @import './footer';

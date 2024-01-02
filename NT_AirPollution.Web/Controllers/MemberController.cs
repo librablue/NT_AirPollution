@@ -93,7 +93,7 @@ namespace NT_AirPollution.Web.Controllers
                     throw new Exception("登入失敗，帳號或密碼錯誤。");
 
                 FormsAuthenticationTicket ticket = new FormsAuthenticationTicket(1,
-                        result.Email,
+                        result.ID.ToString(),
                         DateTime.Now,
                         DateTime.Now.AddHours(8),
                         true,

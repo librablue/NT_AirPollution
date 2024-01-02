@@ -101,7 +101,6 @@ namespace NT_AirPollution.Web.Controllers
                 form.M_DATE = DateTime.Now;
                 form.SerialNo = sn + 1;
                 form.AutoFormID = DateTime.Now.ToString($"yyyyMMdd{(sn + 1).ToString().PadLeft(3, '0')}");
-                form.ClientUserID = BaseService.CurrentUser.ID;
                 form.ActiveCode = Guid.NewGuid().ToString();
                 form.IsActive = false;
                 form.Status = Status.審理中;

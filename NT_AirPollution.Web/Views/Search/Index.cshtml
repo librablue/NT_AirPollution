@@ -1,0 +1,35 @@
+﻿@using hbehr.recaptcha;
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section styles {
+    <link rel="stylesheet" href="@Url.Content("~/static/css/form.css")" />
+}
+@section scripts {
+    <script src="@Url.Content("~/static/js/search/index.js")"></script>
+}
+
+<div id="app" class="main-wrap">
+    <el-row type="flex" justify="center">
+        <el-col :span="12">
+            <h2>進度查詢</h2>
+            <el-form :rules="rules" ref="form" :model="form">
+                <el-form-item prop="AutoFormID" label="案件編號">
+                    <el-input v-model="form.AutoFormID" maxlength="20"></el-input>
+                    <div class="prompt-text">(案件編號可於您的 E-mail 認證信中查詢)</div>
+                </el-form-item>
+                <el-form-item prop="CreateUserEmail" label="Email">
+                    <el-input type="email" inputmode="email" v-model="form.CreateUserEmail" maxlength="50"></el-input>
+                </el-form-item>
+                <el-form-item prop="Captcha">
+                    @ReCaptcha.GetCaptcha()
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" class="btn-block" @@click="formSubmit">登 入</el-button>
+                </el-form-item>
+            </el-form>
+        </el-col>
+    </el-row>
+</div>

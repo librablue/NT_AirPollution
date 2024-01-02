@@ -545,7 +545,7 @@ namespace NT_AirPollution.Model.Domain
         /// </summary>
         public string ActiveCode { get; set; }
         // 是否啟用
-        public bool IsActive { get; set; }
+        public bool? IsActive { get; set; }
         /// <summary>
         /// 流水號
         /// </summary>

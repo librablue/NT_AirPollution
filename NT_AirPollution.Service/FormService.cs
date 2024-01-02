@@ -67,6 +67,42 @@ namespace NT_AirPollution.Service
         }
 
         /// <summary>
+        /// 取得用戶的申請單
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        public FormView GetFormByUser(Form filter)
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                var result = cn.QueryFirstOrDefault<FormView>(@"
+                    SELECT * FROM Form 
+                    WHERE CreateUserEmail=@CreateUserEmail
+                        AND AutoFormID=@AutoFormID",
+                    new
+                    {
+                        CreateUserEmail = filter.CreateUserEmail,
+                        AutoFormID = filter.AutoFormID
+                    });
+
+                result.Attachment = cn.QueryFirstOrDefault<Attachment>(@"
+                        SELECT * FROM Attachment WHERE FormID=@FormID",
+                                        new { FormID = result.ID });
+
+                if (!string.IsNullOrEmpty(result.B_DATE))
+                    result.B_DATE2 = Convert.ToDateTime($"{Convert.ToInt32(result.B_DATE.Substring(0, 3)) + 1911}-{result.B_DATE.Substring(3, 2)}-{result.B_DATE.Substring(5, 2)}");
+                if (!string.IsNullOrEmpty(result.E_DATE))
+                    result.E_DATE2 = Convert.ToDateTime($"{Convert.ToInt32(result.E_DATE.Substring(0, 3)) + 1911}-{result.E_DATE.Substring(3, 2)}-{result.E_DATE.Substring(5, 2)}");
+                if (!string.IsNullOrEmpty(result.S_B_BDATE))
+                    result.S_B_BDATE2 = Convert.ToDateTime($"{Convert.ToInt32(result.S_B_BDATE.Substring(0, 3)) + 1911}-{result.S_B_BDATE.Substring(3, 2)}-{result.S_B_BDATE.Substring(5, 2)}");
+                if (!string.IsNullOrEmpty(result.R_B_BDATE))
+                    result.R_B_BDATE2 = Convert.ToDateTime($"{Convert.ToInt32(result.R_B_BDATE.Substring(0, 3)) + 1911}-{result.R_B_BDATE.Substring(3, 2)}-{result.R_B_BDATE.Substring(5, 2)}");
+
+                return result;
+            }
+        }
+
+        /// <summary>
         /// 取得表單最新流水號
         /// </summary>
         /// <returns></returns>

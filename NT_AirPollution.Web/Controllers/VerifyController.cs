@@ -20,7 +20,7 @@ namespace NT_AirPollution.Web.Controllers
             if (form == null)
                 return View();
 
-            if (!form.IsActive)
+            if (!form.IsActive.Value)
             {
                 // 更新為驗證通過
                 _verifyService.VerifyForm(form.ID);
