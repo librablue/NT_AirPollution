@@ -82,7 +82,7 @@ namespace NT_AirPollution.Web.Controllers
         {
             try
             {
-                if (user.Captcha == null || !ReCaptcha.ValidateCaptcha(user.Captcha))
+                if (string.IsNullOrEmpty(user.Captcha) || !ReCaptcha.ValidateCaptcha(user.Captcha))
                     throw new Exception("請勾選我不是機器人。");
 
                 if (string.IsNullOrEmpty(user.Email) || string.IsNullOrEmpty(user.Password))
@@ -176,7 +176,7 @@ namespace NT_AirPollution.Web.Controllers
         {
             try
             {
-                if (user.Captcha == null || !ReCaptcha.ValidateCaptcha(user.Captcha))
+                if (string.IsNullOrEmpty(user.Captcha) || !ReCaptcha.ValidateCaptcha(user.Captcha))
                     throw new Exception("請勾選我不是機器人。");
 
                 if (!ModelState.IsValid)
@@ -267,7 +267,7 @@ namespace NT_AirPollution.Web.Controllers
         {
             try
             {
-                if (user.Captcha == null || !ReCaptcha.ValidateCaptcha(user.Captcha))
+                if (string.IsNullOrEmpty(user.Captcha) || !ReCaptcha.ValidateCaptcha(user.Captcha))
                     throw new Exception("請勾選我不是機器人。");
 
                 if (!ModelState.IsValid)
