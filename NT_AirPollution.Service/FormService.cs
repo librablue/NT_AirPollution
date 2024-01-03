@@ -85,18 +85,21 @@ namespace NT_AirPollution.Service
                         AutoFormID = filter.AutoFormID
                     });
 
-                result.Attachment = cn.QueryFirstOrDefault<Attachment>(@"
+                if (result != null)
+                {
+                    result.Attachment = cn.QueryFirstOrDefault<Attachment>(@"
                     SELECT * FROM Attachment WHERE FormID=@FormID",
-                    new { FormID = result.ID });
+                        new { FormID = result.ID });
 
-                if (!string.IsNullOrEmpty(result.B_DATE))
-                    result.B_DATE2 = Convert.ToDateTime($"{Convert.ToInt32(result.B_DATE.Substring(0, 3)) + 1911}-{result.B_DATE.Substring(3, 2)}-{result.B_DATE.Substring(5, 2)}");
-                if (!string.IsNullOrEmpty(result.E_DATE))
-                    result.E_DATE2 = Convert.ToDateTime($"{Convert.ToInt32(result.E_DATE.Substring(0, 3)) + 1911}-{result.E_DATE.Substring(3, 2)}-{result.E_DATE.Substring(5, 2)}");
-                if (!string.IsNullOrEmpty(result.S_B_BDATE))
-                    result.S_B_BDATE2 = Convert.ToDateTime($"{Convert.ToInt32(result.S_B_BDATE.Substring(0, 3)) + 1911}-{result.S_B_BDATE.Substring(3, 2)}-{result.S_B_BDATE.Substring(5, 2)}");
-                if (!string.IsNullOrEmpty(result.R_B_BDATE))
-                    result.R_B_BDATE2 = Convert.ToDateTime($"{Convert.ToInt32(result.R_B_BDATE.Substring(0, 3)) + 1911}-{result.R_B_BDATE.Substring(3, 2)}-{result.R_B_BDATE.Substring(5, 2)}");
+                    if (!string.IsNullOrEmpty(result.B_DATE))
+                        result.B_DATE2 = Convert.ToDateTime($"{Convert.ToInt32(result.B_DATE.Substring(0, 3)) + 1911}-{result.B_DATE.Substring(3, 2)}-{result.B_DATE.Substring(5, 2)}");
+                    if (!string.IsNullOrEmpty(result.E_DATE))
+                        result.E_DATE2 = Convert.ToDateTime($"{Convert.ToInt32(result.E_DATE.Substring(0, 3)) + 1911}-{result.E_DATE.Substring(3, 2)}-{result.E_DATE.Substring(5, 2)}");
+                    if (!string.IsNullOrEmpty(result.S_B_BDATE))
+                        result.S_B_BDATE2 = Convert.ToDateTime($"{Convert.ToInt32(result.S_B_BDATE.Substring(0, 3)) + 1911}-{result.S_B_BDATE.Substring(3, 2)}-{result.S_B_BDATE.Substring(5, 2)}");
+                    if (!string.IsNullOrEmpty(result.R_B_BDATE))
+                        result.R_B_BDATE2 = Convert.ToDateTime($"{Convert.ToInt32(result.R_B_BDATE.Substring(0, 3)) + 1911}-{result.R_B_BDATE.Substring(3, 2)}-{result.R_B_BDATE.Substring(5, 2)}");
+                }
 
                 return result;
             }

@@ -70,8 +70,11 @@ namespace NT_AirPollution.Web.Controllers
                     AutoFormID = BaseService.CurrentUser.AutoFormID
                 };
 
-                var form = _formService.GetFormByUser(fiter);
-                return View(form);
+                var result = _formService.GetFormByUser(fiter);
+                if (result == null)
+                    throw new Exception("登入失敗，案件編號或 Email 錯誤");
+
+                return View(result);
             }
 
             return RedirectToAction("Index");

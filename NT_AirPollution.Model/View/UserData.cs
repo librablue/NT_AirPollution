@@ -14,6 +14,9 @@ namespace NT_AirPollution.Model.View
         /// 案件編號
         /// </summary>
         public string AutoFormID { get; set; }
+        /// <summary>
+        /// 角色
+        /// </summary>
         public string[] Role { get; set; }
         public string ActiveCode { get; set; }
         public string Captcha { get; set; }
