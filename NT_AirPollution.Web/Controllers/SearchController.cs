@@ -6,8 +6,11 @@ using NT_AirPollution.Service;
 using NT_AirPollution.Web.Models;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.IO;
 using System.Linq;
 using System.Web;
+using System.Web.Hosting;
 using System.Web.Mvc;
 using System.Web.Security;
 
@@ -15,7 +18,9 @@ namespace NT_AirPollution.Web.Controllers
 {
     public class SearchController : Controller
     {
+        private readonly string _configDomain = ConfigurationManager.AppSettings["Domain"].ToString();
         private readonly FormService _formService = new FormService();
+        private readonly SendBoxService _sendBoxService = new SendBoxService();
 
         public ActionResult Index()
         {
@@ -67,9 +72,46 @@ namespace NT_AirPollution.Web.Controllers
                 CreateUserEmail = BaseService.CurrentUser.Email,
                 AutoFormID = BaseService.CurrentUser.AutoFormID
             };
-
             var result = _formService.GetFormByUser(fiter);
             return View(result);
+        }
+
+        [Authorize(Roles = "NonMember")]
+        public JsonResult Resend()
+        {
+            try
+            {
+                var fiter = new Form
+                {
+                    CreateUserEmail = BaseService.CurrentUser.Email,
+                    AutoFormID = BaseService.CurrentUser.AutoFormID
+                };
+                var form = _formService.GetFormByUser(fiter);
+
+                // 寄驗證信
+                string template = ($@"{HostingEnvironment.ApplicationPhysicalPath}/App_Data/Template/ActiveMail.txt");
+                using (StreamReader sr = new StreamReader(template))
+                {
+                    String content = sr.ReadToEnd();
+                    string url = string.Format("{0}/Verify/Index?code={1}", _configDomain, form.ActiveCode);
+                    string body = string.Format(content, form.AutoFormID, form.CreateUserEmail, url, url);
+
+                    _sendBoxService.AddSendBox(new SendBox
+                    {
+                        Address = form.CreateUserEmail,
+                        Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統認證信(案件編號-{form.AutoFormID})",
+                        Body = body,
+                        FailTimes = 0,
+                        CreateDate = DateTime.Now
+                    });
+                }
+
+                return Json(new AjaxResult { Status = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new AjaxResult { Status = false, Message = "發生錯誤" });
+            }
         }
     }
 }
