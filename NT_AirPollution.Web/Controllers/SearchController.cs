@@ -59,25 +59,17 @@ namespace NT_AirPollution.Web.Controllers
             }
         }
 
-        [Authorize(Roles = "Member,NonMember")]
+        [Authorize(Roles = "NonMember")]
         public ActionResult Result()
         {
-            if (User.IsInRole("NonMember"))
+            var fiter = new Form
             {
-                var fiter = new Form
-                {
-                    CreateUserEmail = BaseService.CurrentUser.Email,
-                    AutoFormID = BaseService.CurrentUser.AutoFormID
-                };
+                CreateUserEmail = BaseService.CurrentUser.Email,
+                AutoFormID = BaseService.CurrentUser.AutoFormID
+            };
 
-                var result = _formService.GetFormByUser(fiter);
-                if (result == null)
-                    throw new Exception("登入失敗，案件編號或 Email 錯誤");
-
-                return View(result);
-            }
-
-            return RedirectToAction("Index");
+            var result = _formService.GetFormByUser(fiter);
+            return View(result);
         }
     }
 }
