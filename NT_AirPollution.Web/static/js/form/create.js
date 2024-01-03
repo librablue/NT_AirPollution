@@ -163,6 +163,10 @@
 					this.projectCode = Object.freeze(res.data);
 				});
 			},
+			deleteFile(idx) {
+				if (!confirm('是否確認刪除?')) return;
+				this.selectRow.Attachment[`File${idx}`] = null;
+			},
 			sendForm() {
 				this.form.Captcha = grecaptcha.getResponse();
 				this.$refs.form.validate(valid => {
@@ -190,7 +194,7 @@
 							}
 
 							alert('畫面資料已儲存。');
-                            location.reload();
+							location.reload();
 						})
 						.catch(err => {
 							alert('系統發生未預期錯誤');

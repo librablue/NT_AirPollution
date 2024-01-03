@@ -90,8 +90,9 @@ namespace NT_AirPollution.Web.Controllers
                 var allDists = _optionService.GetDistrict();
                 var allProjectCode = _optionService.GetProjectCode();
                 var sn = _formService.GetSerialNumber();
+                form.SER_NO = 1;
                 form.TOWN_NA = allDists.First(o => o.Code == form.TOWN_NO).Name;
-                form.KIND = allProjectCode.First(o => o.Code == form.KIND_NO).Name;
+                form.KIND = allProjectCode.First(o => o.ID == form.KIND_NO).Name;
                 form.AP_DATE = DateTime.Now.AddYears(-1911).ToString("yyyMMdd");
                 form.B_DATE = form.B_DATE2.AddYears(-1911).ToString("yyyMMdd");
                 form.E_DATE = form.E_DATE2.AddYears(-1911).ToString("yyyMMdd");
@@ -104,7 +105,7 @@ namespace NT_AirPollution.Web.Controllers
                 form.ActiveCode = Guid.NewGuid().ToString();
                 form.IsActive = false;
                 form.Status = Status.審理中;
-                var id = _formService.AddForm(form);
+                _formService.AddForm(form);
 
                 // 寄驗證信
                 string template = ($@"{HostingEnvironment.ApplicationPhysicalPath}/App_Data/Template/ActiveMail.txt");

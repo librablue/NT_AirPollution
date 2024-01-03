@@ -86,8 +86,8 @@ namespace NT_AirPollution.Service
                     });
 
                 result.Attachment = cn.QueryFirstOrDefault<Attachment>(@"
-                        SELECT * FROM Attachment WHERE FormID=@FormID",
-                                        new { FormID = result.ID });
+                    SELECT * FROM Attachment WHERE FormID=@FormID",
+                    new { FormID = result.ID });
 
                 if (!string.IsNullOrEmpty(result.B_DATE))
                     result.B_DATE2 = Convert.ToDateTime($"{Convert.ToInt32(result.B_DATE.Substring(0, 3)) + 1911}-{result.B_DATE.Substring(3, 2)}-{result.B_DATE.Substring(5, 2)}");
@@ -97,6 +97,40 @@ namespace NT_AirPollution.Service
                     result.S_B_BDATE2 = Convert.ToDateTime($"{Convert.ToInt32(result.S_B_BDATE.Substring(0, 3)) + 1911}-{result.S_B_BDATE.Substring(3, 2)}-{result.S_B_BDATE.Substring(5, 2)}");
                 if (!string.IsNullOrEmpty(result.R_B_BDATE))
                     result.R_B_BDATE2 = Convert.ToDateTime($"{Convert.ToInt32(result.R_B_BDATE.Substring(0, 3)) + 1911}-{result.R_B_BDATE.Substring(3, 2)}-{result.R_B_BDATE.Substring(5, 2)}");
+
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// 取得申請單 by 管制編號
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        public List<FormView> GetFormsByC_NO(FormFilter filter)
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                var result = cn.Query<FormView>(@"
+                    SELECT * FROM Form WHERE C_NO=@C_NO AND ClientUserID=@ClientUserID",
+                    new { C_NO = filter.C_NO, ClientUserID = filter.ClientUserID })
+                    .OrderBy(o => o.SER_NO).ToList();
+
+                foreach (var item in result)
+                {
+                    item.Attachment = cn.QueryFirstOrDefault<Attachment>(@"
+                        SELECT * FROM Attachment WHERE FormID=@FormID",
+                        new { FormID = item.ID });
+
+                    if (!string.IsNullOrEmpty(item.B_DATE))
+                        item.B_DATE2 = Convert.ToDateTime($"{Convert.ToInt32(item.B_DATE.Substring(0, 3)) + 1911}-{item.B_DATE.Substring(3, 2)}-{item.B_DATE.Substring(5, 2)}");
+                    if (!string.IsNullOrEmpty(item.E_DATE))
+                        item.E_DATE2 = Convert.ToDateTime($"{Convert.ToInt32(item.E_DATE.Substring(0, 3)) + 1911}-{item.E_DATE.Substring(3, 2)}-{item.E_DATE.Substring(5, 2)}");
+                    if (!string.IsNullOrEmpty(item.S_B_BDATE))
+                        item.S_B_BDATE2 = Convert.ToDateTime($"{Convert.ToInt32(item.S_B_BDATE.Substring(0, 3)) + 1911}-{item.S_B_BDATE.Substring(3, 2)}-{item.S_B_BDATE.Substring(5, 2)}");
+                    if (!string.IsNullOrEmpty(item.R_B_BDATE))
+                        item.R_B_BDATE2 = Convert.ToDateTime($"{Convert.ToInt32(item.R_B_BDATE.Substring(0, 3)) + 1911}-{item.R_B_BDATE.Substring(3, 2)}-{item.R_B_BDATE.Substring(5, 2)}");
+                }
 
                 return result;
             }
@@ -134,8 +168,23 @@ namespace NT_AirPollution.Service
                     try
                     {
                         long id = cn.Insert(form, trans);
+
+                        // 附件
                         form.Attachment.FormID = id;
                         cn.Insert(form.Attachment, trans);
+
+                        // 停復工
+                        foreach (var item in form.StopWorks)
+                        {
+                            item.FormID = id;
+                            item.DOWN_DATE = item.DOWN_DATE2.AddYears(-1911).ToString("yyyMMdd");
+                            item.UP_DATE = item.UP_DATE2.AddYears(-1911).ToString("yyyMMdd");
+                            item.DOWN_DAY = Convert.ToInt32((item.UP_DATE2 - item.DOWN_DATE2).TotalDays + 1);
+                            item.C_DATE = DateTime.Now;
+                            item.M_DATE = DateTime.Now;
+                        }
+                        cn.Insert(form.StopWorks, trans);
+
                         trans.Commit();
                         return true;
                     }
@@ -177,49 +226,49 @@ namespace NT_AirPollution.Service
         /// </summary>
         /// <param name="form"></param>
         /// <returns></returns>
-        public int CalcTotalMoney(Form form)
-        {
-            using (var cn = new SqlConnection(connStr))
-            {
-                // 計算施工天數
-                var diffDays = (form.B_DATE2 - form.E_DATE2).TotalDays + 1;
-                var projectCodes = cn.GetAll<ProjectCode>().ToList();
-                var projectCode = projectCodes.First(o => o.Code == form.KIND_NO);
-                // 基數
-                double basicNum = 0;
-                // 費率
-                double rate = 0;
-                switch (form.KIND_NO)
-                {
-                    case "1":
-                    case "2":
-                    case "4":
-                    case "5":
-                    case "6":
-                    case "7":
-                    case "8":
-                    case "9":
-                    case "A":
-                        basicNum = form.Area2 * diffDays / 30;
-                        break;
-                    case "3":
-                    case "B":
-                        basicNum = form.Area2;
-                        break;
-                    case "Z":
-                        basicNum = form.MONEY;
-                        break;
-                }
+        //public int CalcTotalMoney(Form form)
+        //{
+        //    using (var cn = new SqlConnection(connStr))
+        //    {
+        //        // 計算施工天數
+        //        var diffDays = (form.B_DATE2 - form.E_DATE2).TotalDays + 1;
+        //        var projectCodes = cn.GetAll<ProjectCode>().ToList();
+        //        var projectCode = projectCodes.First(o => o.ID == form.KIND_NO);
+        //        // 基數
+        //        double basicNum = 0;
+        //        // 費率
+        //        double rate = 0;
+        //        switch (form.KIND_NO)
+        //        {
+        //            case "1":
+        //            case "2":
+        //            case "4":
+        //            case "5":
+        //            case "6":
+        //            case "7":
+        //            case "8":
+        //            case "9":
+        //            case "A":
+        //                basicNum = form.AREA_B * diffDays / 30;
+        //                break;
+        //            case "3":
+        //            case "B":
+        //                basicNum = form.AREA_B;
+        //                break;
+        //            case "Z":
+        //                basicNum = form.MONEY;
+        //                break;
+        //        }
 
-                if (basicNum >= projectCode.Level1)
-                    rate = projectCode.Rate1;
-                else if (basicNum * projectCode.Rate3 >= projectCode.Level2)
-                    rate = projectCode.Rate2;
-                else
-                    rate = projectCode.Rate3;
+        //        if (basicNum >= projectCode.Level1)
+        //            rate = projectCode.Rate1;
+        //        else if (basicNum * projectCode.Rate3 >= projectCode.Level2)
+        //            rate = projectCode.Rate2;
+        //        else
+        //            rate = projectCode.Rate3;
 
-                return Convert.ToInt32(Math.Round(basicNum * rate, 0, MidpointRounding.AwayFromZero));
-            }
-        }
+        //        return Convert.ToInt32(Math.Round(basicNum * rate, 0, MidpointRounding.AwayFromZero));
+        //    }
+        //}
     }
 }

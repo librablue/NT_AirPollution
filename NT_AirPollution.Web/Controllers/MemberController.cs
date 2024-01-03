@@ -494,6 +494,18 @@ namespace NT_AirPollution.Web.Controllers
                 if (form.B_DATE2 > form.E_DATE2)
                     throw new Exception("施工期程起始日期不能大於結束日期");
 
+                // 如果管制編號有值，表示用複製的
+                if (!string.IsNullOrEmpty(form.C_NO))
+                {
+                    var filter = new FormFilter { C_NO = form.C_NO, ClientUserID = BaseService.CurrentUser.ID };
+                    var formsInDB = _formService.GetFormsByC_NO(filter);
+                    if (formsInDB.Count() == 0)
+                        throw new Exception("查無所複製的管制編號");
+
+                    // 相同管制編號的序號最大值+1
+                    form.SER_NO = formsInDB.Last().SER_NO + 1;
+                }
+
                 //if (file1 == null)
                 //    throw new Exception("未上傳空氣污染防制費申報表");
                 //if (file2 == null)
@@ -543,8 +555,9 @@ namespace NT_AirPollution.Web.Controllers
                 var allDists = _optionService.GetDistrict();
                 var allProjectCode = _optionService.GetProjectCode();
                 var sn = _formService.GetSerialNumber();
+
                 form.TOWN_NA = allDists.First(o => o.Code == form.TOWN_NO).Name;
-                form.KIND = allProjectCode.First(o => o.Code == form.KIND_NO).Name;
+                form.KIND = allProjectCode.First(o => o.ID == form.KIND_NO).Name;
                 form.AP_DATE = DateTime.Now.AddYears(-1911).ToString("yyyMMdd");
                 form.B_DATE = form.B_DATE2.AddYears(-1911).ToString("yyyMMdd");
                 form.E_DATE = form.E_DATE2.AddYears(-1911).ToString("yyyMMdd");
@@ -556,7 +569,7 @@ namespace NT_AirPollution.Web.Controllers
                 form.AutoFormID = DateTime.Now.ToString($"yyyyMMdd{(sn + 1).ToString().PadLeft(3, '0')}");
                 form.ClientUserID = BaseService.CurrentUser.ID;
                 form.Status = Status.審理中;
-                var id = _formService.AddForm(form);
+                _formService.AddForm(form);
 
                 return Json(new AjaxResult { Status = true });
             }
