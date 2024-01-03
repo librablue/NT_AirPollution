@@ -63,6 +63,7 @@
     <Compile Include="View\AttachmentFile.cs" />
     <Compile Include="View\FormFIlter.cs" />
     <Compile Include="View\FormView.cs" />
+    <Compile Include="View\UserData.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

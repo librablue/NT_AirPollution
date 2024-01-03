@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using NT_AirPollution.Model.Domain;
+using NT_AirPollution.Model.View;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -15,7 +15,7 @@ namespace NT_AirPollution.Service
     {
         protected readonly string connStr = ConfigurationManager.ConnectionStrings["NT_AirPollution"].ConnectionString;
         protected readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-        public static ClientUser CurrentUser
+        public static UserData CurrentUser
         {
             get
             {
@@ -23,7 +23,7 @@ namespace NT_AirPollution.Service
                 {
                     FormsIdentity id = (FormsIdentity)HttpContext.Current.User.Identity;
                     FormsAuthenticationTicket ticket = id.Ticket;
-                    ClientUser clientUser = JsonConvert.DeserializeObject<ClientUser>(ticket.UserData);
+                    UserData clientUser = JsonConvert.DeserializeObject<UserData>(ticket.UserData);
                     return clientUser;
                 }
 

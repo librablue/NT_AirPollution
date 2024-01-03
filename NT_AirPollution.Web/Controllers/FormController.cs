@@ -34,7 +34,7 @@ namespace NT_AirPollution.Web.Controllers
             try
             {
                 if (string.IsNullOrEmpty(form.Captcha) || !ReCaptcha.ValidateCaptcha(form.Captcha))
-                    throw new Exception("請勾選驗證碼");
+                    throw new Exception("請勾選我不是機器人");
 
                 if (!ModelState.IsValid)
                     throw new Exception("欄位驗證錯誤");

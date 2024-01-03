@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using NT_AirPollution.Model.Domain;
+using NT_AirPollution.Model.View;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +31,7 @@ namespace NT_AirPollution.Web
                         return;
 
                     FormsAuthenticationTicket ticket = FormsAuthentication.Decrypt(authCookie.Value);
-                    ClientUser clientUser = JsonConvert.DeserializeObject<ClientUser>(ticket.UserData);
+                    UserData clientUser = JsonConvert.DeserializeObject<UserData>(ticket.UserData);
                     if (Context.User != null)
                         Context.User = new GenericPrincipal(Context.User.Identity, clientUser.Role);
                 }

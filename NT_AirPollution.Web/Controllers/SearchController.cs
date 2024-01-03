@@ -27,8 +27,8 @@ namespace NT_AirPollution.Web.Controllers
         {
             try
             {
-                if (!ReCaptcha.ValidateCaptcha(form.Captcha))
-                    throw new Exception("請勾選驗證碼");
+                if (string.IsNullOrEmpty(form.Captcha) || !ReCaptcha.ValidateCaptcha(form.Captcha))
+                    throw new Exception("請勾選我不是機器人");
 
                 var result = _formService.GetFormByUser(form);
                 if (result == null)
@@ -43,6 +43,7 @@ namespace NT_AirPollution.Web.Controllers
                         {
                             ID = result.ID,
                             Email = result.CreateUserEmail,
+                            AutoFormID = result.AutoFormID,
                             Role = new string[] { "NonMember" }
                         }),
                         FormsAuthentication.FormsCookiePath);
@@ -56,6 +57,24 @@ namespace NT_AirPollution.Web.Controllers
             {
                 return Json(new AjaxResult { Status = false, Message = ex.Message });
             }
+        }
+
+        [Authorize(Roles = "Member,NonMember")]
+        public ActionResult Result()
+        {
+            if (User.IsInRole("NonMember"))
+            {
+                var fiter = new Form
+                {
+                    CreateUserEmail = BaseService.CurrentUser.Email,
+                    AutoFormID = BaseService.CurrentUser.AutoFormID
+                };
+
+                var form = _formService.GetFormByUser(fiter);
+                return View(form);
+            }
+
+            return RedirectToAction("Index");
         }
     }
 }

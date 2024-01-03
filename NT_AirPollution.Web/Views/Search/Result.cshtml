@@ -1,0 +1,128 @@
+﻿@using NT_AirPollution.Model.Enum;
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section styles {
+    <link rel="stylesheet" href="@Url.Content("~/static/css/form.css")" />
+    <style>
+        .payemnt-container {
+            font-size: 18px;
+            padding: 10px 0;
+        }
+
+        .payment-title {
+            margin: 10px 0 20px;
+        }
+
+        .alert-message {
+            color: #F73D93;
+            font-weight: 700;
+        }
+
+        .btn-download {
+            margin: 10px;
+            padding: 12px 20px;
+            color: #fff;
+        }
+
+            .btn-download:hover {
+                color: #fff;
+            }
+
+            .btn-download.primary {
+                background-color: #1F4690;
+            }
+
+            .btn-download.second {
+                background-color: #2F8F9D;
+            }
+    </style>
+}
+@section scripts {
+    <script src="@Url.Content("~/static/js/search/result.js")"></script>
+}
+
+<div id="app" class="main-wrap">
+    <el-row type="flex" justify="center">
+        <el-col :xs="24" :sm="12">
+            <h1>進度查詢</h1>
+            <ul class="progressbar">
+                <li class="@((int)Model.Status >= 1 ? "active" : "")">審理中</li>
+                <li class="@((int)Model.Status >= 3 ? "active" : "")">通過待繳費</li>
+                <li class="@((int)Model.Status >= 4 ? "active" : "")">已繳費完成</li>
+            </ul>
+
+            <ul class="result-list">
+                <li>
+                    <span class="label">申請日期：</span>
+                    <span class="text">@Model.C_DATE.ToString("yyyy-MM-dd")</span>
+                </li>
+                <li>
+                    <span class="label">案件編號：</span>
+                    <span class="text">@Model.AutoFormID</span>
+                </li>
+                <li>
+                    <span class="label">Email：</span>
+                    <span class="text">
+                        @Model.CreateUserEmail (@(Model.IsActive ? "已驗證" : "未驗證"))
+                    </span>
+                    @if (!Model.IsActive)
+                    {
+                        <el-button type="success" size="small" round @@click="resend()" :disabled="sending" v-cloak>{{sendText}}</el-button>
+                    }
+                </li>
+                <li>
+                    <span class="label">審核結果：</span>
+                    @if (!Model.IsActive)
+                    {
+                        <span class="text">尚未驗證 Email</span>
+                    }
+                    else if (Model.Status == Status.審理中)
+                    {
+                        <span class="text">審理中</span>
+                    }
+                    else if (Model.Status == Status.需補件)
+                    {
+                        <div class="text">
+                            需補件(<a href="@Url.Content($"~/Form/Update")">編輯</a>)
+                        </div>
+                    }
+                    else if (Model.Status == Status.通過待繳費)
+                    {
+                        <span class="text">通過待繳費</span>
+                    }
+                    else if (Model.Status == Status.已繳費完成)
+                    {
+                        <span class="text">已繳費完成</span>
+                    }
+                </li>
+                @if (Model.Status == Status.需補件)
+                {
+                    <li>
+                        <span class="label">補件原因：</span>
+                        <span class="text">@Html.Raw(Model.FailReason?.Replace("\n", "<br>"))</span>
+                    </li>
+                }
+            </ul>
+            @if (Model.IsActive && Model.Status == Status.通過待繳費)
+            {
+                <div class="payemnt-container">
+                    <div class="payment-title">
+                        您的申請案件已通過審件，應繳總金額為 @(Model.TotalMoney.ToString("N0")) 元 (剩餘金額 @((Model.TotalMoney - Model.ReceiveMoney).ToString("N0")) 元)
+                    </div>
+                    @*<div class="alert-message">※應繳總金額未達 1 萬元者不得分期。</div>
+                        <div class="alert-message">※選擇分期者，第 1 期繳費單應立即繳納後始得開工，第 2 期繳費單應於完工前繳納完畢。</div>*@
+                    <div class="text-center my-5">
+                        <a class="btn-download primary" href="@Url.Content("~/Form/DownloadPayment")"><i class="fa fa-cloud-download"></i> 下載繳費單(一次繳交)</a>
+                    </div>
+                </div>
+            }
+            @if (Model.IsActive && Model.Status == Status.已繳費完成)
+            {
+                <div class="text-center my-5">
+                    <a class="btn-download primary" href="@Url.Content($"~/Form/DownloadReceipt")"><i class="fa fa-cloud-download"></i> 下載收據</a>
+                </div>
+            }
+        </el-col>
+    </el-row>
+</div>

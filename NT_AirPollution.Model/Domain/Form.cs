@@ -237,7 +237,7 @@ namespace NT_AirPollution.Model.Domain
         /// <summary>
         /// 合約經費
         /// </summary>
-        public double? MONEY { get; set; }
+        public double MONEY { get; set; }
 
         /// <summary>
         /// 工程環保經費

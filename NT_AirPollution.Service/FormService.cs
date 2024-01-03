@@ -148,5 +148,78 @@ namespace NT_AirPollution.Service
                 }
             }
         }
+
+        /// <summary>
+        /// 數字轉換為中文
+        /// </summary>
+        /// <param name="inputNum"></param>
+        /// <returns></returns>
+        private string GetChineseMoney(string inputNum)
+        {
+            string[] intArr = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", };
+            string[] strArr = { "零", "壹", "貳", "參", "肆", "伍", "陸", "柒", "捌", "玖", };
+            //string[] Chinese = { "", "拾", "佰", "仟", "萬", "拾", "佰", "仟", "億" };
+            //金額
+            string[] Chinese = { "元", "拾", "佰", "仟", "萬", "拾", "佰", "仟", "億" };
+            char[] tmpArr = inputNum.ToString().ToArray();
+            string tmpVal = "";
+            for (int i = 0; i < tmpArr.Length; i++)
+            {
+                tmpVal += strArr[tmpArr[i] - 48];//ASCII編碼 0為48
+                tmpVal += Chinese[tmpArr.Length - 1 - i];//根據對應的位數插入對應的單位
+            }
+
+            return tmpVal;
+        }
+
+        /// <summary>
+        /// 計算總金額
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        public int CalcTotalMoney(Form form)
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                // 計算施工天數
+                var diffDays = (form.B_DATE2 - form.E_DATE2).TotalDays + 1;
+                var projectCodes = cn.GetAll<ProjectCode>().ToList();
+                var projectCode = projectCodes.First(o => o.Code == form.KIND_NO);
+                // 基數
+                double basicNum = 0;
+                // 費率
+                double rate = 0;
+                switch (form.KIND_NO)
+                {
+                    case "1":
+                    case "2":
+                    case "4":
+                    case "5":
+                    case "6":
+                    case "7":
+                    case "8":
+                    case "9":
+                    case "A":
+                        basicNum = form.Area2 * diffDays / 30;
+                        break;
+                    case "3":
+                    case "B":
+                        basicNum = form.Area2;
+                        break;
+                    case "Z":
+                        basicNum = form.MONEY;
+                        break;
+                }
+
+                if (basicNum >= projectCode.Level1)
+                    rate = projectCode.Rate1;
+                else if (basicNum * projectCode.Rate3 >= projectCode.Level2)
+                    rate = projectCode.Rate2;
+                else
+                    rate = projectCode.Rate3;
+
+                return Convert.ToInt32(Math.Round(basicNum * rate, 0, MidpointRounding.AwayFromZero));
+            }
+        }
     }
 }
