@@ -1,0 +1,99 @@
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+a {
+	text-decoration: none;
+	&:hover {
+		text-decoration: none;
+	}
+}
+
+html,
+body {
+	font-size: 10px;
+}
+
+body {
+	font-family: 'Microsoft JhengHei', 'Arial', 'sans-serif';
+}
+
+img {
+	vertical-align: middle;
+}
+
+input[disabled],
+textarea[disabled] {
+	color: #606266 !important;
+	background-color: #fff !important;
+}
+
+[v-cloak] {
+	display: none !important;
+}
+
+$spaceamounts: (-1, 0, 1, 2, 3, 4, 5);
+@each $space in $spaceamounts {
+	.mt-#{$space} {
+		margin-top: #{$space}em;
+	}
+	.mb-#{$space} {
+		margin-bottom: #{$space}em;
+	}
+	.mr-#{$space} {
+		margin-right: #{$space}em;
+	}
+	.ml-#{$space} {
+		margin-left: #{$space}em;
+	}
+	.pt-#{$space} {
+		padding-top: #{$space}em;
+	}
+	.pb-#{$space} {
+		padding-bottom: #{$space}em;
+	}
+	.pr-#{$space} {
+		padding-right: #{$space}em;
+	}
+	.pl-#{$space} {
+		padding-left: #{$space}em;
+	}
+}
+
+$widthamounts: (10, 20, 30, 40, 50, 60, 70, 80, 90, 100);
+@each $width in $widthamounts {
+	.w#{$width} {
+		width: #{$width}px !important;
+	}
+	.w#{$width}p {
+		width: round(percentage($width/100)) !important;
+	}
+}
+
+/* 頁面切換 */
+.fade-enter-active,
+.fade-leave-active {
+	transition: opacity 0s;
+}
+.fade-enter,
+.fade-leave-to {
+	opacity: 0;
+}
+/* input number spin 隱藏 */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+
+.text-right {
+	text-align: right;
+}
+.text-center {
+	text-align: center;
+}
+.text-danger {
+	color: #f56c6c;
+}
