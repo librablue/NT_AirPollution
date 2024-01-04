@@ -66,7 +66,7 @@
 </template>
 <script>
 import { dateTime, form } from '@/mixins/filter';
-import FormModal from '@/components/form/FormModal';
+import FormModal from '@/components/function/child/FormModal';
 export default {
 	name: 'forms',
 	mixins: [dateTime, form],

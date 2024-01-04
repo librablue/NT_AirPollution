@@ -9,6 +9,7 @@ import 'vxe-table/lib/index.css';
 import './plugin-setup/vxe-table';
 import axios from 'axios';
 import VueAxios from 'vue-axios';
+import Vue2Editor from 'vue2-editor';
 import router from './router';
 import store from './store';
 import authCheck from './router/auth';
@@ -49,6 +50,7 @@ router.beforeEach(async (to, from, next) => {
 Vue.use(ElementUI);
 Vue.use(VXETable);
 Vue.use(VueAxios, axios);
+Vue.use(Vue2Editor);
 Vue.component('fa-checkbox', faCheckbox);
 
 new Vue({

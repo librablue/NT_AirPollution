@@ -14,11 +14,16 @@ export default new Router({
 			path: '/',
 			component: (resolve) => require(['@/components/Main'], resolve),
 			children: [
-				{ path: '', redirect: '/form' },
+				{ path: '', redirect: '/function/form' },
 				{
-					path: '/form',
-					name: 'form',
-					component: (resolve) => require(['@/components/form/Form'], resolve)
+					path: '/function/form',
+					name: 'function_form',
+					component: (resolve) => require(['@/components/function/Form'], resolve)
+				},
+                {
+					path: '/function/news',
+					name: 'function_news',
+					component: (resolve) => require(['@/components/function/News'], resolve)
 				}
 			]
 		}

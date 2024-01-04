@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AdminService.cs" />
+    <Compile Include="NewsService.cs" />
     <Compile Include="VerifyService.cs" />
     <Compile Include="OptionService.cs" />
     <Compile Include="FormService.cs" />
