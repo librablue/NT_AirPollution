@@ -9,7 +9,7 @@
 				<el-input style="width: 140px" v-model="filter.C_NO"></el-input>
 			</el-form-item>
 			<el-form-item label="Email">
-				<el-input v-model="filter.Email"></el-input>
+				<el-input v-model="filter.ClientUserEmail"></el-input>
 			</el-form-item>
 			<el-form-item label="審核狀態">
 				<el-select style="width: 140px" v-model="filter.Status">
@@ -109,7 +109,7 @@ export default {
 			filter: {
 				AutoFormID: '',
 				C_NO: '',
-				Email: '',
+				ClientUserEmail: '',
 				Status: 1
 			},
 			forms: [],
