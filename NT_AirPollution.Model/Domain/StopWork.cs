@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace NT_AirPollution.Model.Domain
 {
-    [Table("Form")]
+    [Table("StopWork")]
     public class StopWork
     {
         [Key]

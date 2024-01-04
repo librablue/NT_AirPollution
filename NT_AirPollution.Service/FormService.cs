@@ -17,6 +17,62 @@ namespace NT_AirPollution.Service
     public class FormService : BaseService
     {
         protected readonly string _configDomain = ConfigurationManager.AppSettings["Domain"].ToString();
+        private readonly string _uploadPath = ConfigurationManager.AppSettings["UploadPath"].ToString();
+
+        /// <summary>
+        /// 取得全部表單
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        public List<FormView> GetForms(FormFilter filter)
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                var forms = cn.Query<FormView>(@"
+                    SELECT * FROM Form
+                    WHERE (@AutoFormID='' OR AutoFormID=@AutoFormID)
+                        AND (@C_NO='' OR C_NO=@C_NO)
+                        AND (@ClientUserEmail='' OR ClientUserEmail=@ClientUserEmail)
+                        AND (@Status='' OR Status=@Status)",
+                    new
+                    {
+                        AutoFormID = filter.AutoFormID,
+                        C_NO = filter.C_NO,
+                        ClientUserEmail = filter.ClientUserEmail,
+                        Status = filter.Status
+                    }).ToList();
+
+                foreach (var item in forms)
+                {
+                    item.Attachment = cn.QueryFirstOrDefault<Attachment>(@"
+                        SELECT * FROM Attachment
+                        WHERE FormID=@FormID", new { FormID = item.ID });
+
+                    item.StopWorks = cn.Query<StopWork>(@"
+                        SELECT * FROM StopWork
+                        WHERE FormID=@FormID", new { FormID = item.ID }).ToList();
+                }
+
+                return forms;
+            }
+        }
+
+        /// <summary>
+        /// 取得申請單 BY ID
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        public Form GetFormByID(long id)
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                var form = cn.QueryFirstOrDefault<Form>(@"
+                    SELECT * FROM Form WHERE ID=@ID",
+                    new { ID = id });
+
+                return form;
+            }
+        }
 
         /// <summary>
         /// 取得用戶的申請單
@@ -202,6 +258,29 @@ namespace NT_AirPollution.Service
         }
 
         /// <summary>
+        /// 修改申請單
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        public bool UpdateForm(Form form)
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                try
+                {
+                    // 更新表單
+                    cn.Update(form);
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex.Message);
+                    throw ex;
+                }
+            }
+        }
+
+        /// <summary>
         /// 數字轉換為中文
         /// </summary>
         /// <param name="inputNum"></param>
@@ -273,5 +352,130 @@ namespace NT_AirPollution.Service
         //        return Convert.ToInt32(Math.Round(basicNum * rate, 0, MidpointRounding.AwayFromZero));
         //    }
         //}
+
+        public bool SendStatus2(Form form)
+        {
+            string template = ($@"{HostingEnvironment.ApplicationPhysicalPath}\App_Data\Template\Status2.txt");
+            using (StreamReader sr = new StreamReader(template))
+            {
+                String content = sr.ReadToEnd();
+                string url = string.Format("{0}/Search/Index", _configDomain);
+                string body = string.Format(content, form.AutoFormID, form.CreateUserEmail, url, url, form.FailReason.Replace("\n", "<br>"));
+
+                try
+                {
+                    using (var cn = new SqlConnection(connStr))
+                    {
+                        // 寄件夾
+                        cn.Insert(new SendBox
+                        {
+                            Address = form.CreateUserEmail,
+                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件需補件通知(案件編號 {form.AutoFormID})",
+                            Body = body,
+                            FailTimes = 0,
+                            CreateDate = DateTime.Now
+                        });
+                    }
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex.Message);
+                    throw ex;
+                }
+            }
+        }
+
+        public bool SendStatus3(Form form)
+        {
+            string template = ($@"{HostingEnvironment.ApplicationPhysicalPath}\App_Data\Template\Status3.txt");
+            using (StreamReader sr = new StreamReader(template))
+            {
+                String content = sr.ReadToEnd();
+                string url1 = string.Format("{0}/Form/Guide", _configDomain);
+                string url2 = string.Format("{0}/Search/Index", _configDomain);
+                string body = string.Format(content, form.AutoFormID, form.CreateUserEmail, url1, url2);
+
+                // 產生繳款單
+                string pdfTemplateFile = $@"{HostingEnvironment.ApplicationPhysicalPath}\App_Data\Template\Payment.html";
+                //var fileBytes = this.GeneratePDF(pdfTemplateFile, form);
+                // 儲存實體檔案
+                string paymentFile = $@"{_uploadPath}\Payment\繳款單{form.AutoFormID}.pdf";
+                using (var fs = new FileStream(paymentFile, FileMode.Create, FileAccess.Write))
+                {
+                    //fs.Write(fileBytes, 0, fileBytes.Length);
+                }
+
+                try
+                {
+                    using (var cn = new SqlConnection(connStr))
+                    {
+                        // 寄件夾
+                        cn.Insert(new SendBox
+                        {
+                            Address = form.CreateUserEmail,
+                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件繳費通知(案件編號 {form.AutoFormID})",
+                            Body = body,
+                            Attachment = paymentFile,
+                            FailTimes = 0,
+                            CreateDate = DateTime.Now
+                        });
+                    }
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex.Message);
+                    throw ex;
+                }
+            }
+        }
+
+        public bool SendStatus4(Form form)
+        {
+            string template = ($@"{HostingEnvironment.ApplicationPhysicalPath}\App_Data\Template\Status4.txt");
+            using (StreamReader sr = new StreamReader(template))
+            {
+                String content = sr.ReadToEnd();
+                string url = string.Format("{0}/Search/Result", _configDomain);
+                string body = string.Format(content, form.AutoFormID, form.CreateUserEmail, url);
+
+                // 產生收據
+                string pdfTemplateFile = $@"{HostingEnvironment.ApplicationPhysicalPath}\App_Data\Template\Receipt.html";
+                //var fileBytes = this.GeneratePDF(pdfTemplateFile, form);
+                // 儲存實體檔案
+                string receiptFile = $@"{_uploadPath}\Receipt\收據{form.AutoFormID}.pdf";
+                using (var fs = new FileStream(receiptFile, FileMode.Create, FileAccess.Write))
+                {
+                    //fs.Write(fileBytes, 0, fileBytes.Length);
+                }
+
+                try
+                {
+                    using (var cn = new SqlConnection(connStr))
+                    {
+                        // 寄件夾
+                        cn.Insert(new SendBox
+                        {
+                            Address = form.CreateUserEmail,
+                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件繳費完成(案件編號 {form.AutoFormID})",
+                            Body = body,
+                            Attachment = receiptFile,
+                            FailTimes = 0,
+                            CreateDate = DateTime.Now
+                        });
+                    }
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex.Message);
+                    throw ex;
+                }
+            }
+        }
     }
 }

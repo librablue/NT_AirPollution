@@ -6,15 +6,6 @@
 				<el-form-item prop="ProjectID" label="管制編號">
 					<el-input maxlength="50" v-model="form.ProjectID" />
 				</el-form-item>
-				<el-form-item prop="TotalMoney" label="應繳總金額">
-					<el-input style="width:140px" type="number" v-model="form.TotalMoney" />
-				</el-form-item>
-				<el-form-item>
-					<el-button type="warning" size="mini" icon="el-icon-right" circle @click="setReceiveMoney()"></el-button>
-				</el-form-item>
-				<el-form-item prop="ReceiveMoney" label="已收金額">
-					<el-input style="width:140px" type="number" v-model="form.ReceiveMoney" />
-				</el-form-item>
 				<el-form-item prop="Status" label="審核狀態">
 					<el-select style="width:140px" v-model="form.Status">
 						<el-option label="審理中" :value="1" v-if="data.Status <= 1"></el-option>
@@ -26,263 +17,190 @@
 				<el-form-item prop="FailReason" label="補件原因" v-if="form.Status === 2">
 					<el-input type="textarea" :autosize="{ minRows: 2, maxRows: 6 }" v-model="form.FailReason" />
 				</el-form-item>
-				<table class="modal-table border">
+				<table class="table">
 					<tbody>
 						<tr>
-							<th style="width: 180px">1.工程名稱</th>
-							<td colspan="7">
-								<el-input v-model="form.ProjectName" />
+							<th style="width:180px">管制編號</th>
+							<td>{{form.C_NO || '待取號'}}</td>
+							<th style="width:180px">序號</th>
+							<td>{{form.SER_NO || '1'}}</td>
+							<th style="width:180px">鄉鎮分類</th>
+							<td>
+								<el-form-item prop="TOWN_NO">
+									<el-select v-model="form.TOWN_NO">
+										<el-option label="請選擇" :value="undefined"></el-option>
+										<el-option v-for="item in district" :key="item.Code" :label="item.Name" :value="item.Code"></el-option>
+									</el-select>
+								</el-form-item>
 							</td>
 						</tr>
 						<tr>
-							<th>2.工地地址或地號</th>
-							<td colspan="3">
-								<el-input v-model="form.ProjectAddr" />
+							<th>申請日期</th>
+							<td>{{form.C_DATE | date}}</td>
+							<th>申請人</th>
+							<td>
+								<el-form-item prop="CreateUserName">
+									<el-input v-model="form.CreateUserName" maxlength="20"></el-input>
+								</el-form-item>
 							</td>
-							<th style="width: 180px">3.E-Mail</th>
-							<td colspan="3">
-								<el-input style="width:250px" v-model="form.Email" />
-								({{form.IsVerify ? '已驗證' : '未驗證'}})
+							<th>申請人電子信箱</th>
+							<td>
+								<el-form-item prop="CreateUserEmail">
+									<el-input type="email" v-model="form.CreateUserEmail" maxlength="50"></el-input>
+								</el-form-item>
 							</td>
 						</tr>
 						<tr>
+							<th>1.工程名稱</th>
+							<td colspan="2">
+								<el-form-item prop="COMP_NAM">
+									<el-input v-model="form.COMP_NAM" maxlength="150"></el-input>
+								</el-form-item>
+							</td>
+							<th>2.工程類別</th>
+							<td colspan="2">
+								<el-form-item prop="KIND_NO">
+									<el-select class="w100p" v-model="form.KIND_NO">
+										<el-option label="請選擇" :value="null"></el-option>
+										<el-option v-for="item in projectCode" :key="item.ID" :label="`${item.ID}. ${item.Name}`" :value="item.ID"></el-option>
+									</el-select>
+								</el-form-item>
+							</td>
+						</tr>
+						<tr>
+							<th>3.工地地址或地號</th>
+							<td colspan="3">
+								<el-form-item prop="ADDR">
+									<el-input v-model="form.ADDR" maxlength="100"></el-input>
+								</el-form-item>
+							</td>
 							<th>4.建照字號或合約編號</th>
-							<td colspan="3">
-								<el-input v-model="form.ContractID" />
+							<td>
+								<el-form-item prop="B_SERNO">
+									<el-input v-model="form.B_SERNO" maxlength="60"></el-input>
+								</el-form-item>
 							</td>
-							<th>5.工程類別代碼</th>
-							<td colspan="3">
-								<el-select style="width:100%" v-model="form.ProjectCode" @change="projectCodeChange()">
-									<el-option label="請選擇" value></el-option>
-									<el-option label="1. 建築（房屋）工程-鋼筋混凝土構造" value="1"></el-option>
-									<el-option label="2. 建築（房屋）工程-鋼骨結構" value="2"></el-option>
-									<el-option label="3. 建築（房屋）工程-拆除" value="3"></el-option>
-									<el-option label="4. 道路（隧道）工程-道路" value="4"></el-option>
-									<el-option label="5. 道路（隧道）工程-隧道" value="5"></el-option>
-									<el-option label="6. 管線開挖工程" value="6"></el-option>
-									<el-option label="7. 橋樑工程" value="7"></el-option>
-									<el-option label="8. 區域開發工程-社區" value="8"></el-option>
-									<el-option label="9. 區域開發工程-工業區" value="9"></el-option>
-									<el-option label="A. 區域開發工程-遊樂區" value="A"></el-option>
-									<el-option label="B. 疏濬工程" value="B"></el-option>
-									<el-option label="Z. 其他工程" value="Z"></el-option>
-								</el-select>
+						</tr>
+						<tr>
+							<th>座標X</th>
+							<td>
+								<el-form-item prop="UTME">
+									<el-input type="number" v-model="form.UTME"></el-input>
+								</el-form-item>
+							</td>
+							<th>座標Y</th>
+							<td>
+								<el-form-item prop="UTMN">
+									<el-input type="number" v-model="form.UTMN"></el-input>
+								</el-form-item>
+							</td>
+							<th>座標(緯度、經度)</th>
+							<td>
+								<el-form-item prop="LATLNG">
+									<el-input v-model="form.LATLNG" maxlength="200"></el-input>
+								</el-form-item>
 							</td>
 						</tr>
 						<tr>
 							<th>6.工程內容概述</th>
-							<td colspan="7">
-								<el-input v-model="form.ProjectDescription" />
-							</td>
-						</tr>
-						<tr>
-							<th>7.營建業主名稱</th>
-							<td colspan="3">
-								<el-input v-model="form.BizCompany" />
-							</td>
-							<th>8.營利事業統一編號</th>
-							<td colspan="3">
-								<el-input v-model="form.BizID" />
-							</td>
-						</tr>
-						<tr>
-							<th>9.營業地址</th>
-							<td colspan="7">
-								<el-input v-model="form.BizAddr1" />
-							</td>
-						</tr>
-						<tr>
-							<th>10.聯絡地址</th>
-							<td colspan="3">
-								<el-input v-model="form.BizAddr2" />
-							</td>
-							<th>11.聯絡電話</th>
-							<td colspan="3">
-								<el-input v-model="form.BizTel" />
-							</td>
-						</tr>
-						<tr>
-							<th>12.負責人姓名</th>
-							<td>
-								<el-input v-model="form.BizOwnerName" />
-							</td>
-							<th style="width: 80px">13.職稱</th>
-							<td>
-								<el-input v-model="form.BizOwnerJobTitle" />
-							</td>
-							<th>14.身分證字號</th>
-							<td colspan="3">
-								<el-input v-model="form.BizOwnerID" />
-							</td>
-						</tr>
-						<tr>
-							<th>15.聯絡人姓名</th>
-							<td>
-								<el-input v-model="form.BizContactName" />
-							</td>
-							<th>16.職稱</th>
-							<td>
-								<el-input v-model="form.BizContactJobTitle" />
-							</td>
-							<th>17.身分證字號</th>
-							<td colspan="3">
-								<el-input v-model="form.BizContactID" />
-							</td>
-						</tr>
-						<tr>
-							<th>18.聯絡人地址</th>
-							<td colspan="3">
-								<el-input v-model="form.BizContactAddr" />
-							</td>
-							<th>19.電話</th>
-							<td colspan="3">
-								<el-input v-model="form.BizContactTel" />
-							</td>
-						</tr>
-						<tr>
-							<th>20.承包(造)單位名稱</th>
-							<td colspan="3">
-								<el-input v-model="form.ExecCompany" />
-							</td>
-							<th>21.營利事業統一編號</th>
-							<td colspan="3">
-								<el-input v-model="form.ExecCompany" />
-							</td>
-						</tr>
-						<tr>
-							<th>22.營業地址</th>
-							<td colspan="7">
-								<el-input v-model="form.ExecAddr1" />
-							</td>
-						</tr>
-						<tr>
-							<th>23.聯絡地址</th>
-							<td colspan="3">
-								<el-input v-model="form.ExecAddr2" />
-							</td>
-							<th>24.聯絡電話</th>
-							<td colspan="3">
-								<el-input v-model="form.ExecTel1" />
-							</td>
-						</tr>
-						<tr>
-							<th>25.負責人姓名</th>
-							<td>
-								<el-input v-model="form.ExecOwnerName" />
-							</td>
-							<th>26.職稱</th>
-							<td>
-								<el-input v-model="form.ExecOwnerJobTitle" />
-							</td>
-							<th>27.身分證字號</th>
-							<td colspan="3">
-								<el-input v-model="form.ExecOwnerID" />
-							</td>
-						</tr>
-						<tr>
-							<th>28.工務所地址</th>
-							<td colspan="3">
-								<el-input v-model="form.ExecAddr3" />
-							</td>
-							<th>29.電話</th>
-							<td colspan="3">
-								<el-input v-model="form.ExecTel2" />
-							</td>
-						</tr>
-						<tr>
-							<th>30.工地主任姓名</th>
-							<td>
-								<el-input v-model="form.ExecManagerName" />
-							</td>
-							<th>31.電話</th>
-							<td>
-								<el-input v-model="form.ExecManagerTel" />
-							</td>
-							<th>32.工地環保負責人姓名</th>
-							<td>
-								<el-input v-model="form.ExecEnvManagerName" />
-							</td>
-							<th style="width: 80px">33.電話</th>
-							<td>
-								<el-input v-model="form.ExecEnvMangerTel" />
-							</td>
-						</tr>
-						<tr>
-							<th>34.工程合約經費</th>
-							<td colspan="7">
-								<el-input style="width:200px" data-type="integer" type="number" v-model="form.ContractMoney" />
-							</td>
-						</tr>
-						<tr>
-							<th>35.工程環保經費</th>
-							<td colspan="7">
-								<el-input style="width:200px" data-type="integer" type="number" v-model="form.EnvMoney" />佔工程合約經費之
-								<el-input style="width:200px" type="number" v-model="form.EnvMoneyPercent" />%
-							</td>
-						</tr>
-						<tr>
-							<th>36.工程面積</th>
-							<td colspan="7">
-								<el-select v-model="form.Area1">
-									<el-option label="請選擇" value></el-option>
-									<el-option label="建築面積" :value="1"></el-option>
-									<el-option label="總樓地板面積" :value="2"></el-option>
-									<el-option label="施工面積" :value="3"></el-option>
-									<el-option label="隧道面積" :value="4"></el-option>
-									<el-option label="橋面面積" :value="5"></el-option>
-									<el-option label="開發面積" :value="6"></el-option>
-								</el-select>
-								<el-input style="width:160px; margin-left:20px;" type="number" v-model="form.Area2" />
-								<span v-if="form.ProjectCode === 'B'">
-									M
-									<sup>3</sup>
-								</span>
-								<span style="margin-left:20px" v-else>
-									<el-radio v-model="form.Area3" :label="1">
-										M
-										<sup>2</sup>
-									</el-radio>
-									<el-radio v-model="form.Area3" :label="2">公頃</el-radio>
-								</span>
-							</td>
-						</tr>
-						<tr>
-							<th>37.預計施工期程</th>
-							<td colspan="7">
-								<el-date-picker style="width:160px" placement="bottom-start" v-model="form.StartDate" type="date" value-format="yyyy-MM-dd" placeholder="開始日期"></el-date-picker>~
-								<el-date-picker style="width:160px" placement="bottom-start" v-model="form.EndDate" type="date" value-format="yyyy-MM-dd" placeholder="開始日期"></el-date-picker>
-								共 {{diffDays}} 日曆天
-							</td>
-						</tr>
-						<tr>
-							<th>38.是否繳交空氣污染防制書(嘉義市政府公共工程請繳交)</th>
-							<td colspan="2">
-								<el-switch v-model="form.HasPromiseDoc" active-text="是" inactive-text="否"></el-switch>
-							</td>
 							<td colspan="5">
-								<a :href="`api/Form/Download?f=${form.PromiseDoc}&n=${form.PromiseDocDisplayName}`" target="_blank">{{form.PromiseDocDisplayName}}</a>
+								<el-form-item prop="STATE">
+									<el-input v-model="form.STATE" maxlength="200"></el-input>
+								</el-form-item>
+							</td>
+						</tr>
+						<tr>
+							<th>環評保護對策</th>
+							<td colspan="5">
+								<el-form-item prop="EIACOMMENTS">
+									<el-input v-model="form.EIACOMMENTS"></el-input>
+								</el-form-item>
+							</td>
+						</tr>
+						<tr>
+							<th>記錄註記</th>
+							<td colspan="5">
+								<el-form-item prop="RECCOMMENTS">
+									<el-input v-model="form.RECCOMMENTS"></el-input>
+								</el-form-item>
 							</td>
 						</tr>
 					</tbody>
 				</table>
-				<h2 class="modal-header">
-					<i class="fa fa-paperclip"></i> 附件
-				</h2>
-				<ul class="file-list">
-					<li v-for="(item, idx) in form.Attachments" :key="idx">
-						<div style="width: 100%" class="flex-row-center">
-							<span class="filename">
-								<a :href="`api/Form/Download?f=${item.FileName}&n=${item.DisplayName}`" target="_blank">{{item.DisplayName}}</a>
-							</span>
+				<el-tabs v-model="activeTab">
+					<el-tab-pane label="檢附資料" name="first">
+						<div class="table-responsive">
+							<table class="table">
+								<thead>
+									<tr>
+										<th>檢附資料名稱</th>
+										<th>說明</th>
+										<th>檢附資料上傳</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<th>空氣污染防制費申報表</th>
+										<td>建照起造人為公司行號請加蓋公司大小章，建照起造人為私人請加蓋個人私章</td>
+										<td>
+											<a :href="`/Form/Download?f=${form.Attachment.File1}`" v-if="form.Attachment.File1">{{form.Attachment.File1}}</a>
+										</td>
+									</tr>
+									<tr>
+										<th>建築執照影印本</th>
+										<td></td>
+										<td>
+											<a :href="`/Form/Download?f=${form.Attachment.File2}`" v-if="form.Attachment.File2">{{form.Attachment.File2}}</a>
+										</td>
+									</tr>
+									<tr>
+										<th>營建業主身分證影本</th>
+										<td>業主為建設公司檢附建設公司執照或營業事業登記證，若無營利事業登記證可用公司登記函取代</td>
+										<td>
+											<a :href="`/Form/Download?f=${form.Attachment.File3}`" v-if="form.Attachment.File3">{{form.Attachment.File3}}</a>
+										</td>
+									</tr>
+									<tr>
+										<th>簡易位置圖</th>
+										<td>附註路名或大地標</td>
+										<td>
+											<a :href="`/Form/Download?f=${form.Attachment.File4}`" v-if="form.Attachment.File4">{{form.Attachment.File4}}</a>
+										</td>
+									</tr>
+									<tr>
+										<th>承包商營利事業登記證</th>
+										<td>承包商第一次申報需檢附。若無營利事業登記證可用公司登記函取代</td>
+										<td>
+											<a :href="`/Form/Download?f=${form.Attachment.File5}`" v-if="form.Attachment.File5">{{form.Attachment.File5}}</a>
+										</td>
+									</tr>
+									<tr>
+										<th>承包商負責人身分證影本</th>
+										<td>承包商第一次申報需檢附。空污費二萬元以上，請配合本局辦理道路認養。</td>
+										<td>
+											<a :href="`/Form/Download?f=${form.Attachment.File6}`" v-if="form.Attachment.File6">{{form.Attachment.File6}}</a>
+										</td>
+									</tr>
+									<tr>
+										<th>其它文件</th>
+										<td></td>
+										<td>
+											<a :href="`/Form/Download?f=${form.Attachment.File7}`" v-if="form.Attachment.File7">{{form.Attachment.File7}}</a>
+										</td>
+									</tr>
+									<tr>
+										<th>免徵案件證明</th>
+										<td>免徵案件需上傳免徵證明</td>
+										<td>
+											<a :href="`/Form/Download?f=${form.Attachment.File8}`" v-if="form.Attachment.File8">{{form.Attachment.File8}}</a>
+										</td>
+									</tr>
+								</tbody>
+							</table>
 						</div>
-					</li>
-				</ul>
-				<h2 class="modal-header">
-					<i class="fa fa-paperclip"></i> 收據
-				</h2>
-				<div class="mb-2">
-					<a v-if="data.Status === 4" :href="`api/Form/Download?f=Receipt/收據${form.PaymentID}.pdf&n=收據${form.PaymentID}.pdf`" target="_blank">{{`收據${form.PaymentID}.pdf`}}</a>
-				</div>
+					</el-tab-pane>
+					<el-tab-pane label="停復工" name="second">停復工</el-tab-pane>
+				</el-tabs>
 			</el-form>
 		</template>
 		<template #footer>
@@ -306,16 +224,17 @@ export default {
 		return {
 			visible: false,
 			loading: false,
-			form: {}
+			form: {},
+			activeTab: 'first'
 		};
 	},
 	mounted() {},
 	computed: {
 		...mapGetters(['currentUser']),
 		diffDays() {
-			if (!this.form.StartDate || !this.form.EndDate) return 0;
-			var day1 = new Date(this.form.StartDate);
-			var day2 = new Date(this.form.EndDate);
+			if (!this.form.B_DATE2 || !this.form.E_DATE2) return 0;
+			var day1 = new Date(this.form.B_DATE2);
+			var day2 = new Date(this.form.E_DATE2);
 
 			var difference = Math.abs(day2 - day1);
 			var days = Math.round(difference / (1000 * 3600 * 24) + 1);
@@ -389,40 +308,25 @@ export default {
 .el-form-item__label {
 	font-weight: 700;
 }
-.modal-table {
+.table-responsive {
+	overflow-x: auto;
+}
+.table {
 	width: 100%;
+	margin-bottom: 20px;
 	border-collapse: collapse;
-	&.border {
-		th,
-		td {
-			border: 1px solid #ccc;
-		}
+	th {
+		font-weight: 700;
 	}
-	th,
-	td {
-		padding: 11px 8px;
-		vertical-align: top !important;
-	}
-	.pure-text {
-		line-height: 33px;
-		margin: 0 10px;
+	td,
+	th {
+		border: 1px solid #ddd;
+		padding: 8px;
+		vertical-align: middle;
+		line-height: 1.428571429;
 	}
 }
 .modal-header {
 	margin: 10px 0;
-}
-.file-list {
-	list-style-type: none;
-	li {
-		display: flex;
-		border-bottom: 1px dashed #ccc;
-		padding: 4px 0;
-		.filename {
-			display: block;
-			overflow: hidden;
-			text-overflow: ellipsis;
-			white-space: nowrap;
-		}
-	}
 }
 </style>

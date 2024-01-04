@@ -1,5 +1,6 @@
 ﻿using Dapper.Contrib.Extensions;
 using NT_AirPollution.Model.Domain;
+using NT_AirPollution.Model.Enum;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,5 +19,8 @@ namespace NT_AirPollution.Model.View
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public long ClientUserID { get; set; }
+        public string ClientUserEmail { get; set; }
+        public string AutoFormID { get; set; }
+        public Status Status { get; set; }
     }
 }

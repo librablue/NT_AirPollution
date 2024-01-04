@@ -51,7 +51,7 @@ namespace NT_AirPollution.Admin.Controllers
             }
             catch (Exception ex)
             {
-                new AjaxResult { Status = false, Message = ex.Message };
+                return new AjaxResult { Status = false, Message = ex.Message };
             }
         }
 

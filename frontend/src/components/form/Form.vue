@@ -37,57 +37,25 @@
 			</vxe-table-column>
 			<vxe-table-column field="AutoFormID" title="案件編號" width="100" align="center" sortable fixed="left"></vxe-table-column>
 			<vxe-table-column field="C_NO" title="管制編號" width="100" align="center" sortable fixed="left"></vxe-table-column>
-			<vxe-table-column field="Email" title="Email" width="240" align="center" fixed="left">
-				<template #default="{ row }">{{ row.Email }}({{ row.IsVerify ? "已驗證" : "未驗證" }})</template>
+			<vxe-table-column field="CreateUserEmail" title="Email" width="240" align="center" fixed="left">
+				<template #default="{ row }">{{ row.CreateUserEmail }}({{ row.IsActive ? "已驗證" : "未驗證" }})</template>
 			</vxe-table-column>
-			<vxe-table-column field="ProjectName" title="工程名稱" width="120"></vxe-table-column>
-			<vxe-table-column field="ProjectAddr" title="工地地址或地號" width="140"></vxe-table-column>
-			<vxe-table-column field="ContractID" title="建照字號或合約編號" width="140" align="center"></vxe-table-column>
-			<vxe-table-column field="ProjectCode" title="工程類別代碼" width="200" align="center">
-				<template #default="{ row }">{{ row.ProjectCode | projectCode }}</template>
+			<vxe-table-column field="B_SERNO" title="建照字號" width="100" align="center"></vxe-table-column>
+			<vxe-table-column field="COMP_NAM" title="工程名稱" width="120"></vxe-table-column>
+			<vxe-table-column field="ADDR" title="工地地址" width="140"></vxe-table-column>
+			<vxe-table-column field="KIND_NO" title="工程類別代碼" width="200" align="center">
+				<template #default="{ row }">{{ row.KIND_NO }}. {{ row.KIND }}</template>
 			</vxe-table-column>
-			<vxe-table-column field="BizCompany" title="營建業主名稱" width="140" align="center"></vxe-table-column>
-			<vxe-table-column field="BizID" title="營利事業統一編號" width="140" align="center"></vxe-table-column>
-			<vxe-table-column field="BizAddr1" title="營業地址" width="140"></vxe-table-column>
-			<vxe-table-column field="BizAddr2" title="聯絡地址" width="140"></vxe-table-column>
-			<vxe-table-column field="BizTel" title="聯絡電話" width="100" align="center"></vxe-table-column>
-			<vxe-table-column field="BizOwnerName" title="負責人姓名" width="100" align="center"></vxe-table-column>
-			<vxe-table-column field="BizOwnerJobTitle" title="職稱" width="100" align="center"></vxe-table-column>
-			<vxe-table-column field="BizOwnerID" title="身分證字號" width="100" align="center"></vxe-table-column>
-			<vxe-table-column field="BizContactName" title="聯絡人姓名" width="100" align="center"></vxe-table-column>
-			<vxe-table-column field="BizContactJobTitle" title="職稱" width="100" align="center"></vxe-table-column>
-			<vxe-table-column field="BizContactID" title="身分證字號" width="100" align="center"></vxe-table-column>
-			<vxe-table-column field="BizContactAddr" title="聯絡人地址" width="140"></vxe-table-column>
-			<vxe-table-column field="BizContactTel" title="電話" width="100" align="center"></vxe-table-column>
-			<vxe-table-column field="ExecCompany" title="承包(造)單位名稱" width="140" align="center"></vxe-table-column>
-			<vxe-table-column field="ExecID" title="營利事業統一編號" width="140" align="center"></vxe-table-column>
-			<vxe-table-column field="ExecAddr1" title="營業地址" width="140"></vxe-table-column>
-			<vxe-table-column field="ExecAddr2" title="聯絡地址" width="140"></vxe-table-column>
-			<vxe-table-column field="ExecTel1" title="聯絡電話" width="140" align="center"></vxe-table-column>
-			<vxe-table-column field="ExecOwnerName" title="負責人姓名" width="100" align="center"></vxe-table-column>
-			<vxe-table-column field="ExecOwnerJobTitle" title="職稱" width="100" align="center"></vxe-table-column>
-			<vxe-table-column field="ExecOwnerID" title="身分證字號" width="100" align="center"></vxe-table-column>
-			<vxe-table-column field="ExecAddr3" title="工務所地址" width="140"></vxe-table-column>
-			<vxe-table-column field="ExecTel2" title="電話" width="100" align="center"></vxe-table-column>
-			<vxe-table-column field="ExecManagerName" title="工地主任姓名" width="100" align="center"></vxe-table-column>
-			<vxe-table-column field="ExecManagerTel" title="電話" width="100" align="center"></vxe-table-column>
-			<vxe-table-column field="ExecEnvManagerName" title="工地環保負責人姓名" width="100" align="center"></vxe-table-column>
-			<vxe-table-column field="ExecEnvMangerTel" title="電話" width="100" align="center"></vxe-table-column>
-			<vxe-table-column field="ContractMoney" title="工程合約經費" width="100" align="right"></vxe-table-column>
-			<vxe-table-column field="EnvMoney" title="工程環保經費" width="100" align="right">
-				<template #default="{ row }">{{ row.EnvMoney }} ({{ row.EnvMoneyPercent }}%)</template>
+			<vxe-table-column field="S_NAME" title="營建業主名稱" width="140"></vxe-table-column>
+			<vxe-table-column field="R_NAME" title="承包(造)名稱" width="140"></vxe-table-column>
+			<vxe-table-column field="Status" title="案件狀態" width="100" align="center" sortable>
+				<template #default="{ row }">{{ row.Status | status }}</template>
 			</vxe-table-column>
-			<vxe-table-column field="Area2" title="工程面積" width="140" align="center">
-				<template #default="{ row }">{{ row.Area1 | area1 }} {{ row.Area2 }} {{ row.Area3 | area3 }}</template>
+			<vxe-table-column field="C_DATE" title="申報日期" width="100" align="center" sortable>
+				<template #default="{ row }">{{ row.C_DATE | date }}</template>
 			</vxe-table-column>
-			<vxe-table-column field="StartDate" title="預計施工期程" width="180" align="center">
-				<template #default="{ row }">{{ row.StartDate | date }} ~ {{ row.EndDate | date }}</template>
-			</vxe-table-column>
-			<vxe-table-column field="CreateDate" title="建立日期" width="100" align="center" sortable>
-				<template #default="{ row }">{{ row.CreateDate | date }}</template>
-			</vxe-table-column>
-			<vxe-table-column field="ModifyDate" title="修改日期" width="100" align="center" sortable>
-				<template #default="{ row }">{{ row.ModifyDate | date }}</template>
+			<vxe-table-column field="M_DATE" title="修改日期" width="100" align="center" sortable>
+				<template #default="{ row }">{{ row.M_DATE | date }}</template>
 			</vxe-table-column>
 			<vxe-table-column field="VerifyDate" title="審核日期" width="100" align="center" sortable>
 				<template #default="{ row }">{{ row.VerifyDate | date }}</template>
