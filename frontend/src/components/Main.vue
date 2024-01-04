@@ -14,7 +14,7 @@
 					<i class="fa fa-user-circle-o"></i>
 					{{currentUser.Account}}
 				</a>
-				<a href="javascript:;" class="func-link ml-1" @click="signout()">
+				<a href="javascript:;" class="func-link ml-1" @click="logout()">
 					<i class="fa fa-sign-out"></i> 登 出
 				</a>
 			</div>
@@ -46,9 +46,9 @@ export default {
 	},
 	methods: {
 		...mapActions(['getCurrentUser', 'setCurrentUser']),
-		signout() {
+		logout() {
 			if (!confirm('是否確認登出?')) return false;
-			this.axios.get('api/Staff/SignOut').then(res => {
+			this.axios.get('api/Admin/Logout').then(res => {
 				location.href = '#/login';
 			});
 		}

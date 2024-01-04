@@ -3,10 +3,10 @@
 		<h1>申請案件管理</h1>
 		<el-form size="small" inline>
 			<el-form-item label="案件編號">
-				<el-input style="width: 140px" v-model="filter.PaymentID"></el-input>
+				<el-input style="width: 140px" v-model="filter.AutoFormID"></el-input>
 			</el-form-item>
 			<el-form-item label="管制編號">
-				<el-input style="width: 140px" v-model="filter.ProjectID"></el-input>
+				<el-input style="width: 140px" v-model="filter.C_NO"></el-input>
 			</el-form-item>
 			<el-form-item label="Email">
 				<el-input v-model="filter.Email"></el-input>
@@ -35,8 +35,8 @@
 			<vxe-table-column field="Status" title="審核狀態" width="100" align="center" sortable fixed="left">
 				<template #default="{ row }">{{ row.Status | status }}</template>
 			</vxe-table-column>
-			<vxe-table-column field="PaymentID" title="案件編號" width="100" align="center" sortable fixed="left"></vxe-table-column>
-			<vxe-table-column field="ProjectID" title="管制編號" width="100" align="center" sortable fixed="left"></vxe-table-column>
+			<vxe-table-column field="AutoFormID" title="案件編號" width="100" align="center" sortable fixed="left"></vxe-table-column>
+			<vxe-table-column field="C_NO" title="管制編號" width="100" align="center" sortable fixed="left"></vxe-table-column>
 			<vxe-table-column field="Email" title="Email" width="240" align="center" fixed="left">
 				<template #default="{ row }">{{ row.Email }}({{ row.IsVerify ? "已驗證" : "未驗證" }})</template>
 			</vxe-table-column>
@@ -107,8 +107,8 @@ export default {
 		return {
 			loading: false,
 			filter: {
-				PaymentID: '',
-				ProjectID: '',
+				AutoFormID: '',
+				C_NO: '',
 				Email: '',
 				Status: 1
 			},

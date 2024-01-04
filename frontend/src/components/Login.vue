@@ -9,7 +9,10 @@
 				<input type="password" placeholder="密碼" v-model="user.Password">
 			</div>
 			<div class="form-item">
-				<vue-recaptcha ref="captcha" sitekey="6Lde16sZAAAAAKrHCmXbAXCray0vlqEKblppoTy8" @verify="verify"></vue-recaptcha>
+				<div class="captcha-row">
+					<input placeholder="驗證碼" v-model="user.Captcha" @keyup.enter="login()" />
+					<img ref="captcha" src="api/Auth/Captcha" @click="refreshCaptcha()" />
+				</div>
 			</div>
 			<div class="form-item">
 				<button @click="login()">登 入</button>
@@ -19,11 +22,9 @@
 </template>
 
 <script>
-import VueRecaptcha from 'vue-recaptcha';
 import { mapActions } from 'vuex';
 export default {
 	name: 'Login',
-	components: { VueRecaptcha },
 	data() {
 		return {
 			user: {
@@ -35,20 +36,21 @@ export default {
 	},
 	methods: {
 		...mapActions(['setCurrentUser']),
-		verify(response) {
-			this.user.Captcha = response;
-		},
 		login() {
 			this.axios
-				.post('api/Auth/SignIn', this.user)
+				.post('api/Admin/Login', this.user)
 				.then(res => {
 					this.setCurrentUser(res.data);
-					this.$router.push({ path: '/' });
+					this.$router.push('/');
 				})
 				.catch(err => {
-					this.$message.error('登入失敗');
-					this.$refs.captcha.reset();
+					this.refreshCaptcha();
+					this.$message.error(err.response.data.ExceptionMessage);
 				});
+		},
+		refreshCaptcha() {
+			var id = Math.random();
+			this.$refs.captcha.setAttribute('src', 'api/Admin/Captcha?id=' + id);
 		}
 	}
 };
@@ -78,6 +80,17 @@ export default {
 	}
 	.form-item {
 		margin-bottom: 20px;
+	}
+	.captcha-row {
+		display: flex;
+		align-items: center;
+		input {
+			flex: 1;
+		}
+		img {
+			width: 100px;
+			height: 41px;
+		}
 	}
 	input {
 		box-sizing: border-box;

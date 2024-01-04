@@ -56,6 +56,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AdminService.cs" />
     <Compile Include="VerifyService.cs" />
     <Compile Include="OptionService.cs" />
     <Compile Include="FormService.cs" />

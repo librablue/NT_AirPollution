@@ -203,8 +203,10 @@
 				this.selectRow = {
 					SER_NO: 1,
 					P_KIND: '一次全繳',
+					KIND_NO: null,
 					BUD_DOC2: '無',
 					CreateUserName: document.querySelector('#hfUserName').value,
+					CreateUserEmail: document.querySelector('#hfUserEmail').value,
 					Attachment: {}
 				};
 

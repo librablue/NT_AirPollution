@@ -4,7 +4,6 @@ using NT_AirPollution.Model.Domain;
 using NT_AirPollution.Model.Enum;
 using NT_AirPollution.Model.View;
 using NT_AirPollution.Service;
-using NT_AirPollution.Web.Models;
 using System;
 using System.Collections.Generic;
 using System.Configuration;

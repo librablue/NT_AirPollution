@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using NT_AirPollution.Model.Domain;
 using NT_AirPollution.Model.View;
 using System;
 using System.Collections.Generic;
@@ -25,6 +26,22 @@ namespace NT_AirPollution.Service
                     FormsAuthenticationTicket ticket = id.Ticket;
                     UserData clientUser = JsonConvert.DeserializeObject<UserData>(ticket.UserData);
                     return clientUser;
+                }
+
+                return null;
+            }
+        }
+
+        public static AdminUser CurrentAdmin
+        {
+            get
+            {
+                if (HttpContext.Current.User.Identity.IsAuthenticated)
+                {
+                    FormsIdentity id = (FormsIdentity)HttpContext.Current.User.Identity;
+                    FormsAuthenticationTicket ticket = id.Ticket;
+                    AdminUser user = JsonConvert.DeserializeObject<AdminUser>(ticket.UserData);
+                    return user;
                 }
 
                 return null;

@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("NT_AirPollution.Admin")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("HP")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("NT_AirPollution.Admin")]
-[assembly: AssemblyCopyright("Copyright © HP 2024")]
+[assembly: AssemblyCopyright("Copyright ©  2024")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // 下列 GUID 為專案公開 (Expose) 至 COM 時所要使用的 typelib ID
-[assembly: Guid("5bcdfe4b-80f9-43fa-9cc9-e967e3b7847e")]
+[assembly: Guid("d5602ed7-7b51-4844-b21a-37acca86c513")]
 
 // 組件的版本資訊是由下列四項值構成:
 //
