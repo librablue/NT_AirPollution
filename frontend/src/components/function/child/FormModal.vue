@@ -2,10 +2,8 @@
 	<vxe-modal title="申請單明細" v-model="visible" width="80%" height="90%" :lock-scroll="false" esc-closable resize show-footer>
 		<template #default>
 			<el-form ref="form" size="small" :model="form" inline>
-				<el-form-item label="案件編號">{{form.PaymentID}}</el-form-item>
-				<el-form-item prop="ProjectID" label="管制編號">
-					<el-input maxlength="50" v-model="form.ProjectID" />
-				</el-form-item>
+				<el-form-item label="案件編號">{{form.AutoFormID}}</el-form-item>
+				<el-form-item prop="ProjectID" label="管制編號">{{form.C_NO}}</el-form-item>
 				<el-form-item prop="Status" label="審核狀態">
 					<el-select style="width:140px" v-model="form.Status">
 						<el-option label="審理中" :value="1" v-if="data.Status <= 1"></el-option>
@@ -143,56 +141,56 @@
 										<th>空氣污染防制費申報表</th>
 										<td>建照起造人為公司行號請加蓋公司大小章，建照起造人為私人請加蓋個人私章</td>
 										<td>
-											<a :href="`/Form/Download?f=${form.Attachment.File1}`" v-if="form.Attachment.File1">{{form.Attachment.File1}}</a>
+											<a :href="`/api/Form/Download?f=${form.Attachment.File1}`" v-if="form.Attachment.File1">{{form.Attachment.File1}}</a>
 										</td>
 									</tr>
 									<tr>
 										<th>建築執照影印本</th>
 										<td></td>
 										<td>
-											<a :href="`/Form/Download?f=${form.Attachment.File2}`" v-if="form.Attachment.File2">{{form.Attachment.File2}}</a>
+											<a :href="`/api/Form/Download?f=${form.Attachment.File2}`" v-if="form.Attachment.File2">{{form.Attachment.File2}}</a>
 										</td>
 									</tr>
 									<tr>
 										<th>營建業主身分證影本</th>
 										<td>業主為建設公司檢附建設公司執照或營業事業登記證，若無營利事業登記證可用公司登記函取代</td>
 										<td>
-											<a :href="`/Form/Download?f=${form.Attachment.File3}`" v-if="form.Attachment.File3">{{form.Attachment.File3}}</a>
+											<a :href="`/api/Form/Download?f=${form.Attachment.File3}`" v-if="form.Attachment.File3">{{form.Attachment.File3}}</a>
 										</td>
 									</tr>
 									<tr>
 										<th>簡易位置圖</th>
 										<td>附註路名或大地標</td>
 										<td>
-											<a :href="`/Form/Download?f=${form.Attachment.File4}`" v-if="form.Attachment.File4">{{form.Attachment.File4}}</a>
+											<a :href="`/api/Form/Download?f=${form.Attachment.File4}`" v-if="form.Attachment.File4">{{form.Attachment.File4}}</a>
 										</td>
 									</tr>
 									<tr>
 										<th>承包商營利事業登記證</th>
 										<td>承包商第一次申報需檢附。若無營利事業登記證可用公司登記函取代</td>
 										<td>
-											<a :href="`/Form/Download?f=${form.Attachment.File5}`" v-if="form.Attachment.File5">{{form.Attachment.File5}}</a>
+											<a :href="`/api/Form/Download?f=${form.Attachment.File5}`" v-if="form.Attachment.File5">{{form.Attachment.File5}}</a>
 										</td>
 									</tr>
 									<tr>
 										<th>承包商負責人身分證影本</th>
 										<td>承包商第一次申報需檢附。空污費二萬元以上，請配合本局辦理道路認養。</td>
 										<td>
-											<a :href="`/Form/Download?f=${form.Attachment.File6}`" v-if="form.Attachment.File6">{{form.Attachment.File6}}</a>
+											<a :href="`/api/Form/Download?f=${form.Attachment.File6}`" v-if="form.Attachment.File6">{{form.Attachment.File6}}</a>
 										</td>
 									</tr>
 									<tr>
 										<th>其它文件</th>
 										<td></td>
 										<td>
-											<a :href="`/Form/Download?f=${form.Attachment.File7}`" v-if="form.Attachment.File7">{{form.Attachment.File7}}</a>
+											<a :href="`/api/Form/Download?f=${form.Attachment.File7}`" v-if="form.Attachment.File7">{{form.Attachment.File7}}</a>
 										</td>
 									</tr>
 									<tr>
 										<th>免徵案件證明</th>
 										<td>免徵案件需上傳免徵證明</td>
 										<td>
-											<a :href="`/Form/Download?f=${form.Attachment.File8}`" v-if="form.Attachment.File8">{{form.Attachment.File8}}</a>
+											<a :href="`/api/Form/Download?f=${form.Attachment.File8}`" v-if="form.Attachment.File8">{{form.Attachment.File8}}</a>
 										</td>
 									</tr>
 								</tbody>
@@ -207,7 +205,7 @@
 			<el-button size="small" @click="visible = false">
 				<i class="fa fa-ban"></i> 取 消
 			</el-button>
-			<el-button type="primary" size="small" @click="save()">
+			<el-button type="primary" size="small" @click="saveForm()">
 				<i class="fa fa-floppy-o"></i> 儲 存
 			</el-button>
 		</template>
@@ -225,10 +223,15 @@ export default {
 			visible: false,
 			loading: false,
 			form: {},
+			district: Object.freeze([]),
+			projectCode: Object.freeze([]),
 			activeTab: 'first'
 		};
 	},
-	mounted() {},
+	mounted() {
+		this.getDistrict();
+		this.getProjectCode();
+	},
 	computed: {
 		...mapGetters(['currentUser']),
 		diffDays() {
@@ -242,6 +245,16 @@ export default {
 		}
 	},
 	methods: {
+		getDistrict() {
+			this.axios.get('api/Option/GetDistrict').then(res => {
+				this.district = Object.freeze(res.data);
+			});
+		},
+		getProjectCode() {
+			this.axios.get('api/Option/GetProjectCode').then(res => {
+				this.projectCode = Object.freeze(res.data);
+			});
+		},
 		setReceiveMoney() {
 			this.form.ReceiveMoney = this.form.TotalMoney;
 		},
@@ -253,7 +266,7 @@ export default {
 				if (this.form.Area3 === 3) this.form.Area3 = 1;
 			}
 		},
-		save() {
+		saveForm() {
 			if (this.form.Status === 2 && !this.form.FailReason) {
 				alert('呃，請輸入補件原因。');
 				return false;
@@ -269,7 +282,7 @@ export default {
 				}
 			}
 			if (this.data.Status !== 3 && this.form.Status === 3) {
-				if (!confirm(`你確定要將案件編號 ${this.form.PaymentID}、管制編號 ${this.form.ProjectID}、繳費金額 ${this.form.TotalMoney} 元，通過審查產生繳費單?`)) return false;
+				if (!confirm(`你確定要將案件編號 ${this.form.AutoFormID}、管制編號 ${this.form.ProjectID}、繳費金額 ${this.form.TotalMoney} 元，通過審查產生繳費單?`)) return false;
 			}
 			if (this.form.Status === 4 && !this.form.ReceiveMoney) {
 				alert('呃，請輸入已收金額。');

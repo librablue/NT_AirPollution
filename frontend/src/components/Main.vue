@@ -5,7 +5,8 @@
 				<h1>
 					<router-link to="/">南投縣營建空污繳費申報系統</router-link>
 				</h1>
-				<el-menu :default-active="activeIndex" mode="horizontal">
+				<el-menu :default-active="activeIndex" mode="horizontal" router>
+					<el-menu-item index="function_news" route="/function/news">最新消息</el-menu-item>
 					<el-menu-item index="function_form" route="/function/form">申請案件管理</el-menu-item>
 				</el-menu>
 			</div>

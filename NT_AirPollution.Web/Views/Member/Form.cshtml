@@ -625,4 +625,11 @@
             <el-button type="primary" @@click="sendForm">儲 存</el-button>
         </span>
     </el-dialog>
+
+    <el-dialog title="退件原因" :visible.sync="failReasonDialogVisible" width="30%">
+        <div v-html="selectRow.FailReason"></div>
+        <span slot="footer" class="dialog-footer">
+            <el-button type="primary" @@click="failReasonDialogVisible = false">確 定</el-button>
+        </span>
+    </el-dialog>
 </div>

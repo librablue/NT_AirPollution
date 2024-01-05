@@ -35,19 +35,16 @@
 			<vxe-table-column field="Status" title="審核狀態" width="100" align="center" sortable fixed="left">
 				<template #default="{ row }">{{ row.Status | status }}</template>
 			</vxe-table-column>
-			<vxe-table-column field="AutoFormID" title="案件編號" width="100" align="center" sortable fixed="left"></vxe-table-column>
-			<vxe-table-column field="C_NO" title="管制編號" width="100" align="center" sortable fixed="left"></vxe-table-column>
+			<vxe-table-column field="AutoFormID" title="案件編號" width="120" align="center" sortable fixed="left"></vxe-table-column>
+			<vxe-table-column field="C_NO" title="管制編號" width="140" align="center" sortable fixed="left"></vxe-table-column>
 			<vxe-table-column field="CreateUserEmail" title="Email" width="240" align="center" fixed="left">
 				<template #default="{ row }">{{ row.CreateUserEmail }}({{ row.IsActive ? "已驗證" : "未驗證" }})</template>
 			</vxe-table-column>
-			<vxe-table-column field="B_SERNO" title="建照字號" width="100" align="center"></vxe-table-column>
-			<vxe-table-column field="COMP_NAM" title="工程名稱" width="120"></vxe-table-column>
-			<vxe-table-column field="ADDR" title="工地地址" width="140"></vxe-table-column>
-			<vxe-table-column field="KIND_NO" title="工程類別代碼" width="200" align="center">
-				<template #default="{ row }">{{ row.KIND_NO }}. {{ row.KIND }}</template>
-			</vxe-table-column>
-			<vxe-table-column field="S_NAME" title="營建業主名稱" width="140"></vxe-table-column>
-			<vxe-table-column field="R_NAME" title="承包(造)名稱" width="140"></vxe-table-column>
+			<vxe-table-column field="B_SERNO" title="建照字號" width="120" align="center"></vxe-table-column>
+			<vxe-table-column field="COMP_NAM" title="工程名稱" width="180" align="center"></vxe-table-column>
+			<vxe-table-column field="ADDR" title="工地地址" width="180"></vxe-table-column>
+			<vxe-table-column field="S_NAME" title="營建業主名稱" width="180"></vxe-table-column>
+			<vxe-table-column field="R_NAME" title="承包(造)名稱" width="180"></vxe-table-column>
 			<vxe-table-column field="Status" title="案件狀態" width="100" align="center" sortable>
 				<template #default="{ row }">{{ row.Status | status }}</template>
 			</vxe-table-column>

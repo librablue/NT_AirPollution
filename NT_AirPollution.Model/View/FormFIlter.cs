@@ -19,7 +19,7 @@ namespace NT_AirPollution.Model.View
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public long ClientUserID { get; set; }
-        public string ClientUserEmail { get; set; }
+        public string CreateUserEmail { get; set; }
         public string AutoFormID { get; set; }
         public Status Status { get; set; }
     }

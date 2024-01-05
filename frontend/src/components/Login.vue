@@ -11,7 +11,7 @@
 			<div class="form-item">
 				<div class="captcha-row">
 					<input placeholder="驗證碼" v-model="user.Captcha" @keyup.enter="login()" />
-					<img ref="captcha" src="api/Auth/Captcha" @click="refreshCaptcha()" />
+					<img ref="captcha" src="api/Admin/Captcha" @click="refreshCaptcha()" />
 				</div>
 			</div>
 			<div class="form-item">

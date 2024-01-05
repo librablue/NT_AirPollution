@@ -1,4 +1,5 @@
-﻿using NT_AirPollution.Admin.Helper;
+﻿using NT_AirPollution.Admin.ActionFilter;
+using NT_AirPollution.Admin.Helper;
 using NT_AirPollution.Model.Domain;
 using NT_AirPollution.Service;
 using System;
@@ -13,6 +14,7 @@ using System.Web.Http;
 
 namespace NT_AirPollution.Admin.Controllers
 {
+    [AuthorizeUser]
     public class NewsController : ApiController
     {
         private readonly string _uploadPath = ConfigurationManager.AppSettings["UploadPath"].ToString();

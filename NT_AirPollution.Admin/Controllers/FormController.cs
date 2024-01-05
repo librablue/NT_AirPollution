@@ -1,4 +1,5 @@
-﻿using NT_AirPollution.Model.Domain;
+﻿using NT_AirPollution.Admin.ActionFilter;
+using NT_AirPollution.Model.Domain;
 using NT_AirPollution.Model.Enum;
 using NT_AirPollution.Model.View;
 using NT_AirPollution.Service;
@@ -14,6 +15,7 @@ using System.Web.Http;
 
 namespace NT_AirPollution.Admin.Controllers
 {
+    [AuthorizeUser]
     public class FormController : ApiController
     {
         private readonly string _uploadPath = ConfigurationManager.AppSettings["UploadPath"].ToString();

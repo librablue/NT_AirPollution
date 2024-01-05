@@ -32,13 +32,13 @@ namespace NT_AirPollution.Service
                     SELECT * FROM Form
                     WHERE (@AutoFormID='' OR AutoFormID=@AutoFormID)
                         AND (@C_NO='' OR C_NO=@C_NO)
-                        AND (@ClientUserEmail='' OR ClientUserEmail=@ClientUserEmail)
-                        AND (@Status='' OR Status=@Status)",
+                        AND (@CreateUserEmail='' OR CreateUserEmail=@CreateUserEmail)
+                        AND (@Status=0 OR Status=@Status)",
                     new
                     {
-                        AutoFormID = filter.AutoFormID,
-                        C_NO = filter.C_NO,
-                        ClientUserEmail = filter.ClientUserEmail,
+                        AutoFormID = filter.AutoFormID ?? "",
+                        C_NO = filter.C_NO ?? "",
+                        CreateUserEmail = filter.CreateUserEmail ?? "",
                         Status = filter.Status
                     }).ToList();
 
@@ -355,12 +355,17 @@ namespace NT_AirPollution.Service
 
         public bool SendStatus2(Form form)
         {
-            string template = ($@"{HostingEnvironment.ApplicationPhysicalPath}\App_Data\Template\Status2.txt");
+            string template = ($@"{HostingEnvironment.ApplicationPhysicalPath}\App_Data\Template\Status2_{(form.ClientUserID == null ? "NonMember" : "Member")}.txt");
             using (StreamReader sr = new StreamReader(template))
             {
                 String content = sr.ReadToEnd();
-                string url = string.Format("{0}/Search/Index", _configDomain);
-                string body = string.Format(content, form.AutoFormID, form.CreateUserEmail, url, url, form.FailReason.Replace("\n", "<br>"));
+                // 會員
+                string url = string.Format("{0}/Member/Login", _configDomain);
+                // 非會員
+                if(form.ClientUserID == null)
+                    url = string.Format("{0}/Search/Index", _configDomain);
+                
+                string body = string.Format(content, form.C_NO, form.ClientUserID == null ? form.CreateUserEmail : form.C_DATE.ToString("yyyy-MM-dd"), url, url, form.FailReason.Replace("\n", "<br>"));
 
                 try
                 {

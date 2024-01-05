@@ -14,22 +14,19 @@
 			</el-form-item>
 		</el-form>
 		<vxe-table :data="news" :loading="loading" size="small" max-height="640px" show-overflow border resizable auto-resize :sort-config="{ trigger: 'cell', defaultSort: { field: 'CreateDate', order: 'desc' }}">
-			<vxe-table-column title="內容" align="center" width="60" fixed="left">
+			<vxe-table-column title="功能" align="center" width="100" fixed="left">
 				<template v-slot="{ row }">
 					<el-button size="mini" icon="el-icon-edit" circle @click="showDetail(row)"></el-button>
-				</template>
-			</vxe-table-column>
-			<vxe-table-column title="刪除" align="center" width="60" fixed="left">
-				<template v-slot="{ row }">
 					<el-button type="danger" size="mini" icon="el-icon-delete" circle @click="deleteNews(row)"></el-button>
 				</template>
 			</vxe-table-column>
+			<vxe-table-column field="ID" title="系統編號" align="center" width="100"></vxe-table-column>
 			<vxe-table-column field="Title" title="標題"></vxe-table-column>
-			<vxe-table-column field="CreateDate" title="建立日期" align="center" width="120" sortable>
+			<vxe-table-column field="CreateDate" title="上架日期" align="center" width="140" sortable>
 				<template v-slot="{ row }">{{ row.CreateDate | date }}</template>
 			</vxe-table-column>
 		</vxe-table>
-		<NewsModal :show.sync="modalVisible" :data="selectNews" @on-update="onUpdate" />
+		<NewsModal :show.sync="modalVisible" :data="selectNews" @on-success="onSuccess" />
 	</div>
 </template>
 
@@ -67,7 +64,7 @@ export default {
 			this.selectNews = row;
 			this.modalVisible = true;
 		},
-		onUpdate(data) {
+		onSuccess(data) {
 			this.getNews();
 		},
 		deleteNews(row) {

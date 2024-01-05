@@ -18,7 +18,7 @@ const getters = {
 // actions
 const actions = {
     getCurrentUser({ commit, state }) {
-        return axios.get('api/Auth/GetCurrentUser');
+        return axios.get('api/Admin/GetCurrentUser');
     },
     setCurrentUser({ commit, state }, user) {
         commit('SET_CURRENT_USER', user);

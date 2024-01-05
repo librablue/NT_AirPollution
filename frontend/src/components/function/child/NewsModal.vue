@@ -88,8 +88,7 @@ export default {
 				this.axios
 					.post(url, this.news)
 					.then(res => {
-						const callbackEvent = this.news.ID ? 'on-update' : 'on-add';
-						this.$emit(callbackEvent);
+						this.$emit('on-success');
 						this.$message.success('畫面資料已儲存');
 						this.visible = false;
 					})

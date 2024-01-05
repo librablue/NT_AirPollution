@@ -21,6 +21,7 @@
 				district: Object.freeze([]),
 				projectCode: Object.freeze([]),
 				form: {
+					SER_NO: 1,
 					P_KIND: '一次全繳',
 					BUD_DOC2: '無',
 					Attachment: {}
@@ -83,6 +84,7 @@
 			this.getDistrict();
 			this.getProjectCode();
 			this.form = {
+				SER_NO: 1,
 				P_KIND: '一次全繳',
 				BUD_DOC2: '無',
 				PUB_COMP: true,
