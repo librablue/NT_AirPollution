@@ -29,7 +29,7 @@ namespace NT_AirPollution.Admin.Controllers
         }
 
         [HttpPost]
-        public bool UpdateForm(Form form)
+        public bool UpdateForm(FormView form)
         {
             try
             {

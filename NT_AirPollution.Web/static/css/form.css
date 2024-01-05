@@ -350,6 +350,15 @@ h3 {
   min-width: 160px;
 }
 
+.row-table {
+  width: auto;
+}
+.row-table th,
+.row-table td {
+  text-align: center;
+  white-space: nowrap;
+}
+
 .head-row {
   display: flex;
   align-items: center;

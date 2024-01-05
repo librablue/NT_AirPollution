@@ -109,13 +109,23 @@ namespace NT_AirPollution.Service
                         new { FormID = item.ID });
 
                     if (!string.IsNullOrEmpty(item.B_DATE))
-                        item.B_DATE2 = Convert.ToDateTime($"{Convert.ToInt32(item.B_DATE.Substring(0, 3)) + 1911}-{item.B_DATE.Substring(3, 2)}-{item.B_DATE.Substring(5, 2)}");
+                        item.B_DATE2 = base.ChineseDateToWestDate(item.B_DATE);
                     if (!string.IsNullOrEmpty(item.E_DATE))
-                        item.E_DATE2 = Convert.ToDateTime($"{Convert.ToInt32(item.E_DATE.Substring(0, 3)) + 1911}-{item.E_DATE.Substring(3, 2)}-{item.E_DATE.Substring(5, 2)}");
+                        item.E_DATE2 = base.ChineseDateToWestDate(item.E_DATE);
                     if (!string.IsNullOrEmpty(item.S_B_BDATE))
-                        item.S_B_BDATE2 = Convert.ToDateTime($"{Convert.ToInt32(item.S_B_BDATE.Substring(0, 3)) + 1911}-{item.S_B_BDATE.Substring(3, 2)}-{item.S_B_BDATE.Substring(5, 2)}");
+                        item.S_B_BDATE2 = base.ChineseDateToWestDate(item.S_B_BDATE);
                     if (!string.IsNullOrEmpty(item.R_B_BDATE))
-                        item.R_B_BDATE2 = Convert.ToDateTime($"{Convert.ToInt32(item.R_B_BDATE.Substring(0, 3)) + 1911}-{item.R_B_BDATE.Substring(3, 2)}-{item.R_B_BDATE.Substring(5, 2)}");
+                        item.R_B_BDATE2 = base.ChineseDateToWestDate(item.R_B_BDATE);
+
+                    item.StopWorks = cn.Query<StopWork>(@"
+                        SELECT * FROM StopWork WHERE FormID=@FormID",
+                        new { FormID = item.ID }).ToList();
+
+                    foreach (var sub in item.StopWorks)
+                    {
+                        sub.DOWN_DATE2 = base.ChineseDateToWestDate(sub.DOWN_DATE);
+                        sub.UP_DATE2 = base.ChineseDateToWestDate(sub.UP_DATE);
+                    }
                 }
 
                 return result;
@@ -148,13 +158,23 @@ namespace NT_AirPollution.Service
                         new { FormID = result.ID });
 
                     if (!string.IsNullOrEmpty(result.B_DATE))
-                        result.B_DATE2 = Convert.ToDateTime($"{Convert.ToInt32(result.B_DATE.Substring(0, 3)) + 1911}-{result.B_DATE.Substring(3, 2)}-{result.B_DATE.Substring(5, 2)}");
+                        result.B_DATE2 = base.ChineseDateToWestDate(result.B_DATE);
                     if (!string.IsNullOrEmpty(result.E_DATE))
-                        result.E_DATE2 = Convert.ToDateTime($"{Convert.ToInt32(result.E_DATE.Substring(0, 3)) + 1911}-{result.E_DATE.Substring(3, 2)}-{result.E_DATE.Substring(5, 2)}");
+                        result.E_DATE2 = base.ChineseDateToWestDate(result.E_DATE);
                     if (!string.IsNullOrEmpty(result.S_B_BDATE))
-                        result.S_B_BDATE2 = Convert.ToDateTime($"{Convert.ToInt32(result.S_B_BDATE.Substring(0, 3)) + 1911}-{result.S_B_BDATE.Substring(3, 2)}-{result.S_B_BDATE.Substring(5, 2)}");
+                        result.S_B_BDATE2 = base.ChineseDateToWestDate(result.S_B_BDATE);
                     if (!string.IsNullOrEmpty(result.R_B_BDATE))
-                        result.R_B_BDATE2 = Convert.ToDateTime($"{Convert.ToInt32(result.R_B_BDATE.Substring(0, 3)) + 1911}-{result.R_B_BDATE.Substring(3, 2)}-{result.R_B_BDATE.Substring(5, 2)}");
+                        result.R_B_BDATE2 = base.ChineseDateToWestDate(result.R_B_BDATE);
+
+                    result.StopWorks = cn.Query<StopWork>(@"
+                        SELECT * FROM StopWork WHERE FormID=@FormID",
+                        new { FormID = result.ID }).ToList();
+
+                    foreach (var sub in result.StopWorks)
+                    {
+                        sub.DOWN_DATE2 = base.ChineseDateToWestDate(sub.DOWN_DATE);
+                        sub.UP_DATE2 = base.ChineseDateToWestDate(sub.UP_DATE);
+                    }
                 }
 
                 return result;
@@ -182,13 +202,23 @@ namespace NT_AirPollution.Service
                         new { FormID = item.ID });
 
                     if (!string.IsNullOrEmpty(item.B_DATE))
-                        item.B_DATE2 = Convert.ToDateTime($"{Convert.ToInt32(item.B_DATE.Substring(0, 3)) + 1911}-{item.B_DATE.Substring(3, 2)}-{item.B_DATE.Substring(5, 2)}");
+                        item.B_DATE2 = base.ChineseDateToWestDate(item.B_DATE);
                     if (!string.IsNullOrEmpty(item.E_DATE))
-                        item.E_DATE2 = Convert.ToDateTime($"{Convert.ToInt32(item.E_DATE.Substring(0, 3)) + 1911}-{item.E_DATE.Substring(3, 2)}-{item.E_DATE.Substring(5, 2)}");
+                        item.E_DATE2 = base.ChineseDateToWestDate(item.E_DATE);
                     if (!string.IsNullOrEmpty(item.S_B_BDATE))
-                        item.S_B_BDATE2 = Convert.ToDateTime($"{Convert.ToInt32(item.S_B_BDATE.Substring(0, 3)) + 1911}-{item.S_B_BDATE.Substring(3, 2)}-{item.S_B_BDATE.Substring(5, 2)}");
+                        item.S_B_BDATE2 = base.ChineseDateToWestDate(item.S_B_BDATE);
                     if (!string.IsNullOrEmpty(item.R_B_BDATE))
-                        item.R_B_BDATE2 = Convert.ToDateTime($"{Convert.ToInt32(item.R_B_BDATE.Substring(0, 3)) + 1911}-{item.R_B_BDATE.Substring(3, 2)}-{item.R_B_BDATE.Substring(5, 2)}");
+                        item.R_B_BDATE2 = base.ChineseDateToWestDate(item.R_B_BDATE);
+
+                    item.StopWorks = cn.Query<StopWork>(@"
+                        SELECT * FROM StopWork WHERE FormID=@FormID",
+                        new { FormID = item.ID }).ToList();
+
+                    foreach (var sub in item.StopWorks)
+                    {
+                        sub.DOWN_DATE2 = base.ChineseDateToWestDate(sub.DOWN_DATE);
+                        sub.UP_DATE2 = base.ChineseDateToWestDate(sub.UP_DATE);
+                    }
                 }
 
                 return result;
@@ -262,20 +292,46 @@ namespace NT_AirPollution.Service
         /// </summary>
         /// <param name="form"></param>
         /// <returns></returns>
-        public bool UpdateForm(Form form)
+        public bool UpdateForm(FormView form)
         {
             using (var cn = new SqlConnection(connStr))
             {
-                try
+                cn.Open();
+                using (var trans = cn.BeginTransaction())
                 {
-                    // 更新表單
-                    cn.Update(form);
-                    return true;
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error(ex.Message);
-                    throw ex;
+                    try
+                    {
+                        cn.Update(form, trans);
+
+                        // 附件
+                        form.Attachment.FormID = form.ID;
+                        cn.Update(form.Attachment, trans);
+
+                        // 清空停復工
+                        cn.Execute(@"DELETE FROM StopWork WHERE FormID=@FormID",
+                            new { FormID = form.ID }, trans);
+
+                        // 新增停復工
+                        foreach (var item in form.StopWorks)
+                        {
+                            item.FormID = form.ID;
+                            item.DOWN_DATE = item.DOWN_DATE2.AddYears(-1911).ToString("yyyMMdd");
+                            item.UP_DATE = item.UP_DATE2.AddYears(-1911).ToString("yyyMMdd");
+                            item.DOWN_DAY = Convert.ToInt32((item.UP_DATE2 - item.DOWN_DATE2).TotalDays + 1);
+                            item.C_DATE = DateTime.Now;
+                            item.M_DATE = DateTime.Now;
+                        }
+                        cn.Insert(form.StopWorks, trans);
+
+                        trans.Commit();
+                        return true;
+                    }
+                    catch (Exception ex)
+                    {
+                        trans.Rollback();
+                        Logger.Error(ex.Message);
+                        throw new Exception("系統發生未預期錯誤");
+                    }
                 }
             }
         }
@@ -362,9 +418,9 @@ namespace NT_AirPollution.Service
                 // 會員
                 string url = string.Format("{0}/Member/Login", _configDomain);
                 // 非會員
-                if(form.ClientUserID == null)
+                if (form.ClientUserID == null)
                     url = string.Format("{0}/Search/Index", _configDomain);
-                
+
                 string body = string.Format(content, form.C_NO, form.ClientUserID == null ? form.CreateUserEmail : form.C_DATE.ToString("yyyy-MM-dd"), url, url, form.FailReason.Replace("\n", "<br>"));
 
                 try

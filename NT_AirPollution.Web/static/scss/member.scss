@@ -81,6 +81,15 @@ h3 {
     }
 }
 
+.row-table {
+	width: auto;
+	th,
+	td {
+        text-align: center;
+		white-space: nowrap;
+	}
+}
+
 .head-row {
     display: flex;
     align-items: center;

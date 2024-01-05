@@ -577,5 +577,94 @@ namespace NT_AirPollution.Web.Controllers
                 return Json(new AjaxResult { Status = false, Message = ex.Message });
             }
         }
+
+        [Authorize(Roles = "Member")]
+        [HttpPost]
+        public JsonResult UpdateForm(FormView form, HttpPostedFileBase file1, HttpPostedFileBase file2, HttpPostedFileBase file3, HttpPostedFileBase file4, HttpPostedFileBase file5, HttpPostedFileBase file6, HttpPostedFileBase file7, HttpPostedFileBase file8)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    string firstError = ModelState.Values.SelectMany(o => o.Errors).First().ErrorMessage;
+                    throw new Exception(firstError);
+                }
+
+                var formInDB = _formService.GetFormByID(form.ID);
+                if (form.ClientUserID != formInDB.ClientUserID)
+                    throw new Exception("無法修改他人申請單");
+
+                if (form.B_DATE2 > form.E_DATE2)
+                    throw new Exception("施工期程起始日期不能大於結束日期");
+
+                //if (file1 == null)
+                //    throw new Exception("未上傳空氣污染防制費申報表");
+                //if (file2 == null)
+                //    throw new Exception("未上傳建築執照影印本");
+                //if (file3 == null)
+                //    throw new Exception("未上傳營建業主身分證影本");
+                //if (file4 == null)
+                //    throw new Exception("未上傳簡易位置圖");
+                //if (file5 == null)
+                //    throw new Exception("未上傳承包商營利事業登記證");
+                //if (file6 == null)
+                //    throw new Exception("未上傳承包商負責人身分證影本");
+
+                var attachFile = new AttachmentFile();
+                attachFile.File1 = file1;
+                attachFile.File2 = file2;
+                attachFile.File3 = file3;
+                attachFile.File4 = file4;
+                attachFile.File5 = file5;
+                attachFile.File6 = file6;
+                attachFile.File7 = file7;
+                attachFile.File8 = file8;
+
+
+                // 設定資料夾
+                string absoluteDirPath = $"{_uploadPath}";
+                string absoluteFilePath = "";
+
+                for (int i = 1; i <= 8; i++)
+                {
+                    var file = (HttpPostedFileBase)attachFile[$"File{i}"];
+                    if (file != null)
+                    {
+                        // 生成檔名
+                        string fileName = $@"{Guid.NewGuid().ToString()}{Path.GetExtension(file.FileName)}";
+                        // 設定儲存路徑
+                        absoluteFilePath = absoluteDirPath + $@"\{fileName}";
+                        // 儲存檔案
+                        file.SaveAs(absoluteFilePath);
+                        form.Attachment[$"File{i}"] = fileName;
+                    }
+                }
+
+                var allDists = _optionService.GetDistrict();
+                var allProjectCode = _optionService.GetProjectCode();
+                var sn = _formService.GetSerialNumber();
+
+                form.TOWN_NA = allDists.First(o => o.Code == form.TOWN_NO).Name;
+                form.KIND = allProjectCode.First(o => o.ID == form.KIND_NO).Name;
+                form.AP_DATE = DateTime.Now.AddYears(-1911).ToString("yyyMMdd");
+                form.B_DATE = form.B_DATE2.AddYears(-1911).ToString("yyyMMdd");
+                form.E_DATE = form.E_DATE2.AddYears(-1911).ToString("yyyMMdd");
+                form.S_B_BDATE = form.S_B_BDATE2.AddYears(-1911).ToString("yyyMMdd");
+                form.R_B_BDATE = form.R_B_BDATE2.AddYears(-1911).ToString("yyyMMdd");
+                form.C_DATE = DateTime.Now;
+                form.M_DATE = DateTime.Now;
+                form.SerialNo = formInDB.SerialNo;
+                form.AutoFormID = formInDB.AutoFormID;
+                form.ClientUserID = BaseService.CurrentUser.ID;
+                form.Status = formInDB.Status;
+                _formService.UpdateForm(form);
+
+                return Json(new AjaxResult { Status = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new AjaxResult { Status = false, Message = ex.Message });
+            }
+        }
     }
 }
