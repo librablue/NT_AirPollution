@@ -15,6 +15,7 @@ namespace NT_AirPollution.Service
     public class BaseService
     {
         protected readonly string connStr = ConfigurationManager.ConnectionStrings["NT_AirPollution"].ConnectionString;
+        protected readonly string accessConnStr = ConfigurationManager.ConnectionStrings["Access"].ConnectionString;
         protected readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         public static UserData CurrentUser
         {

@@ -57,6 +57,11 @@ input[type=number] {
   margin: 0 auto;
 }
 
+.el-input.is-disabled .el-input__inner {
+  color: #606266;
+  background-color: #fff;
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -301,11 +306,11 @@ input[type=number] {
 }
 .table-responsive {
   overflow-x: auto;
+  margin-bottom: 20px;
 }
 
 .table {
   width: 100%;
-  margin-bottom: 20px;
   border-collapse: collapse;
 }
 .table th {
