@@ -16,8 +16,8 @@
         <el-col :xs="24" :sm="12">
             <h2>進度查詢</h2>
             <el-form :rules="rules" ref="form" :model="form">
-                <el-form-item prop="AutoFormID" label="案件編號">
-                    <el-input v-model="form.AutoFormID" maxlength="20" placeholder="案件編號可於您的 E-mail 認證信中查詢"></el-input>
+                <el-form-item prop="C_NO" label="管制編號">
+                    <el-input v-model="form.C_NO" maxlength="20" placeholder="管制編號可於您的 Email 認證信中查詢"></el-input>
                 </el-form-item>
                 <el-form-item prop="CreateUserEmail" label="Email">
                     <el-input type="email" inputmode="email" v-model="form.CreateUserEmail" maxlength="50"></el-input>

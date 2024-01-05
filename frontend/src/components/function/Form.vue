@@ -35,10 +35,11 @@
 			<vxe-table-column field="Status" title="審核狀態" width="100" align="center" sortable fixed="left">
 				<template #default="{ row }">{{ row.Status | status }}</template>
 			</vxe-table-column>
-			<vxe-table-column field="AutoFormID" title="案件編號" width="120" align="center" sortable fixed="left"></vxe-table-column>
-			<vxe-table-column field="C_NO" title="管制編號" width="140" align="center" sortable fixed="left"></vxe-table-column>
+			<vxe-table-column field="C_NO" title="管制編號" width="140" align="center" sortable fixed="left">
+				<template #default="{ row }">{{ row.C_NO || '(取號中)' }}</template>
+			</vxe-table-column>
 			<vxe-table-column field="CreateUserEmail" title="Email" width="240" align="center" fixed="left">
-				<template #default="{ row }">{{ row.CreateUserEmail }}({{ row.IsActive ? "已驗證" : "未驗證" }})</template>
+				<template #default="{ row }">{{ row.CreateUserEmail }}({{ row.ClientUserID ? '會員' : (row.IsActive ? "已驗證" : "未驗證") }})</template>
 			</vxe-table-column>
 			<vxe-table-column field="B_SERNO" title="建照字號" width="120" align="center"></vxe-table-column>
 			<vxe-table-column field="COMP_NAM" title="工程名稱" width="180" align="center"></vxe-table-column>

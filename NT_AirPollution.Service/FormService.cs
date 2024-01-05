@@ -134,11 +134,11 @@ namespace NT_AirPollution.Service
                 var result = cn.QueryFirstOrDefault<FormView>(@"
                     SELECT * FROM Form 
                     WHERE CreateUserEmail=@CreateUserEmail
-                        AND AutoFormID=@AutoFormID",
+                        AND C_NO=@C_NO",
                     new
                     {
                         CreateUserEmail = filter.CreateUserEmail,
-                        AutoFormID = filter.AutoFormID
+                        C_NO = filter.C_NO
                     });
 
                 if (result != null)

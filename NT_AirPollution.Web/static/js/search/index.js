@@ -4,12 +4,12 @@
         data() {
             return {
                 form: {
-                    AutoFormID: '',
+                    C_NO: '',
                     CreateUserEmail: '',
                     Captcha: ''
                 },
                 rules: Object.freeze({
-                    AutoFormID: [{ required: true, message: '請輸入案件編號', trigger: 'blur' }],
+                    C_NO: [{ required: true, message: '請輸入管制編號', trigger: 'blur' }],
                     CreateUserEmail: [{ required: true, message: '請輸入Email', trigger: 'blur' }],
                     Captcha: [{ required: true, message: '請勾選我不是機器人' }]
                 })
