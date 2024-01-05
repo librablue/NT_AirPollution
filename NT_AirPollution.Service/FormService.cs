@@ -217,7 +217,7 @@ namespace NT_AirPollution.Service
         /// </summary>
         /// <param name="form"></param>
         /// <returns></returns>
-        public bool AddForm(FormView form)
+        public long AddForm(FormView form)
         {
             using (var cn = new SqlConnection(connStr))
             {
@@ -245,7 +245,7 @@ namespace NT_AirPollution.Service
                         cn.Insert(form.StopWorks, trans);
 
                         trans.Commit();
-                        return true;
+                        return id;
                     }
                     catch (Exception ex)
                     {

@@ -104,7 +104,7 @@ namespace NT_AirPollution.Web.Controllers
                 form.ActiveCode = Guid.NewGuid().ToString();
                 form.IsActive = false;
                 form.Status = Status.審理中;
-                _formService.AddForm(form);
+                long id = _formService.AddForm(form);
 
                 // 寄驗證信
                 string template = ($@"{HostingEnvironment.ApplicationPhysicalPath}/App_Data/Template/ActiveMail.txt");
