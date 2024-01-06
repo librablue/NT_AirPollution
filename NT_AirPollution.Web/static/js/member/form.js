@@ -294,6 +294,7 @@
 			sendForm() {
 				this.$refs.form.validate(valid => {
 					if (!valid) {
+                        alert('欄位驗證錯誤，請檢查修正後重新送出');
 						return false;
 					}
 
@@ -328,8 +329,8 @@
 								return;
 							}
 
+                            alert('您申報之空污費，試算繳費金額約為 ' + res.data.Message + '元，請依後續審核後之繳費單金額為主。');
 							this.getForms();
-							alert('畫面資料已儲存。');
 							this.dialogVisible = false;
 						})
 						.catch(err => {

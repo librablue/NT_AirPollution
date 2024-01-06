@@ -543,7 +543,7 @@ namespace NT_AirPollution.Model.Domain
         /// <summary>
         /// 流水號
         /// </summary>
-        public int SerialNo { get; set; }
+        public int? SerialNo { get; set; }
         /// <summary>
         /// 非會員啟用碼
         /// </summary>

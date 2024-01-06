@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Access\ABUDF.cs" />
     <Compile Include="Domain\AdminUser.cs" />
     <Compile Include="Domain\Attachment.cs" />
     <Compile Include="Domain\News.cs" />
@@ -72,5 +73,6 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

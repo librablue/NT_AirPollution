@@ -454,6 +454,9 @@ h3 {
 .result-list li .text {
   margin-right: 10px;
 }
+.result-list li a {
+  color: #1640d6;
+}
 
 footer {
   background-color: #ebf5ff;

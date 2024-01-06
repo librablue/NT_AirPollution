@@ -47,7 +47,7 @@ namespace NT_AirPollution.Web.Controllers
                         {
                             ID = result.ID,
                             Email = result.CreateUserEmail,
-                            AutoFormID = result.AutoFormID,
+                            C_NO = result.C_NO,
                             Role = new string[] { "NonMember" }
                         }),
                         FormsAuthentication.FormsCookiePath);
@@ -69,7 +69,7 @@ namespace NT_AirPollution.Web.Controllers
             var fiter = new Form
             {
                 CreateUserEmail = BaseService.CurrentUser.Email,
-                AutoFormID = BaseService.CurrentUser.AutoFormID
+                C_NO = BaseService.CurrentUser.C_NO
             };
             var result = _formService.GetFormByUser(fiter);
             return View(result);
@@ -83,7 +83,7 @@ namespace NT_AirPollution.Web.Controllers
                 var fiter = new Form
                 {
                     CreateUserEmail = BaseService.CurrentUser.Email,
-                    AutoFormID = BaseService.CurrentUser.AutoFormID
+                    C_NO = BaseService.CurrentUser.C_NO
                 };
                 var form = _formService.GetFormByUser(fiter);
 

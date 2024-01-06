@@ -11,9 +11,9 @@ namespace NT_AirPollution.Model.View
         public long ID { get; set; }
         public string Email { get; set; }
         /// <summary>
-        /// 案件編號
+        /// 管制編號
         /// </summary>
-        public string AutoFormID { get; set; }
+        public string C_NO { get; set; }
         /// <summary>
         /// 角色
         /// </summary>

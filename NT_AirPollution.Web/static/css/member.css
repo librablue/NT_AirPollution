@@ -382,7 +382,7 @@ h3 {
 .main-wrap {
   max-width: 1170px;
   padding: 40px 20px;
-  margin: 40px auto;
+  margin: 0 auto;
 }
 
 .form-table th,

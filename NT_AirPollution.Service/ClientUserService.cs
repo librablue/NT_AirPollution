@@ -28,7 +28,7 @@ namespace NT_AirPollution.Service
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error(ex.Message);
+                    Logger.Error($"AddVerifyLog: {ex.Message}");
                     throw new Exception("系統發生未預期錯誤");
                 }
             }
@@ -69,7 +69,7 @@ namespace NT_AirPollution.Service
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error(ex.Message);
+                    Logger.Error($"UpdateVerifyLog: {ex.Message}");
                     throw new Exception("系統發生未預期錯誤");
                 }
             }
@@ -142,7 +142,7 @@ namespace NT_AirPollution.Service
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error(ex.Message);
+                    Logger.Error($"AddUser: {ex.Message}");
                     throw new Exception("系統發生未預期錯誤");
                 }
             }
@@ -165,7 +165,7 @@ namespace NT_AirPollution.Service
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error(ex.Message);
+                    Logger.Error($"UpdateClientUser: {ex.Message}");
                     throw new Exception("系統發生未預期錯誤");
                 }
             }
@@ -268,7 +268,7 @@ namespace NT_AirPollution.Service
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error(ex.Message);
+                    Logger.Error($"AddCompany: {ex.Message}");
                     throw new Exception("系統發生未預期錯誤");
                 }
             }
@@ -291,7 +291,7 @@ namespace NT_AirPollution.Service
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error(ex.Message);
+                    Logger.Error($"UpdateCompany: {ex.Message}");
                     throw new Exception("系統發生未預期錯誤");
                 }
             }
@@ -317,7 +317,7 @@ namespace NT_AirPollution.Service
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error(ex.Message);
+                    Logger.Error($"DeleteCompany: {ex.Message}");
                     throw new Exception("系統發生未預期錯誤");
                 }
             }
@@ -398,7 +398,7 @@ namespace NT_AirPollution.Service
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error(ex.Message);
+                    Logger.Error($"AddContractor: {ex.Message}");
                     throw new Exception("系統發生未預期錯誤");
                 }
             }
@@ -421,7 +421,7 @@ namespace NT_AirPollution.Service
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error(ex.Message);
+                    Logger.Error($"UpdateContractor: {ex.Message}");
                     throw new Exception("系統發生未預期錯誤");
                 }
             }
@@ -447,7 +447,7 @@ namespace NT_AirPollution.Service
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error(ex.Message);
+                    Logger.Error($"DeleteContractor: {ex.Message}");
                     throw new Exception("系統發生未預期錯誤");
                 }
             }

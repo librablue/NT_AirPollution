@@ -24,6 +24,7 @@ namespace NT_AirPollution.Web.Controllers
         private readonly FormService _formService = new FormService();
         private readonly OptionService _optionService = new OptionService();
         private readonly SendBoxService _sendBoxService = new SendBoxService();
+        private readonly AccessService _accessService = new AccessService();
 
         public ActionResult Index()
         {
@@ -493,18 +494,6 @@ namespace NT_AirPollution.Web.Controllers
                 if (form.B_DATE2 > form.E_DATE2)
                     throw new Exception("施工期程起始日期不能大於結束日期");
 
-                // 如果管制編號有值，表示用複製的
-                if (!string.IsNullOrEmpty(form.C_NO))
-                {
-                    var filter = new FormFilter { C_NO = form.C_NO, ClientUserID = BaseService.CurrentUser.ID };
-                    var formsInDB = _formService.GetFormsByC_NO(filter);
-                    if (formsInDB.Count() == 0)
-                        throw new Exception("查無所複製的管制編號");
-
-                    // 相同管制編號的序號最大值+1
-                    form.SER_NO = formsInDB.Last().SER_NO + 1;
-                }
-
                 //if (file1 == null)
                 //    throw new Exception("未上傳空氣污染防制費申報表");
                 //if (file2 == null)
@@ -554,7 +543,6 @@ namespace NT_AirPollution.Web.Controllers
                 var allDists = _optionService.GetDistrict();
                 var allProjectCode = _optionService.GetProjectCode();
                 var sn = _formService.GetSerialNumber();
-
                 form.TOWN_NA = allDists.First(o => o.Code == form.TOWN_NO).Name;
                 form.KIND = allProjectCode.First(o => o.ID == form.KIND_NO).Name;
                 form.AP_DATE = DateTime.Now.AddYears(-1911).ToString("yyyMMdd");
@@ -568,9 +556,32 @@ namespace NT_AirPollution.Web.Controllers
                 form.AutoFormID = DateTime.Now.ToString($"yyyyMMdd{(sn + 1).ToString().PadLeft(3, '0')}");
                 form.ClientUserID = BaseService.CurrentUser.ID;
                 form.Status = Status.審理中;
+
+                // 如果管制編號有值，表示用複製的
+                if (string.IsNullOrEmpty(form.C_NO))
+                {
+                    string c_no = _accessService.GetC_NO(form);
+                    form.C_NO = c_no;
+                }
+                else
+                {
+                    var filter = new FormFilter { C_NO = form.C_NO, ClientUserID = BaseService.CurrentUser.ID };
+                    var formsInDB = _formService.GetFormsByC_NO(filter);
+                    if (formsInDB.Count() == 0)
+                        throw new Exception("查無複製的管制編號");
+
+                    // 相同管制編號的序號最大值+1
+                    form.SER_NO = formsInDB.Last().SER_NO + 1;
+                }
+
+                // 寫入 Access
+                bool isAccessOK = _accessService.AddABUDF(form);
+                if (!isAccessOK)
+                    throw new Exception("系統發生未預期錯誤");
+
                 _formService.AddForm(form);
 
-                return Json(new AjaxResult { Status = true });
+                return Json(new AjaxResult { Status = true, Message = 0 });
             }
             catch (Exception ex)
             {
