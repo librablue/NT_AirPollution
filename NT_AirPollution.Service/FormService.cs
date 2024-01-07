@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Dapper.Contrib.Extensions;
 using NT_AirPollution.Model.Domain;
+using NT_AirPollution.Model.Enum;
 using NT_AirPollution.Model.View;
 using System;
 using System.Collections.Generic;
@@ -89,6 +90,7 @@ namespace NT_AirPollution.Service
                         AND (@PUB_COMP IS NULL OR PUB_COMP=@PUB_COMP)
                         AND (@COMP_NAM='' OR COMP_NAM LIKE '%'+@COMP_NAM+'%')
                         AND (@CreateUserName='' OR CreateUserName=@CreateUserName)
+                        AND (@Status=0 OR Status=@Status)
                         AND C_DATE BETWEEN @StartDate AND @EndDate
                         AND ClientUserID=@ClientUserID",
                     new
@@ -97,6 +99,7 @@ namespace NT_AirPollution.Service
                         PUB_COMP = filter.PUB_COMP,
                         COMP_NAM = filter.COMP_NAM ?? "",
                         CreateUserName = filter.CreateUserName ?? "",
+                        Status = filter.Status,
                         StartDate = filter.StartDate,
                         EndDate = filter.EndDate.ToString("yyyy-MM-dd 23:59:59"),
                         ClientUserID = filter.ClientUserID

@@ -38,7 +38,7 @@
                             if(returnUrl)
                                 location.href = returnUrl;
                             else
-                                location.href = '/Member/Index';
+                                location.href = '/Member/Form';
                         })
                         .catch(err => {
                             console.log(err);

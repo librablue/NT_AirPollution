@@ -40,7 +40,8 @@
 					C_NO: null,
 					PUB_COMP: null,
 					CreateUserName: null,
-					COMP_NAM: null
+					COMP_NAM: null,
+                    Status: 0
 				},
 				district: Object.freeze([]),
 				projectCode: Object.freeze([]),
