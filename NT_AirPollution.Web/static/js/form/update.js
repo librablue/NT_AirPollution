@@ -81,64 +81,9 @@
             };
         },
         mounted() {
+            this.getMyForm();
             this.getDistrict();
             this.getProjectCode();
-            this.form = {
-                SER_NO: 1,
-                P_KIND: '一次全繳',
-                BUD_DOC2: '無',
-                PUB_COMP: true,
-                TOWN_NO: 'M2',
-                CreateUserName: '申請人',
-                CreateUserEmail: 'abc@gmail.com',
-                COMP_NAM: 'COMP_NAM',
-                KIND_NO: '1',
-                ADDR: 'ADDR',
-                B_SERNO: 'B_SERNO',
-                UTME: 123,
-                UTMN: 456,
-                LATLNG: '123456',
-                STATE: 'STATE',
-                EIACOMMENTS: 'EIACOMMENTS',
-                RECCOMMENTS: 'RECCOMMENTS',
-                S_NAME: 'S_NAME',
-                S_G_NO: 'S_G_NO',
-                S_ADDR1: 'S_ADDR1',
-                S_ADDR2: 'S_ADDR2',
-                S_TEL: 'S_TEL',
-                S_B_NAM: 'S_B_NAM',
-                S_B_TIT: 'S_B_TIT',
-                S_B_ID: 'S_B_ID',
-                S_B_BDATE2: '1985-07-14',
-                S_C_NAM: 'S_C_NAM',
-                S_C_TIT: 'S_C_TIT',
-                S_C_ID: 'S_C_ID',
-                S_C_ADDR: 'S_C_ADDR',
-                S_C_TEL: 'S_C_TEL',
-                R_NAME: 'R_NAME',
-                R_G_NO: 'R_G_NO',
-                R_ADDR1: 'R_ADDR1',
-                R_ADDR2: 'R_ADDR2',
-                R_TEL: 'R_TEL',
-                R_B_NAM: 'R_B_NAM',
-                R_B_TIT: 'R_B_TIT',
-                R_B_ID: 'R_B_ID',
-                R_B_BDATE2: '2024-01-01',
-                R_ADDR3: 'R_ADDR3',
-                R_M_NAM: 'R_M_NAM',
-                R_C_NAM: 'R_C_NAM',
-                R_TEL1: 'R_TEL1',
-                MONEY: 1,
-                C_MONEY: 2,
-                PERCENT: 3,
-                AREA_F: 4,
-                AREA_B: 5,
-                AREA2: 6,
-                PERC_B: 7,
-                B_DATE2: '2024-01-01',
-                E_DATE2: '2024-01-31',
-                Attachment: {}
-            };
         },
         computed: {
             totalDays() {
@@ -155,6 +100,11 @@
             }
         },
         methods: {
+            getMyForm() {
+                axios.get('/Form/GetMyForm').then(res => {
+                    this.form = res.data;
+                });
+            },
             getDistrict() {
                 axios.get('/Option/GetDistrict').then(res => {
                     this.district = Object.freeze(res.data);
@@ -201,7 +151,7 @@
                     }
 
                     axios
-                        .post(`/Form/Create`, formData)
+                        .post(`/Form/Update`, formData)
                         .then(res => {
                             if (!res.data.Status) {
                                 grecaptcha.reset();
@@ -209,7 +159,7 @@
                                 return;
                             }
 
-                            alert('申請資料已送出。\n系統將於5分鐘內傳送認證信給您，請點選郵件中的連結進行驗證。\n完成驗證之案件才會進入審核程序。');
+                            alert('修改資料已送出，請等待審核人員通知');
                             alert('您申報之空污費，試算繳費金額約為 ' + res.data.Message + '元，請依後續審核後之繳費單金額為主。');
                             location.href = '/Home/Index';
                         })

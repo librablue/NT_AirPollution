@@ -7,12 +7,12 @@
     <link rel="stylesheet" href="@Url.Content("~/static/css/form.css")" />
 }
 @section scripts {
-    <script src="@Url.Content("~/static/js/form/create.js")"></script>
+    <script src="@Url.Content("~/static/js/form/update.js")"></script>
 }
 
 <div id="app">
     <div class="main-wrap">
-        <h2>營建空污費申報</h2>
+        <h2>營建空污費申報(編輯)</h2>
         <el-form :rules="rules" ref="form" :model="form">
             <el-form-item label="案件類型">
                 <el-select v-model="form.PUB_COMP">
@@ -31,14 +31,7 @@
                             <th style="width:180px">序號</th>
                             <td>{{form.SER_NO || '1'}}</td>
                             <th style="width:180px">鄉鎮分類</th>
-                            <td>
-                                <el-form-item prop="TOWN_NO">
-                                    <el-select v-model="form.TOWN_NO">
-                                        <el-option label="請選擇" :value="undefined"></el-option>
-                                        <el-option v-for="item in district" :key="item.Code" :label="item.Name" :value="item.Code"></el-option>
-                                    </el-select>
-                                </el-form-item>
-                            </td>
+                            <td>{{form.TOWN_NA}}</td>
                         </tr>
                         <tr>
                             <th>申請日期</th>
@@ -64,14 +57,7 @@
                                 </el-form-item>
                             </td>
                             <th>2.工程類別</th>
-                            <td colspan="2">
-                                <el-form-item prop="KIND_NO">
-                                    <el-select class="w100p" v-model="form.KIND_NO">
-                                        <el-option label="請選擇" :value="null"></el-option>
-                                        <el-option v-for="item in projectCode" :key="item.ID" :label="`${item.ID}. ${item.Name}`" :value="item.ID"></el-option>
-                                    </el-select>
-                                </el-form-item>
-                            </td>
+                            <td colspan="2">{{form.KIND}}</td>
                         </tr>
                         <tr>
                             <th>3.工地地址或地號</th>

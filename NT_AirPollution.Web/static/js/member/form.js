@@ -316,6 +316,7 @@
 						const file = document.querySelector(`#file${i}`);
 						if (file && file.files.length > 0) formData.append(`file${i}`, file.files[0]);
 					}
+                    // 停復工
                     for (let i = 0; i < this.selectRow.StopWorks.length; i++) {
                         formData.append(`StopWorks[${i}].DOWN_DATE2`, this.selectRow.StopWorks[i].DOWN_DATE2);
                         formData.append(`StopWorks[${i}].UP_DATE2`, this.selectRow.StopWorks[i].UP_DATE2);

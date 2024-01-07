@@ -248,10 +248,14 @@ namespace NT_AirPollution.Web.Controllers
                 form.M_DATE = DateTime.Now;
                 form.Status = Status.審理中;
 
-                // 修改access todo
+                // 修改 access
+                bool isAccessOK = _accessService.UpdateABUDF(form);
+                if (!isAccessOK)
+                    throw new Exception("系統發生未預期錯誤");
 
-                var result = _formService.UpdateForm(form);
-                return Json(new AjaxResult { Status = result, Message = 0 });
+                _formService.UpdateForm(form);
+
+                return Json(new AjaxResult { Status = true, Message = 0 });
             }
             catch (Exception ex)
             {
