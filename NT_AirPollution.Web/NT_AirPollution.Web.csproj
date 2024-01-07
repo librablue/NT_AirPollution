@@ -155,7 +155,6 @@
     <Content Include="static\scss\_navbar.scss" />
     <Content Include="static\scss\_shared.scss" />
     <Content Include="Views\Home\Index.cshtml" />
-    <Content Include="Views\Member\Index.cshtml" />
     <Content Include="Views\Member\Login.cshtml" />
     <Content Include="Views\Member\Regist.cshtml" />
     <Content Include="Views\Member\Forget.cshtml" />
