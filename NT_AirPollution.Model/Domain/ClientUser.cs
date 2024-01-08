@@ -1,4 +1,5 @@
 ﻿using Dapper.Contrib.Extensions;
+using NT_AirPollution.Model.Enum;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -17,10 +18,16 @@ namespace NT_AirPollution.Model.Domain
         [EmailAddress(ErrorMessage = "Email 格式錯誤")]
         [MaxLength(50, ErrorMessage = "Email 格式錯誤")]
         public string Email { get; set; }
+        [Required(ErrorMessage = "未選擇會員類別")]
+        public UserType UserType { get; set; }
         [Required(ErrorMessage = "密碼格式錯誤")]
         [RegularExpression(@"^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$", ErrorMessage = "密碼格式錯誤")]
         public string Password { get; set; }
         public string UserName { get; set; }
+        [Required(ErrorMessage = "未輸入統一編號")]
+        [RegularExpression(@"^\d{8}$", ErrorMessage = "統一編號格式錯誤")]
+        public string CompanyID { get; set; }
+
         public DateTime CreateDate { get; set; }
         public DateTime? DeleteDate { get; set; }
         [Computed]
