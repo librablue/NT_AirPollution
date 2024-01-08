@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Dapper.Contrib.Extensions;
 using NT_AirPollution.Model.Access;
+using NT_AirPollution.Model.Domain;
 using NT_AirPollution.Model.View;
 using System;
 using System.Collections.Generic;
@@ -56,7 +57,8 @@ namespace NT_AirPollution.Service
             {
                 try
                 {
-                    cn.Execute(@"INSERT INTO ABUDF ([C_NO],[SER_NO],[COUNTRY],[TOWN_NO],[TOWN_NA],[KIND_NO],[KIND],[AP_DATE],[B_SERNO],[PUB_COMP],[S_NAME],[S_G_NO],[S_ADDR1],[S_ADDR2],[S_TEL],[S_B_NAM],[S_B_TIT],[S_B_ID],[S_B_BDATE],[S_C_NAM],[S_C_TIT],[S_C_ID],[S_C_ADDR],[S_C_TEL],[R_NAME],[R_G_NO],[R_ADDR1],[R_ADDR2],[R_TEL],[R_B_NAM],[R_B_TIT],[R_B_ID],[R_B_BDATE],[R_ADDR3],[R_TEL1],[R_M_NAM],[R_C_NAM],[A_KIND],[AREA],[VOLUMEL],[RATIOLB],[DENSITYL],[MONEY],[C_MONEY],[PERCENT],[YEAR],[B_DATE],[E_DATE],[S_AMT],[P_KIND],[P_NUM],[P_AMT],[FIN_DATE],[FIN_COM],[STATE],[ID_DOC1],[ID_DOC2],[ID_DOC3],[COMP_DOC1],[COMP_DOC2],[COMP_DOC3],[COMP_OTH],[BUD_DOC1],[BUD_DOC2],[BUD_DOC3],[BUD_OTH],[REC_YN],[AREA_B],[AREA_F],[PERC_B],[COMP_NAM],[ADDR],[AP_TYPE],[UTME],[UTMN],[LATLNG],[AREA3],[AREA2],[O_C_Q],[G_NAME],[ADDR1],[COMP_NAM1],[ENG_STONE],[ENG_WRAP],[ENG_DES],[ENG_DES_TEL],[ENG_DES_ADDR],[NOLEVY],[COMP_L],[RCAP_DATE],[RC_DATE],[RC_SERNO],[RCE],[COMMENT],[EIACOMMENTS],[C_DATE],[M_DATE],[KEYIN],[RECCOMMENTS])
+                    cn.Execute(@"
+                        INSERT INTO ABUDF ([C_NO],[SER_NO],[COUNTRY],[TOWN_NO],[TOWN_NA],[KIND_NO],[KIND],[AP_DATE],[B_SERNO],[PUB_COMP],[S_NAME],[S_G_NO],[S_ADDR1],[S_ADDR2],[S_TEL],[S_B_NAM],[S_B_TIT],[S_B_ID],[S_B_BDATE],[S_C_NAM],[S_C_TIT],[S_C_ID],[S_C_ADDR],[S_C_TEL],[R_NAME],[R_G_NO],[R_ADDR1],[R_ADDR2],[R_TEL],[R_B_NAM],[R_B_TIT],[R_B_ID],[R_B_BDATE],[R_ADDR3],[R_TEL1],[R_M_NAM],[R_C_NAM],[A_KIND],[AREA],[VOLUMEL],[RATIOLB],[DENSITYL],[MONEY],[C_MONEY],[PERCENT],[YEAR],[B_DATE],[E_DATE],[S_AMT],[P_KIND],[P_NUM],[P_AMT],[FIN_DATE],[FIN_COM],[STATE],[ID_DOC1],[ID_DOC2],[ID_DOC3],[COMP_DOC1],[COMP_DOC2],[COMP_DOC3],[COMP_OTH],[BUD_DOC1],[BUD_DOC2],[BUD_DOC3],[BUD_OTH],[REC_YN],[AREA_B],[AREA_F],[PERC_B],[COMP_NAM],[ADDR],[AP_TYPE],[UTME],[UTMN],[LATLNG],[AREA3],[AREA2],[O_C_Q],[G_NAME],[ADDR1],[COMP_NAM1],[ENG_STONE],[ENG_WRAP],[ENG_DES],[ENG_DES_TEL],[ENG_DES_ADDR],[NOLEVY],[COMP_L],[RCAP_DATE],[RC_DATE],[RC_SERNO],[RCE],[COMMENT],[EIACOMMENTS],[C_DATE],[M_DATE],[KEYIN],[RECCOMMENTS])
                         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                         new
                         {
@@ -157,9 +159,26 @@ namespace NT_AirPollution.Service
                             EIACOMMENTS = form.EIACOMMENTS,
                             C_DATE = form.C_DATE.ToString("yyyy-MM-dd HH:mm:ss"),
                             M_DATE = form.M_DATE.ToString("yyyy-MM-dd HH:mm:ss"),
-                            KEYIN = form.KEYIN,
+                            KEYIN = "EPB02",
                             RECCOMMENTS = form.RECCOMMENTS
                         });
+
+                    foreach (var item in form.StopWorks)
+                    {
+                        cn.Execute(@"
+                            INSERT INTO ABUDF_DAY ([C_NO],[SER_NO],[DOWN_DATE],[UP_DATE],[DOWN_DAY],[KEYIN],[C_DATE],[M_DATE])
+                            VALUES (?,?,?,?,?,?,?,?)",
+                            new
+                            {
+                                C_NO = form.C_NO,
+                                SER_NO = form.SER_NO,
+                                DOWN_DATE = item.DOWN_DATE,
+                                UP_DATE = item.UP_DATE,
+                                C_DATE = item.C_DATE.Value.ToString("yyyy-MM-dd HH:mm:ss"),
+                                M_DATE = item.M_DATE.Value.ToString("yyyy-MM-dd HH:mm:ss"),
+                                KEYIN = "EPB02"
+                            });
+                    }
 
                     return true;
                 }
@@ -368,6 +387,26 @@ namespace NT_AirPollution.Service
                             C_NO = form.C_NO,
                             SER_NO = form.SER_NO
                         });
+
+                    cn.Execute(@"DELETE FROM ABUDF_DAY WHERE [C_NO]=? AND [SER_NO]=?",
+                        new { C_NO = form.C_NO, SER_NO = form.SER_NO });
+
+                    foreach (var item in form.StopWorks)
+                    {
+                        cn.Execute(@"
+                            INSERT INTO ABUDF_DAY ([C_NO],[SER_NO],[DOWN_DATE],[UP_DATE],[DOWN_DAY],[KEYIN],[C_DATE],[M_DATE])
+                            VALUES (?,?,?,?,?,?,?,?)",
+                            new
+                            {
+                                C_NO = form.C_NO,
+                                SER_NO = form.SER_NO,
+                                DOWN_DATE = item.DOWN_DATE,
+                                UP_DATE = item.UP_DATE,
+                                C_DATE = item.C_DATE.Value.ToString("yyyy-MM-dd HH:mm:ss"),
+                                M_DATE = item.M_DATE.Value.ToString("yyyy-MM-dd HH:mm:ss"),
+                                KEYIN = "EPB02"
+                            });
+                    }
 
                     return true;
                 }

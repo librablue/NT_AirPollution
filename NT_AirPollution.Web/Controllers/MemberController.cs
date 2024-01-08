@@ -552,6 +552,16 @@ namespace NT_AirPollution.Web.Controllers
                 form.ClientUserID = BaseService.CurrentUser.ID;
                 form.Status = Status.審理中;
 
+                // 停復工
+                foreach (var item in form.StopWorks)
+                {
+                    item.DOWN_DATE = item.DOWN_DATE2.AddYears(-1911).ToString("yyyMMdd");
+                    item.UP_DATE = item.UP_DATE2.AddYears(-1911).ToString("yyyMMdd");
+                    item.DOWN_DAY = Convert.ToInt32((item.UP_DATE2 - item.DOWN_DATE2).TotalDays + 1);
+                    item.C_DATE = DateTime.Now;
+                    item.M_DATE = DateTime.Now;
+                }
+
                 // 如果管制編號有值，表示用複製的
                 if (string.IsNullOrEmpty(form.C_NO))
                 {
@@ -597,7 +607,7 @@ namespace NT_AirPollution.Web.Controllers
                 }
 
                 var formInDB = _formService.GetFormByID(form.ID);
-                if (form.ClientUserID != formInDB.ClientUserID)
+                if (formInDB.ClientUserID != BaseService.CurrentUser.ID)
                     throw new Exception("無法修改他人申請單");
 
                 if (form.B_DATE2 > form.E_DATE2)
@@ -648,21 +658,41 @@ namespace NT_AirPollution.Web.Controllers
 
                 var allDists = _optionService.GetDistrict();
                 var allProjectCode = _optionService.GetProjectCode();
-                var sn = _formService.GetSerialNumber();
-
+                // 避免被修改的欄位
+                form.C_NO = formInDB.C_NO;
+                form.SER_NO = formInDB.SER_NO;
+                form.ClientUserID = formInDB.ClientUserID;
+                form.CreateUserEmail = formInDB.CreateUserEmail;
+                form.ActiveCode = formInDB.ActiveCode;
+                form.IsActive = formInDB.IsActive;
+                form.C_DATE = formInDB.C_DATE;
+                // 可修改的欄位
                 form.TOWN_NA = allDists.First(o => o.Code == form.TOWN_NO).Name;
                 form.KIND = allProjectCode.First(o => o.ID == form.KIND_NO).Name;
-                form.AP_DATE = DateTime.Now.AddYears(-1911).ToString("yyyMMdd");
+                form.AP_DATE = formInDB.AP_DATE;
                 form.B_DATE = form.B_DATE2.AddYears(-1911).ToString("yyyMMdd");
                 form.E_DATE = form.E_DATE2.AddYears(-1911).ToString("yyyMMdd");
                 form.S_B_BDATE = form.S_B_BDATE2.AddYears(-1911).ToString("yyyMMdd");
                 form.R_B_BDATE = form.R_B_BDATE2.AddYears(-1911).ToString("yyyMMdd");
-                form.C_DATE = DateTime.Now;
                 form.M_DATE = DateTime.Now;
-                form.SerialNo = formInDB.SerialNo;
-                form.AutoFormID = formInDB.AutoFormID;
-                form.ClientUserID = BaseService.CurrentUser.ID;
-                form.Status = formInDB.Status;
+                form.Status = Status.審理中;
+
+                // 停復工
+                foreach (var item in form.StopWorks)
+                {
+                    item.FormID = form.ID;
+                    item.DOWN_DATE = item.DOWN_DATE2.AddYears(-1911).ToString("yyyMMdd");
+                    item.UP_DATE = item.UP_DATE2.AddYears(-1911).ToString("yyyMMdd");
+                    item.DOWN_DAY = Convert.ToInt32((item.UP_DATE2 - item.DOWN_DATE2).TotalDays + 1);
+                    item.C_DATE = DateTime.Now;
+                    item.M_DATE = DateTime.Now;
+                }
+
+                // 修改 access
+                bool isAccessOK = _accessService.UpdateABUDF(form);
+                if (!isAccessOK)
+                    throw new Exception("系統發生未預期錯誤");
+
                 _formService.UpdateForm(form);
 
                 return Json(new AjaxResult { Status = true });

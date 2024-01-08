@@ -269,11 +269,6 @@ namespace NT_AirPollution.Service
                         foreach (var item in form.StopWorks)
                         {
                             item.FormID = id;
-                            item.DOWN_DATE = item.DOWN_DATE2.AddYears(-1911).ToString("yyyMMdd");
-                            item.UP_DATE = item.UP_DATE2.AddYears(-1911).ToString("yyyMMdd");
-                            item.DOWN_DAY = Convert.ToInt32((item.UP_DATE2 - item.DOWN_DATE2).TotalDays + 1);
-                            item.C_DATE = DateTime.Now;
-                            item.M_DATE = DateTime.Now;
                         }
                         cn.Insert(form.StopWorks, trans);
 
@@ -315,15 +310,6 @@ namespace NT_AirPollution.Service
                             new { FormID = form.ID }, trans);
 
                         // 新增停復工
-                        foreach (var item in form.StopWorks)
-                        {
-                            item.FormID = form.ID;
-                            item.DOWN_DATE = item.DOWN_DATE2.AddYears(-1911).ToString("yyyMMdd");
-                            item.UP_DATE = item.UP_DATE2.AddYears(-1911).ToString("yyyMMdd");
-                            item.DOWN_DAY = Convert.ToInt32((item.UP_DATE2 - item.DOWN_DATE2).TotalDays + 1);
-                            item.C_DATE = DateTime.Now;
-                            item.M_DATE = DateTime.Now;
-                        }
                         cn.Insert(form.StopWorks, trans);
 
                         trans.Commit();

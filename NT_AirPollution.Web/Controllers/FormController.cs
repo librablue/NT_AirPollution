@@ -248,6 +248,17 @@ namespace NT_AirPollution.Web.Controllers
                 form.M_DATE = DateTime.Now;
                 form.Status = Status.審理中;
 
+                // 停復工
+                foreach (var item in form.StopWorks)
+                {
+                    item.FormID = form.ID;
+                    item.DOWN_DATE = item.DOWN_DATE2.AddYears(-1911).ToString("yyyMMdd");
+                    item.UP_DATE = item.UP_DATE2.AddYears(-1911).ToString("yyyMMdd");
+                    item.DOWN_DAY = Convert.ToInt32((item.UP_DATE2 - item.DOWN_DATE2).TotalDays + 1);
+                    item.C_DATE = DateTime.Now;
+                    item.M_DATE = DateTime.Now;
+                }
+
                 // 修改 access
                 bool isAccessOK = _accessService.UpdateABUDF(form);
                 if (!isAccessOK)
