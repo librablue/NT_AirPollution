@@ -48,28 +48,43 @@
                 <li>
                     <a href="@Url.Content("~/Search/Index")">進度查詢</a>
                 </li>
-                @if (User.IsInRole("Member"))
+                @if (User.IsInRole("Member1"))
                 {
                     <li class="dropdown">
                         <a href="javascript:;">會員中心 <i class="fa fa-angle-down"></i></a>
                         <ul class="dropdown-menu">
                             <li>
-                                <a href="@Url.Content("~/Member/Form")">申報案件管理</a>
+                                <a href="@Url.Content("~/Apply/Form")">申報案件管理</a>
                             </li>
                             <li>
-                                <a href="@Url.Content("~/Member/Company")">營建業主資料管理</a>
+                                <a href="@Url.Content("~/Apply/Company")">營建業主資料管理</a>
                             </li>
                             <li>
-                                <a href="@Url.Content("~/Member/Contractor")">承包(造)資料管理</a>
+                                <a href="@Url.Content("~/Apply/Contractor")">承包(造)資料管理</a>
                             </li>
                             <li>
-                                <a href="@Url.Content("~/Member/Edit")">密碼修改</a>
+                                <a href="@Url.Content("~/Member/Edit")">會員資料修改</a>
                             </li>
                             <li>
                                 <a href="@Url.Content("~/Member/Logout")">登出</a>
                             </li>
                         </ul>
                     </li>
+                }
+                else if (User.IsInRole("Member2"))
+                {
+                    <li class="dropdown">
+                        <a href="javascript:;">會員中心 <i class="fa fa-angle-down"></i></a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="@Url.Content("~/Member/Edit")">會員資料修改</a>
+                            </li>
+                            <li>
+                                <a href="@Url.Content("~/Member/Logout")">登出</a>
+                            </li>
+                        </ul>
+                    </li>
+
                 }
                 else
                 {

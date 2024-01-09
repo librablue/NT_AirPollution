@@ -17,8 +17,7 @@ namespace NT_AirPollution.Model.Domain
             set { this.GetType().GetProperty(propertyName).SetValue(this, value, null); }
         }
 
-        [Key]
-        public long ID { get; set; }
+        [ExplicitKey]
         public long FormID { get; set; }
         public string File1 { get; set; }
         public string File2 { get; set; }

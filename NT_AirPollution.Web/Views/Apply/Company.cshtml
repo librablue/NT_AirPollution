@@ -50,7 +50,7 @@
         </el-table>
     </div>
 
-    <el-dialog title="建立營建業主資料" :visible.sync="dialogVisible" width="33%" :close-on-click-modal="false">
+    <el-dialog title="建立營建業主資料" :visible.sync="dialogVisible" width="33%" :close-on-click-modal="false" v-cloak>
         <el-form label-width="120px">
             <el-form-item label="營建業主名稱">
                 <el-input v-model="selectRow.S_NAME" maxlength="80"></el-input>

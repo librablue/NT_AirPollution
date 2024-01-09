@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NT_AirPollution.Model.Enum;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,9 +10,11 @@ namespace NT_AirPollution.Model.View
     public class UserData
     {
         public long ID { get; set; }
+        public UserType UserType { get; set; }
         public string Email { get; set; }
+        public string CompanyID { get; set; }
         /// <summary>
-        /// 管制編號
+        /// 管制編號(非會員)
         /// </summary>
         public string C_NO { get; set; }
         /// <summary>

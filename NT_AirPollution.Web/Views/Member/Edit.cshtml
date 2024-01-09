@@ -1,4 +1,5 @@
-﻿@using NT_AirPollution.Service;
+﻿@using NT_AirPollution.Model.Enum;
+@using NT_AirPollution.Service;
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -12,12 +13,11 @@
 
 <div id="app">
     <div class="main-wrap" style="width: fit-content">
-        <h2>密碼修改</h2>
+        <h2>會員資料修改</h2>
         <el-form :rules="rules" ref="form" :model="form" label-position="top">
-            <el-form-item prop="Email" label="Email">@BaseService.CurrentUser.Email</el-form-item>
-            <el-form-item prop="UserName" label="申請人姓名">
-                <el-input v-model="form.UserName" maxlength="20"></el-input>
-            </el-form-item>
+            <el-form-item label="會員類型">@BaseService.CurrentUser.UserType</el-form-item>
+            <el-form-item label="Email">@BaseService.CurrentUser.Email</el-form-item>
+            <el-form-item label="統一編號">{{form.CompanyID}}</el-form-item>
             <el-form-item prop="Password" label="新密碼">
                 <el-input type="password" v-model="form.Password" maxlength="20"></el-input>
                 <small class="prompt-text">密碼須為 6 ~ 20 字，且須使用大、小寫英文 + 數字組合</small>

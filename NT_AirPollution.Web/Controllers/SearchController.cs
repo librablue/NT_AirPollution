@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using NT_AirPollution.Model.Domain;
 using NT_AirPollution.Model.View;
 using NT_AirPollution.Service;
+using NT_AirPollution.Web.ActionFilter;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -15,7 +16,7 @@ using System.Web.Security;
 
 namespace NT_AirPollution.Web.Controllers
 {
-    public class SearchController : Controller
+    public class SearchController : BaseController
     {
         private readonly string _configDomain = ConfigurationManager.AppSettings["Domain"].ToString();
         private readonly FormService _formService = new FormService();
@@ -63,7 +64,7 @@ namespace NT_AirPollution.Web.Controllers
             }
         }
 
-        [Authorize(Roles = "NonMember")]
+        [CustomAuthorize(Roles = "NonMember")]
         public ActionResult Result()
         {
             var fiter = new Form
@@ -75,7 +76,7 @@ namespace NT_AirPollution.Web.Controllers
             return View(result);
         }
 
-        [Authorize(Roles = "NonMember")]
+        [CustomAuthorize(Roles = "NonMember")]
         public JsonResult Resend()
         {
             try

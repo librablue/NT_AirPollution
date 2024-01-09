@@ -17,7 +17,13 @@
         </div>
         <div class="side-form">
             <h1>註冊帳號</h1>
-            <el-form :rules="rules" ref="form" :model="form">
+            <el-form :rules="rules" ref="form" :model="form" label-position="top">
+                <el-form-item prop="UserType" label="會員類型">
+                    <el-select class="w100p" v-model="form.UserType">
+                        <el-option label="營建空污費申報" :value="1"></el-option>
+                        <el-option label="營建自主管理" :value="2"></el-option>
+                    </el-select>
+                </el-form-item>
                 <el-form-item prop="Email" label="Email">
                     <el-input type="email" v-model="form.Email" maxlength="50">
                         <el-button slot="append" type="primary" class="btn-append" @@click="sendCode" :disabled="btnSendCodeDisabled">{{btnSendCodeText}}</el-button>
@@ -26,6 +32,10 @@
                 </el-form-item>
                 <el-form-item prop="ActiveCode" label="信箱驗證碼">
                     <el-input type="text" inputmode="numeric" v-model="form.ActiveCode"></el-input>
+                </el-form-item>
+                <el-form-item prop="CompanyID" label="統一編號">
+                    <el-input v-model="form.CompanyID" maxlength="8"></el-input>
+                    <small class="prompt-text">註冊後不可修改</small>
                 </el-form-item>
                 <el-form-item prop="Password" label="密碼">
                     <el-input type="password" v-model="form.Password" maxlength="20"></el-input>

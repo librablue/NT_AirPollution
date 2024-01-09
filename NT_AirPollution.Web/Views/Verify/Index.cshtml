@@ -1,0 +1,75 @@
+﻿@using NT_AirPollution.Model.Domain
+@model Form
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section styles {
+    <link rel="stylesheet" href="@Url.Content("~/static/css/member.css")" />
+    <style>
+        .verify-card {
+            width: 100%;
+            max-width: 500px;
+            margin: 40px auto;
+            padding: 40px 20px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+            background-color: #fff;
+            text-align: center;
+        }
+
+        @@media (min-width:768px) {
+            .verify-card {
+                width: 50%;
+            }
+        }
+
+        .fa-status {
+            font-size: 160px;
+            margin: 20px 0;
+        }
+
+        .fa-frown-o {
+            color: #F73D93;
+        }
+
+        .fa-smile-o {
+            color: #2F8F9D;
+        }
+
+        .message {
+            line-height: 2;
+        }
+        .link-home {
+            display: block;
+            color: #fff;
+            background-color: #2F8F9D;
+            padding: 6px 12px;
+            border-radius: 50px;
+            margin-top: 20px;
+            transition: all .3s;
+        }
+        .link-home:hover {
+            color: #fff;
+            opacity: .9;
+        }
+    </style>
+}
+
+<div class="main-wrap">
+    <div class="verify-card">
+        @if (@Model == null)
+        {
+            <h2>驗證失敗</h2>
+            <i class="fa fa-frown-o fa-status"></i>
+            <div class="message">無法驗證此網頁，請確認開啟信箱連結進行驗證。</div>
+        }
+        else
+        {
+            <h2>驗證完成</h2>
+            <i class="fa fa-smile-o fa-status"></i>
+            <div class="message">您的信箱<br> @Model.CreateUserEmail <br>已驗證完成 <br><a href="@Url.Content("~/Home/Index")" class="link-home">回到首頁</a></div>
+        }
+    </div>
+</div>

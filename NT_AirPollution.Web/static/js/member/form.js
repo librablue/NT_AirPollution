@@ -41,7 +41,7 @@
 					PUB_COMP: null,
 					CreateUserName: null,
 					COMP_NAM: null,
-                    Status: 0
+					Status: 0
 				},
 				district: Object.freeze([]),
 				projectCode: Object.freeze([]),
@@ -143,7 +143,7 @@
 				});
 			},
 			getCompanies() {
-				axios.post('/Member/GetMyCompanies', this.filter).then(res => {
+				axios.post('/Apply/GetMyCompanies', this.filter).then(res => {
 					this.companies = Object.freeze(res.data);
 				});
 			},
@@ -166,7 +166,7 @@
 				this.selectRow.S_C_TEL = result.S_C_TEL;
 			},
 			getContractor() {
-				axios.post('/Member/GetMyContractor', this.filter).then(res => {
+				axios.post('/Apply/GetMyContractor', this.filter).then(res => {
 					this.contractors = Object.freeze(res.data);
 				});
 			},
@@ -190,7 +190,7 @@
 			getForms() {
 				this.loading = true;
 				axios
-					.post('/Member/GetForms', this.filter)
+					.post('/Apply/GetForms', this.filter)
 					.then(res => {
 						this.forms = res.data;
 						this.loading = false;
@@ -207,10 +207,10 @@
 				//	P_KIND: '一次全繳',
 				//	KIND_NO: null,
 				//	BUD_DOC2: '無',
-				//	CreateUserName: document.querySelector('#hfUserName').value,
+				//	CreateUserName: null,
 				//	CreateUserEmail: document.querySelector('#hfUserEmail').value,
 				//	Attachment: {},
-                //  StopWorks: []
+				//  StopWorks: []
 				//};
 
 				this.selectRow = {
@@ -219,7 +219,7 @@
 					BUD_DOC2: '無',
 					PUB_COMP: true,
 					TOWN_NO: 'M2',
-					CreateUserName: document.querySelector('#hfUserName').value,
+					CreateUserName: null,
 					CreateUserEmail: document.querySelector('#hfUserEmail').value,
 					COMP_NAM: 'COMP_NAM',
 					KIND_NO: '1',
@@ -268,7 +268,7 @@
 					B_DATE2: '2024-01-01',
 					E_DATE2: '2024-01-31',
 					Attachment: {},
-                    StopWorks: []
+					StopWorks: []
 				};
 
 				this.dialogVisible = true;
@@ -295,17 +295,16 @@
 			sendForm() {
 				this.$refs.form.validate(valid => {
 					if (!valid) {
-                        alert('欄位驗證錯誤，請檢查修正後重新送出');
+						alert('欄位驗證錯誤，請檢查修正後重新送出');
 						return false;
 					}
 
-                    for (let i = 0; i < this.selectRow.StopWorks.length; i++) {
-                        if(!this.selectRow.StopWorks[i].DOWN_DATE2 || !this.selectRow.StopWorks[i].UP_DATE2) {
-                            alert('請選擇停復工日期');
-                            return;
-                        }
-                    }
-
+					for (let i = 0; i < this.selectRow.StopWorks.length; i++) {
+						if (!this.selectRow.StopWorks[i].DOWN_DATE2 || !this.selectRow.StopWorks[i].UP_DATE2) {
+							alert('請選擇停復工日期');
+							return;
+						}
+					}
 
 					if (!confirm('是否確認繼續?')) return false;
 					const formData = new FormData();
@@ -317,21 +316,21 @@
 						const file = document.querySelector(`#file${i}`);
 						if (file && file.files.length > 0) formData.append(`file${i}`, file.files[0]);
 					}
-                    // 停復工
-                    for (let i = 0; i < this.selectRow.StopWorks.length; i++) {
-                        formData.append(`StopWorks[${i}].DOWN_DATE2`, this.selectRow.StopWorks[i].DOWN_DATE2);
-                        formData.append(`StopWorks[${i}].UP_DATE2`, this.selectRow.StopWorks[i].UP_DATE2);
-                    }
+					// 停復工
+					for (let i = 0; i < this.selectRow.StopWorks.length; i++) {
+						formData.append(`StopWorks[${i}].DOWN_DATE2`, this.selectRow.StopWorks[i].DOWN_DATE2);
+						formData.append(`StopWorks[${i}].UP_DATE2`, this.selectRow.StopWorks[i].UP_DATE2);
+					}
 
 					axios
-						.post(`/Member/AddForm`, formData)
+						.post(`/Apply/${this.mode}Form`, formData)
 						.then(res => {
 							if (!res.data.Status) {
 								alert(res.data.Message);
 								return;
 							}
 
-                            alert('您申報之空污費，試算繳費金額約為 ' + res.data.Message + '元，請依後續審核後之繳費單金額為主。');
+							alert('您申報之空污費，試算繳費金額約為 ' + res.data.Message + '元，請依後續審核後之繳費單金額為主。');
 							this.getForms();
 							this.dialogVisible = false;
 						})
@@ -370,17 +369,24 @@
 
 				return dayDiff;
 			},
-            addStopWork() {
-                this.selectRow.StopWorks.push({
-                    DOWN_DATE: '',
-                    DOWN_DATE2: '',
-                    UP_DATE: '',
-                    UP_DATE2: ''
-                });
-            },
+			addStopWork() {
+				this.selectRow.StopWorks.push({
+					DOWN_DATE: '',
+					DOWN_DATE2: '',
+					UP_DATE: '',
+					UP_DATE2: ''
+				});
+			},
 			deleteStopWork(idx) {
 				if (!confirm('是否確認刪除?')) return;
 				this.selectRow.StopWorks.splice(idx, 1);
+			},
+			dialogClose() {
+				// 清空附件
+				for (let i = 1; i <= 8; i++) {
+					const file = document.querySelector(`#file${i}`);
+					if (file) file.value = '';
+				}
 			}
 		}
 	});

@@ -10,7 +10,10 @@
 			};
 			return {
 				form: {
+					UserType: null,
+					Email: '',
 					UserName: '',
+					CompanyID: '',
 					Password: '',
 					Password2: ''
 				},
@@ -20,7 +23,20 @@
 				})
 			};
 		},
+		mounted() {
+			this.getCurrentUser();
+		},
 		methods: {
+			getCurrentUser() {
+				axios.get('/Member/GetCurrentUser').then(res => {
+					if (!res.data.Status) {
+						alert(res.data.Message);
+						return;
+					}
+
+					this.form = res.data.Message;
+				});
+			},
 			updatePassword() {
 				this.$refs.form.validate(valid => {
 					if (!valid) {
@@ -35,7 +51,7 @@
 								return;
 							}
 
-                            alert('密碼修改成功，請重新登入');
+							alert('密碼修改成功，請重新登入');
 							location.href = '/Member/Logout';
 						})
 						.catch(err => {

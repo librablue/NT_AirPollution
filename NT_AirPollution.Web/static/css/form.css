@@ -62,6 +62,15 @@ input[type=number] {
   background-color: #fff;
 }
 
+.el-form-item__label {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+[v-cloak] {
+  display: none !important;
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;

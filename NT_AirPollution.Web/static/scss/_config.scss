@@ -60,3 +60,12 @@ input[type='number'] {
     color: #606266;
     background-color: #fff;
 }
+
+.el-form-item__label {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+[v-cloak] {
+    display: none !important;
+}

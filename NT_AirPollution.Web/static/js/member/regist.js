@@ -29,6 +29,12 @@
                 }
                 callback();
             };
+            const checkCompanyID = (rule, value, callback) => {
+                if (this.step === 'SUBMIT' && !value) {
+                    callback(new Error('請輸入統一編號'));
+                }
+                callback();
+            };
             const checkCaptcha = (rule, value, callback) => {
                 if (this.step === 'SUBMIT' && !value) {
                     callback(new Error('請勾選我不是機器人'));
@@ -40,6 +46,7 @@
                 btnSendCodeText: '寄送驗證碼',
                 btnSendCodeDisabled: false,
                 form: {
+                    UserType: null,
                     Email: '',
                     ActiveCode: '',
                     Password: '',
@@ -47,10 +54,12 @@
                     Captcha: ''
                 },
                 rules: Object.freeze({
+                    UserType: [{ required: true, message: '請選擇會員類型' }],
                     Email: [{ validator: checkEmail }],
                     ActiveCode: [{ validator: checkActiveCode }],
                     Password: [{ validator: checkPassword }],
                     Password2: [{ validator: checkPassword2 }],
+                    CompanyID: [{ validator: checkCompanyID }],
                     Captcha: [{ validator: checkCaptcha }]
                 })
             };
@@ -112,7 +121,7 @@
                             }
 
                             alert('註冊成功，請重新登入');
-                            location.href = 'Login';
+                            location.href = '/Member/Login';
                         })
                         .catch(err => {
                             console.log(err);

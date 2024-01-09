@@ -20,7 +20,7 @@
         methods: {
             getContractor() {
                 this.loading = true;
-                axios.post('/Member/GetMyContractor', this.filter).then(res => {
+                axios.post('/Apply/GetMyContractor', this.filter).then(res => {
                     this.contractors = res.data;
                     this.loading = false;
                 });
@@ -38,7 +38,7 @@
             deleteContractor(row) {
                 if (!confirm('是否確認刪除?')) return false;
                 axios
-                    .post(`/Member/DeleteContractor`, row)
+                    .post(`/Apply/DeleteContractor`, row)
                     .then(res => {
                         alert('畫面資料已儲存。');
                         this.getContractor();
@@ -51,7 +51,7 @@
             saveForm() {
                 if (!confirm('是否確認繼續?')) return false;
                 axios
-                    .post(`/Member/${this.mode}Contractor`, this.selectRow)
+                    .post(`/Apply/${this.mode}Contractor`, this.selectRow)
                     .then(res => {
                         if (!res.data.Status) {
                             alert(res.data.Message);

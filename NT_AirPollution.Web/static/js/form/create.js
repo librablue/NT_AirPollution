@@ -137,7 +137,8 @@
                 PERC_B: 7,
                 B_DATE2: '2024-01-01',
                 E_DATE2: '2024-01-31',
-                Attachment: {}
+                Attachment: {},
+                StopWorks: []
             };
         },
         computed: {

@@ -19,7 +19,7 @@
         methods: {
             getCompanies() {
                 this.loading = true;
-                axios.post('/Member/GetMyCompanies', this.filter).then(res => {
+                axios.post('/Apply/GetMyCompanies', this.filter).then(res => {
                     this.companies = res.data;
                     this.loading = false;
                 });
@@ -37,7 +37,7 @@
             deleteCompany(row) {
                 if (!confirm('是否確認刪除?')) return false;
                 axios
-                    .post(`/Member/DeleteCompany`, row)
+                    .post(`/Apply/DeleteCompany`, row)
                     .then(res => {
                         alert('畫面資料已儲存。');
                         this.getCompanies();
@@ -50,7 +50,7 @@
             saveForm() {
                 if (!confirm('是否確認繼續?')) return false;
                 axios
-                    .post(`/Member/${this.mode}Company`, this.selectRow)
+                    .post(`/Apply/${this.mode}Company`, this.selectRow)
                     .then(res => {
                         if (!res.data.Status) {
                             alert(res.data.Message);

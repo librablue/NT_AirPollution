@@ -120,10 +120,13 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActionFilter\CustomAuthorizeAttribute.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\FormController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\ApplyController.cs" />
+    <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\MemberController.cs" />
     <Compile Include="Controllers\OptionController.cs" />
     <Compile Include="Controllers\SearchController.cs" />
@@ -159,15 +162,16 @@
     <Content Include="Views\Member\Regist.cshtml" />
     <Content Include="Views\Member\Forget.cshtml" />
     <Content Include="Views\Member\Edit.cshtml" />
-    <Content Include="Views\Member\Company.cshtml" />
+    <Content Include="Views\Apply\Company.cshtml" />
     <Content Include="static\js\plugin\element-ui\fonts\element-icons.ttf" />
     <Content Include="static\js\plugin\element-ui\fonts\element-icons.woff" />
-    <Content Include="Views\Member\Contractor.cshtml" />
-    <Content Include="Views\Member\Form.cshtml" />
+    <Content Include="Views\Apply\Contractor.cshtml" />
+    <Content Include="Views\Apply\Form.cshtml" />
     <Content Include="Views\Form\Create.cshtml" />
     <Content Include="Views\Search\Index.cshtml" />
     <Content Include="Views\Search\Result.cshtml" />
     <Content Include="Views\Form\Update.cshtml" />
+    <Content Include="Views\Verify\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -179,8 +183,8 @@
     <Folder Include="App_Data\Upload\" />
     <Folder Include="static\image\Upload\" />
     <Folder Include="Views\Base\" />
+    <Folder Include="Views\Manage\" />
     <Folder Include="Views\Option\" />
-    <Folder Include="Views\Verify\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NT_AirPollution.Model\NT_AirPollution.Model.csproj">
