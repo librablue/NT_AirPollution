@@ -8,6 +8,7 @@ namespace NT_AirPollution.Model.Enum
 {
     public enum Commitment
     {
+        全部 = 0,
         未完成認養承諾書 = 1,
         未完成廢土承諾書 = 2
     }

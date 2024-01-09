@@ -1,5 +1,4 @@
-﻿using Microsoft.SqlServer.Server;
-using NT_AirPollution.Model.Domain;
+﻿using NT_AirPollution.Model.Domain;
 using NT_AirPollution.Model.View;
 using NT_AirPollution.Service;
 using NT_AirPollution.Web.ActionFilter;
@@ -10,8 +9,6 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using System.Web.Security;
-using static System.Net.WebRequestMethods;
 
 namespace NT_AirPollution.Web.Controllers
 {

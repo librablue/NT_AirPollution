@@ -135,6 +135,11 @@ namespace NT_AirPollution.Service
             }
         }
 
+        /// <summary>
+        /// 取得自主管理的申請單(抓相同統編)
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
         public List<FormView> GetFormsByCompany(FormFilter filter)
         {
             using (var cn = new SqlConnection(connStr))
@@ -143,16 +148,15 @@ namespace NT_AirPollution.Service
                     SELECT * FROM Form 
                     WHERE (@C_NO='' OR C_NO=@C_NO)
                         AND (@COMP_NAM='' OR COMP_NAM LIKE '%'+@COMP_NAM+'%')
-                        AND (S_G_NO=@CompanyID OR R_G_NO=@CompanyID)
-                        AND (@Status=0 OR Status=@Status)",
+                        AND (S_G_NO=@CompanyID OR R_G_NO=@CompanyID)",
                     new
                     {
                         C_NO = filter.C_NO ?? "",
                         COMP_NAM = filter.COMP_NAM ?? "",
-                        CompanyID = filter.CompanyID,
-                        Status = filter.Status
+                        CompanyID = filter.CompanyID
                     }).ToList();
 
+                var now = DateTime.Now;
                 foreach (var item in result)
                 {
                     item.Attachment = cn.QueryFirstOrDefault<Attachment>(@"
@@ -177,7 +181,30 @@ namespace NT_AirPollution.Service
                         sub.DOWN_DATE2 = base.ChineseDateToWestDate(sub.DOWN_DATE);
                         sub.UP_DATE2 = base.ChineseDateToWestDate(sub.UP_DATE);
                     }
+
+
+                    // 檢查今天是否在停復工日期範圍內
+                    bool isPause = result.Any(o => o.StopWorks.Any(x => x.DOWN_DATE2 < now && now > x.UP_DATE2));
+
+                    if (isPause)
+                        item.WorkStatus = WorkStatus.停工中;
+                    else if (now > item.E_DATE2)
+                        item.WorkStatus = WorkStatus.已完工;
+                    else
+                        item.WorkStatus = WorkStatus.施工中;
                 }
+
+                if (filter.WorkStatus != WorkStatus.全部)
+                    result = result.Where(o => o.WorkStatus == filter.WorkStatus).ToList();
+
+                // Todo
+                //switch (filter.Commitment)
+                //{
+                //    case Commitment.未完成認養承諾書:
+                //        break;
+                //    case Commitment.未完成廢土承諾書:
+                //        break;
+                //}
 
                 return result;
             }

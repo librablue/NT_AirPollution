@@ -1,6 +1,22 @@
 ﻿document.addEventListener('DOMContentLoaded', () => {
     new Vue({
         el: '#app',
+        filters: {
+            date: value => {
+                if (!value || value === '0001-01-01T00:00:00') return '';
+                return moment(value).format('YYYY-MM-DD');
+            },
+            workStatus: value => {
+                switch (value) {
+                    case 1:
+                        return '施工中';
+                    case 2:
+                        return '停工中';
+                    case 3:
+                        return '已完工';
+                }
+            }
+        },
         data() {
             return {
                 loading: false,
@@ -10,33 +26,14 @@
                     WorkStatus: 0,
                     Commitment: 0
                 },
-                selectRow: {},
-                dialogVisible: false
+                forms: []
             };
         },
         methods: {
-            showEditModal(row) {
-                this.selectRow = JSON.parse(JSON.stringify(row));
-                this.dialogVisible = true;
-            },
-            saveForm() {
-                if (!confirm('是否確認繼續?')) return false;
-                axios
-                    .post(`/Apply/${this.mode}Company`, this.selectRow)
-                    .then(res => {
-                        if (!res.data.Status) {
-                            alert(res.data.Message);
-                            return;
-                        }
-
-                        this.getCompanies();
-                        alert('畫面資料已儲存。');
-                        this.dialogVisible = false;
-                    })
-                    .catch(err => {
-                        alert('系統發生未預期錯誤');
-                        console.log(err);
-                    });
+            GetForms() {
+                axios.post('/Manage/GetForms', this.filter).then(res => {
+                    this.forms = res.data.Message;
+                });
             }
         }
     });

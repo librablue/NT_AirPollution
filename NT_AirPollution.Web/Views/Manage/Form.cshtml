@@ -38,5 +38,25 @@
                 <el-button type="primary" icon="el-icon-search" @@click="getForms">查 詢</el-button>
             </el-form-item>
         </el-form>
+
+        <el-table :data="forms" :loading="loading" border stripe>
+            <el-table-column label="功能" width="100" align="center" fixed>
+                <template slot-scope="scope">
+                </template>
+            </el-table-column>
+            <el-table-column label="案件狀態" align="center" width="100">
+                <template slot-scope="scope">
+                    {{ scope.row.WorkStatus | workStatus }}
+                </template>
+            </el-table-column>
+            <el-table-column prop="C_NO" label="管制編號" align="center" width="140"></el-table-column>
+            <el-table-column prop="SER_NO" label="序號" align="center" width="50"></el-table-column>
+            <el-table-column prop="COMP_NAM" label="工程名稱"></el-table-column>
+            <el-table-column prop="C_DATE" label="申報工期" align="center" width="180">
+                <template slot-scope="scope">
+                    {{ scope.row.B_DATE2 | date }} ~ {{ scope.row.E_DATE2 | date }}
+                </template>
+            </el-table-column>
+        </el-table>
     </div>
 </div>
