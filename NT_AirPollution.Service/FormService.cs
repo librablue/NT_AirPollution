@@ -135,6 +135,54 @@ namespace NT_AirPollution.Service
             }
         }
 
+        public List<FormView> GetFormsByCompany(FormFilter filter)
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                var result = cn.Query<FormView>(@"
+                    SELECT * FROM Form 
+                    WHERE (@C_NO='' OR C_NO=@C_NO)
+                        AND (@COMP_NAM='' OR COMP_NAM LIKE '%'+@COMP_NAM+'%')
+                        AND (S_G_NO=@CompanyID OR R_G_NO=@CompanyID)
+                        AND (@Status=0 OR Status=@Status)",
+                    new
+                    {
+                        C_NO = filter.C_NO ?? "",
+                        COMP_NAM = filter.COMP_NAM ?? "",
+                        CompanyID = filter.CompanyID,
+                        Status = filter.Status
+                    }).ToList();
+
+                foreach (var item in result)
+                {
+                    item.Attachment = cn.QueryFirstOrDefault<Attachment>(@"
+                        SELECT * FROM Attachment WHERE FormID=@FormID",
+                        new { FormID = item.ID });
+
+                    if (!string.IsNullOrEmpty(item.B_DATE))
+                        item.B_DATE2 = base.ChineseDateToWestDate(item.B_DATE);
+                    if (!string.IsNullOrEmpty(item.E_DATE))
+                        item.E_DATE2 = base.ChineseDateToWestDate(item.E_DATE);
+                    if (!string.IsNullOrEmpty(item.S_B_BDATE))
+                        item.S_B_BDATE2 = base.ChineseDateToWestDate(item.S_B_BDATE);
+                    if (!string.IsNullOrEmpty(item.R_B_BDATE))
+                        item.R_B_BDATE2 = base.ChineseDateToWestDate(item.R_B_BDATE);
+
+                    item.StopWorks = cn.Query<StopWork>(@"
+                        SELECT * FROM StopWork WHERE FormID=@FormID",
+                        new { FormID = item.ID }).ToList();
+
+                    foreach (var sub in item.StopWorks)
+                    {
+                        sub.DOWN_DATE2 = base.ChineseDateToWestDate(sub.DOWN_DATE);
+                        sub.UP_DATE2 = base.ChineseDateToWestDate(sub.UP_DATE);
+                    }
+                }
+
+                return result;
+            }
+        }
+
         /// <summary>
         /// 取得用戶的申請單
         /// </summary>
@@ -232,18 +280,18 @@ namespace NT_AirPollution.Service
         /// 取得表單最新流水號
         /// </summary>
         /// <returns></returns>
-        public int GetSerialNumber()
-        {
-            using (var cn = new SqlConnection(connStr))
-            {
-                int serialNo = cn.QuerySingleOrDefault<int>(@"
-                    SELECT ISNULL(MAX(SerialNo), 0) FROM Form 
-                    WHERE C_DATE>=@Today",
-                    new { Today = DateTime.Now.ToString("yyyy-MM-dd") });
+        //public int GetSerialNumber()
+        //{
+        //    using (var cn = new SqlConnection(connStr))
+        //    {
+        //        int serialNo = cn.QuerySingleOrDefault<int>(@"
+        //            SELECT ISNULL(MAX(SerialNo), 0) FROM Form 
+        //            WHERE C_DATE>=@Today",
+        //            new { Today = DateTime.Now.ToString("yyyy-MM-dd") });
 
-                return serialNo;
-            }
-        }
+        //        return serialNo;
+        //    }
+        //}
 
         /// <summary>
         /// 新增申請單

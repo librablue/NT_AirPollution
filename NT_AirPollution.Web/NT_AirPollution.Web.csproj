@@ -172,6 +172,7 @@
     <Content Include="Views\Search\Result.cshtml" />
     <Content Include="Views\Form\Update.cshtml" />
     <Content Include="Views\Verify\Index.cshtml" />
+    <Content Include="Views\Manage\Form.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -183,7 +184,6 @@
     <Folder Include="App_Data\Upload\" />
     <Folder Include="static\image\Upload\" />
     <Folder Include="Views\Base\" />
-    <Folder Include="Views\Manage\" />
     <Folder Include="Views\Option\" />
   </ItemGroup>
   <ItemGroup>

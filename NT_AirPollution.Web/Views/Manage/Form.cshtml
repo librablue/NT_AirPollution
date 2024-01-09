@@ -1,0 +1,42 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section styles {
+    <link rel="stylesheet" href="@Url.Content("~/static/css/member.css")" />
+}
+@section scripts {
+    <script src="@Url.Content("~/static/js/member/form.js")"></script>
+}
+
+<div id="app">
+    <div class="main-wrap">
+        <h2>工地自主管理</h2>
+        <el-form inline>
+            <el-form-item label="管制編號">
+                <el-input style="width:160px" v-model="filter.C_NO"></el-input>
+            </el-form-item>
+            <el-form-item label="工程名稱">
+                <el-input v-model="filter.COMP_NAM"></el-input>
+            </el-form-item>
+            <el-form-item label="狀態">
+                <el-select style="width:140px" v-model="filter.WorkStatus">
+                    <el-option label="請選擇" :value="0"></el-option>
+                    <el-option label="施工中" :value="1"></el-option>
+                    <el-option label="停工中" :value="2"></el-option>
+                    <el-option label="已完工" :value="3"></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="狀態">
+                <el-select style="width:160px" v-model="filter.Commitment">
+                    <el-option label="請選擇" :value="0"></el-option>
+                    <el-option label="未完成認養承諾書" :value="1"></el-option>
+                    <el-option label="未完成廢土承諾書" :value="2"></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" icon="el-icon-search" @@click="getForms">查 詢</el-button>
+            </el-form-item>
+        </el-form>
+    </div>
+</div>

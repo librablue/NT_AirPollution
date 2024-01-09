@@ -22,5 +22,11 @@ namespace NT_AirPollution.Model.View
         public string CreateUserEmail { get; set; }
         public string AutoFormID { get; set; }
         public Status Status { get; set; }
+        /// <summary>
+        /// 統一編號
+        /// </summary>
+        public string CompanyID { get; set; }
+        public WorkStatus WorkStatus { get; set; }
+        public Commitment Commitment { get; set; }
     }
 }
