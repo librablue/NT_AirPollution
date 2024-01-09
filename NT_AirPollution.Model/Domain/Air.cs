@@ -7,13 +7,12 @@ using System.Threading.Tasks;
 
 namespace NT_AirPollution.Model.Domain
 {
-    [Table("AirPollution")]
-    public class AirPollution
+    [Table("Air")]
+    public class Air
     {
         [Key]
         public long ID { get; set; }
-        public string C_NO { get; set; }
-        public int SER_NO { get; set; }
+        public long FormID { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public string Position { get; set; }

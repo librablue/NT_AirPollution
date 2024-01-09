@@ -7,11 +7,12 @@ using System.Threading.Tasks;
 
 namespace NT_AirPollution.Model.Domain
 {
-    [Table("AirPollutionFile")]
-    public class AirPollutionFile
+    [Table("AirFile")]
+    public class AirFile
     {
         [Key]
         public long ID { get; set; }
+        public long AirID { get; set; }
         public string FileName { get; set; }
     }
 }

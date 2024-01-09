@@ -122,6 +122,7 @@
   <ItemGroup>
     <Compile Include="ActionFilter\CustomAuthorizeAttribute.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\AirController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\FormController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -183,6 +184,7 @@
   <ItemGroup>
     <Folder Include="App_Data\Upload\" />
     <Folder Include="static\image\Upload\" />
+    <Folder Include="Views\Air\" />
     <Folder Include="Views\Base\" />
     <Folder Include="Views\Option\" />
   </ItemGroup>
