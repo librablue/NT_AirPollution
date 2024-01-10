@@ -66,6 +66,13 @@ input[type='number'] {
     font-weight: 700;
 }
 
+@media (max-width: 992px) {
+    .el-dialog {
+        width: 90% !important;
+    }
+}
+
+
 [v-cloak] {
     display: none !important;
 }

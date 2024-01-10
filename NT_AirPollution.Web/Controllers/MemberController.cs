@@ -312,7 +312,7 @@ namespace NT_AirPollution.Web.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new AjaxResult { Status = false, Message = ex.Message });
+                return Json(new AjaxResult { Status = false, Message = ex.Message }, JsonRequestBehavior.AllowGet);
             }
         }
     }

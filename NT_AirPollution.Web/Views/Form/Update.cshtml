@@ -441,7 +441,7 @@
                                     <td>建照起造人為公司行號請加蓋公司大小章，建照起造人為私人請加蓋個人私章</td>
                                     <td>
                                         <div v-if="form.Attachment.File1">
-                                            <a href="javascript:;" @@click="deleteFile(1)"><i class="el-icon-delete"></i></a>
+                                            <a href="javascript:;" class="link-delete" @@click="deleteFile(1)"><i class="el-icon-delete"></i></a>
                                             <a :href="`/Option/Download?f=${form.Attachment.File1}`">{{form.Attachment.File1}}</a>
                                         </div>
                                         <input type="file" id="file1" accept=".doc,.docx,.pdf" v-else />
@@ -452,7 +452,7 @@
                                     <td></td>
                                     <td>
                                         <div v-if="form.Attachment.File2">
-                                            <a href="javascript:;" @@click="deleteFile(2)"><i class="el-icon-delete"></i></a>
+                                            <a href="javascript:;" class="link-delete" @@click="deleteFile(2)"><i class="el-icon-delete"></i></a>
                                             <a :href="`/Option/Download?f=${form.Attachment.File2}`">{{form.Attachment.File2}}</a>
                                         </div>
                                         <input type="file" id="file2" accept=".doc,.docx,.pdf" v-else />
@@ -463,7 +463,7 @@
                                     <td>業主為建設公司檢附建設公司執照或營業事業登記證，若無營利事業登記證可用公司登記函取代</td>
                                     <td>
                                         <div v-if="form.Attachment.File3">
-                                            <a href="javascript:;" @@click="deleteFile(3)"><i class="el-icon-delete"></i></a>
+                                            <a href="javascript:;" class="link-delete" @@click="deleteFile(3)"><i class="el-icon-delete"></i></a>
                                             <a :href="`/Option/Download?f=${form.Attachment.File3}`">{{form.Attachment.File3}}</a>
                                         </div>
                                         <input type="file" id="file3" accept=".doc,.docx,.pdf" v-else />
@@ -474,7 +474,7 @@
                                     <td>附註路名或大地標</td>
                                     <td>
                                         <div v-if="form.Attachment.File4">
-                                            <a href="javascript:;" @@click="deleteFile(4)"><i class="el-icon-delete"></i></a>
+                                            <a href="javascript:;" class="link-delete" @@click="deleteFile(4)"><i class="el-icon-delete"></i></a>
                                             <a :href="`/Option/Download?f=${form.Attachment.File4}`">{{form.Attachment.File4}}</a>
                                         </div>
                                         <input type="file" id="file4" accept=".doc,.docx,.pdf" v-else />
@@ -485,7 +485,7 @@
                                     <td>承包商第一次申報需檢附。若無營利事業登記證可用公司登記函取代</td>
                                     <td>
                                         <div v-if="form.Attachment.File5">
-                                            <a href="javascript:;" @@click="deleteFile(5)"><i class="el-icon-delete"></i></a>
+                                            <a href="javascript:;" class="link-delete" @@click="deleteFile(5)"><i class="el-icon-delete"></i></a>
                                             <a :href="`/Option/Download?f=${form.Attachment.File5}`">{{form.Attachment.File5}}</a>
                                         </div>
                                         <input type="file" id="file5" accept=".doc,.docx,.pdf" v-else />
@@ -496,7 +496,7 @@
                                     <td>承包商第一次申報需檢附。空污費二萬元以上，請配合本局辦理道路認養。</td>
                                     <td>
                                         <div v-if="form.Attachment.File6">
-                                            <a href="javascript:;" @@click="deleteFile(6)"><i class="el-icon-delete"></i></a>
+                                            <a href="javascript:;" class="link-delete" @@click="deleteFile(6)"><i class="el-icon-delete"></i></a>
                                             <a :href="`/Option/Download?f=${form.Attachment.File6}`">{{form.Attachment.File6}}</a>
                                         </div>
                                         <input type="file" id="file6" accept=".doc,.docx,.pdf" v-else />
@@ -507,7 +507,7 @@
                                     <td></td>
                                     <td>
                                         <div v-if="form.Attachment.File7">
-                                            <a href="javascript:;" @@click="deleteFile(7)"><i class="el-icon-delete"></i></a>
+                                            <a href="javascript:;" class="link-delete" @@click="deleteFile(7)"><i class="el-icon-delete"></i></a>
                                             <a :href="`/Option/Download?f=${form.Attachment.File7}`">{{form.Attachment.File7}}</a>
                                         </div>
                                         <input type="file" id="file7" accept=".doc,.docx,.pdf" v-else />
@@ -518,7 +518,7 @@
                                     <td>免徵案件需上傳免徵證明</td>
                                     <td>
                                         <div v-if="form.Attachment.File8">
-                                            <a href="javascript:;" @@click="deleteFile(8)"><i class="el-icon-delete"></i></a>
+                                            <a href="javascript:;" class="link-delete" @@click="deleteFile(8)"><i class="el-icon-delete"></i></a>
                                             <a :href="`/Option/Download?f=${form.Attachment.File8}`">{{form.Attachment.File8}}</a>
                                         </div>
                                         <input type="file" id="file8" accept=".doc,.docx,.pdf" v-else />

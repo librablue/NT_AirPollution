@@ -102,13 +102,15 @@
     <Content Include="static\image\illu-building.svg" />
     <Content Include="static\image\illu-news.svg" />
     <Content Include="static\image\logo.png" />
+    <Content Include="static\js\air\index.js" />
+    <Content Include="static\js\apply\company.js" />
+    <Content Include="static\js\apply\contractor.js" />
+    <Content Include="static\js\apply\form.js" />
     <Content Include="static\js\form\update.js" />
+    <Content Include="static\js\manage\form.js" />
     <Content Include="static\js\search\result.js" />
     <Content Include="static\js\form\create.js" />
     <Content Include="static\js\main.js" />
-    <Content Include="static\js\member\form.js" />
-    <Content Include="static\js\member\company.js" />
-    <Content Include="static\js\member\contractor.js" />
     <Content Include="static\js\member\forget.js" />
     <Content Include="static\js\member\edit.js" />
     <Content Include="static\js\member\login.js" />
@@ -174,6 +176,7 @@
     <Content Include="Views\Form\Update.cshtml" />
     <Content Include="Views\Verify\Index.cshtml" />
     <Content Include="Views\Manage\Form.cshtml" />
+    <Content Include="Views\Air\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -184,7 +187,6 @@
   <ItemGroup>
     <Folder Include="App_Data\Upload\" />
     <Folder Include="static\image\Upload\" />
-    <Folder Include="Views\Air\" />
     <Folder Include="Views\Base\" />
     <Folder Include="Views\Option\" />
   </ItemGroup>

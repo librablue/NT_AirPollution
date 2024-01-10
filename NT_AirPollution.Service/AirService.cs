@@ -24,7 +24,7 @@ namespace NT_AirPollution.Service
             {
                 var airs = cn.Query<AirView>(@"
                     SELECT a1.*,
-                        a2.C_NO,a2.SER_NO 
+                        a2.C_NO,a2.SER_NO,a2.COMP_NAM,a2.B_DATE,a2.E_DATE 
                     FROM Air AS a1
                     INNER JOIN Form AS a2 ON a1.FormID=a2.ID
                     WHERE a2.ID=@ID",
@@ -32,7 +32,7 @@ namespace NT_AirPollution.Service
 
                 foreach (var item in airs)
                 {
-                    item.AirFile = cn.Query<AirFile>(@"
+                    item.AirFiles = cn.Query<AirFile>(@"
                         SELECT * FROM AirFile WHERE AirID=@AirID",
                         new { AirID = item.ID }).ToList();
                 }
@@ -59,10 +59,10 @@ namespace NT_AirPollution.Service
                         long id = cn.Insert(air, trans);
 
                         // 附件
-                        foreach (var item in air.AirFile)
+                        foreach (var item in air.AirFiles)
                             item.AirID = id;
 
-                        cn.Insert(air.AirFile, trans);
+                        cn.Insert(air.AirFiles, trans);
 
                         trans.Commit();
                         return id;
@@ -98,8 +98,12 @@ namespace NT_AirPollution.Service
                         cn.Execute(@"DELETE FROM AirFile WHERE AirID=@AirID",
                             new { AirID = air.ID}, trans);
 
+                        // 附件
+                        foreach (var item in air.AirFiles)
+                            item.AirID = air.ID;
+
                         // 新增附件
-                        cn.Insert(air.AirFile, trans);
+                        cn.Insert(air.AirFiles, trans);
 
                         trans.Commit();
                         return true;

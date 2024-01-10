@@ -67,6 +67,11 @@ input[type=number] {
   font-weight: 700;
 }
 
+@media (max-width: 992px) {
+  .el-dialog {
+    width: 90% !important;
+  }
+}
 [v-cloak] {
   display: none !important;
 }
@@ -428,6 +433,53 @@ h3 {
 .link-delete {
   color: #f56c6c;
   margin-right: 10px;
+}
+
+.img-thumb-list {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.img-thumb-wrap {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin: 4px;
+}
+.img-thumb-wrap:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: #000;
+  opacity: 0;
+  border-radius: 4px;
+  transition: all 0.3s;
+}
+.img-thumb-wrap:hover:before {
+  opacity: 0.5;
+}
+.img-thumb-wrap:hover .link-delete {
+  display: inline-block;
+}
+.img-thumb-wrap .link-delete {
+  display: none;
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  font-size: 18px;
+  color: #fff;
+  margin: 0;
+  line-height: 1;
+}
+.img-thumb-wrap img {
+  width: 100%;
+  height: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
+  border-radius: 4px;
 }
 
 @media (min-width: 768px) {

@@ -20,15 +20,27 @@ namespace NT_AirPollution.Web.Controllers
         private readonly AirService _airService = new AirService();
         private readonly FormService _formService = new FormService();
 
+        public ActionResult Index()
+        {
+            return View();
+        }
+
         public JsonResult GetAirsByForm(int formID)
         {
-            // 檢查是否為自己的申請單
-            var formInDB = _formService.GetFormByID(formID);
-            if (formInDB == null || (formInDB.S_G_NO != BaseService.CurrentUser.CompanyID && formInDB.R_G_NO != BaseService.CurrentUser.CompanyID))
-                throw new Exception("查無此空污申請單");
+            try
+            {
+                // 檢查是否為自己的申請單
+                var formInDB = _formService.GetFormByID(formID);
+                if (formInDB == null || (formInDB.S_G_NO != BaseService.CurrentUser.CompanyID && formInDB.R_G_NO != BaseService.CurrentUser.CompanyID))
+                    throw new Exception("查無此空污申請單");
 
-            var airs = _airService.GetAirsByFormID(formID);
-            return Json(new AjaxResult { Status = true, Message = airs }, JsonRequestBehavior.AllowGet);
+                var airs = _airService.GetAirsByFormID(formID);
+                return Json(new AjaxResult { Status = true, Message = airs }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new AjaxResult { Status = false, Message = ex.Message }, JsonRequestBehavior.AllowGet);
+            }
         }
 
         public JsonResult AddAir(AirView air, List<HttpPostedFileBase> file)
@@ -60,7 +72,7 @@ namespace NT_AirPollution.Web.Controllers
                         // 儲存檔案
                         f.SaveAs(absoluteFilePath);
 
-                        air.AirFile.Add(new AirFile
+                        air.AirFiles.Add(new AirFile
                         {
                             FileName = fileName
                         });
@@ -77,7 +89,6 @@ namespace NT_AirPollution.Web.Controllers
             {
                 return Json(new AjaxResult { Status = false, Message = ex.Message });
             }
-
         }
 
         public JsonResult UpdateAir(AirView air, List<HttpPostedFileBase> file)
@@ -109,8 +120,8 @@ namespace NT_AirPollution.Web.Controllers
                         // 儲存檔案
                         f.SaveAs(absoluteFilePath);
 
-                        air.AirFile.Add(new AirFile
-                        {   ID = air.ID,
+                        air.AirFiles.Add(new AirFile
+                        {   AirID = air.ID,
                             FileName = fileName
                         });
                     }
