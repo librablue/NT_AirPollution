@@ -18,12 +18,12 @@
             <el-form-item label="工程名稱">{{form.COMP_NAM}}</el-form-item>
             <el-form-item label="申報工期">{{form.B_DATE2 | date}}~{{form.E_DATE2 | date}}</el-form-item>
             <el-form-item>
-                <el-button v-if="road" type="success" icon="el-icon-search" @@click="showPromise()">檢視認養承諾書</el-button>
+                <el-button v-if="promise" type="success" icon="el-icon-search" @@click="promiseDialogVisible = true">檢視認養承諾書</el-button>
                 <el-button v-else type="success" icon="el-icon-plus" @@click="addPromise()">新增認養承諾書</el-button>
             </el-form-item>
         </el-form>
 
-        <el-table :data="airs" :loading="loading" border stripe>
+        @*<el-table :data="airs" :loading="loading" border stripe>
             <el-table-column label="功能" width="100" align="center" fixed>
                 <template slot-scope="scope">
                     <el-button type="primary" size="mini" icon="el-icon-search" circle title="查看" @@click="showModal(scope.row)"></el-button>
@@ -52,48 +52,61 @@
                     </el-popover>
                 </template>
             </el-table-column>
-        </el-table>
+        </el-table>*@
     </div>
 
-    <el-dialog title="建立認養成果" :visible.sync="dialogVisible" width="33%" v-cloak>
-        <el-form :rules="rules" ref="form" :model="selectRow" label-width="120px">
+    <el-dialog title="建立認養承諾書" :visible.sync="promiseDialogVisible" width="50%" v-if="promise" v-cloak>
+        <el-form :rules="promiseRules" ref="form1" :model="promise" label-width="120px">
             <el-form-item label="管制編號">{{form.C_NO}}-{{form.SER_NO}}</el-form-item>
-            <el-form-item label="執行起始日期">
-                <el-date-picker class="w100p" v-model="selectRow.StartDate" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
+            <el-form-item label="工地名稱">{{form.COMP_NAM}}</el-form-item>
+            <el-form-item label="工地地點">{{form.ADDR}}</el-form-item>
+            <el-form-item label="聯絡人">{{form.R_M_NAM}}</el-form-item>
+            <el-form-item label="工地電話">{{form.R_TEL}}</el-form-item>
+            <el-form-item label="行動電話">{{form.R_TEL1}}</el-form-item>
+            <el-form-item label="認養道路名稱"></el-form-item>
+            
+            <el-form-item prop="CleanWay" label="清掃方式">
+                <el-row type="flex" :gutter="10">
+                    <el-col :span="8">
+                        <el-select c v-model="promise.CleanWay1">
+                            <el-option label="掃街" value="掃街"></el-option>
+                            <el-option label="洗街" value="洗街"></el-option>
+                        </el-select>
+                    </el-col>
+                    <el-col :span="8">
+                        <el-select class="w100p" v-model="promise.CleanWay2">
+                            <el-option label="人力" value="人力"></el-option>
+                            <el-option label="機具" value="機具"></el-option>
+                        </el-select>
+                    </el-col>
+                </el-row>
             </el-form-item>
-            <el-form-item label="執行結束日期">
-                <el-date-picker class="w100p" v-model="selectRow.EndDate" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
-            </el-form-item>
-            <el-form-item prop="Position" label="執行地點">
-                <el-input v-model="selectRow.Position"></el-input>
-            </el-form-item>
-            <el-form-item prop="Method" label="執行措施">
-                <el-input v-model="selectRow.Method"></el-input>
-            </el-form-item>
-            <el-form-item prop="Remark" label="備註">
-                <el-input type="textarea" :autosize="{ minRows: 4}" v-model="selectRow.Remark"></el-input>
-            </el-form-item>
-            <el-form-item label="現場狀況">
-                <el-button type="primary" size="mini" icon="el-icon-plus" circle @@click="addFile"></el-button>
-                <ul class="img-thumb-list">
-                    <li v-for="(item, idx) in selectRow.AirFiles">
-                        <div class="img-thumb-wrap" v-if="item.FileName">
-                            <a href="javascript:;" class="link-delete" @@click="deleteFile(idx)"><i class="el-icon-delete"></i></a>
-                            <img :src="`/Option/Download?f=${item.FileName}`" />
+            <el-form-item prop="Frequency" label="清掃頻率">
+                <el-row type="flex" :gutter="10">
+                    <el-col :span="8">
+                        <el-select v-model="promise.Frequency">
+                            <el-option label="每日" value="每日"></el-option>
+                            <el-option label="每週" value="每週"></el-option>
+                        </el-select>
+                    </el-col>
+                    <el-col :span="16">
+                        <div style="display:flex">
+                            <el-input-number v-model="promise.Times" :min="1"></el-input-number>
+                            <span style="margin-left:4px">次</span>
                         </div>
-                        <input type="file" :id="`file${idx}`" accept=".jpg,.jpeg,.png" v-else />
-                    </li>
-                </ul>
-                <ul>
-                    <li v-for="(item, idx) in newFiles">
-                        <input type="file" :id="`file${idx}`" accept=".jpg,.jpeg,.png" />
-                    </li>
-                </ul>
+                    </el-col>
+                </el-row>
+            </el-form-item>
+            <el-form-item prop="StartDate" label="認養期限(起)">
+                <el-date-picker class="w100p" v-model="promise.StartDate" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
+            </el-form-item>
+            <el-form-item prop="EndDate" label="認養期限(迄)">
+                <el-date-picker class="w100p" v-model="promise.EndDate" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
             </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
-            <el-button @@click="dialogVisible = false">取 消</el-button>
-            <el-button type="primary" @@click="sendForm">儲 存</el-button>
+            <el-button @@click="promiseDialogVisible = false">取 消</el-button>
+            <el-button type="primary" @@click="sendPromise">儲 存</el-button>
         </span>
     </el-dialog>
 </div>

@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.UI;
 
 namespace NT_AirPollution.Web.Controllers
 {
@@ -32,12 +33,36 @@ namespace NT_AirPollution.Web.Controllers
                 if (formInDB == null || (formInDB.S_G_NO != BaseService.CurrentUser.CompanyID && formInDB.R_G_NO != BaseService.CurrentUser.CompanyID))
                     throw new Exception("查無此空污申請單");
 
-                var airs = _roadService.GetPromiseByFormID(formID);
-                return Json(new AjaxResult { Status = true, Message = airs }, JsonRequestBehavior.AllowGet);
+                var promise = _roadService.GetPromiseByFormID(formID);
+                return Json(new AjaxResult { Status = true, Message = promise }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {
                 return Json(new AjaxResult { Status = false, Message = ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        public JsonResult AddPromise(RoadPromiseView promise)
+        {
+            try
+            {
+                // 檢查是否為自己的申請單
+                var formInDB = _formService.GetFormByID(promise.FormID);
+                if (formInDB == null || (formInDB.S_G_NO != BaseService.CurrentUser.CompanyID && formInDB.R_G_NO != BaseService.CurrentUser.CompanyID))
+                    throw new Exception("查無此空污申請單");
+
+                if (promise.StartDate > promise.EndDate)
+                    throw new Exception("起始日期不能大於結束日期");
+
+                promise.FormID = formInDB.ID;
+                promise.CreateUserID = BaseService.CurrentUser.ID;
+                promise.CreateDate = DateTime.Now;
+                _roadService.AddPromise(promise);
+                return Json(new AjaxResult { Status = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new AjaxResult { Status = false, Message = ex.Message });
             }
         }
     }

@@ -18,23 +18,61 @@ namespace NT_AirPollution.Service
         /// </summary>
         /// <param name="formID"></param>
         /// <returns></returns>
-        public RoadPromise GetPromiseByFormID(long formID)
+        public RoadPromiseView GetPromiseByFormID(long formID)
         {
             using (var cn = new SqlConnection(connStr))
             {
                 var promise = cn.QueryFirstOrDefault<RoadPromiseView>(@"
                     SELECT a1.*
-                        a2.C_NO,a2.SER_NO,a2.COMP_NAM,a2.ADDR,a2.R_M_NAM,a2.R_TEL,a2.R_TEL1
                     FROM RoadPromise AS a1
                     INNER JOIN Form AS a2 ON a1.FormID=a2.ID
                     WHERE a2.ID=@ID",
                     new { ID = formID });
 
-                promise.Roads = cn.Query<Road>(@"
+                if (promise != null)
+                {
+                    promise.Roads = cn.Query<Road>(@"
                     SELECT * FROM Road WHERE PromiseID=@PromiseID",
                     new { PromiseID = promise.ID }).ToList();
+                }
 
                 return promise;
+            }
+        }
+
+        /// <summary>
+        /// 新增道路認養承諾書
+        /// </summary>
+        /// <param name="promise"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public long AddPromise(RoadPromiseView promise)
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                cn.Open();
+                using (var trans = cn.BeginTransaction())
+                {
+                    try
+                    {
+                        long id = cn.Insert(promise, trans);
+
+                        // 附件
+                        foreach (var item in promise.Roads)
+                            item.PromiseID = id;
+
+                        cn.Insert(promise.Roads, trans);
+
+                        trans.Commit();
+                        return id;
+                    }
+                    catch (Exception ex)
+                    {
+                        trans.Rollback();
+                        Logger.Error($"AddPromise: {ex.Message}");
+                        throw new Exception("系統發生未預期錯誤");
+                    }
+                }
             }
         }
     }

@@ -57,10 +57,10 @@
     <el-dialog title="建立空品不良回報" :visible.sync="dialogVisible" width="33%" v-cloak>
         <el-form :rules="rules" ref="form" :model="selectRow" label-width="120px">
             <el-form-item label="管制編號">{{form.C_NO}}-{{form.SER_NO}}</el-form-item>
-            <el-form-item label="執行起始日期">
+            <el-form-item prop="StartDate" label="執行日期(起)">
                 <el-date-picker class="w100p" v-model="selectRow.StartDate" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
             </el-form-item>
-            <el-form-item label="執行結束日期">
+            <el-form-item prop="EndDate" label="執行日期(迄)">
                 <el-date-picker class="w100p" v-model="selectRow.EndDate" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
             </el-form-item>
             <el-form-item prop="Position" label="執行地點">

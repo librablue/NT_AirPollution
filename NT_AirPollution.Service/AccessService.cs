@@ -174,9 +174,10 @@ namespace NT_AirPollution.Service
                                 SER_NO = form.SER_NO,
                                 DOWN_DATE = item.DOWN_DATE,
                                 UP_DATE = item.UP_DATE,
+                                DOWN_DAY = item.DOWN_DAY,
+                                KEYIN = "EPB02",
                                 C_DATE = item.C_DATE.Value.ToString("yyyy-MM-dd HH:mm:ss"),
-                                M_DATE = item.M_DATE.Value.ToString("yyyy-MM-dd HH:mm:ss"),
-                                KEYIN = "EPB02"
+                                M_DATE = item.M_DATE.Value.ToString("yyyy-MM-dd HH:mm:ss")
                             });
                     }
 

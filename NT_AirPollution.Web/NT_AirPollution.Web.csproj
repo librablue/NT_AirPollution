@@ -190,7 +190,6 @@
   <ItemGroup>
     <Folder Include="App_Data\Upload\" />
     <Folder Include="static\image\Upload\" />
-    <Folder Include="Views\Base\" />
     <Folder Include="Views\Option\" />
   </ItemGroup>
   <ItemGroup>
