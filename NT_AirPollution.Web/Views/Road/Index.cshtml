@@ -6,19 +6,20 @@
     <link rel="stylesheet" href="@Url.Content("~/static/css/member.css")" />
 }
 @section scripts {
-    <script src="@Url.Content("~/static/js/air/index.js")"></script>
+    <script src="@Url.Content("~/static/js/road/index.js")"></script>
 }
 
 <div id="app">
     <div class="main-wrap">
-        <h2>空品不良應變回報</h2>
+        <h2>每月道路認養回報</h2>
         <el-form size="small" inline v-cloak>
             <el-form-item label="案件狀態">{{form.WorkStatus | workStatus}}</el-form-item>
             <el-form-item label="管制編號">{{form.C_NO}}-{{form.SER_NO}}</el-form-item>
             <el-form-item label="工程名稱">{{form.COMP_NAM}}</el-form-item>
             <el-form-item label="申報工期">{{form.B_DATE2 | date}}~{{form.E_DATE2 | date}}</el-form-item>
             <el-form-item>
-                <el-button type="success" icon="el-icon-plus" @@click="showModal()">新增空品不良回報</el-button>
+                <el-button v-if="road" type="success" icon="el-icon-search" @@click="showPromise()">檢視認養承諾書</el-button>
+                <el-button v-else type="success" icon="el-icon-plus" @@click="addPromise()">新增認養承諾書</el-button>
             </el-form-item>
         </el-form>
 
@@ -54,7 +55,7 @@
         </el-table>
     </div>
 
-    <el-dialog title="建立空品不良回報" :visible.sync="dialogVisible" width="33%" v-cloak>
+    <el-dialog title="建立認養成果" :visible.sync="dialogVisible" width="33%" v-cloak>
         <el-form :rules="rules" ref="form" :model="selectRow" label-width="120px">
             <el-form-item label="管制編號">{{form.C_NO}}-{{form.SER_NO}}</el-form-item>
             <el-form-item label="執行起始日期">

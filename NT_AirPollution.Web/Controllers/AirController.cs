@@ -16,7 +16,6 @@ namespace NT_AirPollution.Web.Controllers
     public class AirController : BaseController
     {
         private readonly string _uploadPath = ConfigurationManager.AppSettings["UploadPath"].ToString();
-        private readonly string _configDomain = ConfigurationManager.AppSettings["Domain"].ToString();
         private readonly AirService _airService = new AirService();
         private readonly FormService _formService = new FormService();
 
@@ -80,6 +79,7 @@ namespace NT_AirPollution.Web.Controllers
                 }
 
                 air.FormID = formInDB.ID;
+                air.CreateUserID = BaseService.CurrentUser.ID;
                 air.CreateDate = DateTime.Now;
                 air.ModifyDate = DateTime.Now;
                 _airService.AddAir(air);
@@ -127,6 +127,7 @@ namespace NT_AirPollution.Web.Controllers
                     }
                 }
 
+                air.CreateUserID = BaseService.CurrentUser.ID;
                 air.ModifyDate = DateTime.Now;
                 _airService.UpdateAir(air);
                 return Json(new AjaxResult { Status = true });

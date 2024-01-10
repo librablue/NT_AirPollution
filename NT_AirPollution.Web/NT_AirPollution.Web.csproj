@@ -108,6 +108,7 @@
     <Content Include="static\js\apply\form.js" />
     <Content Include="static\js\form\update.js" />
     <Content Include="static\js\manage\form.js" />
+    <Content Include="static\js\road\index.js" />
     <Content Include="static\js\search\result.js" />
     <Content Include="static\js\form\create.js" />
     <Content Include="static\js\main.js" />
@@ -124,6 +125,7 @@
   <ItemGroup>
     <Compile Include="ActionFilter\CustomAuthorizeAttribute.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\RoadController.cs" />
     <Compile Include="Controllers\AirController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\FormController.cs" />
@@ -177,6 +179,7 @@
     <Content Include="Views\Verify\Index.cshtml" />
     <Content Include="Views\Manage\Form.cshtml" />
     <Content Include="Views\Air\Index.cshtml" />
+    <Content Include="Views\Road\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
