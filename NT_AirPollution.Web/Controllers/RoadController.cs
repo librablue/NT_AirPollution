@@ -99,6 +99,11 @@ namespace NT_AirPollution.Web.Controllers
                 if (formInDB == null || (formInDB.S_G_NO != BaseService.CurrentUser.CompanyID && formInDB.R_G_NO != BaseService.CurrentUser.CompanyID))
                     throw new Exception("查無此空污申請單");
 
+                var reportInDB = _roadService.GetReportByFormID(view.FormID);
+                bool isExist = reportInDB.Any(o => o.YearMth == view.YearMth);
+                if(isExist)
+                    throw new Exception("相同年月禁止重複申報");
+
                 var roadReports = new List<RoadReport>();
                 foreach (var item in view.Roads)
                 {

@@ -33,6 +33,7 @@
 				formID: null,
 				mode: '',
 				loading: false,
+                user: {},
 				form: {},
 				promise: null,
                 roadReports: [],
@@ -54,11 +55,22 @@
 				location.href = '/Manage/Form';
 				return;
 			}
+            this.getCurrentUser();
 			this.getFormByID();
 			this.getPromiseByForm();
             this.getReportByForm();
 		},
 		methods: {
+            getCurrentUser() {
+				axios.get('/Member/GetCurrentUser').then(res => {
+					if (!res.data.Status) {
+						alert(res.data.Message);
+						return;
+					}
+
+					this.user = res.data.Message;
+				});
+			},
 			getFormByID() {
 				axios
 					.get(`/Manage/GetFormByID`, {
@@ -177,7 +189,7 @@
 						return false;
 					}
 
-					if (!confirm('是否確認繼續?')) return false;
+					if (!confirm('資料送出後不可修改，是否確認繼續?')) return false;
 					axios
 						.post('/Road/AddReport', this.report)
 						.then(res => {

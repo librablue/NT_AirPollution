@@ -22,13 +22,8 @@
                 <el-button v-else type="info" icon="el-icon-plus" round @@click="addPromise()">新增認養承諾書</el-button>
             </el-form-item>
         </el-form>
-        <el-button type="success" icon="el-icon-plus" @@click="addReport()">新增認養成果</el-button>
+        <el-button style="margin-bottom:4px" type="success" icon="el-icon-plus" @@click="addReport()">新增認養成果</el-button>
         <el-table :data="roadReports" :loading="loading" border stripe>
-            <el-table-column label="功能" width="100" align="center" fixed>
-                <template slot-scope="scope">
-                    <el-button type="primary" size="mini" icon="el-icon-search" circle title="查看" @@click="showModal(scope.row)"></el-button>
-                </template>
-            </el-table-column>
             <el-table-column type="index" label="序號" align="center" width="80"></el-table-column>
             <el-table-column label="申報年月" align="center" width="100">
                 <template slot-scope="scope">
@@ -46,9 +41,9 @@
                     {{ scope.row.Frequency }}{{scope.row.Times}}次
                 </template>
             </el-table-column>
-            <el-table-column prop="LengthPerTimes" label="每次洗掃街長度" align="center" width="140"></el-table-column>
-            <el-table-column prop="TotalLength" label="當月洗掃街總長度" align="center" width="140"></el-table-column>
-            <el-table-column prop="GreenLength" label="綠美化執行總長度" align="center" width="140"></el-table-column>
+            <el-table-column prop="LengthPerTimes" label="每次洗掃街長度(公尺)" align="center" width="160"></el-table-column>
+            <el-table-column prop="TotalLength" label="當月洗掃街總長度(公尺)" align="center" width="180"></el-table-column>
+            <el-table-column prop="GreenLength" label="綠美化執行總長度(公尺)" align="center" width="180"></el-table-column>
         </el-table>
     </div>
 
@@ -69,9 +64,9 @@
                             <el-input v-model="item.RoadName" placeholder="道路名稱"></el-input>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="8" class="road-col">
+                    <el-col :span="10" class="road-col">
                         <el-form-item label="認養長度" :prop="`Roads.${idx}.RoadLength`" :rules="{required: true, message: '請輸入道路長度', trigger: 'blur'}">
-                            <el-input type="number" inputmode="numeric" v-model="item.RoadLength" placeholder="單位: 公里"></el-input>
+                            <el-input type="number" inputmode="numeric" v-model="item.RoadLength" placeholder="公里"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12" class="road-col">
@@ -134,7 +129,7 @@
                 <el-col :span="8">
                     <el-form-item label="管制編號">{{form.C_NO}}-{{form.SER_NO}}</el-form-item>
                 </el-col>
-                <el-col :span="8">
+                <el-col :span="12">
                     <el-form-item label="工地名稱">{{form.COMP_NAM}}</el-form-item>
                 </el-col>
                 <el-col :span="8">
@@ -146,7 +141,7 @@
                     <el-form-item label="負責人">{{form.R_M_NAM}}</el-form-item>
                 </el-col>
                 <el-col :span="8">
-                    <el-form-item label="填表人"></el-form-item>
+                    <el-form-item label="填表人">{{user.UserName}}</el-form-item>
                 </el-col>
             </el-row>
             <div class="table-responsive">
