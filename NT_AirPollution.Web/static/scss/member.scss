@@ -162,6 +162,22 @@ h3 {
 	}
 }
 
+.road-row {
+	position: relative;
+	border: 1px solid #ccc;
+	border-radius: 6px;
+	margin-bottom: 10px;
+	padding-top: 22px;
+	.road-col {
+		margin-bottom: 22px;
+	}
+	.btn-delete {
+		position: absolute;
+		top: 4px;
+		right: 4px;
+	}
+}
+
 @media (min-width: 768px) {
 	.verify-card {
 		width: 50%;

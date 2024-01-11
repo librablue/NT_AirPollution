@@ -97,10 +97,6 @@
 			addPromise() {
 				this.promise = {
 					FormID: this.formID,
-					CleanWay1: null,
-					CleanWay2: null,
-					Frequency: null,
-					Times: 1,
                     Roads: []
 				};
 				this.promiseDialogVisible = true;
@@ -108,7 +104,8 @@
 			addRoad() {
 				this.promise.Roads.push({
 					RoadName: null,
-					RoadLength: null
+					RoadLength: null,
+					Times: 1,
 				});
 			},
             deleteRoad(idx) {
@@ -142,7 +139,7 @@
 				});
 			},
             addReport() {
-                
+
             }
 		}
 	});

@@ -75,5 +75,35 @@ namespace NT_AirPollution.Service
                 }
             }
         }
+
+        //public long AddReport(RoadReport report)
+        //{
+        //    using (var cn = new SqlConnection(connStr))
+        //    {
+        //        cn.Open();
+        //        using (var trans = cn.BeginTransaction())
+        //        {
+        //            try
+        //            {
+        //                long id = cn.Insert(promise, trans);
+
+        //                // 附件
+        //                foreach (var item in promise.Roads)
+        //                    item.PromiseID = id;
+
+        //                cn.Insert(promise.Roads, trans);
+
+        //                trans.Commit();
+        //                return id;
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                trans.Rollback();
+        //                Logger.Error($"AddPromise: {ex.Message}");
+        //                throw new Exception("系統發生未預期錯誤");
+        //            }
+        //        }
+        //    }
+        //}
     }
 }

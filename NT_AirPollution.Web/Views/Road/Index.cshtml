@@ -65,53 +65,51 @@
             <el-form-item label="行動電話">{{form.R_TEL1}}</el-form-item>
             <el-form-item label="認養道路名稱">
                 <el-button v-if="!promise.ID" type="success" size="mini" icon="el-icon-plus" circle @@click="addRoad"></el-button>
-                <el-row type="flex" :gutter="10" style="margin-bottom:24px" v-for="(item, idx) in promise.Roads" :key="idx">
-                    <el-col :span="12">
-                        <el-form-item :prop="`Roads.${idx}.RoadName`" :rules="{required: true, message: '請輸入道路名稱', trigger: 'blur'}">
+                <el-row class="road-row" v-for="(item, idx) in promise.Roads" :key="idx">
+                    <el-button v-if="!promise.ID" class="btn-delete" type="danger" size="mini" icon="el-icon-delete" circle @@click="deleteRoad(idx)"></el-button>
+                    <el-col :span="12" class="road-col">
+                        <el-form-item label="道路名稱" :prop="`Roads.${idx}.RoadName`" :rules="{required: true, message: '請輸入道路名稱', trigger: 'blur'}">
                             <el-input v-model="item.RoadName" placeholder="道路名稱"></el-input>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="8">
-                        <el-form-item :prop="`Roads.${idx}.RoadLength`" :rules="{required: true, message: '請輸入道路長度', trigger: 'blur'}">
-                            <el-input type="number" inputmode="numeric" v-model="item.RoadLength" placeholder="道路長度(單位: 公里)"></el-input>
+                    <el-col :span="8" class="road-col">
+                        <el-form-item label="認養長度" :prop="`Roads.${idx}.RoadLength`" :rules="{required: true, message: '請輸入道路長度', trigger: 'blur'}">
+                            <el-input type="number" inputmode="numeric" v-model="item.RoadLength" placeholder="單位: 公里"></el-input>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="1">
-                        <el-button v-if="!promise.ID" type="danger" size="mini" icon="el-icon-delete" circle @@click="deleteRoad(idx)"></el-button>
+                    <el-col :span="12" class="road-col">
+                        <el-form-item label="清掃方式" :prop="`Roads.${idx}.CleanWay1`" :rules="{required: true, message: '請選擇清掃方式', trigger: 'change'}">
+                            <el-select v-model="item.CleanWay1">
+                                <el-option label="請選擇" :value="null"></el-option>
+                                <el-option label="掃街" value="掃街"></el-option>
+                                <el-option label="洗街" value="洗街"></el-option>
+                            </el-select>
+                        </el-form-item>
                     </el-col>
-                </el-row>
-            </el-form-item>
-            <el-form-item prop="CleanWay" label="清掃方式">
-                <el-row type="flex" :gutter="10">
-                    <el-col :span="8">
-                        <el-select c v-model="promise.CleanWay1">
-                            <el-option label="請選擇" :value="null"></el-option>
-                            <el-option label="掃街" value="掃街"></el-option>
-                            <el-option label="洗街" value="洗街"></el-option>
-                        </el-select>
+                    <el-col :span="8" class="road-col">
+                        <el-form-item :prop="`Roads.${idx}.CleanWay2`" :rules="{required: true, message: '請選擇清掃方式', trigger: 'change'}">
+                            <el-select v-model="item.CleanWay2">
+                                <el-option label="請選擇" :value="null"></el-option>
+                                <el-option label="人力" value="人力"></el-option>
+                                <el-option label="機具" value="機具"></el-option>
+                            </el-select>
+                        </el-form-item>
                     </el-col>
-                    <el-col :span="8">
-                        <el-select class="w100p" v-model="promise.CleanWay2">
-                            <el-option label="請選擇" :value="null"></el-option>
-                            <el-option label="人力" value="人力"></el-option>
-                            <el-option label="機具" value="機具"></el-option>
-                        </el-select>
+                    <el-col :span="12" class="road-col">
+                        <el-form-item label="清掃頻率" :prop="`Roads.${idx}.Frequency`" :rules="{required: true, message: '請輸入清掃頻率', trigger: 'change'}">
+                            <el-select v-model="item.Frequency">
+                                <el-option label="每日" value="每日"></el-option>
+                                <el-option label="每週" value="每週"></el-option>
+                            </el-select>
+                        </el-form-item>
                     </el-col>
-                </el-row>
-            </el-form-item>
-            <el-form-item prop="Frequency" label="清掃頻率">
-                <el-row type="flex" :gutter="10">
-                    <el-col :span="8">
-                        <el-select v-model="promise.Frequency">
-                            <el-option label="每日" value="每日"></el-option>
-                            <el-option label="每週" value="每週"></el-option>
-                        </el-select>
-                    </el-col>
-                    <el-col :span="16">
-                        <div style="display:flex">
-                            <el-input-number v-model="promise.Times" :min="1"></el-input-number>
-                            <span style="margin-left:4px">次</span>
-                        </div>
+                    <el-col :span="8" class="road-col">
+                        <el-form-item :prop="`Roads.${idx}.Times`" :rules="{required: true, message: '請輸入清掃頻率', trigger: 'blur'}">
+                            <div style="display:flex">
+                                <el-input-number v-model="item.Times" :min="1"></el-input-number>
+                                <span style="margin-left:10px">次</span>
+                            </div>
+                        </el-form-item>
                     </el-col>
                 </el-row>
             </el-form-item>

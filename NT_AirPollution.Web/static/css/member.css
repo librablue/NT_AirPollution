@@ -489,6 +489,22 @@ h3 {
   border-radius: 4px;
 }
 
+.road-row {
+  position: relative;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  padding-top: 22px;
+}
+.road-row .road-col {
+  margin-bottom: 22px;
+}
+.road-row .btn-delete {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+}
+
 @media (min-width: 768px) {
   .verify-card {
     width: 50%;
