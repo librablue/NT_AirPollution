@@ -55,7 +55,7 @@ namespace NT_AirPollution.Web.Controllers
 
                 var promiseInDB = _roadService.GetPromiseByFormID(promise.FormID);
                 if(promiseInDB != null)
-                    throw new Exception("禁止重複建立道路認養承諾書");
+                    throw new Exception("禁止重複建立承諾書");
 
                 if (promise.StartDate > promise.EndDate)
                     throw new Exception("起始日期不能大於結束日期");

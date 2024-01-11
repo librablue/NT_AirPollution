@@ -65,6 +65,7 @@
     <Compile Include="Domain\ClientUserContractor.cs" />
     <Compile Include="Domain\ClientUserCompany.cs" />
     <Compile Include="Domain\ClientUser.cs" />
+    <Compile Include="Domain\SoilPromise.cs" />
     <Compile Include="Domain\StopWork.cs" />
     <Compile Include="Domain\VerifyLog.cs" />
     <Compile Include="Enum\WorkStatus.cs" />

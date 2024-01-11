@@ -69,7 +69,7 @@ namespace NT_AirPollution.Service
                     catch (Exception ex)
                     {
                         trans.Rollback();
-                        Logger.Error($"AddPromise: {ex.Message}");
+                        Logger.Error($"Road.AddPromise: {ex.Message}");
                         throw new Exception("系統發生未預期錯誤");
                     }
                 }

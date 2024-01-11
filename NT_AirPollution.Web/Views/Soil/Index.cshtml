@@ -1,0 +1,34 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section styles {
+    <link rel="stylesheet" href="@Url.Content("~/static/css/member.css")" />
+}
+@section scripts {
+    <script src="@Url.Content("~/static/js/soil/index.js")"></script>
+}
+
+<div id="app">
+    <div class="main-wrap">
+        <h2>廢土不落地承諾書</h2>
+        <el-form v-cloak>
+            <el-form-item label="管制編號">{{form.C_NO}}-{{form.SER_NO}}</el-form-item>
+            <el-form-item label="工程名稱">{{form.COMP_NAM}}</el-form-item>
+            <el-form-item label="施工期程">{{form.B_DATE2 | date}}~{{form.E_DATE2 | date}}</el-form-item>
+            <el-form-item label="預計開挖期程"></el-form-item>
+            <el-form-item label="營建業主">{{form.S_NAME}}</el-form-item>
+            <el-form-item label="承包廠商">{{form.R_NAME}}</el-form-item>
+            <el-form-item label="工地聯絡人">{{form.R_M_NAM}}</el-form-item>
+            <el-form-item label="連絡電話">{{form.R_TEL1}}</el-form-item>
+            <el-form-item>
+                <el-checkbox v-model="promise.Agree1">願於施工過程中，配合廢土不落地作業</el-checkbox>
+            </el-form-item>
+            <el-form-item label="作業方式">
+                <el-radio v-model="radio" label="1">物料直接置於運載車輛</el-radio>
+                <el-radio v-model="radio" label="2">置入太空包</el-radio>
+                <el-radio v-model="radio" label="2">其他</el-radio>
+            </el-form-item>
+        </el-form>
+    </div>
+</div>

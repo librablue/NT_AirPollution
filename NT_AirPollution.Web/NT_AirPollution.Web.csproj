@@ -120,6 +120,7 @@
     <Content Include="static\js\plugin\element-ui\index.js" />
     <Content Include="static\js\plugin\element-ui\zh-TW.min.js" />
     <Content Include="static\js\search\index.js" />
+    <Content Include="static\js\soil\index.js" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -135,6 +136,7 @@
     <Compile Include="Controllers\MemberController.cs" />
     <Compile Include="Controllers\OptionController.cs" />
     <Compile Include="Controllers\SearchController.cs" />
+    <Compile Include="Controllers\SoilController.cs" />
     <Compile Include="Controllers\VerifyController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -180,6 +182,7 @@
     <Content Include="Views\Manage\Form.cshtml" />
     <Content Include="Views\Air\Index.cshtml" />
     <Content Include="Views\Road\Index.cshtml" />
+    <Content Include="Views\Soil\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

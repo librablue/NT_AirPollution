@@ -31,7 +31,6 @@
 			};
 			return {
 				formID: null,
-				mode: '',
 				loading: false,
                 user: {},
 				form: {},
