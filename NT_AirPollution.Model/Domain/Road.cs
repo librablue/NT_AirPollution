@@ -14,6 +14,6 @@ namespace NT_AirPollution.Model.Domain
         public long ID { get; set; }
         public long PromiseID { get; set; }
         public string RoadName { get; set; }
-        public int Length { get; set; }
+        public double RoadLength { get; set; }
     }
 }

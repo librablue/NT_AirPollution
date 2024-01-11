@@ -12,17 +12,17 @@
 <div id="app">
     <div class="main-wrap">
         <h2>每月道路認養回報</h2>
-        <el-form size="small" inline v-cloak>
+        <el-form inline v-cloak>
             <el-form-item label="案件狀態">{{form.WorkStatus | workStatus}}</el-form-item>
             <el-form-item label="管制編號">{{form.C_NO}}-{{form.SER_NO}}</el-form-item>
             <el-form-item label="工程名稱">{{form.COMP_NAM}}</el-form-item>
             <el-form-item label="申報工期">{{form.B_DATE2 | date}}~{{form.E_DATE2 | date}}</el-form-item>
             <el-form-item>
-                <el-button v-if="promise" type="success" icon="el-icon-search" @@click="promiseDialogVisible = true">檢視認養承諾書</el-button>
-                <el-button v-else type="success" icon="el-icon-plus" @@click="addPromise()">新增認養承諾書</el-button>
+                <el-button v-if="promise" type="info" icon="el-icon-search" round @@click="promiseDialogVisible = true">檢視認養承諾書</el-button>
+                <el-button v-else type="info" icon="el-icon-plus" round @@click="addPromise()">新增認養承諾書</el-button>
             </el-form-item>
         </el-form>
-
+        <el-button type="success" icon="el-icon-plus" @@click="addReport()">新增認養成果</el-button>
         @*<el-table :data="airs" :loading="loading" border stripe>
             <el-table-column label="功能" width="100" align="center" fixed>
                 <template slot-scope="scope">
@@ -56,25 +56,43 @@
     </div>
 
     <el-dialog title="建立認養承諾書" :visible.sync="promiseDialogVisible" width="50%" v-if="promise" v-cloak>
-        <el-form :rules="promiseRules" ref="form1" :model="promise" label-width="120px">
+        <el-form :rules="promiseRules" ref="form1" :model="promise" label-width="120px" :disabled="promise.ID">
             <el-form-item label="管制編號">{{form.C_NO}}-{{form.SER_NO}}</el-form-item>
             <el-form-item label="工地名稱">{{form.COMP_NAM}}</el-form-item>
             <el-form-item label="工地地點">{{form.ADDR}}</el-form-item>
             <el-form-item label="聯絡人">{{form.R_M_NAM}}</el-form-item>
             <el-form-item label="工地電話">{{form.R_TEL}}</el-form-item>
             <el-form-item label="行動電話">{{form.R_TEL1}}</el-form-item>
-            <el-form-item label="認養道路名稱"></el-form-item>
-            
+            <el-form-item label="認養道路名稱">
+                <el-button v-if="!promise.ID" type="success" size="mini" icon="el-icon-plus" circle @@click="addRoad"></el-button>
+                <el-row type="flex" :gutter="10" style="margin-bottom:24px" v-for="(item, idx) in promise.Roads" :key="idx">
+                    <el-col :span="12">
+                        <el-form-item :prop="`Roads.${idx}.RoadName`" :rules="{required: true, message: '請輸入道路名稱', trigger: 'blur'}">
+                            <el-input v-model="item.RoadName" placeholder="道路名稱"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="8">
+                        <el-form-item :prop="`Roads.${idx}.RoadLength`" :rules="{required: true, message: '請輸入道路長度', trigger: 'blur'}">
+                            <el-input type="number" inputmode="numeric" v-model="item.RoadLength" placeholder="道路長度(單位: 公里)"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="1">
+                        <el-button v-if="!promise.ID" type="danger" size="mini" icon="el-icon-delete" circle @@click="deleteRoad(idx)"></el-button>
+                    </el-col>
+                </el-row>
+            </el-form-item>
             <el-form-item prop="CleanWay" label="清掃方式">
                 <el-row type="flex" :gutter="10">
                     <el-col :span="8">
                         <el-select c v-model="promise.CleanWay1">
+                            <el-option label="請選擇" :value="null"></el-option>
                             <el-option label="掃街" value="掃街"></el-option>
                             <el-option label="洗街" value="洗街"></el-option>
                         </el-select>
                     </el-col>
                     <el-col :span="8">
                         <el-select class="w100p" v-model="promise.CleanWay2">
+                            <el-option label="請選擇" :value="null"></el-option>
                             <el-option label="人力" value="人力"></el-option>
                             <el-option label="機具" value="機具"></el-option>
                         </el-select>
@@ -105,8 +123,13 @@
             </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
-            <el-button @@click="promiseDialogVisible = false">取 消</el-button>
-            <el-button type="primary" @@click="sendPromise">儲 存</el-button>
+            <template v-if="promise.ID">
+                <el-button @@click="promiseDialogVisible = false">關 閉</el-button>
+            </template>
+            <template v-else>
+                <el-button @@click="promiseDialogVisible = false">取 消</el-button>
+                <el-button type="primary" @@click="sendPromise">儲 存</el-button>
+            </template>
         </span>
     </el-dialog>
 </div>
