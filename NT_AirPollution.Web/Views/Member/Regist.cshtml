@@ -37,6 +37,9 @@
                     <el-input v-model="form.CompanyID" maxlength="8"></el-input>
                     <small class="prompt-text">註冊後不可修改</small>
                 </el-form-item>
+                <el-form-item prop="UserName" label="姓名">
+                    <el-input v-model="form.UserName" maxlength="20"></el-input>
+                </el-form-item>
                 <el-form-item prop="Password" label="密碼">
                     <el-input type="password" v-model="form.Password" maxlength="20"></el-input>
                     <small class="prompt-text">密碼須為 6 ~ 20 字，且須使用大、小寫英文 + 數字組合</small>

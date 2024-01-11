@@ -6,28 +6,51 @@
 
 @section styles {
     <link rel="stylesheet" href="@Url.Content("~/static/css/member.css")" />
+    <style>
+        .el-tab-pane {
+            padding: 0 10px;
+        }
+        .el-form-item__content {
+            line-height: 1;
+        }
+    </style>
 }
 @section scripts {
     <script src="@Url.Content("~/static/js/member/edit.js")"></script>
 }
 
 <div id="app">
-    <div class="main-wrap" style="width: fit-content">
+    <div class="main-wrap">
         <h2>會員資料修改</h2>
-        <el-form :rules="rules" ref="form" :model="form" label-position="top">
-            <el-form-item label="會員類型">@BaseService.CurrentUser.UserType</el-form-item>
-            <el-form-item label="Email">@BaseService.CurrentUser.Email</el-form-item>
-            <el-form-item label="統一編號">{{form.CompanyID}}</el-form-item>
-            <el-form-item prop="Password" label="新密碼">
-                <el-input type="password" v-model="form.Password" maxlength="20"></el-input>
-                <small class="prompt-text">密碼須為 6 ~ 20 字，且須使用大、小寫英文 + 數字組合</small>
-            </el-form-item>
-            <el-form-item prop="Password2" label="確認密碼">
-                <el-input type="password" v-model="form.Password2" maxlength="20"></el-input>
-            </el-form-item>
-            <el-form-item>
-                <el-button type="primary" class="btn-block" @@click="updatePassword">確認送出</el-button>
-            </el-form-item>
-        </el-form>
+        <el-tabs v-model="activeName" type="card">
+            <el-tab-pane label="基本資料" name="first">
+                <el-form :rules="rules1" ref="form1" :model="form" label-position="top" style="max-width:480px">
+                    <el-form-item label="會員類型">@BaseService.CurrentUser.UserType</el-form-item>
+                    <el-form-item label="Email">@BaseService.CurrentUser.Email</el-form-item>
+                    <el-form-item label="統一編號">{{form.CompanyID}}</el-form-item>
+                    <el-form-item label="姓名">
+                        <el-input v-model="form.UserName" maxlength="20"></el-input>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @@click="updateProfile">確認送出</el-button>
+                    </el-form-item>
+                </el-form>
+            </el-tab-pane>
+            <el-tab-pane label="密碼修改" name="second">
+                <el-form :rules="rules2" ref="form2" :model="form" label-position="top" style="max-width:480px">
+                    <el-form-item prop="Password" label="新密碼">
+                        <el-input type="password" v-model="form.Password" maxlength="20"></el-input>
+                        <small class="prompt-text">密碼須為 6 ~ 20 字，且須使用大、小寫英文 + 數字組合</small>
+                    </el-form-item>
+                    <el-form-item prop="Password2" label="確認密碼">
+                        <el-input type="password" v-model="form.Password2" maxlength="20"></el-input>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @@click="updatePassword">確認送出</el-button>
+                    </el-form-item>
+                </el-form>
+            </el-tab-pane>
+        </el-tabs>
+
     </div>
 </div>

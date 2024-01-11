@@ -76,34 +76,43 @@ namespace NT_AirPollution.Service
             }
         }
 
-        //public long AddReport(RoadReport report)
-        //{
-        //    using (var cn = new SqlConnection(connStr))
-        //    {
-        //        cn.Open();
-        //        using (var trans = cn.BeginTransaction())
-        //        {
-        //            try
-        //            {
-        //                long id = cn.Insert(promise, trans);
+        /// <summary>
+        /// 取得道路認養成果
+        /// </summary>
+        /// <param name="formID"></param>
+        /// <returns></returns>
+        public List<RoadReport> GetReportByFormID(long formID)
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                var report = cn.Query<RoadReport>(@"
+                    SELECT * FROM RoadReport WHERE FormID=@ID
+                        ORDER BY YearMth DESC,RoadID",
+                    new { ID = formID }).ToList();
+                return report;
+            }
+        }
 
-        //                // 附件
-        //                foreach (var item in promise.Roads)
-        //                    item.PromiseID = id;
-
-        //                cn.Insert(promise.Roads, trans);
-
-        //                trans.Commit();
-        //                return id;
-        //            }
-        //            catch (Exception ex)
-        //            {
-        //                trans.Rollback();
-        //                Logger.Error($"AddPromise: {ex.Message}");
-        //                throw new Exception("系統發生未預期錯誤");
-        //            }
-        //        }
-        //    }
-        //}
+        /// <summary>
+        /// 新增道路認養成果
+        /// </summary>
+        /// <param name="formID"></param>
+        /// <returns></returns>
+        public bool AddReport(List<RoadReport> reports)
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                try
+                {
+                    cn.Insert(reports);
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"List: {ex.Message}");
+                    throw new Exception("系統發生未預期錯誤");
+                }
+            }
+        }
     }
 }

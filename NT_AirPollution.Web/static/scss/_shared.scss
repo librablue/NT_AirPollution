@@ -60,8 +60,10 @@
 }
 
 .prompt-text {
+	display: inline-block;
     font-size: 14px;
 	color: #3081D0;
+	padding: 4px 0;
 }
 
 .btn-block {

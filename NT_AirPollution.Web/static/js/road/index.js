@@ -35,7 +35,10 @@
 				loading: false,
 				form: {},
 				promise: null,
+                roadReports: [],
+				report: {},
 				promiseDialogVisible: false,
+				reportDialogVisible: false,
 				promiseRules: Object.freeze({
 					CleanWay: [{ validator: checkCleanWay }],
 					Frequency: [{ validator: checkFrequency }],
@@ -53,6 +56,7 @@
 			}
 			this.getFormByID();
 			this.getPromiseByForm();
+            this.getReportByForm();
 		},
 		methods: {
 			getFormByID() {
@@ -94,10 +98,30 @@
 						console.log(err);
 					});
 			},
+			getReportByForm() {
+				this.loading = true;
+				axios
+					.get('/Road/GetReportByForm', {
+						params: {
+							formID: this.formID
+						}
+					})
+					.then(res => {
+						this.loading = false;
+						if (!res.data.Status) {
+							return;
+						}
+						this.roadReports = res.data.Message;
+					})
+					.catch(err => {
+						this.loading = false;
+						console.log(err);
+					});
+			},
 			addPromise() {
 				this.promise = {
 					FormID: this.formID,
-                    Roads: []
+					Roads: []
 				};
 				this.promiseDialogVisible = true;
 			},
@@ -105,13 +129,13 @@
 				this.promise.Roads.push({
 					RoadName: null,
 					RoadLength: null,
-					Times: 1,
+					Times: 1
 				});
 			},
-            deleteRoad(idx) {
-                if (!confirm('是否確認刪除?')) return;
-                this.promise.Roads.splice(idx, 1);
-            },
+			deleteRoad(idx) {
+				if (!confirm('是否確認刪除?')) return;
+				this.promise.Roads.splice(idx, 1);
+			},
 			sendPromise() {
 				this.$refs.form1.validate(valid => {
 					if (!valid) {
@@ -130,7 +154,7 @@
 
 							this.getPromiseByForm();
 							this.promiseDialogVisible = false;
-                            alert('畫面資料已儲存');
+							alert('畫面資料已儲存');
 						})
 						.catch(err => {
 							alert('系統發生未預期錯誤');
@@ -138,9 +162,40 @@
 						});
 				});
 			},
-            addReport() {
+			addReport() {
+				this.report = {
+					FormID: this.formID,
+					YearMth: moment().format('YYYYMM'),
+					Roads: JSON.parse(JSON.stringify(this.promise.Roads))
+				};
+				this.reportDialogVisible = true;
+			},
+			sendReport() {
+				this.$refs.form2.validate(valid => {
+					if (!valid) {
+						alert('欄位驗證錯誤，請檢查修正後重新送出');
+						return false;
+					}
 
-            }
+					if (!confirm('是否確認繼續?')) return false;
+					axios
+						.post('/Road/AddReport', this.report)
+						.then(res => {
+							if (!res.data.Status) {
+								alert(res.data.Message);
+								return;
+							}
+
+							this.getReportByForm();
+							this.reportDialogVisible = false;
+							alert('畫面資料已儲存');
+						})
+						.catch(err => {
+							alert('系統發生未預期錯誤');
+							console.log(err);
+						});
+				});
+			}
 		}
 	});
 });

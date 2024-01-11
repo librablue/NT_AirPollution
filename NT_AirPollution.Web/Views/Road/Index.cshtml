@@ -23,36 +23,33 @@
             </el-form-item>
         </el-form>
         <el-button type="success" icon="el-icon-plus" @@click="addReport()">新增認養成果</el-button>
-        @*<el-table :data="airs" :loading="loading" border stripe>
+        <el-table :data="roadReports" :loading="loading" border stripe>
             <el-table-column label="功能" width="100" align="center" fixed>
                 <template slot-scope="scope">
                     <el-button type="primary" size="mini" icon="el-icon-search" circle title="查看" @@click="showModal(scope.row)"></el-button>
-                    <el-button type="danger" size="mini" icon="el-icon-delete" circle title="刪除" @@click="deleteAir(scope.row)"></el-button>
                 </template>
             </el-table-column>
             <el-table-column type="index" label="序號" align="center" width="80"></el-table-column>
-            <el-table-column label="回報日期" align="center" width="100">
+            <el-table-column label="申報年月" align="center" width="100">
                 <template slot-scope="scope">
-                    {{ scope.row.CreateDate | date }}
+                    {{ scope.row.YearMth }}
                 </template>
             </el-table-column>
-            <el-table-column prop="C_DATE" label="執行時間" align="center" width="200">
+            <el-table-column prop="RoadName" label="認養道路名稱" align="center" width="160"></el-table-column>
+            <el-table-column label="道路清掃方式" align="center" width="140">
                 <template slot-scope="scope">
-                    {{ scope.row.StartDate | date }} ~ {{ scope.row.EndDate | date }}
+                    {{ scope.row.CleanWay1 }}({{scope.row.CleanWay2}})
                 </template>
             </el-table-column>
-            <el-table-column prop="Position" label="執行地點" align="center" width="160"></el-table-column>
-            <el-table-column prop="Method" label="執行措施" align="center" width="160"></el-table-column>
-            <el-table-column prop="Remark" label="備註"></el-table-column>
-            <el-table-column label="照片" align="center" width="60">
+            <el-table-column label="洗掃頻率" align="center" width="120">
                 <template slot-scope="scope">
-                    <el-popover placement="bottom" width="230" trigger="click">
-                        <el-button slot="reference" size="mini" icon="el-icon-picture-outline" circle title="查看"></el-button>
-                        <img class="img-thumb" v-for="(item, idx) in scope.row.AirFiles" :key="idx" :src="`/Option/Download?f=${item.FileName}`" />
-                    </el-popover>
+                    {{ scope.row.Frequency }}{{scope.row.Times}}次
                 </template>
             </el-table-column>
-        </el-table>*@
+            <el-table-column prop="LengthPerTimes" label="每次洗掃街長度" align="center" width="140"></el-table-column>
+            <el-table-column prop="TotalLength" label="當月洗掃街總長度" align="center" width="140"></el-table-column>
+            <el-table-column prop="GreenLength" label="綠美化執行總長度" align="center" width="140"></el-table-column>
+        </el-table>
     </div>
 
     <el-dialog title="建立認養承諾書" :visible.sync="promiseDialogVisible" width="50%" v-if="promise" v-cloak>
@@ -128,6 +125,64 @@
                 <el-button @@click="promiseDialogVisible = false">取 消</el-button>
                 <el-button type="primary" @@click="sendPromise">儲 存</el-button>
             </template>
+        </span>
+    </el-dialog>
+
+    <el-dialog title="建立認養成果" :visible.sync="reportDialogVisible" width="50%" v-cloak>
+        <el-form :rules="promiseRules" ref="form2" :model="promise" label-width="120px">
+            <el-row>
+                <el-col :span="8">
+                    <el-form-item label="管制編號">{{form.C_NO}}-{{form.SER_NO}}</el-form-item>
+                </el-col>
+                <el-col :span="8">
+                    <el-form-item label="工地名稱">{{form.COMP_NAM}}</el-form-item>
+                </el-col>
+                <el-col :span="8">
+                    <el-form-item label="執行期間">
+                        <el-date-picker class="w100p" v-model="report.YearMth" type="month" value-format="yyyyMM" placeholder="請選擇月份"></el-date-picker>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="8">
+                    <el-form-item label="負責人">{{form.R_M_NAM}}</el-form-item>
+                </el-col>
+                <el-col :span="8">
+                    <el-form-item label="填表人"></el-form-item>
+                </el-col>
+            </el-row>
+            <div class="table-responsive">
+                <table class="table row-table">
+                    <thead>
+                        <tr>
+                            <th>認養道路名稱</th>
+                            <th>道路清掃方式</th>
+                            <th>清掃頻率(次)</th>
+                            <th>每次洗掃街長度(公尺)</th>
+                            <th>當月洗掃街總長度(公尺)</th>
+                            <th>綠美化執行總長度(公尺)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(item, idx) in report.Roads" :key="idx">
+                            <td>{{item.RoadName}}</td>
+                            <td>{{item.CleanWay1}}</td>
+                            <td>{{item.Frequency}}{{item.Times}}次</td>
+                            <td>
+                                <el-input type="number" v-model="item.LengthPerTimes"></el-input>
+                            </td>
+                            <td>
+                                <el-input type="number" v-model="item.TotalLength"></el-input>
+                            </td>
+                            <td>
+                                <el-input type="number" v-model="item.GreenLength"></el-input>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+            <el-button @@click="reportDialogVisible = false">取 消</el-button>
+            <el-button type="primary" @@click="sendReport">儲 存</el-button>
         </span>
     </el-dialog>
 </div>

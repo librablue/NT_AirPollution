@@ -13,6 +13,7 @@ namespace NT_AirPollution.Model.View
         public UserType UserType { get; set; }
         public string Email { get; set; }
         public string CompanyID { get; set; }
+        public string UserName { get; set; }
         /// <summary>
         /// 管制編號(非會員)
         /// </summary>

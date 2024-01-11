@@ -207,7 +207,7 @@
 				//	P_KIND: '一次全繳',
 				//	KIND_NO: null,
 				//	BUD_DOC2: '無',
-				//	CreateUserName: null,
+				//	CreateUserName: document.querySelector('#hfUserName').value,
 				//	CreateUserEmail: document.querySelector('#hfUserEmail').value,
 				//	Attachment: {},
 				//  StopWorks: []
@@ -219,7 +219,7 @@
 					BUD_DOC2: '無',
 					PUB_COMP: true,
 					TOWN_NO: 'M2',
-					CreateUserName: null,
+					CreateUserName: document.querySelector('#hfUserName').value,
 					CreateUserEmail: document.querySelector('#hfUserEmail').value,
 					COMP_NAM: 'COMP_NAM',
 					KIND_NO: '1',

@@ -16,7 +16,7 @@ namespace NT_AirPollution.Model.Domain
         public long ID { get; set; }
         [Required(ErrorMessage = "Email 格式錯誤")]
         [EmailAddress(ErrorMessage = "Email 格式錯誤")]
-        [MaxLength(50, ErrorMessage = "Email 格式錯誤")]
+        [MaxLength(50, ErrorMessage = "Email 超出長度")]
         public string Email { get; set; }
         [Required(ErrorMessage = "未選擇會員類別")]
         public UserType UserType { get; set; }
@@ -26,6 +26,9 @@ namespace NT_AirPollution.Model.Domain
         [Required(ErrorMessage = "未輸入統一編號")]
         [RegularExpression(@"^\d{8}$", ErrorMessage = "統一編號格式錯誤")]
         public string CompanyID { get; set; }
+        [Required(ErrorMessage = "未輸入姓名")]
+        [MaxLength(20, ErrorMessage = "姓名超出長度")]
+        public string UserName { get; set; }
 
         public DateTime CreateDate { get; set; }
         public DateTime? DeleteDate { get; set; }

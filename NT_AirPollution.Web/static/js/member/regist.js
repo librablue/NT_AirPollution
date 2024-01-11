@@ -35,6 +35,12 @@
                 }
                 callback();
             };
+            const checkUserName = (rule, value, callback) => {
+                if (this.step === 'SUBMIT' && !value) {
+                    callback(new Error('請輸入姓名'));
+                }
+                callback();
+            };
             const checkCaptcha = (rule, value, callback) => {
                 if (this.step === 'SUBMIT' && !value) {
                     callback(new Error('請勾選我不是機器人'));
@@ -60,6 +66,7 @@
                     Password: [{ validator: checkPassword }],
                     Password2: [{ validator: checkPassword2 }],
                     CompanyID: [{ validator: checkCompanyID }],
+                    UserName: [{ validator: checkUserName }],
                     Captcha: [{ validator: checkCaptcha }]
                 })
             };

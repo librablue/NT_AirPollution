@@ -79,6 +79,7 @@ namespace NT_AirPollution.Web.Controllers
                             UserType = result.UserType,
                             Email = result.Email,
                             CompanyID = result.CompanyID,
+                            UserName = result.UserName,
                             Role = new string[] { $"Member{(int)result.UserType}" }
                         }),
                         FormsAuthentication.FormsCookiePath);
@@ -278,12 +279,28 @@ namespace NT_AirPollution.Web.Controllers
 
         [CustomAuthorize(Roles = "Member1,Member2")]
         [HttpPost]
-        public JsonResult Edit(ClientUser user)
+        public JsonResult UpdateProfile(ClientUser user)
         {
             try
             {
                 var userInDB = _clientUserService.GetUserByID(BaseService.CurrentUser.ID);
-                user.UserType = userInDB.UserType;
+                userInDB.UserName = user.UserName;
+                _clientUserService.UpdateClientUser(userInDB);
+                return Json(new AjaxResult { Status = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new AjaxResult { Status = false, Message = ex.Message });
+            }
+        }
+
+        [CustomAuthorize(Roles = "Member1,Member2")]
+        [HttpPost]
+        public JsonResult UpdatePassword(ClientUser user)
+        {
+            try
+            {
+                var userInDB = _clientUserService.GetUserByID(BaseService.CurrentUser.ID);
                 user.Email = userInDB.Email;
                 user.CompanyID = userInDB.CompanyID;
                 user.CreateDate = userInDB.CreateDate;
@@ -293,7 +310,8 @@ namespace NT_AirPollution.Web.Controllers
                     throw new Exception(firstError);
                 }
 
-                _clientUserService.UpdateClientUser(user);
+                userInDB.Password = user.Password;
+                _clientUserService.UpdateClientUser(userInDB);
                 return Json(new AjaxResult { Status = true });
             }
             catch (Exception ex)
@@ -307,7 +325,8 @@ namespace NT_AirPollution.Web.Controllers
         {
             try
             {
-                var result = BaseService.CurrentUser;
+                var result = _clientUserService.GetUserByID(BaseService.CurrentUser.ID);
+                result.Password = null;
                 return Json(new AjaxResult { Status = true, Message = result }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)

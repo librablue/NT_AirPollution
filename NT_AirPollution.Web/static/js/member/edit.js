@@ -9,6 +9,7 @@
 				callback();
 			};
 			return {
+				activeName: 'first',
 				form: {
 					UserType: null,
 					Email: '',
@@ -17,7 +18,10 @@
 					Password: '',
 					Password2: ''
 				},
-				rules: Object.freeze({
+				rules1: Object.freeze({
+					UserName: [{ required: true, message: '請輸入姓名', trigger: 'blur' }]
+				}),
+				rules2: Object.freeze({
 					Password: [{ required: true, message: '請輸入密碼', trigger: 'blur' }],
 					Password2: [{ validator: checkPassword2 }]
 				})
@@ -37,14 +41,37 @@
 					this.form = res.data.Message;
 				});
 			},
-			updatePassword() {
-				this.$refs.form.validate(valid => {
+			updateProfile() {
+				this.$refs.form1.validate(valid => {
 					if (!valid) {
 						return false;
 					}
 
 					axios
-						.post('/Member/Edit', this.form)
+						.post('/Member/UpdateProfile', this.form)
+						.then(res => {
+							if (!res.data.Status) {
+								alert(res.data.Message);
+								return;
+							}
+
+							alert('基本資料修改成功');
+							location.reload();
+						})
+						.catch(err => {
+							console.log(err);
+							alert('系統發生未預期錯誤');
+						});
+				});
+			},
+			updatePassword() {
+				this.$refs.form2.validate(valid => {
+					if (!valid) {
+						return false;
+					}
+
+					axios
+						.post('/Member/UpdatePassword', this.form)
 						.then(res => {
 							if (!res.data.Status) {
 								alert(res.data.Message);

@@ -19,5 +19,11 @@ namespace NT_AirPollution.Model.Domain
         public string CleanWay2 { get; set; }
         public string Frequency { get; set; }
         public int Times { get; set; }
+        [Computed]
+        public int LengthPerTimes { get; set; }
+        [Computed]
+        public int TotalLength { get; set; }
+        [Computed]
+        public int GreenLength { get; set; }
     }
 }

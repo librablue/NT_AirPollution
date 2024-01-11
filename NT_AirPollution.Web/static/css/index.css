@@ -67,6 +67,14 @@ input[type=number] {
   font-weight: 700;
 }
 
+.el-tabs__nav-wrap::after {
+  z-index: 0;
+}
+
+.el-tabs__nav {
+  z-index: 0;
+}
+
 @media (max-width: 992px) {
   .el-dialog {
     width: 90% !important;
@@ -134,8 +142,10 @@ input[type=number] {
   }
 }
 .prompt-text {
+  display: inline-block;
   font-size: 14px;
   color: #3081D0;
+  padding: 4px 0;
 }
 
 .btn-block {
