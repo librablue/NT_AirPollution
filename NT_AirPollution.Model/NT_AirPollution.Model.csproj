@@ -73,6 +73,8 @@
     <Compile Include="Enum\UserType.cs" />
     <Compile Include="Enum\Status.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="View\AirReport.cs" />
+    <Compile Include="View\AirFilter.cs" />
     <Compile Include="View\RoadReportView.cs" />
     <Compile Include="View\RoadPromiseView.cs" />
     <Compile Include="View\AirView.cs" />

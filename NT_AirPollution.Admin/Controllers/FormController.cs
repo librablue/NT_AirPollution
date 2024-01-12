@@ -64,7 +64,7 @@ namespace NT_AirPollution.Admin.Controllers
         [HttpGet]
         public HttpResponseMessage Download(string f)
         {
-            var FilePath = $@"{_uploadPath}/{f}";
+            var FilePath = $@"{_uploadPath}\{f}";
             var stream = new FileStream(FilePath, FileMode.Open);
             HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
             response.Content = new StreamContent(stream);

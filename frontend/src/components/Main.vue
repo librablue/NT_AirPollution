@@ -8,6 +8,7 @@
 				<el-menu :default-active="activeIndex" mode="horizontal" router>
 					<el-menu-item index="function_news" route="/function/news">最新消息</el-menu-item>
 					<el-menu-item index="function_form" route="/function/form">申請案件管理</el-menu-item>
+					<el-menu-item index="function_air" route="/function/air">空品不良回報</el-menu-item>
 				</el-menu>
 			</div>
 			<div>

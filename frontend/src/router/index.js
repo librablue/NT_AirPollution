@@ -24,6 +24,11 @@ export default new Router({
 					path: '/function/news',
 					name: 'function_news',
 					component: (resolve) => require(['@/components/function/News'], resolve)
+				},
+                {
+					path: '/function/air',
+					name: 'function_air',
+					component: (resolve) => require(['@/components/function/Air'], resolve)
 				}
 			]
 		}

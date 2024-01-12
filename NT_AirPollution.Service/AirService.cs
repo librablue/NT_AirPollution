@@ -4,15 +4,63 @@ using NT_AirPollution.Model.Domain;
 using NT_AirPollution.Model.View;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace NT_AirPollution.Service
 {
     public class AirService : BaseService
-    {
+    { 
+        /// <summary>
+        /// 後台查詢報表
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        public List<AirReport> GetAirs(AirFilter filter)
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                var airs = cn.Query<AirReport>(@"
+                    SELECT a1.*,a2.*,a1.ID AS AirID
+                    FROM Air AS a1
+                    INNER JOIN Form AS a2 ON a1.FormID=a2.ID
+                    WHERE (@C_NO='' OR a2.C_NO=@C_NO)
+                        AND (@COMP_NAM='' OR a2.COMP_NAM LIKE '%'+@COMP_NAM+'%')
+                        AND (@TOWN_NO='' OR a2.TOWN_NO=@TOWN_NO)
+                        AND (@KIND_NO='' OR a2.KIND_NO=@KIND_NO)
+                        AND (@S_NAME='' OR a2.S_NAME LIKE '%'+@S_NAME+'%')
+                        AND (@R_NAME='' OR a2.R_NAME LIKE '%'+@R_NAME+'%')
+                        AND (@B_DATE='' OR a2.B_DATE>=@B_DATE)
+                        AND (@E_DATE='' OR a2.E_DATE<=@E_DATE)",
+                    new
+                    {
+                        C_NO = filter.C_NO ?? "",
+                        COMP_NAM = filter.COMP_NAM ?? "",
+                        TOWN_NO = filter.TOWN_NO ?? "",
+                        KIND_NO = filter.KIND_NO ?? "",
+                        S_NAME = filter.S_NAME ?? "",
+                        R_NAME = filter.R_NAME ?? "",
+                        B_DATE = filter.StartDate.HasValue ? filter.StartDate.Value.AddYears(-1911).ToString("yyyMMdd") : "",
+                        E_DATE = filter.EndDate.HasValue ? filter.EndDate.Value.AddYears(-1911).ToString("yyyMMdd") : "",
+                    }).ToList();
+
+                foreach (var item in airs)
+                {
+                    item.B_DATE2 = base.ChineseDateToWestDate(item.B_DATE);
+                    item.E_DATE2 = base.ChineseDateToWestDate(item.E_DATE);
+                    item.AirFiles = cn.Query<AirFile>(@"
+                        SELECT * FROM AirFile WHERE AirID=@AirID",
+                        new { AirID = item.AirID }).ToList();
+                }
+
+                return airs;
+            }
+        }
+
         /// <summary>
         /// 取得申報案件的全部空品不良回報紀錄
         /// </summary>
@@ -23,8 +71,7 @@ namespace NT_AirPollution.Service
             using (var cn = new SqlConnection(connStr))
             {
                 var airs = cn.Query<AirView>(@"
-                    SELECT a1.*,
-                        a2.C_NO,a2.SER_NO,a2.COMP_NAM,a2.B_DATE,a2.E_DATE 
+                    SELECT a1.*
                     FROM Air AS a1
                     INNER JOIN Form AS a2 ON a1.FormID=a2.ID
                     WHERE a2.ID=@ID",
@@ -96,7 +143,7 @@ namespace NT_AirPollution.Service
 
                         // 清空附件
                         cn.Execute(@"DELETE FROM AirFile WHERE AirID=@AirID",
-                            new { AirID = air.ID}, trans);
+                            new { AirID = air.ID }, trans);
 
                         // 附件
                         foreach (var item in air.AirFiles)
