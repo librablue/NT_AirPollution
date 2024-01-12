@@ -162,6 +162,7 @@ input[type=number] {
   display: inline-block;
   font-size: 14px;
   color: #3081D0;
+  line-height: 1;
   padding: 4px 0;
 }
 
