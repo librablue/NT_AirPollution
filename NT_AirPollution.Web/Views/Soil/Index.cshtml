@@ -4,6 +4,24 @@
 
 @section styles {
     <link rel="stylesheet" href="@Url.Content("~/static/css/member.css")" />
+    <style>
+        .article {
+            font-size: 18px;
+            font-weight: 700;
+            line-height: 2;
+            margin-bottom: 20px;
+        }
+
+        .level2 {
+            padding-left: 24px;
+        }
+        .level2 li {
+            padding: 6px 0;
+        }
+        .el-radio {
+            margin-bottom: 6px;
+        }
+    </style>
 }
 @section scripts {
     <script src="@Url.Content("~/static/js/soil/index.js")"></script>
@@ -11,23 +29,109 @@
 
 <div id="app">
     <div class="main-wrap">
-        <h2>廢土不落地承諾書</h2>
-        <el-form v-cloak>
-            <el-form-item label="管制編號">{{form.C_NO}}-{{form.SER_NO}}</el-form-item>
-            <el-form-item label="工程名稱">{{form.COMP_NAM}}</el-form-item>
-            <el-form-item label="施工期程">{{form.B_DATE2 | date}}~{{form.E_DATE2 | date}}</el-form-item>
-            <el-form-item label="預計開挖期程"></el-form-item>
-            <el-form-item label="營建業主">{{form.S_NAME}}</el-form-item>
-            <el-form-item label="承包廠商">{{form.R_NAME}}</el-form-item>
-            <el-form-item label="工地聯絡人">{{form.R_M_NAM}}</el-form-item>
-            <el-form-item label="連絡電話">{{form.R_TEL1}}</el-form-item>
+        <h2 class="text-center">南投縣政府環境保護局道路管線工程廢土不落地承諾書</h2>
+        <p class="article">
+            本工地為維護工地週遭的清潔與施工過程的空氣品質、落實對營建工地環境的保護的責任，願於施工期間，將施工過程所產生之土石方、廢料等相關逸散性物料，以廢土不落地的方式進行處置，避免因堆置行為所衍生之路面污染、揚塵等情形，並以民眾觀感與施工環境品質為施工主要考量。承諾内容如下：
+        </p>
+        <el-form ref="form" v-model="promise" :disabled="promise.ID" v-cloak>
+            <div class="table-responsive">
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <th style="min-width:140px">管制編號</th>
+                            <td style="min-width:480px">{{form.C_NO}}-{{form.SER_NO}}</td>
+                        </tr>
+                        <tr>
+                            <th>工程名稱</th>
+                            <td>{{form.COMP_NAM}}</td>
+                        </tr>
+                        <tr>
+                            <th>施工期程</th>
+                            <td>{{form.B_DATE2 | date}}~{{form.E_DATE2 | date}}</td>
+                        </tr>
+                        <tr>
+                            <th>預計開挖期程</th>
+                            <td>
+                                自<el-date-picker style="width: 140px; margin: 0 10px" v-model="promise.StartDate" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>起，
+                                共開挖<el-input type="number" inputmode="numeric" style="width: 100px; margin: 0 10px" v-model="promise.DigDays"></el-input>日
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>營建業主</th>
+                            <td>{{form.COMP_NAM}}</td>
+                        </tr>
+                        <tr>
+                            <th>承包廠商</th>
+                            <td>{{form.R_NAME}}</td>
+                        </tr>
+                        <tr>
+                            <th>工地聯絡人</th>
+                            <td>{{form.R_M_NAM}}</td>
+                        </tr>
+                        <tr>
+                            <th>連絡電話</th>
+                            <td>{{form.R_TEL1}}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <el-radio v-model="promise.Option1" :label="1" @@change="option1Change">願於施工過程中，配合廢土不落地作業</el-radio>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <ul class="level2">
+                                    <li>作業方式</li>
+                                    <li>
+                                        <el-radio v-model="promise.Option2" :label="1" :disabled="promise.Option1 === 2" @@change="option2Change">物料直接置於運載車輛</el-radio>
+                                    </li>
+                                    <li>
+                                        <el-radio v-model="promise.Option2" :label="2" :disabled="promise.Option1 === 2" @@change="option2Change">置入太空包</el-radio>
+                                    </li>
+                                    <li>
+                                        <el-radio v-model="promise.Option2" :label="3" :disabled="promise.Option1 === 2" @@change="option2Change">其他</el-radio>
+                                        <el-input v-model="promise.Other1" :disabled="promise.Option2 !== 3"></el-input>
+                                    </li>
+                                    <li>
+                                        <div class="prompt-text">(請將廢土不落地施作照片，Email至信箱：m0492205390@gmail.com)</div>
+                                    </li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <el-radio v-model="promise.Option1" :label="2" @@change="option1Change">基於下列因素無法於施工中配合廢土不落地作業</el-radio>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <ul class="level2">
+                                    <li>
+                                        <el-radio v-model="promise.Option2" :label="4" :disabled="promise.Option1 === 1" @@change="option2Change">施工腹地過窄，運輸車輛無法進入</el-radio>
+                                    </li>
+                                    <li>
+                                        <el-radio v-model="promise.Option2" :label="5" :disabled="promise.Option1 === 1" @@change="option2Change">因施工工法因素，無法配合</el-radio>
+                                        <div style="padding-left:24px">
+                                            <div style="font-size:14px;margin-bottom:6px">請說明工法與原因：</div>
+                                            <el-input v-model="promise.Reason" :disabled="promise.Option2 !== 5"></el-input>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <el-radio v-model="promise.Option2" :label="6" :disabled="promise.Option1 === 1" @@change="option2Change">其他</el-radio>
+                                        <div style="padding-left:24px">
+                                            <el-input v-model="promise.Other2" :disabled="promise.Option2 !== 6"></el-input>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="prompt-text">(環保局將優先針對無法配合之原因，至現場進行查核，查核重點為物料堆置覆蓋情形、路面髒汙程度、塵揚污染狀況。)</div>
+                                    </li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
             <el-form-item>
-                <el-checkbox v-model="promise.Agree1">願於施工過程中，配合廢土不落地作業</el-checkbox>
-            </el-form-item>
-            <el-form-item label="作業方式">
-                <el-radio v-model="radio" label="1">物料直接置於運載車輛</el-radio>
-                <el-radio v-model="radio" label="2">置入太空包</el-radio>
-                <el-radio v-model="radio" label="2">其他</el-radio>
+                <el-button v-if="!promise.ID" type="primary" class="btn-block" @@click="addPromise">送 出</el-button>
             </el-form-item>
         </el-form>
     </div>

@@ -62,6 +62,23 @@ input[type=number] {
   background-color: #fff;
 }
 
+.el-radio__input.is-disabled + span.el-radio__label {
+  color: #606266;
+}
+
+.el-radio__input.is-disabled.is-checked .el-radio__inner::after {
+  background-color: #606266;
+}
+
+.el-radio__inner {
+  width: 18px;
+  height: 18px;
+}
+.el-radio__inner:after {
+  width: 6px;
+  height: 6px;
+}
+
 .el-form-item__label {
   font-size: 16px;
   font-weight: 700;

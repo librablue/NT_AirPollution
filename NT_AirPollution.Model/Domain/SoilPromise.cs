@@ -15,19 +15,12 @@ namespace NT_AirPollution.Model.Domain
         public long FormID { get; set; }
         public DateTime StartDate { get; set; }
         public int DigDays { get; set; }
-        public bool? Agree1 { get; set; }
-        public bool? Agree1_1 { get; set; }
-        public bool? Agree1_2 { get; set; }
-        public bool? Agree1_3 { get; set; }
-        public string Agree1_3_Text { get; set; }
-        public bool? Agree2 { get; set; }
-        public bool? Agree2_1 { get; set; }
-        public bool? Agree2_2 { get; set; }
-        public string Agree2_2_Text { get; set; }
-        public bool? Agree2_3 { get; set; }
-        public string Agree2_3_Text { get; set; }
+        public int Option1 { get; set; }
+        public int? Option2 { get; set; }
+        public string Other1 { get; set; }
+        public string Reason { get; set; }
+        public string Other2 { get; set; }
         public long CreateUserID { get; set; }
         public DateTime CreateDate { get; set; }
     }
-
 }
