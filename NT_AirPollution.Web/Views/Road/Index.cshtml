@@ -22,8 +22,8 @@
                 <el-button v-else type="info" icon="el-icon-plus" round @@click="addPromise()">新增認養承諾書</el-button>
             </el-form-item>
         </el-form>
-        <el-button style="margin-bottom:4px" type="success" icon="el-icon-plus" @@click="addReport()">新增認養成果</el-button>
-        <el-table :data="roadReports" :loading="loading" border stripe>
+        <el-button v-if="promise" style="margin-bottom:4px" type="success" icon="el-icon-plus" @@click="addReport()">新增認養成果</el-button>
+        <el-table v-if="promise" :data="roadReports" :loading="loading" border stripe>
             <el-table-column type="index" label="序號" align="center" width="80"></el-table-column>
             <el-table-column label="申報年月" align="center" width="100">
                 <template slot-scope="scope">
@@ -162,11 +162,9 @@
                             <td>{{item.CleanWay1}}</td>
                             <td>{{item.Frequency}}{{item.Times}}次</td>
                             <td>
-                                <el-input type="number" v-model="item.LengthPerTimes"></el-input>
+                                <el-input type="number" v-model="item.LengthPerTimes" @@change="lengthPerTimesChange(item)"></el-input>
                             </td>
-                            <td>
-                                <el-input type="number" v-model="item.TotalLength"></el-input>
-                            </td>
+                            <td>{{item.TotalLength}}</td>
                             <td>
                                 <el-input type="number" v-model="item.GreenLength"></el-input>
                             </td>

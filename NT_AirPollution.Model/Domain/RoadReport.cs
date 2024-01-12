@@ -12,7 +12,7 @@ namespace NT_AirPollution.Model.Domain
     {
         [Key]
         public long ID { get; set; }
-        public long FormID { get; set; }
+        public long PromiseID { get; set; }
         public long RoadID { get; set; }
         public int YearMth { get; set; }
         public string RoadName { get; set; }

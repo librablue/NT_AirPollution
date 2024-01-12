@@ -40,6 +40,11 @@ export default {
 			this.axios
 				.post('api/Admin/Login', this.user)
 				.then(res => {
+                    if(!res.data.Status) {
+                        this.$message.error(res.data.Message);
+                        this.refreshCaptcha();
+                        return;
+                    }
 					this.setCurrentUser(res.data);
 					this.$router.push('/');
 				})

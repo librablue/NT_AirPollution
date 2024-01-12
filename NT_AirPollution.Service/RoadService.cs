@@ -76,6 +76,21 @@ namespace NT_AirPollution.Service
             }
         }
 
+        public List<RoadReport> GetReports(long formID)
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                var report = cn.Query<RoadReport>(@"
+                    SELECT a1.*,a2.*
+                    FROM RoadReport AS a1
+                    INNER JOIN RoadPromise AS a2 ON a1.PromiseID=a2.ID
+                    INNER JOIN Form AS a3 ON a2.FormID=a3.ID
+                    WHERE a2.FormID=1",
+                    new { FormID = formID }).ToList();
+                return report;
+            }
+        }
+
         /// <summary>
         /// 取得道路認養成果
         /// </summary>
@@ -86,9 +101,12 @@ namespace NT_AirPollution.Service
             using (var cn = new SqlConnection(connStr))
             {
                 var report = cn.Query<RoadReport>(@"
-                    SELECT * FROM RoadReport WHERE FormID=@ID
-                        ORDER BY YearMth DESC,RoadID",
-                    new { ID = formID }).ToList();
+                    SELECT a1.* 
+                    FROM RoadReport AS a1
+                    INNER JOIN RoadPromise AS a2 ON a1.PromiseID=a2.ID
+                    WHERE a2.FormID=@FormID
+                    ORDER BY a1.YearMth DESC,a1.RoadID",
+                    new { FormID = formID }).ToList();
                 return report;
             }
         }

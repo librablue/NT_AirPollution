@@ -12,6 +12,7 @@ namespace NT_AirPollution.Model.View
     public class RoadReportView
     {
         public long FormID { get; set; }
+        public long PromiseID { get; set; }
         public int YearMth { get; set; }
         [Computed]
         public List<Road> Roads { get; set; } = new List<Road>();

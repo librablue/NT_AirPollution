@@ -107,9 +107,23 @@ namespace NT_AirPollution.Web.Controllers
                 var roadReports = new List<RoadReport>();
                 foreach (var item in view.Roads)
                 {
+                    // 自動計算每月清掃長度
+                    switch (item.Frequency)
+                    {
+                        case "每日":
+                            item.TotalLength = item.LengthPerTimes * item.Times * 30;
+                            break;
+                        case "每週":
+                            item.TotalLength = item.LengthPerTimes * item.Times * 4;
+                            break;
+                        default:
+                            item.TotalLength = 0;
+                            break;
+                    }
+
                     roadReports.Add(new RoadReport
                     {
-                        FormID = view.FormID,
+                        PromiseID = view.PromiseID,
                         RoadID = item.ID,
                         YearMth = view.YearMth,
                         RoadName = item.RoadName,
