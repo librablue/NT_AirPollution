@@ -90,7 +90,7 @@ namespace NT_AirPollution.Service
                     SELECT DISTINCT a1.PromiseID,a1.RoadID,a1.RoadName,a1.CleanWay1,a1.CleanWay2,
                         a2.StartDate,a2.EndDate,a2.CreateDate AS PromiseCreateDate,
 	                    a3.RoadLength,
-                        a4.C_NO,a4.SER_NO,a4.TOWN_NA,a4.KIND,a4.C_DATE,a4.S_NAME
+                        a4.C_NO,a4.SER_NO,a4.COMP_NAM,a4.TOWN_NA,a4.KIND,a4.C_DATE,a4.S_NAME
                     FROM RoadReport AS a1
                     INNER JOIN RoadPromise AS a2 ON a1.PromiseID=a2.ID
                     INNER JOIN Road AS a3 ON a1.RoadID=a3.ID
@@ -100,7 +100,8 @@ namespace NT_AirPollution.Service
                         AND (@TOWN_NO='' OR a4.TOWN_NO=@TOWN_NO)
                         AND (@KIND_NO='' OR a4.KIND_NO=@KIND_NO)
                         AND (@S_NAME='' OR a4.S_NAME LIKE '%'+@S_NAME+'%')
-                        AND (@R_NAME='' OR a4.R_NAME LIKE '%'+@R_NAME+'%')",
+                        AND (@R_NAME='' OR a4.R_NAME LIKE '%'+@R_NAME+'%')
+                        AND a1.YearMth BETWEEN @StartYear AND @EndYear",
                     new
                     {
                         C_NO = filter.C_NO ?? "",
@@ -108,10 +109,10 @@ namespace NT_AirPollution.Service
                         TOWN_NO = filter.TOWN_NO ?? "",
                         KIND_NO = filter.KIND_NO ?? "",
                         S_NAME = filter.S_NAME ?? "",
-                        R_NAME = filter.R_NAME ?? ""
+                        R_NAME = filter.R_NAME ?? "",
+                        StartYear = $"{filter.Year}00",
+                        EndYear = $"{filter.Year}12"
                     }).ToList();
-
-
 
                 foreach (var item in result)
                 {
@@ -130,11 +131,12 @@ namespace NT_AirPollution.Service
 
                     foreach (var sub in roadReport)
                     {
+                        double totalLength = sub.TotalLength / 1000;
                         item.RoadExcelMonth.Add(new RoadExcelMonth
                         {
-                            YearMth = sub.YearMth,
-                            CleanLength1 = sub.CleanWay1 == "洗街" ? sub.TotalLength : 0,
-                            CleanLength2 = sub.CleanWay1 == "掃街" ? sub.TotalLength : 0
+                            Month = Convert.ToInt16(sub.YearMth.ToString().Substring(4, 2)),
+                            CleanLength1 = sub.CleanWay1 == "洗街" ? Math.Round(totalLength, 1, MidpointRounding.AwayFromZero) : 0,
+                            CleanLength2 = sub.CleanWay1 == "掃街" ? Math.Round(totalLength, 1, MidpointRounding.AwayFromZero) : 0
                         });
                     }
                 }

@@ -31,6 +31,7 @@ namespace NT_AirPollution.Model.View
         public double RoadLength { get; set; }
         public string C_NO { get; set; }
         public int SER_NO { get; set; }
+        public string COMP_NAM { get; set; }
         public string TOWN_NA { get; set; }
         public string KIND { get; set; }
         public DateTime C_DATE { get; set; }
@@ -40,15 +41,15 @@ namespace NT_AirPollution.Model.View
 
     public class RoadExcelMonth
     {
-        public int YearMth { get; set; }
+        public int Month { get; set; }
         /// <summary>
         /// 洗街長度
         /// </summary>
-        public int CleanLength1 { get; set; }
+        public double CleanLength1 { get; set; }
         /// <summary>
         /// 掃街長度
         /// </summary>
-        public int CleanLength2 { get; set; }
+        public double CleanLength2 { get; set; }
 
     }
 }
