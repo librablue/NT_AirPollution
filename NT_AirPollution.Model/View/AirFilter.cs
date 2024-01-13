@@ -1,5 +1,4 @@
-﻿using Dapper.Contrib.Extensions;
-using NT_AirPollution.Model.Domain;
+﻿using NT_AirPollution.Model.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;

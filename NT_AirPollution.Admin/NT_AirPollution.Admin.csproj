@@ -91,6 +91,7 @@
     <Compile Include="ActionFilter\AuthorizeUserAttribute.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="Controllers\RoadController.cs" />
     <Compile Include="Controllers\FormController.cs" />
     <Compile Include="Controllers\NewsController.cs" />
     <Compile Include="Controllers\AirController.cs" />

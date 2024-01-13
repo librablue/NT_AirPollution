@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Runtime.Remoting.Metadata.W3cXsd2001;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -76,18 +77,69 @@ namespace NT_AirPollution.Service
             }
         }
 
-        public List<RoadReport> GetReports(long formID)
+        /// <summary>
+        /// 後台查詢報表
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        public List<RoadExcel> GetRoadReport(RoadFilter filter)
         {
             using (var cn = new SqlConnection(connStr))
             {
-                var report = cn.Query<RoadReport>(@"
-                    SELECT a1.*,a2.*
+                var result = cn.Query<RoadExcel>(@"
+                    SELECT DISTINCT a1.PromiseID,a1.RoadID,a1.RoadName,a1.CleanWay1,a1.CleanWay2,
+                        a2.StartDate,a2.EndDate,a2.CreateDate AS PromiseCreateDate,
+	                    a3.RoadLength,
+                        a4.C_NO,a4.SER_NO,a4.TOWN_NA,a4.KIND,a4.C_DATE,a4.S_NAME
                     FROM RoadReport AS a1
                     INNER JOIN RoadPromise AS a2 ON a1.PromiseID=a2.ID
-                    INNER JOIN Form AS a3 ON a2.FormID=a3.ID
-                    WHERE a2.FormID=1",
-                    new { FormID = formID }).ToList();
-                return report;
+                    INNER JOIN Road AS a3 ON a1.RoadID=a3.ID
+                    INNER JOIN Form AS a4 ON a2.FormID=a4.ID
+                    WHERE (@C_NO=@C_NO OR a4.C_NO=@C_NO)
+                        AND (@COMP_NAM=@COMP_NAM OR a4.COMP_NAM=@COMP_NAM)
+                        AND (@TOWN_NO='' OR a4.TOWN_NO=@TOWN_NO)
+                        AND (@KIND_NO='' OR a4.KIND_NO=@KIND_NO)
+                        AND (@S_NAME='' OR a4.S_NAME LIKE '%'+@S_NAME+'%')
+                        AND (@R_NAME='' OR a4.R_NAME LIKE '%'+@R_NAME+'%')",
+                    new
+                    {
+                        C_NO = filter.C_NO ?? "",
+                        COMP_NAM = filter.COMP_NAM ?? "",
+                        TOWN_NO = filter.TOWN_NO ?? "",
+                        KIND_NO = filter.KIND_NO ?? "",
+                        S_NAME = filter.S_NAME ?? "",
+                        R_NAME = filter.R_NAME ?? ""
+                    }).ToList();
+
+
+
+                foreach (var item in result)
+                {
+                    var roadReport = cn.Query<RoadReport>(@"
+                        SELECT * FROM RoadReport
+                            WHERE PromiseID=@PromiseID
+                                AND RoadID=@RoadID
+                                AND YearMth BETWEEN @StartMth AND @EndMth",
+                        new
+                        {
+                            PromiseID = item.PromiseID,
+                            RoadID = item.RoadID,
+                            StartMth = $"{filter.Year}01",
+                            EndMth = $"{filter.Year}12"
+                        }).OrderBy(o => o.YearMth).ToList();
+
+                    foreach (var sub in roadReport)
+                    {
+                        item.RoadExcelMonth.Add(new RoadExcelMonth
+                        {
+                            YearMth = sub.YearMth,
+                            CleanLength1 = sub.CleanWay1 == "洗街" ? sub.TotalLength : 0,
+                            CleanLength2 = sub.CleanWay1 == "掃街" ? sub.TotalLength : 0
+                        });
+                    }
+                }
+
+                return result;
             }
         }
 
