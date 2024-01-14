@@ -34,6 +34,11 @@
 					<i class="fa fa-search"></i> 查 詢
 				</el-button>
 			</el-form-item>
+			<el-form-item>
+				<el-button type="success" @click="exportRoadReport()">
+					<i class="fa fa-file-excel-o"></i> 匯 出
+				</el-button>
+			</el-form-item>
 		</el-form>
 		<vxe-grid v-bind="gridOptions"></vxe-grid>
 	</div>
@@ -170,6 +175,13 @@ export default {
 				this.gridOptions.data = dataAry;
 
 				this.loading = false;
+			});
+		},
+		exportRoadReport() {
+			this.loading = true;
+			this.axios.post('api/Road/ExportRoadReport', this.filter).then(res => {
+				this.loading = false;
+				location.href = `api/Option/Download?f=${res.data}`;
 			});
 		}
 	}

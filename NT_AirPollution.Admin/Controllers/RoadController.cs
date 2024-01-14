@@ -23,7 +23,7 @@ namespace NT_AirPollution.Admin.Controllers
         }
 
         [HttpPost]
-        public List<RoadExcel> ExportRoadReport(RoadFilter filter)
+        public string ExportRoadReport(RoadFilter filter)
         {
             var result = _roadService.GetRoadReport(filter);
             var wb = new XLWorkbook(HostingEnvironment.MapPath(@"~/App_Data/Template/RoadReportTemplate.xlsx"));
@@ -43,8 +43,30 @@ namespace NT_AirPollution.Admin.Controllers
                 ws.Cell(rowIdx, 10).SetValue(item.RoadName);
                 ws.Cell(rowIdx, 11).SetValue(item.StartDate.ToString("yyyy-MM-dd"));
                 ws.Cell(rowIdx, 12).SetValue(item.EndDate.ToString("yyyy-MM-dd"));
-
+                int colIdx = 12;
+                for (int i = 1; i <= 12; i++)
+                {
+                    var month = item.RoadExcelMonth.FirstOrDefault(o => o.Month == i);
+                    if (month == null)
+                    {
+                        ws.Cell(rowIdx, ++colIdx).SetValue(0);
+                        ws.Cell(rowIdx, ++colIdx).SetValue(0);
+                    }
+                    else
+                    {
+                        ws.Cell(rowIdx, ++colIdx).SetValue(month.CleanLength1);
+                        ws.Cell(rowIdx, ++colIdx).SetValue(month.CleanLength2);
+                    }
+                }
+                ws.Cell(rowIdx, ++colIdx).SetValue(item.CleanWay1);
+                ws.Cell(rowIdx, ++colIdx).SetValue(item.CleanWay2);
+                rowIdx++;
             }
+
+            ws.Columns().AdjustToContents(); ;
+            string fileName = $"{Guid.NewGuid().ToString()}.xlsx";
+            wb.SaveAs(HostingEnvironment.MapPath($@"~/App_Data/Download/{fileName}"));
+            return fileName;
         }
     }
 }

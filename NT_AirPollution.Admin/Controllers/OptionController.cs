@@ -1,10 +1,15 @@
-﻿using NT_AirPollution.Model.Domain;
+﻿using ClosedXML.Excel;
+using NT_AirPollution.Model.Domain;
+using NT_AirPollution.Model.View;
 using NT_AirPollution.Service;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Web.Hosting;
 using System.Web.Http;
 
 namespace NT_AirPollution.Admin.Controllers
@@ -21,6 +26,29 @@ namespace NT_AirPollution.Admin.Controllers
         public List<ProjectCode> GetProjectCode()
         {
             return _optionService.GetProjectCode();
+        }
+
+        [HttpGet]
+        public HttpResponseMessage Download(string f)
+        {
+            try
+            {
+                string filePath = HostingEnvironment.MapPath($@"~/App_Data/Download/{f}");
+                var stream = new FileStream(filePath, FileMode.Open);
+                HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
+                response.Content = new StreamContent(stream);
+                response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+                response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
+                {
+                    FileName = f
+                };
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }
