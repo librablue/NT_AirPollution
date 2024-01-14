@@ -31,13 +31,11 @@ namespace NT_AirPollution.Service
             {
                 var forms = cn.Query<FormView>(@"
                     SELECT * FROM Form
-                    WHERE (@AutoFormID='' OR AutoFormID=@AutoFormID)
-                        AND (@C_NO='' OR C_NO=@C_NO)
+                    WHERE (@C_NO='' OR C_NO=@C_NO)
                         AND (@CreateUserEmail='' OR CreateUserEmail=@CreateUserEmail)
                         AND (@Status=0 OR Status=@Status)",
                     new
                     {
-                        AutoFormID = filter.AutoFormID ?? "",
                         C_NO = filter.C_NO ?? "",
                         CreateUserEmail = filter.CreateUserEmail ?? "",
                         Status = filter.Status

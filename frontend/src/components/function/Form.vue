@@ -2,9 +2,6 @@
 	<div class="main">
 		<h1>申請案件管理</h1>
 		<el-form size="small" inline>
-			<el-form-item label="案件編號">
-				<el-input style="width: 140px" v-model="filter.AutoFormID"></el-input>
-			</el-form-item>
 			<el-form-item label="管制編號">
 				<el-input style="width: 140px" v-model="filter.C_NO"></el-input>
 			</el-form-item>
@@ -73,7 +70,6 @@ export default {
 		return {
 			loading: false,
 			filter: {
-				AutoFormID: '',
 				C_NO: '',
 				ClientUserEmail: '',
 				Status: 1
