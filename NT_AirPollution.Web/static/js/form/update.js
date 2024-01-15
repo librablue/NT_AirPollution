@@ -161,7 +161,7 @@
 
                             alert('修改資料已送出，請等待審核人員通知');
                             alert('您申報之空污費，試算繳費金額約為 ' + res.data.Message + '元，請依後續審核後之繳費單金額為主。');
-                            location.href = '/Home/Index';
+                            location.href = `${document.baseURI}/Home/Index`;
                         })
                         .catch(err => {
                             grecaptcha.reset();

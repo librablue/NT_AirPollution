@@ -161,7 +161,6 @@
     <Content Include="static\scss\member.scss" />
     <Content Include="static\scss\_config.scss" />
     <Content Include="static\scss\_footer.scss" />
-    <Content Include="static\scss\_form.scss" />
     <Content Include="static\scss\_navbar.scss" />
     <Content Include="static\scss\_shared.scss" />
     <Content Include="Views\Home\Index.cshtml" />

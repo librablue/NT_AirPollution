@@ -137,6 +137,7 @@
     <script src="@Url.Content("~/static/js/main.js")"></script>
     <script>
         ELEMENT.locale(ELEMENT.lang.zhTW);
+        axios.defaults.baseURL = '@_domain';
     </script>
     @RenderSection("scripts", required: false)
 </body>

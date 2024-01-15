@@ -51,7 +51,7 @@
             var url = new URL(location.href);
             this.formID = url.searchParams.get('id');
             if (!this.formID) {
-                location.href = '/Manage/Form';
+                location.href = `${document.baseURI}/Manage/Form`;
                 return;
             }
             this.getCurrentUser();
@@ -80,7 +80,7 @@
                     .then(res => {
                         if (!res.data.Status) {
                             alert(res.data.Message);
-                            location.href = '/Manage/Form';
+                            location.href = `${document.baseURI}/Manage/Form`;
                             return;
                         }
                         this.form = res.data.Message;

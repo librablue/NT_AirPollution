@@ -212,7 +212,7 @@
 
                             alert('申請資料已送出。\n系統將於5分鐘內傳送認證信給您，請點選郵件中的連結進行驗證。\n完成驗證之案件才會進入審核程序。');
                             alert('您申報之空污費，試算繳費金額約為 ' + res.data.Message + '元，請依後續審核後之繳費單金額為主。');
-                            location.href = '/Home/Index';
+                            location.href = `${document.baseURI}/Home/Index`;
                         })
                         .catch(err => {
                             grecaptcha.reset();

@@ -32,7 +32,7 @@
                                 return;
                             }
 
-                            location.href = '/Search/Result';
+                            location.href = `${document.baseURI}/Search/Result`;
                         })
                         .catch(err => {
                             console.log(err);

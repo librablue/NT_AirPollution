@@ -79,7 +79,7 @@
 							}
 
 							alert('密碼修改成功，請重新登入');
-							location.href = '/Member/Logout';
+							location.href = `${document.baseURI}/Member/Logout`;
 						})
 						.catch(err => {
 							console.log(err);

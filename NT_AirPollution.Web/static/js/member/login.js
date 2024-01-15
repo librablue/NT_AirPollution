@@ -36,12 +36,12 @@
 							const url = new URL(location.href);
 							const returnUrl = url.searchParams.get('ReturnUrl');
 							if (returnUrl) {
-								location.href = returnUrl;
+								location.href = `${document.baseURI}/${returnUrl}`;
 								return;
 							}
 
-							if (res.data.Message === 1) location.href = '/Apply/Form';
-							else location.href = '/Manage/Form';
+							if (res.data.Message === 1) location.href = `${document.baseURI}/Apply/Form`;
+							else location.href = `${document.baseURI}/Manage/Form`;
 						})
 						.catch(err => {
 							console.log(err);
