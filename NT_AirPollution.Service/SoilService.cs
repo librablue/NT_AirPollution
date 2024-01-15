@@ -14,37 +14,37 @@ namespace NT_AirPollution.Service
 {
     public class SoilService : BaseService
     {
-        public SoilPromise GetPromise(AirFilter filter)
-        {
-            using (var cn = new SqlConnection(connStr))
-            {
-                var promise = cn.Query<SoilPromise>(@"
-                    SELECT a2.*
-                    FROM SoilPromise AS a1
-                    INNER JOIN Form AS a2 ON a1.FormID=a2.ID
-                    WHERE (@C_NO='' OR a2.C_NO=@C_NO)
-                        AND (@COMP_NAM='' OR a2.COMP_NAM LIKE '%'+@COMP_NAM+'%')
-                        AND (@TOWN_NO='' OR a2.TOWN_NO=@TOWN_NO)
-                        AND (@KIND_NO='' OR a2.KIND_NO=@KIND_NO)
-                        AND (@S_NAME='' OR a2.S_NAME LIKE '%'+@S_NAME+'%')
-                        AND (@R_NAME='' OR a2.R_NAME LIKE '%'+@R_NAME+'%')
-                        AND (@B_DATE='' OR a2.B_DATE>=@B_DATE)
-                        AND (@E_DATE='' OR a2.E_DATE<=@E_DATE)",
-                    new
-                    {
-                        C_NO = filter.C_NO ?? "",
-                        COMP_NAM = filter.COMP_NAM ?? "",
-                        TOWN_NO = filter.TOWN_NO ?? "",
-                        KIND_NO = filter.KIND_NO ?? "",
-                        S_NAME = filter.S_NAME ?? "",
-                        R_NAME = filter.R_NAME ?? "",
-                        B_DATE = filter.StartDate.HasValue ? filter.StartDate.Value.AddYears(-1911).ToString("yyyMMdd") : "",
-                        E_DATE = filter.EndDate.HasValue ? filter.EndDate.Value.AddYears(-1911).ToString("yyyMMdd") : "",
-                    }).ToList();
+        //public SoilPromise GetPromise(AirFilter filter)
+        //{
+        //    using (var cn = new SqlConnection(connStr))
+        //    {
+        //        var promise = cn.Query<SoilPromise>(@"
+        //            SELECT a2.*
+        //            FROM SoilPromise AS a1
+        //            INNER JOIN Form AS a2 ON a1.FormID=a2.ID
+        //            WHERE (@C_NO='' OR a2.C_NO=@C_NO)
+        //                AND (@COMP_NAM='' OR a2.COMP_NAM LIKE '%'+@COMP_NAM+'%')
+        //                AND (@TOWN_NO='' OR a2.TOWN_NO=@TOWN_NO)
+        //                AND (@KIND_NO='' OR a2.KIND_NO=@KIND_NO)
+        //                AND (@S_NAME='' OR a2.S_NAME LIKE '%'+@S_NAME+'%')
+        //                AND (@R_NAME='' OR a2.R_NAME LIKE '%'+@R_NAME+'%')
+        //                AND (@B_DATE='' OR a2.B_DATE>=@B_DATE)
+        //                AND (@E_DATE='' OR a2.E_DATE<=@E_DATE)",
+        //            new
+        //            {
+        //                C_NO = filter.C_NO ?? "",
+        //                COMP_NAM = filter.COMP_NAM ?? "",
+        //                TOWN_NO = filter.TOWN_NO ?? "",
+        //                KIND_NO = filter.KIND_NO ?? "",
+        //                S_NAME = filter.S_NAME ?? "",
+        //                R_NAME = filter.R_NAME ?? "",
+        //                B_DATE = filter.StartDate.HasValue ? filter.StartDate.Value.AddYears(-1911).ToString("yyyMMdd") : "",
+        //                E_DATE = filter.EndDate.HasValue ? filter.EndDate.Value.AddYears(-1911).ToString("yyyMMdd") : "",
+        //            }).ToList();
 
-                return promise;
-            }
-        }
+        //        return promise;
+        //    }
+        //}
 
         /// <summary>
         /// 取得申報案件的廢土不落地承諾書
