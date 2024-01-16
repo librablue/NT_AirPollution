@@ -3,10 +3,12 @@ using Dapper.Contrib.Extensions;
 using NT_AirPollution.Model.Domain;
 using NT_AirPollution.Model.Enum;
 using NT_AirPollution.Model.View;
+using SelectPdf;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -17,8 +19,9 @@ namespace NT_AirPollution.Service
 {
     public class FormService : BaseService
     {
-        protected readonly string _configDomain = ConfigurationManager.AppSettings["Domain"].ToString();
+        private readonly string _configDomain = ConfigurationManager.AppSettings["Domain"].ToString();
         private readonly string _uploadPath = ConfigurationManager.AppSettings["UploadPath"].ToString();
+        private readonly string _paymentFilePath = ConfigurationManager.AppSettings["PaymentFilePath"].ToString();
 
         /// <summary>
         /// 取得全部表單
@@ -579,6 +582,237 @@ namespace NT_AirPollution.Service
                     throw ex;
                 }
             }
+        }
+
+        /// <summary>
+        /// 產生銀行虛擬繳款帳號
+        /// </summary>
+        /// <param name="autoID">產品自動編號</param>
+        /// <param name="price">價格</param>
+        /// <returns></returns>
+        private string GetBankAccount(string autoID, int price)
+        {
+            DateTime maxPayDay = Convert.ToDateTime(DateTime.Now.AddDays(6).ToString("yyyy/MM/dd"));
+            DateTime firstDayOfYear = Convert.ToDateTime(maxPayDay.ToString("yyyy/01/01"));
+
+            TimeSpan ts = new TimeSpan(maxPayDay.Ticks - firstDayOfYear.Ticks);
+
+            // 代收類別
+            string code1_6 = "713587";
+            // 到期年末碼
+            string code7 = maxPayDay.ToString("yyyy").Substring(3, 1);
+            // 到期天(離1/1相差幾天)
+            string code8_10 = (ts.TotalDays + 1).ToString().PadLeft(3, '0');
+            // 客戶自用編號(產品自動編號5碼)
+            if (autoID.Length <= 5)
+                autoID = autoID.PadLeft(5, '0');
+            else
+                autoID = autoID.Substring(autoID.Length - 5, 5);
+            string code_11_15 = autoID;
+            string code1_15 = code1_6 + code7 + code8_10 + code_11_15;
+            string codePrice = price.ToString().PadLeft(10, '0');
+            string code1_15Price = code1_15 + codePrice;
+            int sum = 0;
+            for (int i = 0; i < code1_15Price.Length; i++)
+            {
+                switch (i % 3)
+                {
+                    case 0:
+                        sum += Convert.ToInt32(code1_15Price[i].ToString()) * 1;
+                        break;
+                    case 1:
+                        sum += Convert.ToInt32(code1_15Price[i].ToString()) * 3;
+                        break;
+                    case 2:
+                        sum += Convert.ToInt32(code1_15Price[i].ToString()) * 7;
+                        break;
+                }
+            }
+
+            // 總和取個位數
+            string code16 = (sum % 10).ToString();
+            string totalCode = code1_15 + code16;
+
+            return totalCode;
+        }
+
+        /// <summary>
+        /// 產生郵局虛擬繳款帳號
+        /// </summary>
+        /// <param name="autoID">產品自動編號</param>
+        /// <param name="price">價格</param>
+        /// <returns></returns>
+        private string GetPostAccount(string autoID, int price)
+        {
+            DateTime maxPayDay = Convert.ToDateTime(DateTime.Now.AddDays(6).ToString("yyyy/MM/dd"));
+            DateTime firstDayOfYear = Convert.ToDateTime(maxPayDay.ToString("yyyy/01/01"));
+
+            TimeSpan ts = new TimeSpan(maxPayDay.Ticks - firstDayOfYear.Ticks);
+
+            // 代收類別
+            string code1_6 = "713587";
+            // 客戶自用編號(產品自動編號7碼)
+            if (autoID.Length <= 7)
+                autoID = autoID.PadLeft(7, '0');
+            else
+                autoID = autoID.Substring(autoID.Length - 7, 7);
+            string code_7_13 = autoID;
+            string code1_13 = code1_6 + code_7_13;
+            string codePrice = price.ToString().PadLeft(10, '0');
+            string code1_13Price = code1_13 + codePrice;
+            int sum = 0;
+            for (int i = 0; i < code1_13Price.Length; i++)
+            {
+                switch (i % 3)
+                {
+                    case 0:
+                        sum += Convert.ToInt32(code1_13Price[i].ToString()) * 1;
+                        break;
+                    case 1:
+                        sum += Convert.ToInt32(code1_13Price[i].ToString()) * 3;
+                        break;
+                    case 2:
+                        sum += Convert.ToInt32(code1_13Price[i].ToString()) * 7;
+                        break;
+                }
+            }
+
+            // 總和取個位數
+            string code14 = (sum % 10 + 1).ToString();
+            code14 = code14.Substring(code14.Length - 1, 1);
+            string totalCode = code1_13 + code14;
+
+            // 前面加繳款期限
+            CultureInfo culture = new CultureInfo("zh-TW");
+            culture.DateTimeFormat.Calendar = new TaiwanCalendar();
+            string strMaxPayDay = maxPayDay.ToString("yyMMdd", culture);
+
+            return strMaxPayDay + totalCode;
+        }
+
+        /// <summary>
+        /// 產生第一段超商條碼
+        /// </summary>
+        /// <returns></returns>
+        private string GetStore1Barcode()
+        {
+            DateTime maxPayDay = Convert.ToDateTime(DateTime.Now.AddDays(6).ToString("yyyy/MM/dd"));
+
+            CultureInfo culture = new CultureInfo("zh-TW");
+            culture.DateTimeFormat.Calendar = new TaiwanCalendar();
+            string strMaxPayDay = maxPayDay.ToString("yyMMdd", culture).Substring(1);
+            return strMaxPayDay + "63F";
+        }
+
+        /// <summary>
+        /// 產生第三段超商條碼
+        /// </summary>
+        /// <param name="bankAccount">銀行帳號</param>
+        /// <param name="priceStr">價格(字串)</param>
+        /// <returns></returns>
+        private string GetStore3Barcode(string bankAccount, string priceStr)
+        {
+            //Dictionary<string, int> charTable = new Dictionary<string, int>()
+            //{
+            //    {"A", 1},{"B", 2},{"C", 3},{"D", 4},{"E", 5},{"F", 6},{"G", 7},{"H", 8},{"I", 9},
+            //    {"J", 1},{"K", 2},{"L", 3},{"M", 4},{"N", 5},{"O", 6},{"P", 7},{"Q", 8},{"R", 9},
+            //    {"S", 2},{"T", 3},{"U", 4},{"V", 5},{"W", 6},{"X", 7},{"Y", 8},{"Z", 9}
+            //};
+
+            string part1 = GetStore1Barcode();
+            part1 = part1.Replace("F", "6");
+            string part2 = bankAccount;
+            string part3 = "0000" + priceStr;
+
+            int part1_sum1 = 0;
+            int part1_sum2 = 0;
+            int part2_sum1 = 0;
+            int part2_sum2 = 0;
+            int part3_sum1 = 0;
+            int part3_sum2 = 0;
+            for (int i = 0; i < part1.Length; i++)
+            {
+                if (i % 2 == 0)
+                    part1_sum1 += Convert.ToInt32(part1[i].ToString());
+                else
+                    part1_sum2 += Convert.ToInt32(part1[i].ToString());
+            }
+            for (int i = 0; i < part2.Length; i++)
+            {
+                if (i % 2 == 0)
+                    part2_sum1 += Convert.ToInt32(part2[i].ToString());
+                else
+                    part2_sum2 += Convert.ToInt32(part2[i].ToString());
+            }
+            for (int i = 0; i < part3.Length; i++)
+            {
+                if (i % 2 == 0)
+                    part3_sum1 += Convert.ToInt32(part3[i].ToString());
+                else
+                    part3_sum2 += Convert.ToInt32(part3[i].ToString());
+            }
+
+            string checkCode1 = ((part1_sum1 + part2_sum1 + part3_sum1) % 11).ToString();
+            string checkCode2 = ((part1_sum2 + part2_sum2 + part3_sum2) % 11).ToString();
+            checkCode1 = checkCode1.Replace("10", "B").Replace("0", "A");
+            checkCode2 = checkCode2.Replace("10", "Y").Replace("0", "X");
+
+            return "0000" + checkCode1 + checkCode2 + priceStr;
+        }
+
+        /// <summary>
+        /// 產生繳款單
+        /// </summary>
+        /// <param name="productName">產品名稱</param>
+        /// <param name="bankAccount">銀行帳號</param>
+        /// <param name="postAccount">郵局帳號</param>
+        /// <param name="form"></param>
+        /// <returns>文件路徑</returns>
+        private string CreatePDF(string productName, string bankAccount, string postAccount, Form form)
+        {
+            PdfPageSize pageSize = (PdfPageSize)Enum.Parse(typeof(PdfPageSize),
+               "A4", true);
+
+            // instantiate a html to pdf converter object
+            HtmlToPdf converter = new HtmlToPdf();
+
+            // set converter options
+            converter.Options.PdfPageSize = pageSize;
+
+            string pdf_orientation = "Portrait";
+            PdfPageOrientation pdfOrientation =
+                (PdfPageOrientation)Enum.Parse(typeof(PdfPageOrientation),
+                pdf_orientation, true);
+            converter.Options.PdfPageOrientation = pdfOrientation;
+            converter.Options.WebPageWidth = 1024;
+            converter.Options.WebPageHeight = 0;
+
+
+            string templatePath = HostingEnvironment.MapPath($@"~/App_Data/Template");
+            string readText = File.ReadAllText($@"{templatePath}\payment.html");
+            readText = readText.Replace("#ProjectID#", $"{form.C_NO}-{form.SER_NO}")
+                                .Replace("#PaymentID#", "")
+                                .Replace("#ProjectName#", form.KIND)
+                                .Replace("#ContractID#", form.B_SERNO)
+                                .Replace("#BizCompany#", form.S_NAME)
+                                .Replace("#TotalMoney#", "")
+                                .Replace("#TotalMoneyChinese#", this.GetChineseMoney("") + "整")
+                                .Replace("#CurrentMoney#", "")
+                                .Replace("#BankAccount#", bankAccount)
+                                .Replace("#PayWay#", "一次全繳<br>共分 1 期，本期為第 1 期")
+                                .Replace("#StartDate#", $"民國 {form.B_DATE2.Year - 1911} 年 {form.B_DATE2.Month} 月 {form.B_DATE2.Day} 日");
+
+            // create a new pdf document converting an url
+            PdfDocument doc = converter.ConvertHtmlString(readText, "");
+
+            string filePath = $@"{_paymentFilePath}\\{bankAccount}.pdf";
+            // save pdf document
+            doc.Save(filePath);
+
+            // close pdf document
+            doc.Close();
+
+            return filePath;
         }
     }
 }
