@@ -94,12 +94,12 @@ namespace NT_AirPollution.Web.Controllers
                 {
                     String content = sr.ReadToEnd();
                     string url = string.Format("{0}/Verify/Index?code={1}", _configDomain, form.ActiveCode);
-                    string body = string.Format(content, form.AutoFormID, form.CreateUserEmail, url, url);
+                    string body = string.Format(content, form.C_NO, form.CreateUserEmail, url, url);
 
                     _sendBoxService.AddSendBox(new SendBox
                     {
                         Address = form.CreateUserEmail,
-                        Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統認證信(案件編號-{form.AutoFormID})",
+                        Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統認證信(管制編號-{form.C_NO})",
                         Body = body,
                         FailTimes = 0,
                         CreateDate = DateTime.Now

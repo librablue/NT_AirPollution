@@ -327,7 +327,7 @@
 								return;
 							}
 
-							alert('您申報之空污費，試算繳費金額約為 ' + res.data.Message + '元，請依後續審核後之繳費單金額為主。');
+							alert('申請資料已送出，繳款金額請依人工審核後之繳費單內容為主。');
 							this.getForms();
 							this.dialogVisible = false;
 						})
@@ -340,7 +340,7 @@
 			copyRow(row) {
 				this.mode = 'Add';
 				this.selectRow = JSON.parse(JSON.stringify(row));
-				const clearAry = ['SER_NO', 'AP_DATE', 'C_DATE', 'AutoFormID', 'SerialNo'];
+				const clearAry = ['SER_NO', 'AP_DATE', 'C_DATE'];
 				for (const key of clearAry) {
 					this.selectRow[key] = null;
 				}

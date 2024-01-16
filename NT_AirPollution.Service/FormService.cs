@@ -302,23 +302,6 @@ namespace NT_AirPollution.Service
         }
 
         /// <summary>
-        /// 取得表單最新流水號
-        /// </summary>
-        /// <returns></returns>
-        //public int GetSerialNumber()
-        //{
-        //    using (var cn = new SqlConnection(connStr))
-        //    {
-        //        int serialNo = cn.QuerySingleOrDefault<int>(@"
-        //            SELECT ISNULL(MAX(SerialNo), 0) FROM Form 
-        //            WHERE C_DATE>=@Today",
-        //            new { Today = DateTime.Now.ToString("yyyy-MM-dd") });
-
-        //        return serialNo;
-        //    }
-        //}
-
-        /// <summary>
         /// 新增申請單
         /// </summary>
         /// <param name="form"></param>
@@ -490,7 +473,7 @@ namespace NT_AirPollution.Service
                         cn.Insert(new SendBox
                         {
                             Address = form.CreateUserEmail,
-                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件需補件通知(案件編號 {form.AutoFormID})",
+                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件需補件通知(管制編號 {form.C_NO})",
                             Body = body,
                             FailTimes = 0,
                             CreateDate = DateTime.Now
@@ -515,13 +498,13 @@ namespace NT_AirPollution.Service
                 String content = sr.ReadToEnd();
                 string url1 = string.Format("{0}/Form/Guide", _configDomain);
                 string url2 = string.Format("{0}/Search/Index", _configDomain);
-                string body = string.Format(content, form.AutoFormID, form.CreateUserEmail, url1, url2);
+                string body = string.Format(content, form.C_NO, form.CreateUserEmail, url1, url2);
 
                 // 產生繳款單
                 string pdfTemplateFile = $@"{HostingEnvironment.ApplicationPhysicalPath}\App_Data\Template\Payment.html";
                 //var fileBytes = this.GeneratePDF(pdfTemplateFile, form);
                 // 儲存實體檔案
-                string paymentFile = $@"{_uploadPath}\Payment\繳款單{form.AutoFormID}.pdf";
+                string paymentFile = $@"{_uploadPath}\Payment\繳款單{form.C_NO}.pdf";
                 using (var fs = new FileStream(paymentFile, FileMode.Create, FileAccess.Write))
                 {
                     //fs.Write(fileBytes, 0, fileBytes.Length);
@@ -535,7 +518,7 @@ namespace NT_AirPollution.Service
                         cn.Insert(new SendBox
                         {
                             Address = form.CreateUserEmail,
-                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件繳費通知(案件編號 {form.AutoFormID})",
+                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件繳費通知(管制編號 {form.C_NO})",
                             Body = body,
                             Attachment = paymentFile,
                             FailTimes = 0,
@@ -560,13 +543,13 @@ namespace NT_AirPollution.Service
             {
                 String content = sr.ReadToEnd();
                 string url = string.Format("{0}/Search/Result", _configDomain);
-                string body = string.Format(content, form.AutoFormID, form.CreateUserEmail, url);
+                string body = string.Format(content, form.C_NO, form.CreateUserEmail, url);
 
                 // 產生收據
                 string pdfTemplateFile = $@"{HostingEnvironment.ApplicationPhysicalPath}\App_Data\Template\Receipt.html";
                 //var fileBytes = this.GeneratePDF(pdfTemplateFile, form);
                 // 儲存實體檔案
-                string receiptFile = $@"{_uploadPath}\Receipt\收據{form.AutoFormID}.pdf";
+                string receiptFile = $@"{_uploadPath}\Receipt\收據{form.C_NO}.pdf";
                 using (var fs = new FileStream(receiptFile, FileMode.Create, FileAccess.Write))
                 {
                     //fs.Write(fileBytes, 0, fileBytes.Length);
@@ -580,7 +563,7 @@ namespace NT_AirPollution.Service
                         cn.Insert(new SendBox
                         {
                             Address = form.CreateUserEmail,
-                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件繳費完成(案件編號 {form.AutoFormID})",
+                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件繳費完成(管制編號 {form.C_NO})",
                             Body = body,
                             Attachment = receiptFile,
                             FailTimes = 0,

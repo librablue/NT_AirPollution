@@ -92,8 +92,6 @@ namespace NT_AirPollution.Web.Controllers
                 form.R_B_BDATE = form.R_B_BDATE2.AddYears(-1911).ToString("yyyMMdd");
                 form.C_DATE = DateTime.Now;
                 form.M_DATE = DateTime.Now;
-                //form.SerialNo = sn + 1;
-                //form.AutoFormID = DateTime.Now.ToString($"yyyyMMdd{(sn + 1).ToString().PadLeft(3, '0')}");
                 form.ActiveCode = Guid.NewGuid().ToString();
                 form.IsActive = false;
                 form.FormStatus = FormStatus.審理中;
@@ -113,12 +111,12 @@ namespace NT_AirPollution.Web.Controllers
                 {
                     String content = sr.ReadToEnd();
                     string url = string.Format("{0}/Verify/Index?code={1}", _configDomain, form.ActiveCode);
-                    string body = string.Format(content, form.AutoFormID, form.CreateUserEmail, url, url);
+                    string body = string.Format(content, form.C_NO, form.CreateUserEmail, url, url);
 
                     _sendBoxService.AddSendBox(new SendBox
                     {
                         Address = form.CreateUserEmail,
-                        Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統認證信(案件編號-{form.AutoFormID})",
+                        Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統認證信(管制編號-{form.C_NO})",
                         Body = body,
                         FailTimes = 0,
                         CreateDate = DateTime.Now

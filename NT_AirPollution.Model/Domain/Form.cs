@@ -537,14 +537,6 @@ namespace NT_AirPollution.Model.Domain
         /// </summary>
         public string CreateUserName { get; set; }
         /// <summary>
-        /// 案件編號
-        /// </summary>
-        public string AutoFormID { get; set; }
-        /// <summary>
-        /// 流水號
-        /// </summary>
-        public int? SerialNo { get; set; }
-        /// <summary>
         /// 非會員啟用碼
         /// </summary>
         public string ActiveCode { get; set; }
