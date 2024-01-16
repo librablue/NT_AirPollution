@@ -190,6 +190,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="App_Data\PaymentFile\" />
     <Folder Include="App_Data\Upload\" />
     <Folder Include="static\image\Upload\" />
     <Folder Include="Views\Option\" />

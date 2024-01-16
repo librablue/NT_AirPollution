@@ -156,13 +156,13 @@ export default {
 						COMP_NAM: item.COMP_NAM,
 						TOWN_NA: item.TOWN_NA,
 						KIND: item.KIND,
-						C_DATE: dayjs(item.C_DATE).format('YYYY-MM-DD'),
+						C_DATE: moment(item.C_DATE).format('YYYY-MM-DD'),
 						S_NAME: item.S_NAME,
-						PromiseCreateDate: dayjs(item.PromiseCreateDate).format('YYYY-MM-DD'),
+						PromiseCreateDate: moment(item.PromiseCreateDate).format('YYYY-MM-DD'),
 						RoadLength: item.RoadLength,
 						RoadName: item.RoadName,
-						StartDate: dayjs(item.StartDate).format('YYYY-MM-DD'),
-						EndDate: dayjs(item.EndDate).format('YYYY-MM-DD'),
+						StartDate: moment(item.StartDate).format('YYYY-MM-DD'),
+						EndDate: moment(item.EndDate).format('YYYY-MM-DD'),
 						CleanWay1: item.CleanWay1,
 						CleanWay2: item.CleanWay2
 					};

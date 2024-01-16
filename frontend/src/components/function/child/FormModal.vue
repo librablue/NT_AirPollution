@@ -1,20 +1,42 @@
 <template>
 	<vxe-modal title="申請單明細" v-model="visible" width="80%" height="90%" :lock-scroll="false" esc-closable resize show-footer>
 		<template #default>
-			<el-form ref="form" size="small" :model="form" inline>
-				<el-form-item label="案件編號">{{form.AutoFormID}}</el-form-item>
-				<el-form-item prop="ProjectID" label="管制編號">{{form.C_NO}}</el-form-item>
-				<el-form-item prop="FormStatus" label="審核狀態">
-					<el-select style="width:140px" v-model="form.FormStatus">
-						<el-option label="審理中" :value="1" v-if="data.FormStatus <= 1"></el-option>
-						<el-option label="需補件" :value="2" v-if="data.FormStatus <= 2"></el-option>
-						<el-option label="通過待繳費" :value="3" v-if="data.FormStatus <= 3"></el-option>
-						<el-option label="已繳費完成" :value="4" v-if="data.FormStatus <= 4"></el-option>
-					</el-select>
-				</el-form-item>
-				<el-form-item prop="FailReason" label="補件原因" v-if="form.FormStatus === 2">
-					<el-input type="textarea" :autosize="{ minRows: 2, maxRows: 6 }" v-model="form.FailReason" />
-				</el-form-item>
+			<el-form class="modal-form" ref="form" size="small" :rules="rules" :model="form">
+				<div class="form-item-inline">
+					<div class="form-item-col">
+						<el-form-item prop="C_NO" label="管制編號">{{form.C_NO}}</el-form-item>
+					</div>
+					<div class="form-item-col">
+						<el-form-item prop="TotalMoney" label="應繳總金額">{{form.TotalMoney | comma}}</el-form-item>
+					</div>
+					<div class="form-item-col">
+						<el-button type="warning" size="mini" icon="el-icon-right" circle @click="setReceiveMoney()"></el-button>
+					</div>
+					<div class="form-item-col">
+						<el-form-item prop="ReceiveMoney" label="已收金額">
+							<el-input style="width:140px" type="number" v-model="form.ReceiveMoney" />
+						</el-form-item>
+					</div>
+					<div class="form-item-col">
+						<el-form-item prop="FormStatus" label="審核狀態">
+							<el-select style="width:140px" v-model="form.FormStatus">
+								<el-option label="審理中" :value="1" v-if="data.FormStatus <= 1"></el-option>
+								<el-option label="需補件" :value="2" v-if="data.FormStatus <= 2"></el-option>
+								<el-option label="通過待繳費" :value="3" v-if="data.FormStatus <= 3"></el-option>
+								<el-option label="已繳費完成" :value="4" v-if="data.FormStatus <= 4"></el-option>
+							</el-select>
+						</el-form-item>
+					</div>
+					<div class="form-item-col">
+						<el-form-item prop="FailReason" label="補件原因" v-if="form.FormStatus === 2">
+							<el-input type="textarea" :autosize="{ minRows: 2, maxRows: 6 }" v-model="form.FailReason" />
+						</el-form-item>
+					</div>
+					<div class="form-item-col">
+						<el-form-item prop="TotalMoney" label="應繳金額" v-if="form.FormStatus === 2">{{form.TotalMoney}}</el-form-item>
+					</div>
+				</div>
+
 				<table class="table">
 					<tbody>
 						<tr>
@@ -518,19 +540,103 @@
 </template>
 <script>
 import { mapGetters } from 'vuex';
-import { dateTime, form } from '@/mixins/filter';
+import { dateTime, comma, form } from '@/mixins/filter';
 export default {
 	name: 'FormModal',
 	props: ['show', 'data'],
-	mixins: [dateTime, form],
+	mixins: [dateTime, comma, form],
 	data() {
+		const checkE_DATE2 = (rule, value, callback) => {
+			if (!value) {
+				callback(new Error('請輸入預計施工完成日期'));
+			}
+			if (this.form.B_DATE2 && this.form.E_DATE2 && moment(value).isSameOrBefore(this.form.B_DATE2)) {
+				callback(new Error('結束日期不得早於起始日期'));
+			}
+			callback();
+		};
+		const checkArea = (rule, value, callback) => {
+			if (!this.form.VOLUMEL && !value) {
+				callback(new Error('如果非疏濬工程，請輸入施工面積'));
+			}
+			callback();
+		};
+		const checkVolumel = (rule, value, callback) => {
+			if (this.form.AREA && !value) {
+				callback(new Error('如果為疏濬工程，請輸入清運土石體積'));
+			}
+			callback();
+		};
+		const checkFailReason = (rule, value, callback) => {
+			if (this.form.FormStatus === 2 && !value) {
+				callback(new Error('請輸入補件原因'));
+			}
+			callback();
+		};
+		const checkReceiveMoney = (rule, value, callback) => {
+			if (this.form.FormStatus === 4 && !value) {
+				callback(new Error('請輸入已收金額'));
+			}
+			callback();
+		};
 		return {
 			visible: false,
 			loading: false,
 			form: {},
 			district: Object.freeze([]),
 			projectCode: Object.freeze([]),
-			activeTab: 'first'
+			activeTab: 'first',
+			rules: Object.freeze({
+				PUB_COMP: [{ required: true, message: '請選擇案件類型', trigger: 'change' }],
+				TOWN_NO: [{ required: true, message: '請選擇鄉鎮分類', trigger: 'change' }],
+				CreateUserName: [{ required: true, message: '請輸入申請人姓名', trigger: 'blur' }],
+				CreateUserEmail: [{ required: true, message: '請輸入申請人電子信箱', trigger: 'blur' }],
+				COMP_NAM: [{ required: true, message: '請輸入工程名稱', trigger: 'blur' }],
+				KIND_NO: [{ required: true, message: '請選擇工程類別', trigger: 'change' }],
+				ADDR: [{ required: true, message: '請輸入工地地址或地號', trigger: 'blur' }],
+				B_SERNO: [{ required: true, message: '請輸入建照字號或合約編號', trigger: 'blur' }],
+				UTME: [{ required: true, message: '請輸入座標X', trigger: 'blur' }],
+				UTMN: [{ required: true, message: '請輸入座標Y', trigger: 'blur' }],
+				LATLNG: [{ required: true, message: '請輸入座標(緯度、經度)', trigger: 'blur' }],
+				STATE: [{ required: true, message: '請輸入工程內容概述', trigger: 'blur' }],
+				EIACOMMENTS: [{ required: true, message: '請輸入環評保護對策', trigger: 'blur' }],
+				S_NAME: [{ required: true, message: '請輸入營建業主名稱', trigger: 'blur' }],
+				S_G_NO: [{ required: true, message: '請輸入營利事業統一編號', trigger: 'blur' }],
+				S_ADDR1: [{ required: true, message: '請輸入營利事業營業地址', trigger: 'blur' }],
+				S_ADDR2: [{ required: true, message: '請輸入營利事業聯絡地址', trigger: 'blur' }],
+				S_TEL: [{ required: true, message: '請輸入營利事業連絡電話', trigger: 'blur' }],
+				S_B_NAM: [{ required: true, message: '請輸入營利事業負責人姓名', trigger: 'blur' }],
+				S_B_TIT: [{ required: true, message: '請輸入營利事業負責人職稱', trigger: 'blur' }],
+				S_B_ID: [{ required: true, message: '請輸入營利事業負責人身分證字號', trigger: 'blur' }],
+				S_B_BDATE2: [{ required: true, message: '請輸入營利事業負責人生日', trigger: 'blur' }],
+				S_C_NAM: [{ required: true, message: '請輸入營利事業聯絡人姓名', trigger: 'blur' }],
+				S_C_TIT: [{ required: true, message: '請輸入營利事業聯絡人職稱', trigger: 'blur' }],
+				S_C_ID: [{ required: true, message: '請輸入營利事業聯絡人身分證字號', trigger: 'blur' }],
+				S_C_ADDR: [{ required: true, message: '請輸入營利事業聯絡人地址', trigger: 'blur' }],
+				S_C_TEL: [{ required: true, message: '請輸入營利事業聯絡人電話', trigger: 'blur' }],
+				R_NAME: [{ required: true, message: '請輸入承包(造)單位名稱', trigger: 'blur' }],
+				R_G_NO: [{ required: true, message: '請輸入承包(造)營利事業統一編號', trigger: 'blur' }],
+				R_ADDR1: [{ required: true, message: '請輸入承包(造)營業地址', trigger: 'blur' }],
+				R_ADDR2: [{ required: true, message: '請輸入承包(造)聯絡地址', trigger: 'blur' }],
+				R_TEL: [{ required: true, message: '請輸入承包(造)連絡電話', trigger: 'blur' }],
+				R_B_NAM: [{ required: true, message: '請輸入承包(造)負責人姓名', trigger: 'blur' }],
+				R_B_TIT: [{ required: true, message: '請輸入承包(造)負責人職稱', trigger: 'blur' }],
+				R_B_ID: [{ required: true, message: '請輸入承包(造)負責人身分證字號', trigger: 'blur' }],
+				R_B_BDATE2: [{ required: true, message: '請輸入承包(造)負責人生日', trigger: 'blur' }],
+				R_ADDR3: [{ required: true, message: '請輸入工務所地址', trigger: 'blur' }],
+				R_M_NAM: [{ required: true, message: '請輸入工地主任姓名', trigger: 'blur' }],
+				R_C_NAM: [{ required: true, message: '請輸入工地環保負責人姓名', trigger: 'blur' }],
+				R_TEL1: [{ required: true, message: '請輸入工務所電話', trigger: 'blur' }],
+				MONEY: [{ required: true, message: '請輸入工程合約經費', trigger: 'blur' }],
+				C_MONEY: [{ required: true, message: '請輸入工程環保經費', trigger: 'blur' }],
+				PERCENT: [{ required: true, message: '請輸入工程合約經費比例', trigger: 'blur' }],
+				AREA: [{ validator: checkArea }],
+				VOLUMEL: [{ validator: checkVolumel }],
+				B_DATE2: [{ required: true, message: '請輸入預計施工開始日期', trigger: 'blur' }],
+				E_DATE2: [{ validator: checkE_DATE2 }],
+				FailReason: [{ validator: checkFailReason }],
+				ReceiveMoney: [{ validator: checkReceiveMoney }]
+			})
 		};
 	},
 	mounted() {
@@ -566,14 +672,6 @@ export default {
 		setReceiveMoney() {
 			this.form.ReceiveMoney = this.form.TotalMoney;
 		},
-		projectCodeChange() {
-			// if (this.form.ProjectCode === 'B') {
-			// 	this.form.Area3 = 3;
-			// } else {
-			// 	// 原本是3的才幫忙修改選項
-			// 	if (this.form.Area3 === 3) this.form.Area3 = 1;
-			// }
-		},
 		getStopDays(row) {
 			if (!row.DOWN_DATE2 || !row.UP_DATE2) return '';
 			var date1 = new Date(row.DOWN_DATE2);
@@ -599,37 +697,26 @@ export default {
 			this.form.StopWorks.splice(idx, 1);
 		},
 		saveForm() {
-			if (this.form.FormStatus === 2 && !this.form.FailReason) {
-				alert('呃，請輸入補件原因。');
-				return false;
-			}
-			if (this.form.FormStatus === 3) {
-				if (!this.form.TotalMoney) {
-					alert('呃，請輸入應繳總金額。');
+			this.$refs.form.validate(valid => {
+				if (!valid) {
+					alert('欄位驗證錯誤，請檢查修正後重新送出');
 					return false;
 				}
-				if (!this.form.ProjectID) {
-					alert('呃，請輸入管制編號。');
-					return false;
+				if (this.data.FormStatus !== 3 && this.form.FormStatus === 3) {
+					if (!confirm(`你確定要將管制編號 ${this.form.C_NO} 通過審查產生繳費單?`)) return false;
 				}
-			}
-			if (this.data.FormStatus !== 3 && this.form.FormStatus === 3) {
-				if (!confirm(`你確定要將案件編號 ${this.form.AutoFormID}、管制編號 ${this.form.ProjectID}、繳費金額 ${this.form.TotalMoney} 元，通過審查產生繳費單?`)) return false;
-			}
-			if (this.form.FormStatus === 4 && !this.form.ReceiveMoney) {
-				alert('呃，請輸入已收金額。');
-				return false;
-			}
-			this.axios
-				.post('api/Form/UpdateForm', this.form)
-				.then(res => {
-					this.$emit('on-updated');
-					this.$message.success('畫面資料已儲存');
-					this.visible = false;
-				})
-				.catch(err => {
-					this.$message.error(err.response.data.ExceptionMessage);
-				});
+
+				this.axios
+					.post('api/Form/UpdateForm', this.form)
+					.then(res => {
+						this.$emit('on-updated');
+						this.$message.success('畫面資料已儲存');
+						this.visible = false;
+					})
+					.catch(err => {
+						this.$message.error(err.response.data.ExceptionMessage);
+					});
+			});
 		}
 	},
 	watch: {
@@ -650,9 +737,25 @@ export default {
 };
 </script>
 <style lang="scss">
-.el-form-item__label {
-	font-weight: 700;
+.modal-form {
+	.el-form-item__label {
+		font-weight: 700;
+	}
+	.el-form-item__error {
+		line-height: 4px;
+	}
+	.form-item-inline {
+        display: flex;
+        .form-item-col {
+            margin: 0 8px;
+        }
+		.el-form-item__label,
+		.el-form-item__content {
+            display: inline-block;
+		}
+	}
 }
+
 .table-responsive {
 	overflow-x: auto;
 }
@@ -672,7 +775,8 @@ export default {
 	}
 }
 .stopwork-table {
-	th,td {
+	th,
+	td {
 		text-align: center;
 	}
 }

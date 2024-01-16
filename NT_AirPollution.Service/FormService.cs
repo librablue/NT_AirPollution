@@ -36,12 +36,12 @@ namespace NT_AirPollution.Service
                     SELECT * FROM Form
                     WHERE (@C_NO='' OR C_NO=@C_NO)
                         AND (@CreateUserEmail='' OR CreateUserEmail=@CreateUserEmail)
-                        AND (@Status=0 OR Status=@Status)",
+                        AND (@FormStatus=0 OR FormStatus=@FormStatus)",
                     new
                     {
                         C_NO = filter.C_NO ?? "",
                         CreateUserEmail = filter.CreateUserEmail ?? "",
-                        Status = filter.Status
+                        FormStatus = filter.FormStatus
                     }).ToList();
 
                 foreach (var item in forms)
@@ -50,9 +50,24 @@ namespace NT_AirPollution.Service
                         SELECT * FROM Attachment
                         WHERE FormID=@FormID", new { FormID = item.ID });
 
+                    if (!string.IsNullOrEmpty(item.B_DATE))
+                        item.B_DATE2 = base.ChineseDateToWestDate(item.B_DATE);
+                    if (!string.IsNullOrEmpty(item.E_DATE))
+                        item.E_DATE2 = base.ChineseDateToWestDate(item.E_DATE);
+                    if (!string.IsNullOrEmpty(item.S_B_BDATE))
+                        item.S_B_BDATE2 = base.ChineseDateToWestDate(item.S_B_BDATE);
+                    if (!string.IsNullOrEmpty(item.R_B_BDATE))
+                        item.R_B_BDATE2 = base.ChineseDateToWestDate(item.R_B_BDATE);
+
                     item.StopWorks = cn.Query<StopWork>(@"
                         SELECT * FROM StopWork
                         WHERE FormID=@FormID", new { FormID = item.ID }).ToList();
+
+                    foreach (var sub in item.StopWorks)
+                    {
+                        sub.DOWN_DATE2 = base.ChineseDateToWestDate(sub.DOWN_DATE);
+                        sub.UP_DATE2 = base.ChineseDateToWestDate(sub.UP_DATE);
+                    }
                 }
 
                 return forms;
@@ -100,7 +115,7 @@ namespace NT_AirPollution.Service
                         PUB_COMP = filter.PUB_COMP,
                         COMP_NAM = filter.COMP_NAM ?? "",
                         CreateUserName = filter.CreateUserName ?? "",
-                        Status = filter.Status,
+                        Status = filter.FormStatus,
                         StartDate = filter.StartDate,
                         EndDate = filter.EndDate.ToString("yyyy-MM-dd 23:59:59"),
                         ClientUserID = filter.ClientUserID
@@ -409,50 +424,52 @@ namespace NT_AirPollution.Service
         /// </summary>
         /// <param name="form"></param>
         /// <returns></returns>
-        //public int CalcTotalMoney(Form form)
-        //{
-        //    using (var cn = new SqlConnection(connStr))
-        //    {
-        //        // 計算施工天數
-        //        var diffDays = (form.B_DATE2 - form.E_DATE2).TotalDays + 1;
-        //        var projectCodes = cn.GetAll<ProjectCode>().ToList();
-        //        var projectCode = projectCodes.First(o => o.ID == form.KIND_NO);
-        //        // 基數
-        //        double basicNum = 0;
-        //        // 費率
-        //        double rate = 0;
-        //        switch (form.KIND_NO)
-        //        {
-        //            case "1":
-        //            case "2":
-        //            case "4":
-        //            case "5":
-        //            case "6":
-        //            case "7":
-        //            case "8":
-        //            case "9":
-        //            case "A":
-        //                basicNum = form.AREA_B * diffDays / 30;
-        //                break;
-        //            case "3":
-        //            case "B":
-        //                basicNum = form.AREA_B;
-        //                break;
-        //            case "Z":
-        //                basicNum = form.MONEY;
-        //                break;
-        //        }
+        public int CalcTotalMoney(Form form)
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                form.B_DATE2 = base.ChineseDateToWestDate(form.B_DATE);
+                form.E_DATE2 = base.ChineseDateToWestDate(form.E_DATE);
+                // 計算施工天數
+                var diffDays = (form.E_DATE2 - form.B_DATE2).TotalDays + 1;
+                var projectCodes = cn.GetAll<ProjectCode>().ToList();
+                var projectCode = projectCodes.First(o => o.ID == form.KIND_NO);
+                // 基數
+                double basicNum = 0;
+                // 費率
+                double rate = 0;
+                switch (form.KIND_NO)
+                {
+                    case "1":
+                    case "2":
+                    case "4":
+                    case "5":
+                    case "6":
+                    case "7":
+                    case "8":
+                    case "9":
+                    case "A":
+                        basicNum = form.AREA.Value * diffDays / 30;
+                        break;
+                    case "3":
+                    case "B":
+                        basicNum = form.VOLUMEL.Value;
+                        break;
+                    case "Z":
+                        basicNum = form.MONEY;
+                        break;
+                }
 
-        //        if (basicNum >= projectCode.Level1)
-        //            rate = projectCode.Rate1;
-        //        else if (basicNum * projectCode.Rate3 >= projectCode.Level2)
-        //            rate = projectCode.Rate2;
-        //        else
-        //            rate = projectCode.Rate3;
+                if (basicNum >= projectCode.Level1)
+                    rate = projectCode.Rate1;
+                else if (basicNum * projectCode.Rate3 >= projectCode.Level2)
+                    rate = projectCode.Rate2;
+                else
+                    rate = projectCode.Rate3;
 
-        //        return Convert.ToInt32(Math.Round(basicNum * rate, 0, MidpointRounding.AwayFromZero));
-        //    }
-        //}
+                return Convert.ToInt32(Math.Round(basicNum * rate, 0, MidpointRounding.AwayFromZero));
+            }
+        }
 
         public bool SendStatus2(Form form)
         {
@@ -503,16 +520,10 @@ namespace NT_AirPollution.Service
                 string url2 = string.Format("{0}/Search/Index", _configDomain);
                 string body = string.Format(content, form.C_NO, form.CreateUserEmail, url1, url2);
 
+                string postAccount = this.GetPostAccount(form.ID.ToString(), form.TotalMoney);
                 // 產生繳款單
-                string pdfTemplateFile = $@"{HostingEnvironment.ApplicationPhysicalPath}\App_Data\Template\Payment.html";
-                //var fileBytes = this.GeneratePDF(pdfTemplateFile, form);
-                // 儲存實體檔案
-                string paymentFile = $@"{_uploadPath}\Payment\繳款單{form.C_NO}.pdf";
-                using (var fs = new FileStream(paymentFile, FileMode.Create, FileAccess.Write))
-                {
-                    //fs.Write(fileBytes, 0, fileBytes.Length);
-                }
-
+                string docPath = this.CreatePDF(postAccount, "", form);
+                
                 try
                 {
                     using (var cn = new SqlConnection(connStr))
@@ -523,7 +534,7 @@ namespace NT_AirPollution.Service
                             Address = form.CreateUserEmail,
                             Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件繳費通知(管制編號 {form.C_NO})",
                             Body = body,
-                            Attachment = paymentFile,
+                            Attachment = docPath,
                             FailTimes = 0,
                             CreateDate = DateTime.Now
                         });
@@ -763,12 +774,11 @@ namespace NT_AirPollution.Service
         /// <summary>
         /// 產生繳款單
         /// </summary>
-        /// <param name="productName">產品名稱</param>
         /// <param name="bankAccount">銀行帳號</param>
         /// <param name="postAccount">郵局帳號</param>
         /// <param name="form"></param>
         /// <returns>文件路徑</returns>
-        private string CreatePDF(string productName, string bankAccount, string postAccount, Form form)
+        private string CreatePDF(string bankAccount, string postAccount, Form form)
         {
             PdfPageSize pageSize = (PdfPageSize)Enum.Parse(typeof(PdfPageSize),
                "A4", true);
@@ -805,7 +815,7 @@ namespace NT_AirPollution.Service
             // create a new pdf document converting an url
             PdfDocument doc = converter.ConvertHtmlString(readText, "");
 
-            string filePath = $@"{_paymentFilePath}\\{bankAccount}.pdf";
+            string filePath = $@"{_paymentFilePath}\繳款單{bankAccount}.pdf";
             // save pdf document
             doc.Save(filePath);
 

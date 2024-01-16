@@ -33,6 +33,7 @@ namespace NT_AirPollution.Admin.Controllers
         {
             try
             {
+                form.TotalMoney = _formService.CalcTotalMoney(form);
                 var formInDB = _formService.GetFormByID(form.ID);
                 if (form.FormStatus != formInDB.FormStatus)
                 {

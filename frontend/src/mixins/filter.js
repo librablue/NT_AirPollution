@@ -2,11 +2,11 @@ const dateTime = {
   filters: {
     date: value => {
       if (!value || value === '0001-01-01T00:00:00') return '';
-      return dayjs(value).format('YYYY-MM-DD');
+      return moment(value).format('YYYY-MM-DD');
     },
     datetime: value => {
       if (!value || value === '0001-01-01T00:00:00') return '';
-      return dayjs(value).format('YYYY-MM-DD HH:mm');
+      return moment(value).format('YYYY-MM-DD HH:mm');
     }
   }
 };

@@ -540,8 +540,18 @@ namespace NT_AirPollution.Model.Domain
         /// 非會員啟用碼
         /// </summary>
         public string ActiveCode { get; set; }
-        // 是否啟用
+        /// <summary>
+        /// 是否啟用
+        /// </summary>
         public bool? IsActive { get; set; }
+        /// <summary>
+        /// 應繳費用
+        /// </summary>
+        public int TotalMoney { get; set; }
+        /// <summary>
+        /// 已收金額
+        /// </summary>
+        public int ReceiveMoney { get; set; }
         /// <summary>
         /// 狀態
         /// </summary>
