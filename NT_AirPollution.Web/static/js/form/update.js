@@ -158,7 +158,7 @@
                             }
 
                             alert('修改資料已送出，繳款金額請依人工審核後之繳費單內容為主。');
-                            location.href = `${document.baseURI}/Home/Index`;
+                            location.href = `${document.baseURI}Home/Index`;
                         })
                         .catch(err => {
                             grecaptcha.reset();

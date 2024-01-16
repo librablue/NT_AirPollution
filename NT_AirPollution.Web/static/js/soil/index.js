@@ -22,7 +22,7 @@
 			var url = new URL(location.href);
 			this.formID = url.searchParams.get('id');
 			if (!this.formID) {
-				location.href = `${document.baseURI}/Manage/Form`;
+				location.href = `${document.baseURI}Manage/Form`;
 				return;
 			}
 			this.getFormByID();
@@ -39,7 +39,7 @@
 					.then(res => {
 						if (!res.data.Status) {
 							alert(res.data.Message);
-							location.href = `${document.baseURI}/Manage/Form`;
+							location.href = `${document.baseURI}Manage/Form`;
 							return;
 						}
 						this.form = res.data.Message;
