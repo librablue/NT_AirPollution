@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NT_AirPollution.Model.Enum
 {
-    public enum Status
+    public enum FormStatus
     {
         審理中 = 1,
         需補件 = 2,

@@ -338,13 +338,6 @@ namespace NT_AirPollution.Service
                         form.Attachment.FormID = id;
                         cn.Insert(form.Attachment, trans);
 
-                        // 停復工
-                        foreach (var item in form.StopWorks)
-                        {
-                            item.FormID = id;
-                        }
-                        cn.Insert(form.StopWorks, trans);
-
                         trans.Commit();
                         return id;
                     }
@@ -362,8 +355,9 @@ namespace NT_AirPollution.Service
         /// 修改申請單
         /// </summary>
         /// <param name="form"></param>
+        /// <param name="isUpdateStopWork">是否修改停復工</param>
         /// <returns></returns>
-        public bool UpdateForm(FormView form)
+        public bool UpdateForm(FormView form, bool isUpdateStopWork = false)
         {
             using (var cn = new SqlConnection(connStr))
             {
@@ -378,12 +372,15 @@ namespace NT_AirPollution.Service
                         form.Attachment.FormID = form.ID;
                         cn.Update(form.Attachment, trans);
 
-                        // 清空停復工
-                        cn.Execute(@"DELETE FROM StopWork WHERE FormID=@FormID",
-                            new { FormID = form.ID }, trans);
+                        if (isUpdateStopWork)
+                        {
+                            // 清空停復工
+                            cn.Execute(@"DELETE FROM StopWork WHERE FormID=@FormID",
+                                new { FormID = form.ID }, trans);
 
-                        // 新增停復工
-                        cn.Insert(form.StopWorks, trans);
+                            // 新增停復工
+                            cn.Insert(form.StopWorks, trans);
+                        }
 
                         trans.Commit();
                         return true;

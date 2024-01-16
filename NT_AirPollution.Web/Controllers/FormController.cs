@@ -11,8 +11,6 @@ using System.Linq;
 using System.Web;
 using System.Web.Hosting;
 using System.Web.Mvc;
-using System.Web.Services.Description;
-using static System.Net.WebRequestMethods;
 
 namespace NT_AirPollution.Web.Controllers
 {
@@ -44,18 +42,6 @@ namespace NT_AirPollution.Web.Controllers
                 if (form.B_DATE2 > form.E_DATE2)
                     throw new Exception("施工期程起始日期不能大於結束日期");
 
-                //if (file1 == null)
-                //    throw new Exception("未上傳空氣污染防制費申報表");
-                //if (file2 == null)
-                //    throw new Exception("未上傳建築執照影印本");
-                //if (file3 == null)
-                //    throw new Exception("未上傳營建業主身分證影本");
-                //if (file4 == null)
-                //    throw new Exception("未上傳簡易位置圖");
-                //if (file5 == null)
-                //    throw new Exception("未上傳承包商營利事業登記證");
-                //if (file6 == null)
-                //    throw new Exception("未上傳承包商負責人身分證影本");
 
                 var attachFile = new AttachmentFile();
                 attachFile.File1 = file1;
@@ -73,10 +59,14 @@ namespace NT_AirPollution.Web.Controllers
                     Directory.CreateDirectory(absoluteDirPath);
 
                 string absoluteFilePath = "";
-
+                List<string> allowExt = new List<string> { ".doc", ".docx", ".pdf" };
                 for (int i = 1; i <= 8; i++)
                 {
                     var file = (HttpPostedFileBase)attachFile[$"File{i}"];
+                    string ext = Path.GetExtension(file.FileName).ToLower();
+                    if (file != null && !allowExt.Any(o => o == ext))
+                        throw new Exception("附件只允許上傳 doc/docx/pdf 等文件");
+
                     if (file != null)
                     {
                         // 生成檔名
@@ -106,7 +96,7 @@ namespace NT_AirPollution.Web.Controllers
                 //form.AutoFormID = DateTime.Now.ToString($"yyyyMMdd{(sn + 1).ToString().PadLeft(3, '0')}");
                 form.ActiveCode = Guid.NewGuid().ToString();
                 form.IsActive = false;
-                form.Status = Status.審理中;
+                form.FormStatus = FormStatus.審理中;
                 string c_no = _accessService.GetC_NO(form);
                 form.C_NO = c_no;
 
@@ -135,7 +125,7 @@ namespace NT_AirPollution.Web.Controllers
                     });
                 }
 
-                return Json(new AjaxResult { Status = true, Message = 0 });
+                return Json(new AjaxResult { Status = true });
             }
             catch (Exception ex)
             {
@@ -152,7 +142,7 @@ namespace NT_AirPollution.Web.Controllers
                 C_NO = BaseService.CurrentUser.C_NO
             };
             var formInDB = _formService.GetFormByUser(filter);
-            if (formInDB.Status != Status.需補件)
+            if (formInDB.FormStatus != FormStatus.需補件)
                 return RedirectToAction("Result", "Search");
 
             return View();
@@ -182,18 +172,6 @@ namespace NT_AirPollution.Web.Controllers
                 if (formInDB == null)
                     throw new Exception("修改申請單不存在");
 
-                //if (file1 == null)
-                //    throw new Exception("未上傳空氣污染防制費申報表");
-                //if (file2 == null)
-                //    throw new Exception("未上傳建築執照影印本");
-                //if (file3 == null)
-                //    throw new Exception("未上傳營建業主身分證影本");
-                //if (file4 == null)
-                //    throw new Exception("未上傳簡易位置圖");
-                //if (file5 == null)
-                //    throw new Exception("未上傳承包商營利事業登記證");
-                //if (file6 == null)
-                //    throw new Exception("未上傳承包商負責人身分證影本");
 
                 var attachFile = new AttachmentFile();
                 attachFile.File1 = file1;
@@ -211,10 +189,14 @@ namespace NT_AirPollution.Web.Controllers
                     Directory.CreateDirectory(absoluteDirPath);
 
                 string absoluteFilePath = "";
-
+                List<string> allowExt = new List<string> { ".doc", ".docx", ".pdf" };
                 for (int i = 1; i <= 8; i++)
                 {
                     var file = (HttpPostedFileBase)attachFile[$"File{i}"];
+                    string ext = Path.GetExtension(file.FileName).ToLower();
+                    if (file != null && !allowExt.Any(o => o == ext))
+                        throw new Exception("附件只允許上傳 doc/docx/pdf 等文件");
+
                     if (file != null)
                     {
                         // 生成檔名
@@ -246,18 +228,7 @@ namespace NT_AirPollution.Web.Controllers
                 form.S_B_BDATE = form.S_B_BDATE2.AddYears(-1911).ToString("yyyMMdd");
                 form.R_B_BDATE = form.R_B_BDATE2.AddYears(-1911).ToString("yyyMMdd");
                 form.M_DATE = DateTime.Now;
-                form.Status = Status.審理中;
-
-                // 停復工
-                foreach (var item in form.StopWorks)
-                {
-                    item.FormID = form.ID;
-                    item.DOWN_DATE = item.DOWN_DATE2.AddYears(-1911).ToString("yyyMMdd");
-                    item.UP_DATE = item.UP_DATE2.AddYears(-1911).ToString("yyyMMdd");
-                    item.DOWN_DAY = Convert.ToInt32((item.UP_DATE2 - item.DOWN_DATE2).TotalDays + 1);
-                    item.C_DATE = DateTime.Now;
-                    item.M_DATE = DateTime.Now;
-                }
+                form.FormStatus = FormStatus.審理中;
 
                 // 修改 access
                 bool isAccessOK = _accessService.UpdateABUDF(form);
@@ -266,7 +237,7 @@ namespace NT_AirPollution.Web.Controllers
 
                 _formService.UpdateForm(form);
 
-                return Json(new AjaxResult { Status = true, Message = 0 });
+                return Json(new AjaxResult { Status = true });
             }
             catch (Exception ex)
             {

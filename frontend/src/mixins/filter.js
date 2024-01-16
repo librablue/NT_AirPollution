@@ -30,7 +30,7 @@ const comma = {
 
 const form = {
   filters: {
-    status(val) {
+    formStatus(val) {
       switch (val) {
         case 1:
           return '審理中';

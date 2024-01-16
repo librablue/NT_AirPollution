@@ -64,14 +64,7 @@
                                 </el-form-item>
                             </td>
                             <th>2.工程類別</th>
-                            <td colspan="2">
-                                <el-form-item prop="KIND_NO">
-                                    <el-select class="w100p" v-model="form.KIND_NO">
-                                        <el-option label="請選擇" :value="null"></el-option>
-                                        <el-option v-for="item in projectCode" :key="item.ID" :label="`${item.ID}. ${item.Name}`" :value="item.ID"></el-option>
-                                    </el-select>
-                                </el-form-item>
-                            </td>
+                            <td colspan="2">{{form.KIND_NA || '待審核'}}</td>
                         </tr>
                         <tr>
                             <th>3.工地地址或地號</th>
@@ -363,42 +356,16 @@
                             </td>
                         </tr>
                         <tr>
-                            <th>基地面積</th>
+                            <th>施工面積</th>
                             <td>
-                                <el-form-item prop="AREA_F">
-                                    <el-input type="number" v-model="form.AREA_F"></el-input>
+                                <el-form-item prop="AREA">
+                                    <el-input type="number" v-model="form.AREA" placeholder="非疏濬工程"></el-input>
                                 </el-form-item>
                             </td>
-                            <th>建築面積</th>
+                            <th>清運土石體積</th>
                             <td>
-                                <el-form-item prop="AREA_B">
-                                    <el-input type="number" v-model="form.AREA_B"></el-input>
-                                </el-form-item>
-                            </td>
-                            <th>總樓地板面積</th>
-                            <td>
-                                <el-form-item prop="AREA2">
-                                    <el-input type="number" v-model="form.AREA2"></el-input>
-                                </el-form-item>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>遮蔽率</th>
-                            <td>
-                                <el-form-item prop="PERC_B">
-                                    <el-input type="number" v-model="form.PERC_B"></el-input>
-                                </el-form-item>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>實方體積</th>
-                            <td>
-                                <el-form-item prop="PERC_B">
-                                </el-form-item>
-                            </td>
-                            <th>鬆方體積</th>
-                            <td colspan="3">
-                                <el-form-item prop="PERC_B">
+                                <el-form-item prop="VOLUMEL">
+                                    <el-input type="number" v-model="form.VOLUMEL" placeholder="疏濬工程"></el-input>
                                 </el-form-item>
                             </td>
                         </tr>
@@ -543,28 +510,22 @@
                     </div>
                 </el-tab-pane>
                 <el-tab-pane label="停復工" name="second">
-                    <el-button type="primary" size="small" icon="el-icon-plus" @@click="addStopWork()">新 增</el-button>
                     <div class="table-responsive" style="margin-top:10px">
                         <table class="table row-table">
                             <thead>
                                 <tr>
-                                    <th style="width:50px">刪除</th>
                                     <th style="width:160px">停工日期</th>
                                     <th style="width:160px">復工日期</th>
                                     <th style="width: 140px; white-space: nowrap">停工天數</th>
                                 </tr>
                             </thead>
                             <tbody>
+                                <tr v-if="form.StopWorks.length === 0">
+                                    <td colspan="3" class="text-center">暫無資料</td>
+                                </tr>
                                 <tr v-for="(item, idx) in form.StopWorks" :key="idx">
-                                    <td style="width: 50px">
-                                        <el-button type="danger" size="mini" icon="el-icon-delete" circle @@click="deleteStopWork(idx)"></el-button>
-                                    </td>
-                                    <td>
-                                        <el-date-picker class="w100p" v-model="item.DOWN_DATE2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
-                                    </td>
-                                    <td>
-                                        <el-date-picker class="w100p" v-model="item.UP_DATE2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
-                                    </td>
+                                    <td>{{item.DOWN_DATE2 | date}}</td>
+                                    <td>{{item.UP_DATE2 | date}}</td>
                                     <td>{{getStopDays(item)}}</td>
                                 </tr>
                             </tbody>

@@ -20,7 +20,7 @@ namespace NT_AirPollution.Model.View
         public DateTime EndDate { get; set; }
         public long ClientUserID { get; set; }
         public string CreateUserEmail { get; set; }
-        public Status Status { get; set; }
+        public FormStatus Status { get; set; }
         /// <summary>
         /// 統一編號
         /// </summary>

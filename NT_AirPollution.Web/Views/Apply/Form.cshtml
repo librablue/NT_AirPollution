@@ -627,28 +627,22 @@
                 </div>
             </el-tab-pane>
             <el-tab-pane label="停復工" name="second">
-                <el-button type="primary" size="small" icon="el-icon-plus" @@click="addStopWork()">新 增</el-button>
                 <div class="table-responsive" style="margin-top:10px">
                     <table class="table row-table">
                         <thead>
                             <tr>
-                                <th style="width:50px">刪除</th>
                                 <th style="width:160px">停工日期</th>
                                 <th style="width:160px">復工日期</th>
                                 <th style="width: 140px; white-space: nowrap">停工天數</th>
                             </tr>
                         </thead>
                         <tbody>
+                            <tr v-if="selectRow.StopWorks.length === 0">
+                                <td colspan="3" class="text-center">暫無資料</td>
+                            </tr>
                             <tr v-for="(item, idx) in selectRow.StopWorks" :key="idx">
-                                <td style="width: 50px">
-                                    <el-button type="danger" size="mini" icon="el-icon-delete" circle @@click="deleteStopWork(idx)"></el-button>
-                                </td>
-                                <td>
-                                    <el-date-picker class="w100p" v-model="item.DOWN_DATE2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
-                                </td>
-                                <td>
-                                    <el-date-picker class="w100p" v-model="item.UP_DATE2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
-                                </td>
+                                <td>{{item.DOWN_DATE2 | date}}</td>
+                                <td>{{item.UP_DATE2 | date}}</td>
                                 <td>{{getStopDays(item)}}</td>
                             </tr>
                         </tbody>

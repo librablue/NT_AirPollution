@@ -29,8 +29,8 @@
 					<el-button type="primary" size="mini" icon="el-icon-search" circle @click="showDetail(row)"></el-button>
 				</template>
 			</vxe-table-column>
-			<vxe-table-column field="Status" title="審核狀態" width="100" align="center" sortable fixed="left">
-				<template #default="{ row }">{{ row.Status | status }}</template>
+			<vxe-table-column field="FormStatus" title="審核狀態" width="100" align="center" sortable fixed="left">
+				<template #default="{ row }">{{ row.FormStatus | formStatus }}</template>
 			</vxe-table-column>
 			<vxe-table-column field="C_NO" title="管制編號" width="140" align="center" sortable fixed="left">
 				<template #default="{ row }">{{ row.C_NO || '(取號中)' }}</template>
@@ -43,9 +43,6 @@
 			<vxe-table-column field="ADDR" title="工地地址" width="180"></vxe-table-column>
 			<vxe-table-column field="S_NAME" title="營建業主名稱" width="180"></vxe-table-column>
 			<vxe-table-column field="R_NAME" title="承包(造)名稱" width="180"></vxe-table-column>
-			<vxe-table-column field="Status" title="案件狀態" width="100" align="center" sortable>
-				<template #default="{ row }">{{ row.Status | status }}</template>
-			</vxe-table-column>
 			<vxe-table-column field="C_DATE" title="申報日期" width="100" align="center" sortable>
 				<template #default="{ row }">{{ row.C_DATE | date }}</template>
 			</vxe-table-column>

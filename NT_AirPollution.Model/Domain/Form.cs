@@ -553,7 +553,7 @@ namespace NT_AirPollution.Model.Domain
         /// <summary>
         /// 狀態
         /// </summary>
-        public Status Status { get; set; }
+        public FormStatus FormStatus { get; set; }
         /// <summary>
         /// 審核日期
         /// </summary>

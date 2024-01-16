@@ -163,23 +163,24 @@ namespace NT_AirPollution.Service
                             RECCOMMENTS = form.RECCOMMENTS
                         });
 
-                    foreach (var item in form.StopWorks)
-                    {
-                        cn.Execute(@"
-                            INSERT INTO ABUDF_DAY ([C_NO],[SER_NO],[DOWN_DATE],[UP_DATE],[DOWN_DAY],[KEYIN],[C_DATE],[M_DATE])
-                            VALUES (?,?,?,?,?,?,?,?)",
-                            new
-                            {
-                                C_NO = form.C_NO,
-                                SER_NO = form.SER_NO,
-                                DOWN_DATE = item.DOWN_DATE,
-                                UP_DATE = item.UP_DATE,
-                                DOWN_DAY = item.DOWN_DAY,
-                                KEYIN = "EPB02",
-                                C_DATE = item.C_DATE.Value.ToString("yyyy-MM-dd HH:mm:ss"),
-                                M_DATE = item.M_DATE.Value.ToString("yyyy-MM-dd HH:mm:ss")
-                            });
-                    }
+                    // 20240115說前台不用停復工
+                    //foreach (var item in form.StopWorks)
+                    //{
+                    //    cn.Execute(@"
+                    //        INSERT INTO ABUDF_DAY ([C_NO],[SER_NO],[DOWN_DATE],[UP_DATE],[DOWN_DAY],[KEYIN],[C_DATE],[M_DATE])
+                    //        VALUES (?,?,?,?,?,?,?,?)",
+                    //        new
+                    //        {
+                    //            C_NO = form.C_NO,
+                    //            SER_NO = form.SER_NO,
+                    //            DOWN_DATE = item.DOWN_DATE,
+                    //            UP_DATE = item.UP_DATE,
+                    //            DOWN_DAY = item.DOWN_DAY,
+                    //            KEYIN = "EPB02",
+                    //            C_DATE = item.C_DATE.Value.ToString("yyyy-MM-dd HH:mm:ss"),
+                    //            M_DATE = item.M_DATE.Value.ToString("yyyy-MM-dd HH:mm:ss")
+                    //        });
+                    //}
 
                     return true;
                 }
@@ -389,26 +390,28 @@ namespace NT_AirPollution.Service
                             SER_NO = form.SER_NO
                         });
 
-                    cn.Execute(@"DELETE FROM ABUDF_DAY WHERE [C_NO]=? AND [SER_NO]=?",
-                        new { C_NO = form.C_NO, SER_NO = form.SER_NO });
 
-                    foreach (var item in form.StopWorks)
-                    {
-                        cn.Execute(@"
-                            INSERT INTO ABUDF_DAY ([C_NO],[SER_NO],[DOWN_DATE],[UP_DATE],[DOWN_DAY],[KEYIN],[C_DATE],[M_DATE])
-                            VALUES (?,?,?,?,?,?,?,?)",
-                            new
-                            {
-                                C_NO = form.C_NO,
-                                SER_NO = form.SER_NO,
-                                DOWN_DATE = item.DOWN_DATE,
-                                UP_DATE = item.UP_DATE,
-                                DOWN_DAY = item.DOWN_DAY,
-                                KEYIN = "EPB02",
-                                C_DATE = item.C_DATE.Value.ToString("yyyy-MM-dd HH:mm:ss"),
-                                M_DATE = item.M_DATE.Value.ToString("yyyy-MM-dd HH:mm:ss")
-                            });
-                    }
+                    // 20240115說前台不用停復工
+                    //cn.Execute(@"DELETE FROM ABUDF_DAY WHERE [C_NO]=? AND [SER_NO]=?",
+                    //    new { C_NO = form.C_NO, SER_NO = form.SER_NO });
+
+                    //foreach (var item in form.StopWorks)
+                    //{
+                    //    cn.Execute(@"
+                    //        INSERT INTO ABUDF_DAY ([C_NO],[SER_NO],[DOWN_DATE],[UP_DATE],[DOWN_DAY],[KEYIN],[C_DATE],[M_DATE])
+                    //        VALUES (?,?,?,?,?,?,?,?)",
+                    //        new
+                    //        {
+                    //            C_NO = form.C_NO,
+                    //            SER_NO = form.SER_NO,
+                    //            DOWN_DATE = item.DOWN_DATE,
+                    //            UP_DATE = item.UP_DATE,
+                    //            DOWN_DAY = item.DOWN_DAY,
+                    //            KEYIN = "EPB02",
+                    //            C_DATE = item.C_DATE.Value.ToString("yyyy-MM-dd HH:mm:ss"),
+                    //            M_DATE = item.M_DATE.Value.ToString("yyyy-MM-dd HH:mm:ss")
+                    //        });
+                    //}
 
                     return true;
                 }

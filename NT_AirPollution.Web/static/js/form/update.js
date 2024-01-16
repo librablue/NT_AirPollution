@@ -17,6 +17,18 @@
                 }
                 callback();
             };
+            const checkArea = (rule, value, callback) => {
+				if (!this.form.VOLUMEL && !value) {
+					callback(new Error('如果非疏濬工程，請輸入施工面積'));
+				}
+				callback();
+			};
+			const checkVolumel = (rule, value, callback) => {
+				if (this.form.AREA && !value) {
+					callback(new Error('如果為疏濬工程，請輸入清運土石體積'));
+				}
+				callback();
+			};
             return {
                 district: Object.freeze([]),
                 projectCode: Object.freeze([]),
@@ -71,10 +83,8 @@
                     MONEY: [{ required: true, message: '請輸入工程合約經費', trigger: 'blur' }],
                     C_MONEY: [{ required: true, message: '請輸入工程環保經費', trigger: 'blur' }],
                     PERCENT: [{ required: true, message: '請輸入工程合約經費比例', trigger: 'blur' }],
-                    AREA_F: [{ required: true, message: '請輸入基地面積', trigger: 'blur' }],
-                    AREA_B: [{ required: true, message: '請輸入建築面積', trigger: 'blur' }],
-                    AREA2: [{ required: true, message: '請輸入總樓地板面積', trigger: 'blur' }],
-                    PERC_B: [{ required: true, message: '請輸入遮蔽率', trigger: 'blur' }],
+                    AREA: [{ validator: checkArea }],
+					VOLUMEL: [{ validator: checkVolumel }],
                     B_DATE2: [{ required: true, message: '請輸入預計施工開始日期', trigger: 'blur' }],
                     E_DATE2: [{ validator: checkE_DATE2 }]
                 })
@@ -127,13 +137,6 @@
                         return false;
                     }
 
-                    for (let i = 0; i < this.form.StopWorks.length; i++) {
-                        if(!this.form.StopWorks[i].DOWN_DATE2 || !this.form.StopWorks[i].UP_DATE2) {
-                            alert('請選擇停復工日期');
-                            return;
-                        }
-                    }
-
                     if (!confirm('是否確認繼續?')) return false;
                     const formData = new FormData();
                     for (const key in this.form) {
@@ -143,11 +146,6 @@
                     for (let i = 1; i <= 8; i++) {
                         const file = document.querySelector(`#file${i}`);
                         if (file.files.length > 0) formData.append(`file${i}`, file.files[0]);
-                    }
-                    // 停復工
-                    for (let i = 0; i < this.form.StopWorks.length; i++) {
-                        formData.append(`StopWorks[${i}].DOWN_DATE2`, this.form.StopWorks[i].DOWN_DATE2);
-                        formData.append(`StopWorks[${i}].UP_DATE2`, this.form.StopWorks[i].UP_DATE2);
                     }
 
                     axios
@@ -181,18 +179,6 @@
 				var dayDiff = Math.ceil(diff / (1000 * 60 * 60 * 24));
 
 				return dayDiff;
-			},
-            addStopWork() {
-                this.form.StopWorks.push({
-                    DOWN_DATE: '',
-                    DOWN_DATE2: '',
-                    UP_DATE: '',
-                    UP_DATE2: ''
-                });
-            },
-			deleteStopWork(idx) {
-				if (!confirm('是否確認刪除?')) return;
-				this.form.StopWorks.splice(idx, 1);
 			}
         }
     });

@@ -31,6 +31,18 @@
 				}
 				callback();
 			};
+            const checkArea = (rule, value, callback) => {
+				if (!this.selectRow.VOLUMEL && !value) {
+					callback(new Error('如果非疏濬工程，請輸入施工面積'));
+				}
+				callback();
+			};
+			const checkVolumel = (rule, value, callback) => {
+				if (this.selectRow.AREA && !value) {
+					callback(new Error('如果為疏濬工程，請輸入清運土石體積'));
+				}
+				callback();
+			};
 			return {
 				mode: '',
 				loading: false,
@@ -53,7 +65,8 @@
 				selectRow: {
 					P_KIND: '一次全繳',
 					BUD_DOC2: '無',
-					Attachment: {}
+					Attachment: {},
+					StopWorks: []
 				},
 				dialogVisible: false,
 				failReasonDialogVisible: false,
@@ -102,10 +115,8 @@
 					MONEY: [{ required: true, message: '請輸入工程合約經費', trigger: 'blur' }],
 					C_MONEY: [{ required: true, message: '請輸入工程環保經費', trigger: 'blur' }],
 					PERCENT: [{ required: true, message: '請輸入工程合約經費比例', trigger: 'blur' }],
-					AREA_F: [{ required: true, message: '請輸入基地面積', trigger: 'blur' }],
-					AREA_B: [{ required: true, message: '請輸入建築面積', trigger: 'blur' }],
-					AREA2: [{ required: true, message: '請輸入總樓地板面積', trigger: 'blur' }],
-					PERC_B: [{ required: true, message: '請輸入遮蔽率', trigger: 'blur' }],
+					AREA: [{ validator: checkArea }],
+					VOLUMEL: [{ validator: checkVolumel }],
 					B_DATE2: [{ required: true, message: '請輸入預計施工開始日期', trigger: 'blur' }],
 					E_DATE2: [{ validator: checkE_DATE2 }]
 				})
@@ -210,7 +221,7 @@
 				//	CreateUserName: document.querySelector('#hfUserName').value,
 				//	CreateUserEmail: document.querySelector('#hfUserEmail').value,
 				//	Attachment: {},
-				//  StopWorks: []
+                //	StopWorks: []
 				//};
 
 				this.selectRow = {
@@ -261,10 +272,8 @@
 					MONEY: 1,
 					C_MONEY: 2,
 					PERCENT: 3,
-					AREA_F: 4,
-					AREA_B: 5,
-					AREA2: 6,
-					PERC_B: 7,
+					AREA: 1,
+					VOLUMEL: null,
 					B_DATE2: '2024-01-01',
 					E_DATE2: '2024-01-31',
 					Attachment: {},
@@ -299,13 +308,6 @@
 						return false;
 					}
 
-					for (let i = 0; i < this.selectRow.StopWorks.length; i++) {
-						if (!this.selectRow.StopWorks[i].DOWN_DATE2 || !this.selectRow.StopWorks[i].UP_DATE2) {
-							alert('請選擇停復工日期');
-							return;
-						}
-					}
-
 					if (!confirm('是否確認繼續?')) return false;
 					const formData = new FormData();
 					for (const key in this.selectRow) {
@@ -315,11 +317,6 @@
 					for (let i = 1; i <= 8; i++) {
 						const file = document.querySelector(`#file${i}`);
 						if (file && file.files.length > 0) formData.append(`file${i}`, file.files[0]);
-					}
-					// 停復工
-					for (let i = 0; i < this.selectRow.StopWorks.length; i++) {
-						formData.append(`StopWorks[${i}].DOWN_DATE2`, this.selectRow.StopWorks[i].DOWN_DATE2);
-						formData.append(`StopWorks[${i}].UP_DATE2`, this.selectRow.StopWorks[i].UP_DATE2);
 					}
 
 					axios
@@ -357,7 +354,7 @@
 					}
 				});
 			},
-			getStopDays(row) {
+            getStopDays(row) {
 				if (!row.DOWN_DATE2 || !row.UP_DATE2) return '';
 				var date1 = new Date(row.DOWN_DATE2);
 				var date2 = new Date(row.UP_DATE2);
@@ -368,18 +365,6 @@
 				var dayDiff = Math.ceil(diff / (1000 * 60 * 60 * 24));
 
 				return dayDiff;
-			},
-			addStopWork() {
-				this.selectRow.StopWorks.push({
-					DOWN_DATE: '',
-					DOWN_DATE2: '',
-					UP_DATE: '',
-					UP_DATE2: ''
-				});
-			},
-			deleteStopWork(idx) {
-				if (!confirm('是否確認刪除?')) return;
-				this.selectRow.StopWorks.splice(idx, 1);
 			},
 			dialogClose() {
 				// 清空附件

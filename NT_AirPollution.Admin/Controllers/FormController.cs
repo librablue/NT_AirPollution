@@ -34,24 +34,24 @@ namespace NT_AirPollution.Admin.Controllers
             try
             {
                 var formInDB = _formService.GetFormByID(form.ID);
-                if (form.Status != formInDB.Status)
+                if (form.FormStatus != formInDB.FormStatus)
                 {
-                    switch (form.Status)
+                    switch (form.FormStatus)
                     {
-                        case Status.需補件:
+                        case FormStatus.需補件:
                             _formService.SendStatus2(form);
                             break;
-                        case Status.通過待繳費:
+                        case FormStatus.通過待繳費:
                             form.VerifyDate = DateTime.Now;
                             _formService.SendStatus3(form);
                             break;
-                        case Status.已繳費完成:
+                        case FormStatus.已繳費完成:
                             _formService.SendStatus4(form);
                             break;
                     }
                 }
 
-                _formService.UpdateForm(form);
+                _formService.UpdateForm(form, true);
 
                 return true;
             }
