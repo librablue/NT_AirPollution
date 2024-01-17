@@ -7,13 +7,16 @@ using System.Threading.Tasks;
 namespace NT_AirPollution.Model.Enum
 {
     /// <summary>
-    /// 申請單狀態
+    /// 結算狀態
     /// </summary>
-    public enum FormStatus
+    public enum CalcStatus
     {
+        未申請 = 0,
         審理中 = 1,
         需補件 = 2,
-        通過待繳費 = 3,
-        已繳費完成 = 4
+        通過待繳費 = 30,
+        通過待退費 = 31,
+        已繳費完成 = 40,
+        已退費完成 = 41
     }
 }

@@ -59,7 +59,7 @@ namespace NT_AirPollution.Web.Controllers
                     Directory.CreateDirectory(absoluteDirPath);
 
                 string absoluteFilePath = "";
-                List<string> allowExt = new List<string> { ".doc", ".docx", ".pdf" };
+                List<string> allowExt = new List<string> { ".doc", ".docx", ".pdf", ".jpg", ".jpeg", ".png" };
                 for (int i = 1; i <= 8; i++)
                 {
                     var file = (HttpPostedFileBase)attachFile[$"File{i}"];
@@ -95,6 +95,7 @@ namespace NT_AirPollution.Web.Controllers
                 form.ActiveCode = Guid.NewGuid().ToString();
                 form.IsActive = false;
                 form.FormStatus = FormStatus.審理中;
+                form.CalcStatus = CalcStatus.未申請;
                 string c_no = _accessService.GetC_NO(form);
                 form.C_NO = c_no;
 
@@ -187,7 +188,7 @@ namespace NT_AirPollution.Web.Controllers
                     Directory.CreateDirectory(absoluteDirPath);
 
                 string absoluteFilePath = "";
-                List<string> allowExt = new List<string> { ".doc", ".docx", ".pdf" };
+                List<string> allowExt = new List<string> { ".doc", ".docx", ".pdf", ".jpg", ".jpeg", ".png" };
                 for (int i = 1; i <= 8; i++)
                 {
                     var file = (HttpPostedFileBase)attachFile[$"File{i}"];
@@ -227,6 +228,7 @@ namespace NT_AirPollution.Web.Controllers
                 form.R_B_BDATE = form.R_B_BDATE2.AddYears(-1911).ToString("yyyMMdd");
                 form.M_DATE = DateTime.Now;
                 form.FormStatus = FormStatus.審理中;
+                form.CalcStatus = CalcStatus.未申請;
 
                 // 修改 access
                 bool isAccessOK = _accessService.UpdateABUDF(form);

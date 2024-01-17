@@ -553,9 +553,13 @@ namespace NT_AirPollution.Model.Domain
         /// </summary>
         public int ReceiveMoney { get; set; }
         /// <summary>
-        /// 狀態
+        /// 申請單狀態
         /// </summary>
         public FormStatus FormStatus { get; set; }
+        /// <summary>
+        /// 結算狀態
+        /// </summary>
+        public CalcStatus CalcStatus { get; set; }
         /// <summary>
         /// 審核日期
         /// </summary>

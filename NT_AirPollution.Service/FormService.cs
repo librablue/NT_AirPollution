@@ -3,17 +3,19 @@ using Dapper.Contrib.Extensions;
 using NT_AirPollution.Model.Domain;
 using NT_AirPollution.Model.Enum;
 using NT_AirPollution.Model.View;
-using SelectPdf;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
+using System.Drawing.Printing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Hosting;
+using TuesPechkin;
+using Unit = TuesPechkin.Unit;
 
 namespace NT_AirPollution.Service
 {
@@ -21,7 +23,7 @@ namespace NT_AirPollution.Service
     {
         private readonly string _configDomain = ConfigurationManager.AppSettings["Domain"].ToString();
         private readonly string _uploadPath = ConfigurationManager.AppSettings["UploadPath"].ToString();
-        private readonly string _paymentFilePath = ConfigurationManager.AppSettings["PaymentFilePath"].ToString();
+        private readonly string _paymentPath = ConfigurationManager.AppSettings["Payment"].ToString();
 
         /// <summary>
         /// 取得全部表單
@@ -106,7 +108,7 @@ namespace NT_AirPollution.Service
                         AND (@PUB_COMP IS NULL OR PUB_COMP=@PUB_COMP)
                         AND (@COMP_NAM='' OR COMP_NAM LIKE '%'+@COMP_NAM+'%')
                         AND (@CreateUserName='' OR CreateUserName=@CreateUserName)
-                        AND (@Status=0 OR Status=@Status)
+                        AND (@FormStatus=0 OR FormStatus=@FormStatus)
                         AND C_DATE BETWEEN @StartDate AND @EndDate
                         AND ClientUserID=@ClientUserID",
                     new
@@ -115,7 +117,7 @@ namespace NT_AirPollution.Service
                         PUB_COMP = filter.PUB_COMP,
                         COMP_NAM = filter.COMP_NAM ?? "",
                         CreateUserName = filter.CreateUserName ?? "",
-                        Status = filter.FormStatus,
+                        FormStatus = filter.FormStatus,
                         StartDate = filter.StartDate,
                         EndDate = filter.EndDate.ToString("yyyy-MM-dd 23:59:59"),
                         ClientUserID = filter.ClientUserID
@@ -520,9 +522,9 @@ namespace NT_AirPollution.Service
                 string url2 = string.Format("{0}/Search/Index", _configDomain);
                 string body = string.Format(content, form.C_NO, form.CreateUserEmail, url1, url2);
 
-                string postAccount = this.GetPostAccount(form.ID.ToString(), form.TotalMoney);
+                string bankAccount = this.GetBankAccount(form.ID.ToString(), form.TotalMoney);
                 // 產生繳款單
-                string docPath = this.CreatePDF(postAccount, "", form);
+                string docPath = this.CreatePDF(bankAccount, "", form);
                 
                 try
                 {
@@ -601,7 +603,7 @@ namespace NT_AirPollution.Service
         /// <param name="autoID">產品自動編號</param>
         /// <param name="price">價格</param>
         /// <returns></returns>
-        private string GetBankAccount(string autoID, int price)
+        public string GetBankAccount(string autoID, int price)
         {
             DateTime maxPayDay = Convert.ToDateTime(DateTime.Now.AddDays(6).ToString("yyyy/MM/dd"));
             DateTime firstDayOfYear = Convert.ToDateTime(maxPayDay.ToString("yyyy/01/01"));
@@ -653,7 +655,7 @@ namespace NT_AirPollution.Service
         /// <param name="autoID">產品自動編號</param>
         /// <param name="price">價格</param>
         /// <returns></returns>
-        private string GetPostAccount(string autoID, int price)
+        public string GetPostAccount(string autoID, int price)
         {
             DateTime maxPayDay = Convert.ToDateTime(DateTime.Now.AddDays(6).ToString("yyyy/MM/dd"));
             DateTime firstDayOfYear = Convert.ToDateTime(maxPayDay.ToString("yyyy/01/01"));
@@ -705,7 +707,7 @@ namespace NT_AirPollution.Service
         /// 產生第一段超商條碼
         /// </summary>
         /// <returns></returns>
-        private string GetStore1Barcode()
+        public string GetStore1Barcode()
         {
             DateTime maxPayDay = Convert.ToDateTime(DateTime.Now.AddDays(6).ToString("yyyy/MM/dd"));
 
@@ -721,7 +723,7 @@ namespace NT_AirPollution.Service
         /// <param name="bankAccount">銀行帳號</param>
         /// <param name="priceStr">價格(字串)</param>
         /// <returns></returns>
-        private string GetStore3Barcode(string bankAccount, string priceStr)
+        public string GetStore3Barcode(string bankAccount, string priceStr)
         {
             //Dictionary<string, int> charTable = new Dictionary<string, int>()
             //{
@@ -778,28 +780,17 @@ namespace NT_AirPollution.Service
         /// <param name="postAccount">郵局帳號</param>
         /// <param name="form"></param>
         /// <returns>文件路徑</returns>
-        private string CreatePDF(string bankAccount, string postAccount, Form form)
+        public string CreatePDF(string bankAccount, string postAccount, Form form)
         {
-            PdfPageSize pageSize = (PdfPageSize)Enum.Parse(typeof(PdfPageSize),
-               "A4", true);
-
-            // instantiate a html to pdf converter object
-            HtmlToPdf converter = new HtmlToPdf();
-
-            // set converter options
-            converter.Options.PdfPageSize = pageSize;
-
-            string pdf_orientation = "Portrait";
-            PdfPageOrientation pdfOrientation =
-                (PdfPageOrientation)Enum.Parse(typeof(PdfPageOrientation),
-                pdf_orientation, true);
-            converter.Options.PdfPageOrientation = pdfOrientation;
-            converter.Options.WebPageWidth = 1024;
-            converter.Options.WebPageHeight = 0;
+            string fileName = $"繳款單{form.C_NO}-{form.SER_NO}({(form.P_KIND == "一次繳清" ? "一次繳清" : "第一期")}).pdf";
+            // 如果已經產生過檔案，直接下載
+            string existFile = $@"{_paymentPath}\Download\{fileName}";
+            if (File.Exists(existFile))
+                return existFile;
 
 
-            string templatePath = HostingEnvironment.MapPath($@"~/App_Data/Template");
-            string readText = File.ReadAllText($@"{templatePath}\payment.html");
+            string templatePath = $@"{_paymentPath}\Template\payment.html";
+            string readText = File.ReadAllText(templatePath);
             readText = readText.Replace("#ProjectID#", $"{form.C_NO}-{form.SER_NO}")
                                 .Replace("#PaymentID#", "")
                                 .Replace("#ProjectName#", form.KIND)
@@ -812,15 +803,35 @@ namespace NT_AirPollution.Service
                                 .Replace("#PayWay#", "一次全繳<br>共分 1 期，本期為第 1 期")
                                 .Replace("#StartDate#", $"民國 {form.B_DATE2.Year - 1911} 年 {form.B_DATE2.Month} 月 {form.B_DATE2.Day} 日");
 
-            // create a new pdf document converting an url
-            PdfDocument doc = converter.ConvertHtmlString(readText, "");
+            //建立欲轉換檔案
+            var document = new HtmlToPdfDocument();
 
-            string filePath = $@"{_paymentFilePath}\繳款單{bankAccount}.pdf";
-            // save pdf document
-            doc.Save(filePath);
+            //設定主體
+            ObjectSettings objSettings = new ObjectSettings()
+            {
+                HtmlText = readText
+            };
 
-            // close pdf document
-            doc.Close();
+            //設定
+            document.GlobalSettings.DocumentTitle = $"{form.C_NO}-{form.SER_NO}";
+            document.GlobalSettings.PaperSize = PaperKind.A4;
+            document.GlobalSettings.Margins = new MarginSettings
+            {
+                Left = 0.5,
+                Right = 0.5,
+                Unit = Unit.Centimeters
+            };
+            document.Objects.Add(objSettings);
+
+            //執行轉換
+            byte[] fileBytes = PDFService.Converter.Convert(document);
+
+            // 儲存實體檔案
+            string filePath = existFile;
+            using (var fs = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+            {
+                fs.Write(fileBytes, 0, fileBytes.Length);
+            }
 
             return filePath;
         }

@@ -6,7 +6,7 @@
 				if (!value || value === '0001-01-01T00:00:00') return '';
 				return moment(value).format('YYYY-MM-DD');
 			},
-			status: value => {
+			formStatus: value => {
 				switch (value) {
 					case 1:
 						return '審理中';
@@ -16,6 +16,26 @@
 						return '通過待繳費';
 					case 4:
 						return '已繳費完成';
+					default:
+						return '';
+				}
+			},
+			calcStatus: value => {
+				switch (value) {
+					case 0:
+						return '未申請';
+					case 1:
+						return '審理中';
+					case 2:
+						return '需補件';
+					case 30:
+						return '通過待繳費';
+					case 31:
+						return '通過待退費';
+					case 40:
+						return '已繳費完成';
+					case 41:
+						return '已退費完成';
 					default:
 						return '';
 				}
@@ -31,7 +51,7 @@
 				}
 				callback();
 			};
-            const checkArea = (rule, value, callback) => {
+			const checkArea = (rule, value, callback) => {
 				if (!this.selectRow.VOLUMEL && !value) {
 					callback(new Error('如果非疏濬工程，請輸入施工面積'));
 				}
@@ -53,7 +73,7 @@
 					PUB_COMP: null,
 					CreateUserName: null,
 					COMP_NAM: null,
-					Status: 0
+					FormStatus: 0
 				},
 				district: Object.freeze([]),
 				projectCode: Object.freeze([]),
@@ -221,7 +241,7 @@
 				//	CreateUserName: document.querySelector('#hfUserName').value,
 				//	CreateUserEmail: document.querySelector('#hfUserEmail').value,
 				//	Attachment: {},
-                //	StopWorks: []
+				//	StopWorks: []
 				//};
 
 				this.selectRow = {
@@ -293,7 +313,7 @@
 				this.mode = 'Update';
 				this.selectRow = JSON.parse(JSON.stringify(row));
 				this.dialogVisible = true;
-				if (this.selectRow.Status === 2) {
+				if (this.selectRow.FormStatus === 2) {
 					this.failReasonDialogVisible = true;
 				}
 			},
@@ -354,7 +374,7 @@
 					}
 				});
 			},
-            getStopDays(row) {
+			getStopDays(row) {
 				if (!row.DOWN_DATE2 || !row.UP_DATE2) return '';
 				var date1 = new Date(row.DOWN_DATE2);
 				var date2 = new Date(row.UP_DATE2);
@@ -372,6 +392,51 @@
 					const file = document.querySelector(`#file${i}`);
 					if (file) file.value = '';
 				}
+			},
+			beforeCommand(row, cmd) {
+				return {
+					row,
+					cmd
+				};
+			},
+			handleCommand(arg) {
+				const { row, cmd } = arg;
+				switch (cmd) {
+					case 'VIEW':
+						this.showModal(row);
+						break;
+					case 'COPY':
+						this.copyRow(row);
+						break;
+					case 'PAYMENT':
+						this.selectRow = row;
+						this.downloadPayment();
+						break;
+					case 'CALC':
+						break;
+				}
+			},
+			downloadPayment() {
+				const loading = this.$loading();
+				axios
+					.post('/Apply/DownloadPayment', this.selectRow, {
+						responseType: 'blob'
+					})
+					.then(res => {
+						loading.close();
+						const url = window.URL.createObjectURL(new Blob([res.data]));
+						const link = document.createElement('a');
+						link.href = url;
+						const fileName = decodeURI(res.headers["file-name"]);
+						link.setAttribute('download', fileName);
+						document.body.appendChild(link);
+						link.click();
+					})
+					.catch(err => {
+						loading.close();
+						alert('系統發生未預期錯誤');
+						console.log(err);
+					});
 			}
 		}
 	});

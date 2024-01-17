@@ -9,6 +9,7 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Web;
+using System.Web.Hosting;
 using System.Web.Mvc;
 
 namespace NT_AirPollution.Web.Controllers
@@ -17,6 +18,7 @@ namespace NT_AirPollution.Web.Controllers
     public class ApplyController : BaseController
     {
         private readonly string _uploadPath = ConfigurationManager.AppSettings["UploadPath"].ToString();
+        private readonly string _paymentPath = ConfigurationManager.AppSettings["Payment"].ToString();
         private readonly ClientUserService _clientUserService = new ClientUserService();
         private readonly FormService _formService = new FormService();
         private readonly OptionService _optionService = new OptionService();
@@ -221,7 +223,7 @@ namespace NT_AirPollution.Web.Controllers
                     Directory.CreateDirectory(absoluteDirPath);
 
                 string absoluteFilePath = "";
-                List<string> allowExt = new List<string> { ".doc", ".docx", ".pdf" };
+                List<string> allowExt = new List<string> { ".doc", ".docx", ".pdf", ".jpg", ".jpeg", ".png" };
                 for (int i = 1; i <= 8; i++)
                 {
                     var file = (HttpPostedFileBase)attachFile[$"File{i}"];
@@ -254,6 +256,7 @@ namespace NT_AirPollution.Web.Controllers
                 form.M_DATE = DateTime.Now;
                 form.ClientUserID = BaseService.CurrentUser.ID;
                 form.FormStatus = FormStatus.審理中;
+                form.CalcStatus = CalcStatus.未申請;
 
                 // 如果管制編號有值，表示用複製的
                 if (string.IsNullOrEmpty(form.C_NO))
@@ -320,7 +323,7 @@ namespace NT_AirPollution.Web.Controllers
                 // 設定資料夾
                 string absoluteDirPath = $"{_uploadPath}";
                 string absoluteFilePath = "";
-                List<string> allowExt = new List<string> { ".doc", ".docx", ".pdf" };
+                List<string> allowExt = new List<string> { ".doc", ".docx", ".pdf", ".jpg", ".jpeg", ".png" };
                 for (int i = 1; i <= 8; i++)
                 {
                     var file = (HttpPostedFileBase)attachFile[$"File{i}"];
@@ -360,6 +363,7 @@ namespace NT_AirPollution.Web.Controllers
                 form.R_B_BDATE = form.R_B_BDATE2.AddYears(-1911).ToString("yyyMMdd");
                 form.M_DATE = DateTime.Now;
                 form.FormStatus = FormStatus.審理中;
+                form.CalcStatus = CalcStatus.未申請;
 
                 // 修改 access
                 bool isAccessOK = _accessService.UpdateABUDF(form);
@@ -374,6 +378,25 @@ namespace NT_AirPollution.Web.Controllers
             {
                 return Json(new AjaxResult { Status = false, Message = ex.Message });
             }
+        }
+
+        /// <summary>
+        /// 下載繳費單
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public FileResult DownloadPayment(FormView form)
+        {
+            int payableAmount = form.TotalMoney;
+            if (form.P_KIND == "分兩次繳清")
+                payableAmount = form.TotalMoney / 2;
+
+            string bankAccount = _formService.GetBankAccount(form.ID.ToString(), payableAmount);
+            string pdfPath = _formService.CreatePDF(bankAccount, "", form);
+
+            Response.Headers.Add("file-name", Uri.EscapeDataString(Path.GetFileName(pdfPath)));
+
+            return File(pdfPath, System.Net.Mime.MediaTypeNames.Application.Octet, Path.GetFileName(pdfPath));
         }
     }
 }
