@@ -62,14 +62,18 @@ namespace NT_AirPollution.Service
                         item.R_B_BDATE2 = base.ChineseDateToWestDate(item.R_B_BDATE);
 
                     item.StopWorks = cn.Query<StopWork>(@"
-                        SELECT * FROM StopWork
-                        WHERE FormID=@FormID", new { FormID = item.ID }).ToList();
+                        SELECT * FROM StopWork WHERE FormID=@FormID",
+                        new { FormID = item.ID }).ToList();
 
                     foreach (var sub in item.StopWorks)
                     {
                         sub.DOWN_DATE2 = base.ChineseDateToWestDate(sub.DOWN_DATE);
                         sub.UP_DATE2 = base.ChineseDateToWestDate(sub.UP_DATE);
                     }
+
+                    item.Payments = cn.Query<Payment>(@"
+                        SELECT * FROM Payment WHERE FormID=@FormID",
+                        new { FormID = item.ID }).ToList();
                 }
 
                 return forms;
@@ -147,6 +151,10 @@ namespace NT_AirPollution.Service
                         sub.DOWN_DATE2 = base.ChineseDateToWestDate(sub.DOWN_DATE);
                         sub.UP_DATE2 = base.ChineseDateToWestDate(sub.UP_DATE);
                     }
+
+                    item.Payments = cn.Query<Payment>(@"
+                        SELECT * FROM Payment WHERE FormID=@FormID",
+                        new { FormID = item.ID }).ToList();
                 }
 
                 return result;
@@ -199,6 +207,10 @@ namespace NT_AirPollution.Service
                         sub.DOWN_DATE2 = base.ChineseDateToWestDate(sub.DOWN_DATE);
                         sub.UP_DATE2 = base.ChineseDateToWestDate(sub.UP_DATE);
                     }
+
+                    item.Payments = cn.Query<Payment>(@"
+                        SELECT * FROM Payment WHERE FormID=@FormID",
+                        new { FormID = item.ID }).ToList();
 
 
                     // 檢查今天是否在停復工日期範圍內
@@ -271,6 +283,10 @@ namespace NT_AirPollution.Service
                         sub.DOWN_DATE2 = base.ChineseDateToWestDate(sub.DOWN_DATE);
                         sub.UP_DATE2 = base.ChineseDateToWestDate(sub.UP_DATE);
                     }
+
+                    result.Payments = cn.Query<Payment>(@"
+                        SELECT * FROM Payment WHERE FormID=@FormID",
+                        new { FormID = result.ID }).ToList();
                 }
 
                 return result;
@@ -315,6 +331,10 @@ namespace NT_AirPollution.Service
                         sub.DOWN_DATE2 = base.ChineseDateToWestDate(sub.DOWN_DATE);
                         sub.UP_DATE2 = base.ChineseDateToWestDate(sub.UP_DATE);
                     }
+
+                    item.Payments = cn.Query<Payment>(@"
+                        SELECT * FROM Payment WHERE FormID=@FormID",
+                        new { FormID = item.ID }).ToList();
                 }
 
                 return result;
@@ -405,8 +425,8 @@ namespace NT_AirPollution.Service
                         foreach (var item in form.StopWorks)
                         {
                             item.FormID = form.ID;
-                            item.DOWN_DATE2 = base.ChineseDateToWestDate(item.DOWN_DATE);
-                            item.UP_DATE2 = base.ChineseDateToWestDate(item.UP_DATE);
+                            item.DOWN_DATE = item.DOWN_DATE2.AddYears(-1911).ToString("yyyMMdd");
+                            item.UP_DATE = item.UP_DATE2.AddYears(-1911).ToString("yyyMMdd");
                             item.DOWN_DAY = (item.UP_DATE2 - item.DOWN_DATE2).TotalDays + 1;
 
                             // ID=0表示新增
