@@ -544,6 +544,13 @@
 										<td>{{item.CreateDate | date}}</td>
 									</tr>
 								</tbody>
+								<tfoot>
+									<tr>
+										<td>合計</td>
+										<td>{{totalPayment}}</td>
+										<td></td>
+									</tr>
+								</tfoot>
 							</table>
 						</div>
 					</el-tab-pane>
@@ -672,6 +679,11 @@ export default {
 			var dayDiff = Math.ceil(diff / (1000 * 60 * 60 * 24));
 
 			return dayDiff;
+		},
+		totalPayment() {
+			return this.form.Payments.reduce((prev, current) => {
+				return prev + current.Amount;
+			}, 0);
 		}
 	},
 	methods: {
@@ -718,6 +730,8 @@ export default {
 				Amount: this.newPayment,
 				CreateDate: moment().format('YYYY-MM-DD')
 			});
+
+			this.newPayment = null;
 		},
 		deletePayment(idx) {
 			if (!confirm('是否確認刪除?')) return false;
