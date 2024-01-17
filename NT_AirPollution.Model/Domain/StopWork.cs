@@ -19,7 +19,7 @@ namespace NT_AirPollution.Model.Domain
         public string UP_DATE { get; set; }
         [Computed]
         public DateTime UP_DATE2 { get; set; }
-        public int DOWN_DAY { get; set; }
+        public double DOWN_DAY { get; set; }
         public DateTime? C_DATE { get; set; }
         public DateTime? M_DATE { get; set; }
     }

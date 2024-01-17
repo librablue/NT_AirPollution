@@ -10,14 +10,6 @@
 						<el-form-item prop="TotalMoney" label="應繳總金額">{{form.TotalMoney | comma}}</el-form-item>
 					</div>
 					<div class="form-item-col">
-						<el-button type="warning" size="mini" icon="el-icon-right" circle @click="setReceiveMoney()"></el-button>
-					</div>
-					<div class="form-item-col">
-						<el-form-item prop="ReceiveMoney" label="已收金額">
-							<el-input style="width:140px" type="number" v-model="form.ReceiveMoney" />
-						</el-form-item>
-					</div>
-					<div class="form-item-col">
 						<el-form-item prop="FormStatus" label="審核狀態">
 							<el-select style="width:140px" v-model="form.FormStatus">
 								<el-option label="審理中" :value="1" v-if="data.FormStatus <= 1"></el-option>
@@ -525,14 +517,44 @@
 							</table>
 						</div>
 					</el-tab-pane>
+					<el-tab-pane label="收款金額" name="third">
+						<div class="form-item-inline">
+							<div class="form-item-col">
+								<el-input type="number" size="small" v-model="newPayment"></el-input>
+							</div>
+							<div class="form-item-col">
+								<el-button type="primary" size="small" icon="el-icon-plus" @click="addPayment()">新 增</el-button>
+							</div>
+						</div>
+						<div class="table-responsive" style="max-width:300px; margin-top:10px">
+							<table class="table stopwork-table">
+								<thead>
+									<tr>
+										<th style="width:50px">刪除</th>
+										<th style="width:120px">收款金額</th>
+										<th style="width:120px;">日期</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr v-for="(item, idx) in form.Payments" :key="idx">
+										<td style="width: 50px">
+											<el-button type="danger" size="mini" icon="el-icon-delete" circle @click="deletePayment(idx)"></el-button>
+										</td>
+										<td>{{item.Amount | comma}}</td>
+										<td>{{item.CreateDate | date}}</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</el-tab-pane>
 				</el-tabs>
 			</el-form>
 		</template>
 		<template #footer>
-			<el-button size="small" @click="visible = false">
+			<el-button @click="visible = false">
 				<i class="fa fa-ban"></i> 取 消
 			</el-button>
-			<el-button type="primary" size="small" @click="saveForm()">
+			<el-button type="primary" @click="saveForm()">
 				<i class="fa fa-floppy-o"></i> 儲 存
 			</el-button>
 		</template>
@@ -573,12 +595,6 @@ export default {
 			}
 			callback();
 		};
-		const checkReceiveMoney = (rule, value, callback) => {
-			if (this.form.FormStatus === 4 && !value) {
-				callback(new Error('請輸入已收金額'));
-			}
-			callback();
-		};
 		return {
 			visible: false,
 			loading: false,
@@ -586,6 +602,7 @@ export default {
 			district: Object.freeze([]),
 			projectCode: Object.freeze([]),
 			activeTab: 'first',
+			newPayment: null,
 			rules: Object.freeze({
 				PUB_COMP: [{ required: true, message: '請選擇案件類型', trigger: 'change' }],
 				TOWN_NO: [{ required: true, message: '請選擇鄉鎮分類', trigger: 'change' }],
@@ -634,8 +651,7 @@ export default {
 				VOLUMEL: [{ validator: checkVolumel }],
 				B_DATE2: [{ required: true, message: '請輸入預計施工開始日期', trigger: 'blur' }],
 				E_DATE2: [{ validator: checkE_DATE2 }],
-				FailReason: [{ validator: checkFailReason }],
-				ReceiveMoney: [{ validator: checkReceiveMoney }]
+				FailReason: [{ validator: checkFailReason }]
 			})
 		};
 	},
@@ -669,9 +685,6 @@ export default {
 				this.projectCode = Object.freeze(res.data);
 			});
 		},
-		setReceiveMoney() {
-			this.form.ReceiveMoney = this.form.TotalMoney;
-		},
 		getStopDays(row) {
 			if (!row.DOWN_DATE2 || !row.UP_DATE2) return '';
 			var date1 = new Date(row.DOWN_DATE2);
@@ -695,6 +708,20 @@ export default {
 		deleteStopWork(idx) {
 			if (!confirm('是否確認刪除?')) return;
 			this.form.StopWorks.splice(idx, 1);
+		},
+		addPayment() {
+			if (!this.newPayment) {
+				alert('請輸入收款金額');
+				return;
+			}
+			this.form.Payments.push({
+				Amount: this.newPayment,
+				CreateDate: moment().format('YYYY-MM-DD')
+			});
+		},
+		deletePayment(idx) {
+			if (!confirm('是否確認刪除?')) return false;
+			this.form.Payments.splice(idx, 1);
 		},
 		saveForm() {
 			this.$refs.form.validate(valid => {
@@ -745,13 +772,13 @@ export default {
 		line-height: 4px;
 	}
 	.form-item-inline {
-        display: flex;
-        .form-item-col {
-            margin: 0 8px;
-        }
+		display: flex;
+		.form-item-col {
+			margin: 0 8px;
+		}
 		.el-form-item__label,
 		.el-form-item__content {
-            display: inline-block;
+			display: inline-block;
 		}
 	}
 }

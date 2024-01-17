@@ -549,10 +549,6 @@ namespace NT_AirPollution.Model.Domain
         /// </summary>
         public int TotalMoney { get; set; }
         /// <summary>
-        /// 已收金額
-        /// </summary>
-        public int ReceiveMoney { get; set; }
-        /// <summary>
         /// 申請單狀態
         /// </summary>
         public FormStatus FormStatus { get; set; }

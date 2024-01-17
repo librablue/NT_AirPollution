@@ -358,9 +358,8 @@ namespace NT_AirPollution.Service
         /// 修改申請單
         /// </summary>
         /// <param name="form"></param>
-        /// <param name="isUpdateStopWork">是否修改停復工</param>
         /// <returns></returns>
-        public bool UpdateForm(FormView form, bool isUpdateStopWork = false)
+        public bool UpdateForm(FormView form)
         {
             using (var cn = new SqlConnection(connStr))
             {
@@ -375,16 +374,6 @@ namespace NT_AirPollution.Service
                         form.Attachment.FormID = form.ID;
                         cn.Update(form.Attachment, trans);
 
-                        if (isUpdateStopWork)
-                        {
-                            // 清空停復工
-                            cn.Execute(@"DELETE FROM StopWork WHERE FormID=@FormID",
-                                new { FormID = form.ID }, trans);
-
-                            // 新增停復工
-                            cn.Insert(form.StopWorks, trans);
-                        }
-
                         trans.Commit();
                         return true;
                     }
@@ -392,6 +381,102 @@ namespace NT_AirPollution.Service
                     {
                         trans.Rollback();
                         Logger.Error($"UpdateForm: {ex.Message}");
+                        throw new Exception("系統發生未預期錯誤");
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 修改停復工
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public bool UpdateStopWork(FormView form)
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                cn.Open();
+                using (var trans = cn.BeginTransaction())
+                {
+                    try
+                    {
+                        foreach (var item in form.StopWorks)
+                        {
+                            item.FormID = form.ID;
+                            item.DOWN_DATE2 = base.ChineseDateToWestDate(item.DOWN_DATE);
+                            item.UP_DATE2 = base.ChineseDateToWestDate(item.UP_DATE);
+                            item.DOWN_DAY = (item.UP_DATE2 - item.DOWN_DATE2).TotalDays + 1;
+
+                            // ID=0表示新增
+                            if (item.ID == 0)
+                            {
+                                item.C_DATE = DateTime.Now;
+                                item.M_DATE = DateTime.Now;
+                            }
+                        }
+
+                        // 清空
+                        cn.Execute(@"DELETE FROM StopWork WHERE FormID=@FormID",
+                            new { FormID = form.ID }, trans);
+
+                        // 新增
+                        cn.Insert(form.StopWorks, trans);
+
+                        trans.Commit();
+                        return true;
+                    }
+                    catch (Exception ex)
+                    {
+                        trans.Rollback();
+                        Logger.Error($"UpdateStopWork: {ex.Message}");
+                        throw new Exception("系統發生未預期錯誤");
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 修改付款紀錄
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public bool UpdatePayment(FormView form)
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                cn.Open();
+                using (var trans = cn.BeginTransaction())
+                {
+                    try
+                    {
+                        foreach (var item in form.Payments)
+                        {
+                            item.FormID = form.ID;
+
+                            // ID=0表示新增
+                            if (item.ID == 0)
+                            {
+                                item.CreateDate = DateTime.Now;
+                            }
+                        }
+
+                        // 清空
+                        cn.Execute(@"DELETE FROM Payment WHERE FormID=@FormID",
+                            new { FormID = form.ID }, trans);
+
+                        // 新增
+                        cn.Insert(form.Payments, trans);
+
+                        trans.Commit();
+                        return true;
+                    }
+                    catch (Exception ex)
+                    {
+                        trans.Rollback();
+                        Logger.Error($"UpdatePayment: {ex.Message}");
                         throw new Exception("系統發生未預期錯誤");
                     }
                 }
@@ -525,7 +610,7 @@ namespace NT_AirPollution.Service
                 string bankAccount = this.GetBankAccount(form.ID.ToString(), form.TotalMoney);
                 // 產生繳款單
                 string docPath = this.CreatePDF(bankAccount, "", form);
-                
+
                 try
                 {
                     using (var cn = new SqlConnection(connStr))

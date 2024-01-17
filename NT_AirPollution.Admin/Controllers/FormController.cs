@@ -52,7 +52,9 @@ namespace NT_AirPollution.Admin.Controllers
                     }
                 }
 
-                _formService.UpdateForm(form, true);
+                _formService.UpdateForm(form);
+                _formService.UpdateStopWork(form);
+                _formService.UpdatePayment(form);
 
                 return true;
             }
