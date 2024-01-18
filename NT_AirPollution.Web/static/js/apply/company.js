@@ -39,7 +39,7 @@
                 axios
                     .post(`/Apply/DeleteCompany`, row)
                     .then(res => {
-                        alert('畫面資料已儲存。');
+                        alert('畫面資料已儲存');
                         this.getCompanies();
                     })
                     .catch(err => {
@@ -58,7 +58,7 @@
                         }
 
                         this.getCompanies();
-                        alert('畫面資料已儲存。');
+                        alert('畫面資料已儲存');
                         this.dialogVisible = false;
                     })
                     .catch(err => {

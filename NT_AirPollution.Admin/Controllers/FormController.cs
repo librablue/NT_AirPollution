@@ -40,14 +40,33 @@ namespace NT_AirPollution.Admin.Controllers
                     switch (form.FormStatus)
                     {
                         case FormStatus.需補件:
-                            _formService.SendStatus2(form);
+                            _formService.SendFormStatus2(form);
                             break;
                         case FormStatus.通過待繳費:
                             form.VerifyDate = DateTime.Now;
-                            _formService.SendStatus3(form);
+                            _formService.SendFormStatus3(form);
                             break;
                         case FormStatus.已繳費完成:
-                            _formService.SendStatus4(form);
+                            _formService.SendFormStatus4(form);
+                            break;
+                    }
+                }
+
+                if(form.CalcStatus != formInDB.CalcStatus)
+                {
+                    switch (form.CalcStatus)
+                    {
+                        case CalcStatus.需補件:
+                            _formService.SendCalcStatus2(form);
+                            break;
+                        case CalcStatus.通過待繳費:
+                            break;
+                        case CalcStatus.通過待退費小於4000:
+                        case CalcStatus.通過待退費大於4000:
+                            break;
+                        case CalcStatus.通過不退補:
+                            break;
+                        default:
                             break;
                     }
                 }

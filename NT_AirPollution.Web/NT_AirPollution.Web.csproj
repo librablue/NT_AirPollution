@@ -160,6 +160,7 @@
     <Content Include="NLog.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="license\Aspose.total.lic" />
     <None Include="NLog.xsd">
       <SubType>Designer</SubType>
     </None>

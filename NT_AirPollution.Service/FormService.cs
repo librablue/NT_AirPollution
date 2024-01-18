@@ -1,4 +1,5 @@
-﻿using Dapper;
+﻿using Aspose.Pdf;
+using Dapper;
 using Dapper.Contrib.Extensions;
 using NT_AirPollution.Model.Domain;
 using NT_AirPollution.Model.Enum;
@@ -7,15 +8,12 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
-using System.Drawing.Printing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Hosting;
-using TuesPechkin;
-using Unit = TuesPechkin.Unit;
 
 namespace NT_AirPollution.Service
 {
@@ -85,15 +83,45 @@ namespace NT_AirPollution.Service
         /// </summary>
         /// <param name="form"></param>
         /// <returns></returns>
-        public Form GetFormByID(long id)
+        public FormView GetFormByID(long id)
         {
             using (var cn = new SqlConnection(connStr))
             {
-                var form = cn.QueryFirstOrDefault<Form>(@"
+                var result = cn.QueryFirstOrDefault<FormView>(@"
                     SELECT * FROM Form WHERE ID=@ID",
                     new { ID = id });
 
-                return form;
+                if (result != null)
+                {
+                    result.Attachment = cn.QueryFirstOrDefault<Attachment>(@"
+                    SELECT * FROM Attachment WHERE FormID=@FormID",
+                        new { FormID = result.ID });
+
+                    if (!string.IsNullOrEmpty(result.B_DATE))
+                        result.B_DATE2 = base.ChineseDateToWestDate(result.B_DATE);
+                    if (!string.IsNullOrEmpty(result.E_DATE))
+                        result.E_DATE2 = base.ChineseDateToWestDate(result.E_DATE);
+                    if (!string.IsNullOrEmpty(result.S_B_BDATE))
+                        result.S_B_BDATE2 = base.ChineseDateToWestDate(result.S_B_BDATE);
+                    if (!string.IsNullOrEmpty(result.R_B_BDATE))
+                        result.R_B_BDATE2 = base.ChineseDateToWestDate(result.R_B_BDATE);
+
+                    result.StopWorks = cn.Query<StopWork>(@"
+                        SELECT * FROM StopWork WHERE FormID=@FormID",
+                        new { FormID = result.ID }).ToList();
+
+                    foreach (var sub in result.StopWorks)
+                    {
+                        sub.DOWN_DATE2 = base.ChineseDateToWestDate(sub.DOWN_DATE);
+                        sub.UP_DATE2 = base.ChineseDateToWestDate(sub.UP_DATE);
+                    }
+
+                    result.Payments = cn.Query<Payment>(@"
+                        SELECT * FROM Payment WHERE FormID=@FormID",
+                        new { FormID = result.ID }).ToList();
+                }
+
+                return result;
             }
         }
 
@@ -531,14 +559,15 @@ namespace NT_AirPollution.Service
         /// </summary>
         /// <param name="form"></param>
         /// <returns></returns>
-        public int CalcTotalMoney(Form form)
+        public int CalcTotalMoney(FormView form)
         {
             using (var cn = new SqlConnection(connStr))
             {
                 form.B_DATE2 = base.ChineseDateToWestDate(form.B_DATE);
                 form.E_DATE2 = base.ChineseDateToWestDate(form.E_DATE);
                 // 計算施工天數
-                var diffDays = (form.E_DATE2 - form.B_DATE2).TotalDays + 1;
+                double downDays = form.StopWorks.Sum(o => o.DOWN_DAY);
+                var diffDays = ((form.E_DATE2 - form.B_DATE2).TotalDays + 1) - downDays;
                 var projectCodes = cn.GetAll<ProjectCode>().ToList();
                 var projectCode = projectCodes.First(o => o.ID == form.KIND_NO);
                 // 基數
@@ -578,9 +607,14 @@ namespace NT_AirPollution.Service
             }
         }
 
-        public bool SendStatus2(Form form)
+        /// <summary>
+        /// 需補件
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        public bool SendFormStatus2(Form form)
         {
-            string template = ($@"{HostingEnvironment.ApplicationPhysicalPath}\App_Data\Template\Status2_{(form.ClientUserID == null ? "NonMember" : "Member")}.txt");
+            string template = ($@"{HostingEnvironment.ApplicationPhysicalPath}\App_Data\Template\FormStatus2_{(form.ClientUserID == null ? "NonMember" : "Member")}.txt");
             using (StreamReader sr = new StreamReader(template))
             {
                 String content = sr.ReadToEnd();
@@ -590,7 +624,7 @@ namespace NT_AirPollution.Service
                 if (form.ClientUserID == null)
                     url = string.Format("{0}/Search/Index", _configDomain);
 
-                string body = string.Format(content, form.C_NO, form.ClientUserID == null ? form.CreateUserEmail : form.C_DATE.ToString("yyyy-MM-dd"), url, url, form.FailReason.Replace("\n", "<br>"));
+                string body = string.Format(content, form.C_NO, form.ClientUserID == null ? form.CreateUserEmail : null, url, url, form.FailReason.Replace("\n", "<br>"));
 
                 try
                 {
@@ -611,21 +645,30 @@ namespace NT_AirPollution.Service
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error($"SendStatus2: {ex.Message}");
+                    Logger.Error($"SendFormStatus2: {ex.Message}");
                     throw ex;
                 }
             }
         }
 
-        public bool SendStatus3(Form form)
+        /// <summary>
+        /// 通過待繳費
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        public bool SendFormStatus3(Form form)
         {
-            string template = ($@"{HostingEnvironment.ApplicationPhysicalPath}\App_Data\Template\Status3.txt");
+            string template = ($@"{HostingEnvironment.ApplicationPhysicalPath}\App_Data\Template\FormStatus3_{(form.ClientUserID == null ? "NonMember" : "Member")}.txt");
             using (StreamReader sr = new StreamReader(template))
             {
                 String content = sr.ReadToEnd();
-                string url1 = string.Format("{0}/Form/Guide", _configDomain);
-                string url2 = string.Format("{0}/Search/Index", _configDomain);
-                string body = string.Format(content, form.C_NO, form.CreateUserEmail, url1, url2);
+                // 會員
+                string url = string.Format("{0}/Member/Login", _configDomain);
+                // 非會員
+                if (form.ClientUserID == null)
+                    url = string.Format("{0}/Search/Index", _configDomain);
+
+                string body = string.Format(content, form.C_NO, form.ClientUserID == null ? form.CreateUserEmail : null, url);
 
                 string bankAccount = this.GetBankAccount(form.ID.ToString(), form.TotalMoney);
                 // 產生繳款單
@@ -651,30 +694,36 @@ namespace NT_AirPollution.Service
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error($"SendStatus3: {ex.Message}");
+                    Logger.Error($"SendFormStatus3: {ex.Message}");
                     throw ex;
                 }
             }
         }
 
-        public bool SendStatus4(Form form)
+        /// <summary>
+        /// 已繳費完成
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        public bool SendFormStatus4(Form form)
         {
-            string template = ($@"{HostingEnvironment.ApplicationPhysicalPath}\App_Data\Template\Status4.txt");
+            string template = ($@"{HostingEnvironment.ApplicationPhysicalPath}\App_Data\Template\FormStatus4_{(form.ClientUserID == null ? "NonMember" : "Member")}.txt");
             using (StreamReader sr = new StreamReader(template))
             {
                 String content = sr.ReadToEnd();
-                string url = string.Format("{0}/Search/Result", _configDomain);
-                string body = string.Format(content, form.C_NO, form.CreateUserEmail, url);
+                // 會員
+                string url = string.Format("{0}/Member/Login", _configDomain);
+                // 非會員
+                if (form.ClientUserID == null)
+                    url = string.Format("{0}/Search/Index", _configDomain);
+
+                string body = string.Format(content, form.C_NO, form.ClientUserID == null ? form.CreateUserEmail : null, url);
 
                 // 產生收據
                 string pdfTemplateFile = $@"{HostingEnvironment.ApplicationPhysicalPath}\App_Data\Template\Receipt.html";
                 //var fileBytes = this.GeneratePDF(pdfTemplateFile, form);
                 // 儲存實體檔案
-                string receiptFile = $@"{_uploadPath}\Receipt\收據{form.C_NO}.pdf";
-                using (var fs = new FileStream(receiptFile, FileMode.Create, FileAccess.Write))
-                {
-                    //fs.Write(fileBytes, 0, fileBytes.Length);
-                }
+                string receiptFile = $@"{_paymentPath}\收據{form.C_NO}.pdf";
 
                 try
                 {
@@ -696,7 +745,51 @@ namespace NT_AirPollution.Service
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error($"SendStatus4: {ex.Message}");
+                    Logger.Error($"SendFormStatus4: {ex.Message}");
+                    throw ex;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 需補件
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        public bool SendCalcStatus2(Form form)
+        {
+            string template = ($@"{HostingEnvironment.ApplicationPhysicalPath}\App_Data\Template\CalcStatus2_{(form.ClientUserID == null ? "NonMember" : "Member")}.txt");
+            using (StreamReader sr = new StreamReader(template))
+            {
+                String content = sr.ReadToEnd();
+                // 會員
+                string url = string.Format("{0}/Member/Login", _configDomain);
+                // 非會員
+                if (form.ClientUserID == null)
+                    url = string.Format("{0}/Search/Index", _configDomain);
+
+                string body = string.Format(content, form.C_NO, form.ClientUserID == null ? form.CreateUserEmail : null, url, url, form.FailReason.Replace("\n", "<br>"));
+
+                try
+                {
+                    using (var cn = new SqlConnection(connStr))
+                    {
+                        // 寄件夾
+                        cn.Insert(new SendBox
+                        {
+                            Address = form.CreateUserEmail,
+                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件需補件通知(管制編號 {form.C_NO})",
+                            Body = body,
+                            FailTimes = 0,
+                            CreateDate = DateTime.Now
+                        });
+                    }
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"SendCalcStatus2: {ex.Message}");
                     throw ex;
                 }
             }
@@ -894,7 +987,7 @@ namespace NT_AirPollution.Service
                 return existFile;
 
 
-            string templatePath = $@"{_paymentPath}\Template\payment.html";
+            string templatePath = $@"{_paymentPath}\Template\Payment.html";
             string readText = File.ReadAllText(templatePath);
             readText = readText.Replace("#ProjectID#", $"{form.C_NO}-{form.SER_NO}")
                                 .Replace("#PaymentID#", "")
@@ -908,37 +1001,34 @@ namespace NT_AirPollution.Service
                                 .Replace("#PayWay#", "一次全繳<br>共分 1 期，本期為第 1 期")
                                 .Replace("#StartDate#", $"民國 {form.B_DATE2.Year - 1911} 年 {form.B_DATE2.Month} 月 {form.B_DATE2.Day} 日");
 
-            //建立欲轉換檔案
-            var document = new HtmlToPdfDocument();
 
-            //設定主體
-            ObjectSettings objSettings = new ObjectSettings()
-            {
-                HtmlText = readText
-            };
+            License wordsLicense = new License();
+            wordsLicense.SetLicense(HostingEnvironment.MapPath(@"~/license/Aspose.total.lic"));
 
-            //設定
-            document.GlobalSettings.DocumentTitle = $"{form.C_NO}-{form.SER_NO}";
-            document.GlobalSettings.PaperSize = PaperKind.A4;
-            document.GlobalSettings.Margins = new MarginSettings
-            {
-                Left = 0.5,
-                Right = 0.5,
-                Unit = Unit.Centimeters
-            };
-            document.Objects.Add(objSettings);
-
-            //執行轉換
-            byte[] fileBytes = PDFService.Converter.Convert(document);
-
-            // 儲存實體檔案
             string filePath = existFile;
-            using (var fs = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+            HtmlLoadOptions options = new HtmlLoadOptions
             {
-                fs.Write(fileBytes, 0, fileBytes.Length);
-            }
+                PageInfo =
+                {
+                    Margin =
+                    {
+                        Left = 0,
+                        Top = 0,
+                        Right = 0,
+                        Bottom = 0
+                    }
+                }
+            };
+            Document pdfDocument = new Document(templatePath, options);
+            pdfDocument.Save(filePath);
 
             return filePath;
+        }
+
+
+        public void FinalCalc()
+        {
+
         }
     }
 }

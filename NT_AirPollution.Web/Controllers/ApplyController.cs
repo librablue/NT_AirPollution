@@ -6,6 +6,7 @@ using NT_AirPollution.Web.ActionFilter;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Web;
@@ -387,6 +388,10 @@ namespace NT_AirPollution.Web.Controllers
         [HttpPost]
         public FileResult DownloadPayment(FormView form)
         {
+            var formInDB = _formService.GetFormByID(form.ID);
+            if (formInDB.ClientUserID != BaseService.CurrentUser.ID)
+                throw new Exception("無法下載他人申請單");
+
             int payableAmount = form.TotalMoney;
             if (form.P_KIND == "分兩次繳清")
                 payableAmount = form.TotalMoney / 2;
@@ -394,9 +399,34 @@ namespace NT_AirPollution.Web.Controllers
             string bankAccount = _formService.GetBankAccount(form.ID.ToString(), payableAmount);
             string pdfPath = _formService.CreatePDF(bankAccount, "", form);
 
+            // 傳到前端的檔名
+            // Uri.EscapeDataString 防中文亂碼
             Response.Headers.Add("file-name", Uri.EscapeDataString(Path.GetFileName(pdfPath)));
 
             return File(pdfPath, System.Net.Mime.MediaTypeNames.Application.Octet, Path.GetFileName(pdfPath));
+        }
+
+        /// <summary>
+        /// 結算金額
+        /// </summary>
+        [HttpPost]
+        public JsonResult FinalCalc(FormView form)
+        {
+            try
+            {
+                var formInDB = _formService.GetFormByID(form.ID);
+                if (formInDB.ClientUserID != BaseService.CurrentUser.ID)
+                    throw new Exception("無法修改他人申請單");
+
+                formInDB.CalcStatus = CalcStatus.審理中;
+                _formService.UpdateForm(formInDB);
+
+                return Json(new AjaxResult { Status = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new AjaxResult { Status = false, Message = ex.Message });
+            }
         }
     }
 }

@@ -155,10 +155,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_Data\Template\Status2_Member.txt" />
-    <Content Include="App_Data\Template\Status2_NonMember.txt" />
-    <Content Include="App_Data\Template\Status3.txt" />
-    <Content Include="App_Data\Template\Status4.txt" />
+    <Content Include="App_Data\Template\Status2.txt" />
+    <Content Include="App_Data\Template\CalcStatus3.txt" />
+    <Content Include="App_Data\Template\FormStatus3.txt" />
+    <Content Include="App_Data\Template\FormStatus4.txt" />
     <Content Include="Global.asax" />
     <Content Include="Web.config" />
   </ItemGroup>

@@ -64,7 +64,7 @@
                             <el-dropdown-item :command="beforeCommand(scope.row, 'VIEW')">查看內容</el-dropdown-item>
                             <el-dropdown-item :command="beforeCommand(scope.row, 'COPY')">複製</el-dropdown-item>
                             <el-dropdown-item v-if="scope.row.FormStatus === 3" :command="beforeCommand(scope.row, 'PAYMENT')">下載繳費單</el-dropdown-item>
-                            <el-dropdown-item v-if="scope.row.FormStatus === 4" :command="beforeCommand(scope.row, 'CALC')">結算</el-dropdown-item>
+                            <el-dropdown-item v-if="scope.row.FormStatus === 4 && (scope.row.CalcStatus === 0 || scope.row.CalcStatus === 2)" :command="beforeCommand(scope.row, 'CALC')">結算</el-dropdown-item>
                         </el-dropdown-menu>
                     </el-dropdown>
                 </template>

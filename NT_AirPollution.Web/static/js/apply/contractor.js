@@ -40,7 +40,7 @@
                 axios
                     .post(`/Apply/DeleteContractor`, row)
                     .then(res => {
-                        alert('畫面資料已儲存。');
+                        alert('畫面資料已儲存');
                         this.getContractor();
                     })
                     .catch(err => {
@@ -59,7 +59,7 @@
                         }
 
                         this.getContractor();
-                        alert('畫面資料已儲存。');
+                        alert('畫面資料已儲存');
                         this.dialogVisible = false;
                     })
                     .catch(err => {

@@ -409,17 +409,17 @@
 						this.copyRow(row);
 						break;
 					case 'PAYMENT':
-						this.selectRow = row;
-						this.downloadPayment();
+						this.downloadPayment(row);
 						break;
 					case 'CALC':
+						this.finalCalc(row);
 						break;
 				}
 			},
-			downloadPayment() {
+			downloadPayment(row) {
 				const loading = this.$loading();
 				axios
-					.post('/Apply/DownloadPayment', this.selectRow, {
+					.post('/Apply/DownloadPayment', row, {
 						responseType: 'blob'
 					})
 					.then(res => {
@@ -427,13 +427,31 @@
 						const url = window.URL.createObjectURL(new Blob([res.data]));
 						const link = document.createElement('a');
 						link.href = url;
-						const fileName = decodeURI(res.headers["file-name"]);
+						const fileName = decodeURI(res.headers['file-name']);
 						link.setAttribute('download', fileName);
 						document.body.appendChild(link);
 						link.click();
 					})
 					.catch(err => {
 						loading.close();
+						alert('系統發生未預期錯誤');
+						console.log(err);
+					});
+			},
+			finalCalc(row) {
+				if (!confirm('是否確認提出結算申請?')) return;
+				axios
+					.post('/Apply/FinalCalc', row)
+					.then(res => {
+						if (!res.data.Status) {
+                            alert(res.data.Message);
+                            return;
+                        }
+
+						alert('結算申請已送出，請等候人工審核後 Email 通知');
+						row.CalcStatus = 1;
+					})
+					.catch(err => {
 						alert('系統發生未預期錯誤');
 						console.log(err);
 					});
