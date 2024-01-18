@@ -16,7 +16,9 @@ namespace NT_AirPollution.Service
         {
             using (var cn = new SqlConnection(connStr))
             {
-                var news = cn.GetAll<News>().Where(o => o.DeleteDate == null).ToList();
+                var news = cn.GetAll<News>()
+                    .Where(o => o.DeleteDate == null)
+                    .OrderByDescending(o => o.CreateDate).ToList();
                 return news;
             }
         }

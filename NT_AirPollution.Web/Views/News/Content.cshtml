@@ -1,0 +1,15 @@
+﻿@using NT_AirPollution.Model.Domain;
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section styles {
+    <link href="@Url.Content("~/static/css/pagination.css")" rel="stylesheet" />
+}
+
+<div class="main-wrap">
+    <h3>@Model.Subject</h3>
+    <div class="text">@Html.Raw(Model.Content.Replace("\n", "<br>"))</div>
+    <div class="text-center">
+        <a href="javascript:history.back()" class="link-back">< 回上一頁</a>
+    </div>
+</div>

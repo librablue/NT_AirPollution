@@ -48,6 +48,12 @@
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL" />
+    <Reference Include="PagedList, Version=1.17.0.0, Culture=neutral, PublicKeyToken=abbb863e9397c5e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\PagedList.1.17.0.0\lib\net40\PagedList.dll</HintPath>
+    </Reference>
+    <Reference Include="PagedList.Mvc, Version=4.5.0.0, Culture=neutral, PublicKeyToken=abbb863e9397c5e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\PagedList.Mvc.4.5.0.0\lib\net40\PagedList.Mvc.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -96,9 +102,11 @@
     <Content Include="App_Data\Payment\Template\Receipt.html" />
     <Content Include="App_Data\Template\VerifyCode.txt" />
     <Content Include="App_Data\Template\ActiveMail.txt" />
+    <Content Include="Content\PagedList.css" />
     <Content Include="Global.asax" />
     <Content Include="static\css\index.css" />
     <Content Include="static\css\member.css" />
+    <Content Include="static\css\pagination.css" />
     <Content Include="static\image\bg-dots.png" />
     <Content Include="static\image\illu-access.svg" />
     <Content Include="static\image\illu-building.svg" />
@@ -128,6 +136,7 @@
   <ItemGroup>
     <Compile Include="ActionFilter\CustomAuthorizeAttribute.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\NewsController.cs" />
     <Compile Include="Controllers\RoadController.cs" />
     <Compile Include="Controllers\AirController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
@@ -184,6 +193,8 @@
     <Content Include="Views\Air\Index.cshtml" />
     <Content Include="Views\Road\Index.cshtml" />
     <Content Include="Views\Soil\Index.cshtml" />
+    <Content Include="Views\News\Index.cshtml" />
+    <Content Include="Views\News\Content.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

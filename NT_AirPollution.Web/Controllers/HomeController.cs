@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NT_AirPollution.Service;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -8,9 +9,11 @@ namespace NT_AirPollution.Web.Controllers
 {
     public class HomeController : Controller
     {
-        // GET: Home
+        private readonly NewsService _newsService =  new NewsService();
+
         public ActionResult Index()
         {
+            ViewBag.News = _newsService.GetNews().Take(5).ToList();
             return View();
         }
     }

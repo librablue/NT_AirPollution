@@ -25,17 +25,16 @@
         <div class="right">
             <h3>最新消息</h3>
             <ul class="news-list">
-                <li>
-                    <span class="date">2023-12-01</span>
-                    <a href="#" class="title">營建工程空氣污染防制設施管理辦法執行手冊</a>
-                </li>
-                <li>
-                    <span class="date">2023-12-01</span>
-                    <a href="#" class="title">營建工程空氣污染防制設施管理辦法執行手冊</a>
-                </li>
+                @foreach (var item in ViewBag.News)
+                {
+                    <li>
+                        <span class="date">@item.CreateDate.ToString("yyyy-MM-dd")</span>
+                        <a href="@Url.Content($"~/News/Content?id={item.ID}")" class="title">@item.Title</a>
+                    </li>
+                }
             </ul>
             <div class="text-right">
-                <a href="#" class="btn-more">更多消息</a>
+                <a href="@Url.Content("~/News/Index")" class="btn-more">更多消息</a>
             </div>
         </div>
     </div>

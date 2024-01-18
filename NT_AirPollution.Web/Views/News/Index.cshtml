@@ -1,0 +1,25 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+@using NT_AirPollution.Model.Domain;
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section styles {
+    <link href="@Url.Content("~/static/css/pagination.css")" rel="stylesheet" />
+}
+
+<div class="main-wrap">
+    <h2 class="headline">最新消息</h2>
+    <ul class="news-list">
+        @foreach (var item in Model)
+        {
+            <li>
+                <div class="date">@item.CreateDate.ToString("yyyy-MM-dd")</div>
+                <a href="@Url.Content($"~/News/Content?id={item.ID}")">@item.Title</a>
+            </li>
+        }
+    </ul>
+    <div class="pagination-container">
+        @Html.PagedListPager((IPagedList)Model, page => Url.Action("Index", new { page }))
+    </div>
+</div>
