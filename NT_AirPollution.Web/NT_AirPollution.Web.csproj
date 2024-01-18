@@ -161,6 +161,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="license\Aspose.total.lic" />
+    <Content Include="App_Data\Payment\Template\結清證明.xls" />
     <None Include="NLog.xsd">
       <SubType>Designer</SubType>
     </None>

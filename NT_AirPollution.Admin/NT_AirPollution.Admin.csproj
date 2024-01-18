@@ -155,6 +155,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\Template\CalcStatus5.txt" />
+    <Content Include="App_Data\Template\CalcStatus4.txt" />
     <Content Include="App_Data\Template\Status2.txt" />
     <Content Include="App_Data\Template\CalcStatus3.txt" />
     <Content Include="App_Data\Template\FormStatus3.txt" />

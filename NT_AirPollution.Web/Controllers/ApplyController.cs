@@ -392,12 +392,14 @@ namespace NT_AirPollution.Web.Controllers
             if (formInDB.ClientUserID != BaseService.CurrentUser.ID)
                 throw new Exception("無法下載他人申請單");
 
-            int payableAmount = form.TotalMoney;
+            int payableAmount = form.TotalMoney1;
             if (form.P_KIND == "分兩次繳清")
-                payableAmount = form.TotalMoney / 2;
+                payableAmount = form.TotalMoney1 / 2;
 
             string bankAccount = _formService.GetBankAccount(form.ID.ToString(), payableAmount);
-            string pdfPath = _formService.CreatePDF(bankAccount, "", form);
+            string postAccount = _formService.GetPostAccount(form.ID.ToString(), form.TotalMoney1);
+            string fileName = $"繳款單{form.C_NO}-{form.SER_NO}({(form.P_KIND == "一次繳清" ? "一次繳清" : "第一期")}).pdf";
+            string pdfPath = _formService.CreatePaymentPDF(bankAccount, postAccount, fileName, form);
 
             // 傳到前端的檔名
             // Uri.EscapeDataString 防中文亂碼

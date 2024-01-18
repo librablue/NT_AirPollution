@@ -545,9 +545,13 @@ namespace NT_AirPollution.Model.Domain
         /// </summary>
         public bool? IsActive { get; set; }
         /// <summary>
-        /// 應繳費用
+        /// 第一期應繳費用
         /// </summary>
-        public int TotalMoney { get; set; }
+        public int TotalMoney1 { get; set; }
+        /// <summary>
+        /// 結算應繳費用
+        /// </summary>
+        public int TotalMoney2 { get; set; }
         /// <summary>
         /// 申請單狀態
         /// </summary>

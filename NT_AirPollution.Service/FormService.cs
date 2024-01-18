@@ -1,4 +1,6 @@
-﻿using Aspose.Pdf;
+﻿using Aspose.Cells;
+using Aspose.Pdf;
+using ClosedXML.Excel;
 using Dapper;
 using Dapper.Contrib.Extensions;
 using NT_AirPollution.Model.Domain;
@@ -612,19 +614,13 @@ namespace NT_AirPollution.Service
         /// </summary>
         /// <param name="form"></param>
         /// <returns></returns>
-        public bool SendFormStatus2(Form form)
+        public bool SendStatus2(FormView form)
         {
-            string template = ($@"{HostingEnvironment.ApplicationPhysicalPath}\App_Data\Template\FormStatus2_{(form.ClientUserID == null ? "NonMember" : "Member")}.txt");
+            string template = ($@"{HostingEnvironment.ApplicationPhysicalPath}\App_Data\Template\Status2.txt");
             using (StreamReader sr = new StreamReader(template))
             {
                 String content = sr.ReadToEnd();
-                // 會員
-                string url = string.Format("{0}/Member/Login", _configDomain);
-                // 非會員
-                if (form.ClientUserID == null)
-                    url = string.Format("{0}/Search/Index", _configDomain);
-
-                string body = string.Format(content, form.C_NO, form.ClientUserID == null ? form.CreateUserEmail : null, url, url, form.FailReason.Replace("\n", "<br>"));
+                string body = string.Format(content, form.C_NO, form.FailReason.Replace("\n", "<br>"));
 
                 try
                 {
@@ -656,26 +652,21 @@ namespace NT_AirPollution.Service
         /// </summary>
         /// <param name="form"></param>
         /// <returns></returns>
-        public bool SendFormStatus3(Form form)
+        public bool SendFormStatus3(FormView form)
         {
-            string template = ($@"{HostingEnvironment.ApplicationPhysicalPath}\App_Data\Template\FormStatus3_{(form.ClientUserID == null ? "NonMember" : "Member")}.txt");
+            string template = ($@"{HostingEnvironment.ApplicationPhysicalPath}\App_Data\Template\FormStatus3.txt");
             using (StreamReader sr = new StreamReader(template))
             {
-                String content = sr.ReadToEnd();
-                // 會員
-                string url = string.Format("{0}/Member/Login", _configDomain);
-                // 非會員
-                if (form.ClientUserID == null)
-                    url = string.Format("{0}/Search/Index", _configDomain);
-
-                string body = string.Format(content, form.C_NO, form.ClientUserID == null ? form.CreateUserEmail : null, url);
-
-                string bankAccount = this.GetBankAccount(form.ID.ToString(), form.TotalMoney);
-                // 產生繳款單
-                string docPath = this.CreatePDF(bankAccount, "", form);
-
                 try
                 {
+                    String content = sr.ReadToEnd();
+                    string body = string.Format(content, form.C_NO);
+                    string bankAccount = this.GetBankAccount(form.ID.ToString(), form.TotalMoney1);
+                    string postAccount = this.GetPostAccount(form.ID.ToString(), form.TotalMoney1);
+                    string fileName = $"繳款單{form.C_NO}-{form.SER_NO}({(form.P_KIND == "一次繳清" ? "一次繳清" : "第一期")}).pdf";
+                    // 產生繳款單
+                    string docPath = this.CreatePaymentPDF(bankAccount, postAccount, fileName, form);
+
                     using (var cn = new SqlConnection(connStr))
                     {
                         // 寄件夾
@@ -705,19 +696,13 @@ namespace NT_AirPollution.Service
         /// </summary>
         /// <param name="form"></param>
         /// <returns></returns>
-        public bool SendFormStatus4(Form form)
+        public bool SendFormStatus4(FormView form)
         {
-            string template = ($@"{HostingEnvironment.ApplicationPhysicalPath}\App_Data\Template\FormStatus4_{(form.ClientUserID == null ? "NonMember" : "Member")}.txt");
+            string template = ($@"{HostingEnvironment.ApplicationPhysicalPath}\App_Data\Template\FormStatus4.txt");
             using (StreamReader sr = new StreamReader(template))
             {
                 String content = sr.ReadToEnd();
-                // 會員
-                string url = string.Format("{0}/Member/Login", _configDomain);
-                // 非會員
-                if (form.ClientUserID == null)
-                    url = string.Format("{0}/Search/Index", _configDomain);
-
-                string body = string.Format(content, form.C_NO, form.ClientUserID == null ? form.CreateUserEmail : null, url);
+                string body = string.Format(content, form.C_NO);
 
                 // 產生收據
                 string pdfTemplateFile = $@"{HostingEnvironment.ApplicationPhysicalPath}\App_Data\Template\Receipt.html";
@@ -752,34 +737,35 @@ namespace NT_AirPollution.Service
         }
 
         /// <summary>
-        /// 需補件
+        /// 結算通過補繳費
         /// </summary>
         /// <param name="form"></param>
         /// <returns></returns>
-        public bool SendCalcStatus2(Form form)
+        public bool SendCalcStatus3(FormView form)
         {
-            string template = ($@"{HostingEnvironment.ApplicationPhysicalPath}\App_Data\Template\CalcStatus2_{(form.ClientUserID == null ? "NonMember" : "Member")}.txt");
+            string template = ($@"{HostingEnvironment.ApplicationPhysicalPath}\App_Data\Template\CalcStatus3.txt");
             using (StreamReader sr = new StreamReader(template))
             {
-                String content = sr.ReadToEnd();
-                // 會員
-                string url = string.Format("{0}/Member/Login", _configDomain);
-                // 非會員
-                if (form.ClientUserID == null)
-                    url = string.Format("{0}/Search/Index", _configDomain);
-
-                string body = string.Format(content, form.C_NO, form.ClientUserID == null ? form.CreateUserEmail : null, url, url, form.FailReason.Replace("\n", "<br>"));
-
                 try
                 {
+                    int diffMoney = form.TotalMoney2 - form.TotalMoney1;
+                    String content = sr.ReadToEnd();
+                    string body = string.Format(content, form.C_NO, diffMoney.ToString("N0"));
+                    string bankAccount = this.GetBankAccount(form.ID.ToString(), diffMoney);
+                    string postAccount = this.GetPostAccount(form.ID.ToString(), diffMoney);
+                    string fileName = $"繳款單{form.C_NO}-{form.SER_NO}(結算補繳).pdf";
+                    // 產生繳款單
+                    string docPath = this.CreatePaymentPDF(bankAccount, postAccount, fileName, form);
+
                     using (var cn = new SqlConnection(connStr))
                     {
                         // 寄件夾
                         cn.Insert(new SendBox
                         {
                             Address = form.CreateUserEmail,
-                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件需補件通知(管制編號 {form.C_NO})",
+                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件補繳費通知(管制編號 {form.C_NO})",
                             Body = body,
+                            Attachment = docPath,
                             FailTimes = 0,
                             CreateDate = DateTime.Now
                         });
@@ -789,7 +775,50 @@ namespace NT_AirPollution.Service
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error($"SendCalcStatus2: {ex.Message}");
+                    Logger.Error($"SendCalcStatus3: {ex.Message}");
+                    throw ex;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 通過待退費小於4000
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        public bool SendCalcStatus4(FormView form)
+        {
+            string template = ($@"{HostingEnvironment.ApplicationPhysicalPath}\App_Data\Template\CalcStatus4.txt");
+            using (StreamReader sr = new StreamReader(template))
+            {
+                try
+                {
+                    int diffMoney = form.TotalMoney1 - form.TotalMoney2;
+                    String content = sr.ReadToEnd();
+                    string body = string.Format(content, form.C_NO, diffMoney.ToString("N0"));
+                    string fileName = $"結清證明{form.C_NO}-{form.SER_NO}.pdf";
+                    // 產生結清證明
+                    string docPath = this.CreateRefundPDF(fileName, form);
+
+                    using (var cn = new SqlConnection(connStr))
+                    {
+                        // 寄件夾
+                        cn.Insert(new SendBox
+                        {
+                            Address = form.CreateUserEmail,
+                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件退費通知(管制編號 {form.C_NO})",
+                            Body = body,
+                            Attachment = docPath,
+                            FailTimes = 0,
+                            CreateDate = DateTime.Now
+                        });
+                    }
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"SendCalcStatus3: {ex.Message}");
                     throw ex;
                 }
             }
@@ -976,39 +1005,40 @@ namespace NT_AirPollution.Service
         /// </summary>
         /// <param name="bankAccount">銀行帳號</param>
         /// <param name="postAccount">郵局帳號</param>
+        /// <param name="fileName">產生檔名</param>
         /// <param name="form"></param>
-        /// <returns>文件路徑</returns>
-        public string CreatePDF(string bankAccount, string postAccount, Form form)
+        /// <returns>文件完整路徑</returns>
+        public string CreatePaymentPDF(string bankAccount, string postAccount, string fileName, Form form)
         {
-            string fileName = $"繳款單{form.C_NO}-{form.SER_NO}({(form.P_KIND == "一次繳清" ? "一次繳清" : "第一期")}).pdf";
-            // 如果已經產生過檔案，直接下載
-            string existFile = $@"{_paymentPath}\Download\{fileName}";
-            if (File.Exists(existFile))
-                return existFile;
-
-
-            string templatePath = $@"{_paymentPath}\Template\Payment.html";
-            string readText = File.ReadAllText(templatePath);
-            readText = readText.Replace("#ProjectID#", $"{form.C_NO}-{form.SER_NO}")
-                                .Replace("#PaymentID#", "")
-                                .Replace("#ProjectName#", form.KIND)
-                                .Replace("#ContractID#", form.B_SERNO)
-                                .Replace("#BizCompany#", form.S_NAME)
-                                .Replace("#TotalMoney#", "")
-                                .Replace("#TotalMoneyChinese#", this.GetChineseMoney("") + "整")
-                                .Replace("#CurrentMoney#", "")
-                                .Replace("#BankAccount#", bankAccount)
-                                .Replace("#PayWay#", "一次全繳<br>共分 1 期，本期為第 1 期")
-                                .Replace("#StartDate#", $"民國 {form.B_DATE2.Year - 1911} 年 {form.B_DATE2.Month} 月 {form.B_DATE2.Day} 日");
-
-
-            License wordsLicense = new License();
-            wordsLicense.SetLicense(HostingEnvironment.MapPath(@"~/license/Aspose.total.lic"));
-
-            string filePath = existFile;
-            HtmlLoadOptions options = new HtmlLoadOptions
+            try
             {
-                PageInfo =
+                // 如果已經產生過檔案，直接下載
+                string existFile = $@"{_paymentPath}\Download\{fileName}";
+                if (File.Exists(existFile))
+                    return existFile;
+
+
+                string templatePath = $@"{_paymentPath}\Template\Payment.html";
+                string readText = File.ReadAllText(templatePath);
+                readText = readText.Replace("#ProjectID#", $"{form.C_NO}-{form.SER_NO}")
+                                    .Replace("#PaymentID#", "")
+                                    .Replace("#ProjectName#", form.KIND)
+                                    .Replace("#ContractID#", form.B_SERNO)
+                                    .Replace("#BizCompany#", form.S_NAME)
+                                    .Replace("#TotalMoney#", "")
+                                    .Replace("#TotalMoneyChinese#", this.GetChineseMoney("") + "整")
+                                    .Replace("#CurrentMoney#", "")
+                                    .Replace("#BankAccount#", bankAccount)
+                                    .Replace("#PayWay#", "一次全繳<br>共分 1 期，本期為第 1 期")
+                                    .Replace("#StartDate#", $"民國 {form.B_DATE2.Year - 1911} 年 {form.B_DATE2.Month} 月 {form.B_DATE2.Day} 日");
+
+
+                Aspose.Pdf.License license = new Aspose.Pdf.License();
+                license.SetLicense(HostingEnvironment.MapPath(@"~/license/Aspose.total.lic"));
+
+                Aspose.Pdf.HtmlLoadOptions options = new Aspose.Pdf.HtmlLoadOptions
+                {
+                    PageInfo =
                 {
                     Margin =
                     {
@@ -1018,17 +1048,103 @@ namespace NT_AirPollution.Service
                         Bottom = 0
                     }
                 }
-            };
-            Document pdfDocument = new Document(templatePath, options);
-            pdfDocument.Save(filePath);
+                };
+                Document pdfDocument = new Document(templatePath, options);
+                pdfDocument.Save(existFile);
 
-            return filePath;
+                return existFile;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"CreatePaymentPDF: {ex.Message}");
+                throw ex;
+            }
         }
 
-
-        public void FinalCalc()
+        /// <summary>
+        /// 產生結清證明
+        /// </summary>
+        /// <param name="fileName">產生檔名</param>
+        /// <param name="form"></param>
+        /// <returns>檔案完整路徑</returns>
+        public string CreateRefundPDF(string fileName, FormView form)
         {
+            try
+            {
+                // 如果已經產生過檔案，直接下載
+                string existFile = $@"{_paymentPath}\Download\{fileName}";
+                if (File.Exists(existFile))
+                    return existFile;
 
+                string templatePath = $@"{_paymentPath}\Template\結清證明.xlsx";
+                var wb = new XLWorkbook(templatePath);
+                var ws = wb.Worksheet(0);
+                ws.Cell("B2").SetValue(form.COMP_NAM);
+                ws.Cell("B3").SetValue(form.C_NO);
+                ws.Cell("F3").SetValue($"-{form.SER_NO}");
+                ws.Cell("C4").SetValue(form.ADDR);
+                ws.Cell("C5").SetValue(form.B_SERNO);
+                ws.Cell("C6").SetValue(form.S_NAME);
+
+                int idx = 0;
+                // 應繳金額
+                string[] payableStrAry = new[] { form.TotalMoney2.ToString() };
+                foreach (var item in payableStrAry)
+                {
+                    ws.Row(9).Cell(16 - idx).SetValue(item);
+                    idx -= 2;
+                }
+
+                idx = 0;
+                // 已繳金額
+                int paidAmount = form.Payments.Sum(o => o.Amount);
+                string[] paidStrAry = new[] { paidAmount.ToString() };
+                foreach (var item in paidStrAry)
+                {
+                    ws.Row(10).Cell(16 - idx).SetValue(item);
+                    idx -= 2;
+                }
+
+                idx = 0;
+                // 應退金額
+                if (form.CalcStatus == CalcStatus.通過待退費小於4000 || form.CalcStatus == CalcStatus.通過待退費大於4000)
+                {
+                    int diffMoney = form.TotalMoney1 - form.TotalMoney2;
+                    string[] diffStrAry = new[] { diffMoney.ToString() };
+                    foreach (var item in diffStrAry)
+                    {
+                        ws.Row(11).Cell(16 - idx).SetValue(item);
+                        idx -= 2;
+                    }
+                }
+
+                idx = 0;
+                // 補繳金額
+                if (form.CalcStatus == CalcStatus.通過待繳費)
+                {
+                    int diffMoney = form.TotalMoney2 - form.TotalMoney1;
+                    string[] diffStrAry = new[] { diffMoney.ToString() };
+                    foreach (var item in diffStrAry)
+                    {
+                        ws.Row(12).Cell(16 - idx).SetValue(item);
+                        idx -= 2;
+                    }
+                }
+
+                string tmpFile = $@"{_paymentPath}\Download\結清證明{form.C_NO}-{form.SER_NO}.xlsx";
+                wb.SaveAs(tmpFile);
+
+                // 轉PDF
+                var workbook = new Workbook(tmpFile);
+                workbook.Save(existFile);
+
+                return existFile;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"CreateRefundPDF: {ex.Message}");
+                throw ex;
+            }
         }
     }
 }

@@ -28,21 +28,32 @@ namespace NT_AirPollution.Admin.Controllers
             return forms;
         }
 
+        /// <summary>
+        /// 結算金額
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        public int GetFinalCalc(FormView form)
+        {
+            int TotalMoney2 = _formService.CalcTotalMoney(form);
+            return TotalMoney2;
+        }
+
         [HttpPost]
         public bool UpdateForm(FormView form)
         {
             try
             {
-                form.TotalMoney = _formService.CalcTotalMoney(form);
                 var formInDB = _formService.GetFormByID(form.ID);
                 if (form.FormStatus != formInDB.FormStatus)
                 {
                     switch (form.FormStatus)
                     {
                         case FormStatus.需補件:
-                            _formService.SendFormStatus2(form);
+                            _formService.SendStatus2(form);
                             break;
                         case FormStatus.通過待繳費:
+                            form.TotalMoney1 = _formService.CalcTotalMoney(form);
                             form.VerifyDate = DateTime.Now;
                             _formService.SendFormStatus3(form);
                             break;
@@ -52,16 +63,19 @@ namespace NT_AirPollution.Admin.Controllers
                     }
                 }
 
-                if(form.CalcStatus != formInDB.CalcStatus)
+                if (form.CalcStatus != formInDB.CalcStatus)
                 {
                     switch (form.CalcStatus)
                     {
                         case CalcStatus.需補件:
-                            _formService.SendCalcStatus2(form);
+                            _formService.SendStatus2(form);
                             break;
                         case CalcStatus.通過待繳費:
+                            _formService.SendCalcStatus3(form);
                             break;
                         case CalcStatus.通過待退費小於4000:
+                            _formService.SendCalcStatus4(form);
+                            break;
                         case CalcStatus.通過待退費大於4000:
                             break;
                         case CalcStatus.通過不退補:
