@@ -217,6 +217,17 @@ namespace NT_AirPollution.Web.Controllers
                 attachFile.File7 = file7;
                 attachFile.File8 = file8;
 
+                List<string> allowExt = new List<string> { ".doc", ".docx", ".pdf", ".jpg", ".jpeg", ".png" };
+                for (int i = 1; i <= 8; i++)
+                {
+                    var file = (HttpPostedFileBase)attachFile[$"File{i}"];
+                    if (file == null)
+                        continue;
+
+                    string ext = Path.GetExtension(file.FileName).ToLower();
+                    if (!allowExt.Any(o => o == ext))
+                        throw new Exception("附件只允許上傳 doc/docx/pdf/jpg/png 等文件");
+                }
 
                 // 設定資料夾
                 string absoluteDirPath = $"{_uploadPath}";
@@ -224,24 +235,19 @@ namespace NT_AirPollution.Web.Controllers
                     Directory.CreateDirectory(absoluteDirPath);
 
                 string absoluteFilePath = "";
-                List<string> allowExt = new List<string> { ".doc", ".docx", ".pdf", ".jpg", ".jpeg", ".png" };
                 for (int i = 1; i <= 8; i++)
                 {
                     var file = (HttpPostedFileBase)attachFile[$"File{i}"];
-                    string ext = Path.GetExtension(file.FileName).ToLower();
-                    if (file != null && !allowExt.Any(o => o == ext))
-                        throw new Exception("附件只允許上傳 doc/docx/pdf 等文件");
+                    if (file == null)
+                        continue;
 
-                    if (file != null)
-                    {
-                        // 生成檔名
-                        string fileName = $@"{Guid.NewGuid().ToString()}{Path.GetExtension(file.FileName)}";
-                        // 設定儲存路徑
-                        absoluteFilePath = absoluteDirPath + $@"\{fileName}";
-                        // 儲存檔案
-                        file.SaveAs(absoluteFilePath);
-                        form.Attachment[$"File{i}"] = fileName;
-                    }
+                    // 生成檔名
+                    string fileName = $@"{Guid.NewGuid().ToString()}{Path.GetExtension(file.FileName)}";
+                    // 設定儲存路徑
+                    absoluteFilePath = absoluteDirPath + $@"\{fileName}";
+                    // 儲存檔案
+                    file.SaveAs(absoluteFilePath);
+                    form.Attachment[$"File{i}"] = fileName;
                 }
 
                 var allDists = _optionService.GetDistrict();
@@ -321,27 +327,37 @@ namespace NT_AirPollution.Web.Controllers
                 attachFile.File8 = file8;
 
 
-                // 設定資料夾
-                string absoluteDirPath = $"{_uploadPath}";
-                string absoluteFilePath = "";
                 List<string> allowExt = new List<string> { ".doc", ".docx", ".pdf", ".jpg", ".jpeg", ".png" };
                 for (int i = 1; i <= 8; i++)
                 {
                     var file = (HttpPostedFileBase)attachFile[$"File{i}"];
-                    string ext = Path.GetExtension(file.FileName).ToLower();
-                    if (file != null && !allowExt.Any(o => o == ext))
-                        throw new Exception("附件只允許上傳 doc/docx/pdf 等文件");
+                    if (file == null)
+                        continue;
 
-                    if (file != null)
-                    {
-                        // 生成檔名
-                        string fileName = $@"{Guid.NewGuid().ToString()}{Path.GetExtension(file.FileName)}";
-                        // 設定儲存路徑
-                        absoluteFilePath = absoluteDirPath + $@"\{fileName}";
-                        // 儲存檔案
-                        file.SaveAs(absoluteFilePath);
-                        form.Attachment[$"File{i}"] = fileName;
-                    }
+                    string ext = Path.GetExtension(file.FileName).ToLower();
+                    if (!allowExt.Any(o => o == ext))
+                        throw new Exception("附件只允許上傳 doc/docx/pdf/jpg/png 等文件");
+                }
+
+                // 設定資料夾
+                string absoluteDirPath = $"{_uploadPath}";
+                if (!Directory.Exists(absoluteDirPath))
+                    Directory.CreateDirectory(absoluteDirPath);
+
+                string absoluteFilePath = "";
+                for (int i = 1; i <= 8; i++)
+                {
+                    var file = (HttpPostedFileBase)attachFile[$"File{i}"];
+                    if (file == null)
+                        continue;
+
+                    // 生成檔名
+                    string fileName = $@"{Guid.NewGuid().ToString()}{Path.GetExtension(file.FileName)}";
+                    // 設定儲存路徑
+                    absoluteFilePath = absoluteDirPath + $@"\{fileName}";
+                    // 儲存檔案
+                    file.SaveAs(absoluteFilePath);
+                    form.Attachment[$"File{i}"] = fileName;
                 }
 
                 var allDists = _optionService.GetDistrict();

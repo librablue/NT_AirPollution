@@ -57,7 +57,7 @@
                 callback();
             };
             const checkVolumel = (rule, value, callback) => {
-                if (this.selectRow.AREA && !value) {
+                if (!this.selectRow.AREA && !value) {
                     callback(new Error('如果為疏濬工程，請輸入清運土石體積'));
                 }
                 callback();

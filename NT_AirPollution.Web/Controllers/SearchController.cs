@@ -77,6 +77,18 @@ namespace NT_AirPollution.Web.Controllers
         }
 
         [CustomAuthorize(Roles = "NonMember")]
+        public JsonResult GetMyForm()
+        {
+            var fiter = new Form
+            {
+                CreateUserEmail = BaseService.CurrentUser.Email,
+                C_NO = BaseService.CurrentUser.C_NO
+            };
+            var result = _formService.GetFormByUser(fiter);
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        [CustomAuthorize(Roles = "NonMember")]
         public JsonResult Resend()
         {
             try

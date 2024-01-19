@@ -24,7 +24,7 @@
 				callback();
 			};
 			const checkVolumel = (rule, value, callback) => {
-				if (this.form.AREA && !value) {
+				if (!this.form.AREA && !value) {
 					callback(new Error('如果為疏濬工程，請輸入清運土石體積'));
 				}
 				callback();
