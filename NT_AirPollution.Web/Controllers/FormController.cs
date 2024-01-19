@@ -346,31 +346,35 @@ namespace NT_AirPollution.Web.Controllers
                 if (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email)
                     throw new Exception("無法修改他人申請單");
 
-                if(formInDB.CalcStatus == CalcStatus.繳退費完成)
+                if (formInDB.CalcStatus == CalcStatus.繳退費完成)
                     throw new Exception("申請單已繳退費完成，無法修改帳戶");
 
-                // 設定資料夾
-                string absoluteDirPath = $"{_uploadPath}";
-                if (!Directory.Exists(absoluteDirPath))
-                    Directory.CreateDirectory(absoluteDirPath);
 
-                string absoluteFilePath = "";
-                List<string> allowExt = new List<string> { ".jpg", ".jpeg", ".png" };
-                string ext = Path.GetExtension(file.FileName).ToLower();
-                if (file != null && !allowExt.Any(o => o == ext))
-                    throw new Exception("附件只允許上傳 jpg/png 等文件");
+                if (file != null)
+                {
+                    // 設定資料夾
+                    string absoluteDirPath = $"{_uploadPath}";
+                    if (!Directory.Exists(absoluteDirPath))
+                        Directory.CreateDirectory(absoluteDirPath);
 
-                // 生成檔名
-                string fileName = $@"{Guid.NewGuid().ToString()}{Path.GetExtension(file.FileName)}";
-                // 設定儲存路徑
-                absoluteFilePath = absoluteDirPath + $@"\{fileName}";
-                // 儲存檔案
-                file.SaveAs(absoluteFilePath);
+                    string absoluteFilePath = "";
+                    List<string> allowExt = new List<string> { ".jpg", ".jpeg", ".png" };
+                    string ext = Path.GetExtension(file.FileName).ToLower();
+                    if (!allowExt.Any(o => o == ext))
+                        throw new Exception("附件只允許上傳 jpg/png 等文件");
+
+                    // 生成檔名
+                    string fileName = $@"{Guid.NewGuid().ToString()}{Path.GetExtension(file.FileName)}";
+                    // 設定儲存路徑
+                    absoluteFilePath = absoluteDirPath + $@"\{fileName}";
+                    // 儲存檔案
+                    file.SaveAs(absoluteFilePath);
+                    bank.Photo = fileName;
+                }
 
                 bank.FormID = formInDB.ID;
-                bank.Photo = fileName;
                 bank.CreateDate = DateTime.Now;
-                _formService.UpdateForm(formInDB);
+                _formService.UpdateRefundBank(bank);
 
                 return Json(new AjaxResult { Status = true });
             }

@@ -52,6 +52,10 @@ namespace NT_AirPollution.Service
                         SELECT * FROM Attachment
                         WHERE FormID=@FormID", new { FormID = item.ID });
 
+                    item.RefundBank = cn.QueryFirstOrDefault<RefundBank>(@"
+                        SELECT * FROM RefundBank WHERE FormID=@FormID",
+                        new { FormID = item.ID });
+
                     if (!string.IsNullOrEmpty(item.B_DATE))
                         item.B_DATE2 = base.ChineseDateToWestDate(item.B_DATE);
                     if (!string.IsNullOrEmpty(item.E_DATE))
@@ -96,7 +100,11 @@ namespace NT_AirPollution.Service
                 if (result != null)
                 {
                     result.Attachment = cn.QueryFirstOrDefault<Attachment>(@"
-                    SELECT * FROM Attachment WHERE FormID=@FormID",
+                        SELECT * FROM Attachment WHERE FormID=@FormID",
+                        new { FormID = result.ID });
+
+                    result.RefundBank = cn.QueryFirstOrDefault<RefundBank>(@"
+                        SELECT * FROM RefundBank WHERE FormID=@FormID",
                         new { FormID = result.ID });
 
                     if (!string.IsNullOrEmpty(result.B_DATE))
@@ -163,6 +171,10 @@ namespace NT_AirPollution.Service
                         SELECT * FROM Attachment WHERE FormID=@FormID",
                         new { FormID = item.ID });
 
+                    item.RefundBank = cn.QueryFirstOrDefault<RefundBank>(@"
+                        SELECT * FROM RefundBank WHERE FormID=@FormID",
+                        new { FormID = item.ID });
+
                     if (!string.IsNullOrEmpty(item.B_DATE))
                         item.B_DATE2 = base.ChineseDateToWestDate(item.B_DATE);
                     if (!string.IsNullOrEmpty(item.E_DATE))
@@ -217,6 +229,10 @@ namespace NT_AirPollution.Service
                 {
                     item.Attachment = cn.QueryFirstOrDefault<Attachment>(@"
                         SELECT * FROM Attachment WHERE FormID=@FormID",
+                        new { FormID = item.ID });
+
+                    item.RefundBank = cn.QueryFirstOrDefault<RefundBank>(@"
+                        SELECT * FROM RefundBank WHERE FormID=@FormID",
                         new { FormID = item.ID });
 
                     if (!string.IsNullOrEmpty(item.B_DATE))
@@ -295,6 +311,10 @@ namespace NT_AirPollution.Service
                     SELECT * FROM Attachment WHERE FormID=@FormID",
                         new { FormID = result.ID });
 
+                    result.RefundBank = cn.QueryFirstOrDefault<RefundBank>(@"
+                        SELECT * FROM RefundBank WHERE FormID=@FormID",
+                        new { FormID = result.ID });
+
                     if (!string.IsNullOrEmpty(result.B_DATE))
                         result.B_DATE2 = base.ChineseDateToWestDate(result.B_DATE);
                     if (!string.IsNullOrEmpty(result.E_DATE))
@@ -341,6 +361,10 @@ namespace NT_AirPollution.Service
                 {
                     item.Attachment = cn.QueryFirstOrDefault<Attachment>(@"
                         SELECT * FROM Attachment WHERE FormID=@FormID",
+                        new { FormID = item.ID });
+
+                    item.RefundBank = cn.QueryFirstOrDefault<RefundBank>(@"
+                        SELECT * FROM RefundBank WHERE FormID=@FormID",
                         new { FormID = item.ID });
 
                     if (!string.IsNullOrEmpty(item.B_DATE))

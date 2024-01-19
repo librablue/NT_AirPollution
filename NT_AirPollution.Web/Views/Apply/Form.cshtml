@@ -695,18 +695,22 @@
     </el-dialog>
 
     <el-dialog title="退款帳戶" :visible.sync="bankAccountDialogVisible" width="30%" v-cloak>
-        <el-form ref="form2" :rules="rules2" :model="bankForm">
+        <el-form ref="form2" :rules="rules2" :model="selectRow.RefundBank" label-position="top">
             <el-form-item prop="Code" label="銀行代碼">
-                <el-select class="w100p" v-model="bankForm.Code" filterable>
+                <el-select class="w100p" v-model="selectRow.RefundBank.Code" filterable>
                     <el-option label="請選擇" :value="null"></el-option>
                     <el-option v-for="item in banks" :key="item.code" :label="`${item.code} ${item.name}`" :value="item.code"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item prop="Account" label="銀行帳號">
-                <el-input v-model="bankForm.Account"></el-input>
+                <el-input v-model="selectRow.RefundBank.Account"></el-input>
             </el-form-item>
             <el-form-item prop="Photo" label="存摺照片">
-                <input type="file" id="fileBA" accept=".jpg,.jpeg,.png" />
+                <div v-if="selectRow.RefundBank.Photo" class="photo-wrap">
+                    <el-button class="btn-remove" type="danger" size="mini" icon="el-icon-delete" circle @@click="deleteBankPhoto"></el-button>
+                    <img class="w100p" :src="`/Option/Download?f=${selectRow.RefundBank.Photo}`" />
+                </div>
+                <input v-else type="file" id="fileBA" accept=".jpg,.jpeg,.png" />
             </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
