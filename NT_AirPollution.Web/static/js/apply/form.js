@@ -367,6 +367,7 @@
             copyRow(row) {
                 this.mode = 'Add';
                 this.selectRow = JSON.parse(JSON.stringify(row));
+                this.selectRow.StopWorks.length = 0;
                 const clearAry = ['SER_NO', 'AP_DATE', 'C_DATE'];
                 for (const key of clearAry) {
                     this.selectRow[key] = null;
