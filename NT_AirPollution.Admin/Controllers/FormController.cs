@@ -74,11 +74,11 @@ namespace NT_AirPollution.Admin.Controllers
                             _formService.SendCalcStatus3(form);
                             break;
                         case CalcStatus.通過待退費小於4000:
-                            _formService.SendCalcStatus4(form);
-                            break;
                         case CalcStatus.通過待退費大於4000:
+                            _formService.SendCalcStatus45(form);
                             break;
-                        case CalcStatus.通過不退補:
+                        case CalcStatus.繳退費完成:
+                            _formService.SendCalcStatus6(form);
                             break;
                         default:
                             break;

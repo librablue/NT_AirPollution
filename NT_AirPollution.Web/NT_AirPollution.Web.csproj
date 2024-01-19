@@ -102,7 +102,6 @@
     <Content Include="App_Data\Payment\Template\Receipt.html" />
     <Content Include="App_Data\Template\VerifyCode.txt" />
     <Content Include="App_Data\Template\ActiveMail.txt" />
-    <Content Include="Content\PagedList.css" />
     <Content Include="Global.asax" />
     <Content Include="static\css\index.css" />
     <Content Include="static\css\member.css" />
@@ -116,6 +115,7 @@
     <Content Include="static\js\apply\company.js" />
     <Content Include="static\js\apply\contractor.js" />
     <Content Include="static\js\apply\form.js" />
+    <Content Include="static\js\bank.js" />
     <Content Include="static\js\form\update.js" />
     <Content Include="static\js\manage\form.js" />
     <Content Include="static\js\road\index.js" />

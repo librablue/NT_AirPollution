@@ -534,6 +534,36 @@ namespace NT_AirPollution.Service
         }
 
         /// <summary>
+        /// 新增退費帳戶
+        /// </summary>
+        /// <param name="bank"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public bool UpdateRefundBank(RefundBank bank)
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                try
+                {
+                    var bankInDB = cn.QueryFirstOrDefault<RefundBank>(@"SELECT * FROM RefundBank WHERE FormID=@FormID",
+                        new { FormID = bank.FormID });
+
+                    if (bankInDB == null)
+                        cn.Insert(bank);
+                    else
+                        cn.Update(bank);
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"UpdateRefundBank: {ex.Message}");
+                    throw new Exception("系統發生未預期錯誤");
+                }
+            }
+        }
+
+        /// <summary>
         /// 數字轉換為中文
         /// </summary>
         /// <param name="inputNum"></param>
@@ -619,7 +649,7 @@ namespace NT_AirPollution.Service
             string template = ($@"{HostingEnvironment.ApplicationPhysicalPath}\App_Data\Template\Status2.txt");
             using (StreamReader sr = new StreamReader(template))
             {
-                String content = sr.ReadToEnd();
+                string content = sr.ReadToEnd();
                 string body = string.Format(content, form.C_NO, form.FailReason.Replace("\n", "<br>"));
 
                 try
@@ -659,7 +689,7 @@ namespace NT_AirPollution.Service
             {
                 try
                 {
-                    String content = sr.ReadToEnd();
+                    string content = sr.ReadToEnd();
                     string body = string.Format(content, form.C_NO);
                     string bankAccount = this.GetBankAccount(form.ID.ToString(), form.TotalMoney1);
                     string postAccount = this.GetPostAccount(form.ID.ToString(), form.TotalMoney1);
@@ -701,7 +731,7 @@ namespace NT_AirPollution.Service
             string template = ($@"{HostingEnvironment.ApplicationPhysicalPath}\App_Data\Template\FormStatus4.txt");
             using (StreamReader sr = new StreamReader(template))
             {
-                String content = sr.ReadToEnd();
+                string content = sr.ReadToEnd();
                 string body = string.Format(content, form.C_NO);
 
                 // 產生收據
@@ -749,7 +779,7 @@ namespace NT_AirPollution.Service
                 try
                 {
                     int diffMoney = form.TotalMoney2 - form.TotalMoney1;
-                    String content = sr.ReadToEnd();
+                    string content = sr.ReadToEnd();
                     string body = string.Format(content, form.C_NO, diffMoney.ToString("N0"));
                     string bankAccount = this.GetBankAccount(form.ID.ToString(), diffMoney);
                     string postAccount = this.GetPostAccount(form.ID.ToString(), diffMoney);
@@ -763,7 +793,7 @@ namespace NT_AirPollution.Service
                         cn.Insert(new SendBox
                         {
                             Address = form.CreateUserEmail,
-                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件補繳費通知(管制編號 {form.C_NO})",
+                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件結算通知(需補繳)(管制編號 {form.C_NO})",
                             Body = body,
                             Attachment = docPath,
                             FailTimes = 0,
@@ -782,19 +812,19 @@ namespace NT_AirPollution.Service
         }
 
         /// <summary>
-        /// 通過待退費小於4000
+        /// 通過待退費
         /// </summary>
         /// <param name="form"></param>
         /// <returns></returns>
-        public bool SendCalcStatus4(FormView form)
+        public bool SendCalcStatus45(FormView form)
         {
-            string template = ($@"{HostingEnvironment.ApplicationPhysicalPath}\App_Data\Template\CalcStatus4.txt");
+            string template = ($@"{HostingEnvironment.ApplicationPhysicalPath}\App_Data\Template\CalcStatus{form.CalcStatus}.txt");
             using (StreamReader sr = new StreamReader(template))
             {
                 try
                 {
                     int diffMoney = form.TotalMoney1 - form.TotalMoney2;
-                    String content = sr.ReadToEnd();
+                    string content = sr.ReadToEnd();
                     string body = string.Format(content, form.C_NO, diffMoney.ToString("N0"));
                     string fileName = $"結清證明{form.C_NO}-{form.SER_NO}.pdf";
                     // 產生結清證明
@@ -806,7 +836,7 @@ namespace NT_AirPollution.Service
                         cn.Insert(new SendBox
                         {
                             Address = form.CreateUserEmail,
-                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件退費通知(管制編號 {form.C_NO})",
+                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件結算通知(可退費)(管制編號 {form.C_NO})",
                             Body = body,
                             Attachment = docPath,
                             FailTimes = 0,
@@ -818,7 +848,44 @@ namespace NT_AirPollution.Service
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error($"SendCalcStatus3: {ex.Message}");
+                    Logger.Error($"SendCalcStatus45: {ex.Message}");
+                    throw ex;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 結算通過不需補退費
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        public bool SendCalcStatus6(FormView form)
+        {
+            string template = ($@"{HostingEnvironment.ApplicationPhysicalPath}\App_Data\Template\CalcStatus6.txt");
+            using (StreamReader sr = new StreamReader(template))
+            {
+                try
+                {
+                    string content = sr.ReadToEnd();
+                    string body = string.Format(content, form.C_NO);
+                    using (var cn = new SqlConnection(connStr))
+                    {
+                        // 寄件夾
+                        cn.Insert(new SendBox
+                        {
+                            Address = form.CreateUserEmail,
+                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件結算通知(已結清)(管制編號 {form.C_NO})",
+                            Body = body,
+                            FailTimes = 0,
+                            CreateDate = DateTime.Now
+                        });
+                    }
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"SendCalcStatus6: {ex.Message}");
                     throw ex;
                 }
             }

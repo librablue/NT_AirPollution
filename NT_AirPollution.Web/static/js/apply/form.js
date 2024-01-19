@@ -15,7 +15,7 @@
 					case 3:
 						return '通過待繳費';
 					case 4:
-						return '已繳費完成';
+						return '繳費完成';
 					default:
 						return '';
 				}
@@ -28,14 +28,13 @@
 						return '審理中';
 					case 2:
 						return '需補件';
-					case 30:
+					case 3:
 						return '通過待繳費';
-					case 31:
+					case 4:
+					case 5:
 						return '通過待退費';
-					case 40:
-						return '已繳費完成';
-					case 41:
-						return '已退費完成';
+					case 6:
+						return '繳退費完成';
 					default:
 						return '';
 				}
@@ -88,8 +87,14 @@
 					Attachment: {},
 					StopWorks: []
 				},
+				banks: Object.freeze(banksAry),
+				bankForm: {
+					Code: null,
+					Account: null
+				},
 				dialogVisible: false,
 				failReasonDialogVisible: false,
+				bankAccountDialogVisible: false,
 				activeTab: 'first',
 				rules: Object.freeze({
 					PUB_COMP: [{ required: true, message: '請選擇案件類型', trigger: 'change' }],
@@ -322,7 +327,7 @@
 				this.selectRow.Attachment[`File${idx}`] = null;
 			},
 			sendForm() {
-				this.$refs.form.validate(valid => {
+				this.$refs.form1.validate(valid => {
 					if (!valid) {
 						alert('欄位驗證錯誤，請檢查修正後重新送出');
 						return false;
@@ -408,18 +413,26 @@
 					case 'COPY':
 						this.copyRow(row);
 						break;
-					case 'PAYMENT':
+					case 'DOWNLOAD_PAYMENT':
 						this.downloadPayment(row);
 						break;
 					case 'CALC':
 						this.finalCalc(row);
+						break;
+					case 'DOWNLOAD_REPAYMENT':
+						this.downloadRePayment(row);
+						break;
+					case 'BANK_ACCOUNT':
+						this.showBankAccountModal(row);
+						break;
+					case 'DOWNLOAD_PROOF':
 						break;
 				}
 			},
 			downloadPayment(row) {
 				const loading = this.$loading();
 				axios
-					.post('/Apply/DownloadPayment', row, {
+					.post('/Form/DownloadPayment', row, {
 						responseType: 'blob'
 					})
 					.then(res => {
@@ -431,6 +444,7 @@
 						link.setAttribute('download', fileName);
 						document.body.appendChild(link);
 						link.click();
+						link.remove();
 					})
 					.catch(err => {
 						loading.close();
@@ -441,12 +455,12 @@
 			finalCalc(row) {
 				if (!confirm('是否確認提出結算申請?')) return;
 				axios
-					.post('/Apply/FinalCalc', row)
+					.post('/Form/FinalCalc', row)
 					.then(res => {
 						if (!res.data.Status) {
-                            alert(res.data.Message);
-                            return;
-                        }
+							alert(res.data.Message);
+							return;
+						}
 
 						alert('結算申請已送出，請等候人工審核後 Email 通知');
 						row.CalcStatus = 1;
@@ -455,6 +469,69 @@
 						alert('系統發生未預期錯誤');
 						console.log(err);
 					});
+			},
+			downloadRePayment(row) {
+				const loading = this.$loading();
+				axios
+					.post('/Form/DownloadRePayment', row, {
+						responseType: 'blob'
+					})
+					.then(res => {
+						loading.close();
+						const url = window.URL.createObjectURL(new Blob([res.data]));
+						const link = document.createElement('a');
+						link.href = url;
+						const fileName = decodeURI(res.headers['file-name']);
+						link.setAttribute('download', fileName);
+						document.body.appendChild(link);
+						link.click();
+						link.remove();
+					})
+					.catch(err => {
+						loading.close();
+						alert('系統發生未預期錯誤');
+						console.log(err);
+					});
+			},
+			showBankAccountModal(row) {
+				this.bankAccountDialogVisible = true;
+			},
+			saveBankAccount() {
+				this.$refs.form2.validate(valid => {
+					if (!valid) {
+						alert('欄位驗證錯誤，請檢查修正後重新送出');
+						return false;
+					}
+
+					if (!confirm('是否確認繼續?')) return false;
+
+					const loading = this.$loading();
+					const formData = new FormData();
+					for (const key in this.bankForm) {
+						if (typeof this.selectRow[key] !== 'object') formData.append(key, this.selectRow[key]);
+					}
+					// 附件
+					const file = document.querySelector(`#fileBA`);
+					formData.append('file', file.files[0]);
+
+					axios
+						.post('/Form/UpdateBankAccount', formData)
+						.then(res => {
+							loading.close();
+							if (!res.data.Status) {
+								alert(res.data.Message);
+								return;
+							}
+
+							alert('退款帳戶資料已儲存');
+							this.bankAccountDialogVisible = false;
+						})
+						.catch(err => {
+							loading.close();
+							alert('系統發生未預期錯誤');
+							console.log(err);
+						});
+				});
 			}
 		}
 	});

@@ -380,55 +380,5 @@ namespace NT_AirPollution.Web.Controllers
                 return Json(new AjaxResult { Status = false, Message = ex.Message });
             }
         }
-
-        /// <summary>
-        /// 下載繳費單
-        /// </summary>
-        /// <returns></returns>
-        [HttpPost]
-        public FileResult DownloadPayment(FormView form)
-        {
-            var formInDB = _formService.GetFormByID(form.ID);
-            if (formInDB.ClientUserID != BaseService.CurrentUser.ID)
-                throw new Exception("無法下載他人申請單");
-
-            int payableAmount = form.TotalMoney1;
-            if (form.P_KIND == "分兩次繳清")
-                payableAmount = form.TotalMoney1 / 2;
-
-            string bankAccount = _formService.GetBankAccount(form.ID.ToString(), payableAmount);
-            string postAccount = _formService.GetPostAccount(form.ID.ToString(), form.TotalMoney1);
-            string fileName = $"繳款單{form.C_NO}-{form.SER_NO}({(form.P_KIND == "一次繳清" ? "一次繳清" : "第一期")}).pdf";
-            string pdfPath = _formService.CreatePaymentPDF(bankAccount, postAccount, fileName, form);
-
-            // 傳到前端的檔名
-            // Uri.EscapeDataString 防中文亂碼
-            Response.Headers.Add("file-name", Uri.EscapeDataString(Path.GetFileName(pdfPath)));
-
-            return File(pdfPath, System.Net.Mime.MediaTypeNames.Application.Octet, Path.GetFileName(pdfPath));
-        }
-
-        /// <summary>
-        /// 結算金額
-        /// </summary>
-        [HttpPost]
-        public JsonResult FinalCalc(FormView form)
-        {
-            try
-            {
-                var formInDB = _formService.GetFormByID(form.ID);
-                if (formInDB.ClientUserID != BaseService.CurrentUser.ID)
-                    throw new Exception("無法修改他人申請單");
-
-                formInDB.CalcStatus = CalcStatus.審理中;
-                _formService.UpdateForm(formInDB);
-
-                return Json(new AjaxResult { Status = true });
-            }
-            catch (Exception ex)
-            {
-                return Json(new AjaxResult { Status = false, Message = ex.Message });
-            }
-        }
     }
 }

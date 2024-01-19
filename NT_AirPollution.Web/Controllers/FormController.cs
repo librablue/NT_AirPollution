@@ -65,7 +65,7 @@ namespace NT_AirPollution.Web.Controllers
                     var file = (HttpPostedFileBase)attachFile[$"File{i}"];
                     string ext = Path.GetExtension(file.FileName).ToLower();
                     if (file != null && !allowExt.Any(o => o == ext))
-                        throw new Exception("附件只允許上傳 doc/docx/pdf 等文件");
+                        throw new Exception("附件只允許上傳 doc/docx/pdf/jpg/png 等文件");
 
                     if (file != null)
                     {
@@ -194,7 +194,7 @@ namespace NT_AirPollution.Web.Controllers
                     var file = (HttpPostedFileBase)attachFile[$"File{i}"];
                     string ext = Path.GetExtension(file.FileName).ToLower();
                     if (file != null && !allowExt.Any(o => o == ext))
-                        throw new Exception("附件只允許上傳 doc/docx/pdf 等文件");
+                        throw new Exception("附件只允許上傳 doc/docx/pdf/jpg/png 等文件");
 
                     if (file != null)
                     {
@@ -257,12 +257,128 @@ namespace NT_AirPollution.Web.Controllers
             return Json(form, JsonRequestBehavior.AllowGet);
         }
 
-        [Authorize(Roles = "NonMember")]
-        public FileResult Download(string f)
+        /// <summary>
+        /// 下載繳費單
+        /// </summary>
+        /// <returns></returns>
+        [Authorize(Roles = "Member,NonMember")]
+        [HttpPost]
+        public FileResult DownloadPayment(FormView form)
         {
-            string fileName = $@"{_uploadPath}\{f}";
-            byte[] fileBytes = System.IO.File.ReadAllBytes(fileName);
-            return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, f);
+            var formInDB = _formService.GetFormByID(form.ID);
+            if (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email)
+                throw new Exception("無法下載他人申請單");
+
+            int payableAmount = form.TotalMoney1;
+            if (form.P_KIND == "分兩次繳清")
+                payableAmount = form.TotalMoney1 / 2;
+
+            string bankAccount = _formService.GetBankAccount(form.ID.ToString(), payableAmount);
+            string postAccount = _formService.GetPostAccount(form.ID.ToString(), form.TotalMoney1);
+            string fileName = $"繳款單{form.C_NO}-{form.SER_NO}({(form.P_KIND == "一次繳清" ? "一次繳清" : "第一期")}).pdf";
+            string pdfPath = _formService.CreatePaymentPDF(bankAccount, postAccount, fileName, form);
+
+            // 傳到前端的檔名
+            // Uri.EscapeDataString 防中文亂碼
+            Response.Headers.Add("file-name", Uri.EscapeDataString(Path.GetFileName(pdfPath)));
+
+            return File(pdfPath, System.Net.Mime.MediaTypeNames.Application.Octet, Path.GetFileName(pdfPath));
+        }
+
+        /// <summary>
+        /// 結算申請
+        /// </summary>
+        [Authorize(Roles = "Member,NonMember")]
+        [HttpPost]
+        public JsonResult FinalCalc(FormView form)
+        {
+            try
+            {
+                var formInDB = _formService.GetFormByID(form.ID);
+                if (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email)
+                    throw new Exception("無法修改他人申請單");
+
+                formInDB.CalcStatus = CalcStatus.審理中;
+                _formService.UpdateForm(formInDB);
+
+                return Json(new AjaxResult { Status = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new AjaxResult { Status = false, Message = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// 下載補繳費單
+        /// </summary>
+        /// <returns></returns>
+        [Authorize(Roles = "Member,NonMember")]
+        [HttpPost]
+        public FileResult DownloadRePayment(FormView form)
+        {
+            var formInDB = _formService.GetFormByID(form.ID);
+            if (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email)
+                throw new Exception("無法下載他人申請單");
+
+            int payableAmount = form.TotalMoney2 - form.TotalMoney1;
+            string bankAccount = _formService.GetBankAccount(form.ID.ToString(), payableAmount);
+            string postAccount = _formService.GetPostAccount(form.ID.ToString(), form.TotalMoney1);
+            string fileName = $"繳款單{form.C_NO}-{form.SER_NO}(補繳).pdf";
+            string pdfPath = _formService.CreatePaymentPDF(bankAccount, postAccount, fileName, form);
+
+            // 傳到前端的檔名
+            // Uri.EscapeDataString 防中文亂碼
+            Response.Headers.Add("file-name", Uri.EscapeDataString(Path.GetFileName(pdfPath)));
+
+            return File(pdfPath, System.Net.Mime.MediaTypeNames.Application.Octet, Path.GetFileName(pdfPath));
+        }
+
+        /// <summary>
+        /// 新增退款帳戶
+        /// </summary>
+        [Authorize(Roles = "Member,NonMember")]
+        [HttpPost]
+        public JsonResult UpdateBankAccount(RefundBank bank, HttpPostedFileBase file)
+        {
+            try
+            {
+                var formInDB = _formService.GetFormByID(bank.FormID);
+                if (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email)
+                    throw new Exception("無法修改他人申請單");
+
+                if(formInDB.CalcStatus == CalcStatus.繳退費完成)
+                    throw new Exception("申請單已繳退費完成，無法修改帳戶");
+
+                // 設定資料夾
+                string absoluteDirPath = $"{_uploadPath}";
+                if (!Directory.Exists(absoluteDirPath))
+                    Directory.CreateDirectory(absoluteDirPath);
+
+                string absoluteFilePath = "";
+                List<string> allowExt = new List<string> { ".jpg", ".jpeg", ".png" };
+                string ext = Path.GetExtension(file.FileName).ToLower();
+                if (file != null && !allowExt.Any(o => o == ext))
+                    throw new Exception("附件只允許上傳 jpg/png 等文件");
+
+                // 生成檔名
+                string fileName = $@"{Guid.NewGuid().ToString()}{Path.GetExtension(file.FileName)}";
+                // 設定儲存路徑
+                absoluteFilePath = absoluteDirPath + $@"\{fileName}";
+                // 儲存檔案
+                file.SaveAs(absoluteFilePath);
+
+                bank.FormID = formInDB.ID;
+                bank.Photo = fileName;
+                bank.CreateDate = DateTime.Now;
+                _formService.UpdateForm(formInDB);
+
+                return Json(new AjaxResult { Status = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new AjaxResult { Status = false, Message = ex.Message });
+            }
         }
     }
 }

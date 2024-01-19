@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="@Url.Content("~/static/css/member.css")" />
 }
 @section scripts {
+    <script src="@Url.Content("~/static/js/bank.js")"></script>
     <script src="@Url.Content("~/static/js/apply/form.js")"></script>
 }
 
@@ -63,8 +64,34 @@
                         <el-dropdown-menu slot="dropdown">
                             <el-dropdown-item :command="beforeCommand(scope.row, 'VIEW')">查看內容</el-dropdown-item>
                             <el-dropdown-item :command="beforeCommand(scope.row, 'COPY')">複製</el-dropdown-item>
-                            <el-dropdown-item v-if="scope.row.FormStatus === 3" :command="beforeCommand(scope.row, 'PAYMENT')">下載繳費單</el-dropdown-item>
-                            <el-dropdown-item v-if="scope.row.FormStatus === 4 && (scope.row.CalcStatus === 0 || scope.row.CalcStatus === 2)" :command="beforeCommand(scope.row, 'CALC')">結算</el-dropdown-item>
+                        </el-dropdown-menu>
+                    </el-dropdown>
+                </template>
+            </el-table-column>
+            <el-table-column prop="Status" label="案件狀態" align="center" width="120">
+                <template slot-scope="scope">
+                    <el-dropdown trigger="click" @@command="handleCommand">
+                        <a href="javascript:;" class="el-dropdown-link">
+                            {{ scope.row.FormStatus | formStatus }}<i class="el-icon-arrow-down el-icon--right"></i>
+                        </a>
+                        <el-dropdown-menu slot="dropdown">
+                            <el-dropdown-item :disabled="!(scope.row.FormStatus === 3)" :command="beforeCommand(scope.row, 'DOWNLOAD_PAYMENT')">下載繳費單</el-dropdown-item>
+                        </el-dropdown-menu>
+                    </el-dropdown>
+                </template>
+            </el-table-column>
+            <el-table-column prop="Status" label="結算狀態" align="center" width="120">
+                <template slot-scope="scope">
+                    <el-dropdown trigger="click" @@command="handleCommand">
+                        <a href="javascript:;" class="el-dropdown-link">
+                            {{ scope.row.CalcStatus | calcStatus }}<i class="el-icon-arrow-down el-icon--right"></i>
+                        </a>
+                        <el-dropdown-menu slot="dropdown">
+                            <el-dropdown-item :disabled="!(scope.row.CalcStatus === 0 || scope.row.CalcStatus === 2)" :command="beforeCommand(scope.row, 'CALC')">申請結算</el-dropdown-item>
+                            <el-dropdown-item :disabled="!(scope.row.CalcStatus === 3)" :command="beforeCommand(scope.row, 'DOWNLOAD_REPAYMENT')">下載繳費單</el-dropdown-item>
+                            <el-dropdown-item :disabled="!(scope.row.CalcStatus === 3)" :command="beforeCommand(scope.row, 'UPLOAD_PAYMENT')">上傳繳費證明</el-dropdown-item>
+                            <el-dropdown-item :disabled="!(scope.row.CalcStatus === 5)" :command="beforeCommand(scope.row, 'BANK_ACCOUNT')">退費帳戶</el-dropdown-item>
+                            <el-dropdown-item :disabled="!(scope.row.CalcStatus > 3)" :command="beforeCommand(scope.row, 'DOWNLOAD_PROOF')">下載結清證明</el-dropdown-item>
                         </el-dropdown-menu>
                     </el-dropdown>
                 </template>
@@ -87,21 +114,11 @@
                     {{ scope.row.PUB_COMP ? '公共工程' : '私人工程' }}
                 </template>
             </el-table-column>
-            <el-table-column prop="Status" label="案件狀態" align="center" width="100">
-                <template slot-scope="scope">
-                    {{ scope.row.FormStatus | formStatus }}
-                </template>
-            </el-table-column>
-            <el-table-column prop="Status" label="結算狀態" align="center" width="100">
-                <template slot-scope="scope">
-                    {{ scope.row.CalcStatus | calcStatus }}
-                </template>
-            </el-table-column>
         </el-table>
     </div>
 
     <el-dialog title="建立空污費申報" :visible.sync="dialogVisible" width="90%" :close-on-click-modal="false" @@close="dialogClose" v-cloak>
-        <el-form :rules="rules" ref="form" :model="selectRow" :disabled="selectRow.FormStatus >= 3">
+        <el-form :rules="rules" ref="form1" :model="selectRow" :disabled="selectRow.FormStatus >= 3">
             <el-form-item label="案件類型">
                 <el-select v-model="selectRow.PUB_COMP">
                     <el-option label="請選擇" :value="null"></el-option>
@@ -674,6 +691,27 @@
         <div v-html="selectRow.FailReason"></div>
         <span slot="footer" class="dialog-footer">
             <el-button type="primary" @@click="failReasonDialogVisible = false">確 定</el-button>
+        </span>
+    </el-dialog>
+
+    <el-dialog title="退款帳戶" :visible.sync="bankAccountDialogVisible" width="30%" v-cloak>
+        <el-form ref="form2">
+            <el-form-item label="銀行代碼">
+                <el-select v-model="bankForm.Code">
+                    <el-option label="請選擇" :value="null"></el-option>
+                    <el-option v-for="item in banks" :key="item.code" :label="item.name" :value="item.code"></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="銀行帳號">
+                <el-input v-model="bankForm.Account"></el-input>
+            </el-form-item>
+            <el-form-item label="存摺照片">
+                <input type="file" id="fileBA" accept=".jpg,.jpeg,.png" />
+            </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+            <el-button @@click="bankAccountDialogVisible = false">取 消</el-button>
+            <el-button type="primary" @@click="saveBankAccount">確 定</el-button>
         </span>
     </el-dialog>
 </div>
