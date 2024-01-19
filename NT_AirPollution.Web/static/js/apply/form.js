@@ -89,14 +89,16 @@
 				},
 				banks: Object.freeze(banksAry),
 				bankForm: {
+					FormID: null,
 					Code: null,
-					Account: null
+					Account: null,
+					Photo: null
 				},
 				dialogVisible: false,
 				failReasonDialogVisible: false,
 				bankAccountDialogVisible: false,
 				activeTab: 'first',
-				rules: Object.freeze({
+				rules1: Object.freeze({
 					PUB_COMP: [{ required: true, message: '請選擇案件類型', trigger: 'change' }],
 					TOWN_NO: [{ required: true, message: '請選擇鄉鎮分類', trigger: 'change' }],
 					CreateUserName: [{ required: true, message: '請輸入申請人姓名', trigger: 'blur' }],
@@ -144,6 +146,11 @@
 					VOLUMEL: [{ validator: checkVolumel }],
 					B_DATE2: [{ required: true, message: '請輸入預計施工開始日期', trigger: 'blur' }],
 					E_DATE2: [{ validator: checkE_DATE2 }]
+				}),
+				rules2: Object.freeze({
+					Code: [{ required: true, message: '請選擇銀行代碼', trigger: 'change' }],
+					Account: [{ required: true, message: '請輸入銀行帳號', trigger: 'blur' }],
+					Photo: [{ required: true, message: '請上傳存摺照片' }]
 				})
 			};
 		},
@@ -494,9 +501,18 @@
 					});
 			},
 			showBankAccountModal(row) {
+				this.bankForm.FormID = row.ID;
 				this.bankAccountDialogVisible = true;
 			},
 			saveBankAccount() {
+				this.bankForm.Photo = null;
+				const formData = new FormData();
+				// 附件
+				const file = document.querySelector(`#fileBA`);
+				if (file.files.length > 0) {
+					formData.append('file', file.files[0]);
+					this.bankForm.Photo = file.files[0].name;
+				}
 				this.$refs.form2.validate(valid => {
 					if (!valid) {
 						alert('欄位驗證錯誤，請檢查修正後重新送出');
@@ -506,13 +522,9 @@
 					if (!confirm('是否確認繼續?')) return false;
 
 					const loading = this.$loading();
-					const formData = new FormData();
 					for (const key in this.bankForm) {
-						if (typeof this.selectRow[key] !== 'object') formData.append(key, this.selectRow[key]);
+						if (typeof this.bankForm[key] !== 'object') formData.append(key, this.bankForm[key]);
 					}
-					// 附件
-					const file = document.querySelector(`#fileBA`);
-					formData.append('file', file.files[0]);
 
 					axios
 						.post('/Form/UpdateBankAccount', formData)

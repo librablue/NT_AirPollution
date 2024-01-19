@@ -337,7 +337,6 @@ namespace NT_AirPollution.Web.Controllers
         /// <summary>
         /// 新增退款帳戶
         /// </summary>
-        [Authorize(Roles = "Member,NonMember")]
         [HttpPost]
         public JsonResult UpdateBankAccount(RefundBank bank, HttpPostedFileBase file)
         {

@@ -118,7 +118,7 @@
     </div>
 
     <el-dialog title="建立空污費申報" :visible.sync="dialogVisible" width="90%" :close-on-click-modal="false" @@close="dialogClose" v-cloak>
-        <el-form :rules="rules" ref="form1" :model="selectRow" :disabled="selectRow.FormStatus >= 3">
+        <el-form ref="form1" :rules="rules1" :model="selectRow" :disabled="selectRow.FormStatus >= 3">
             <el-form-item label="案件類型">
                 <el-select v-model="selectRow.PUB_COMP">
                     <el-option label="請選擇" :value="null"></el-option>
@@ -695,17 +695,17 @@
     </el-dialog>
 
     <el-dialog title="退款帳戶" :visible.sync="bankAccountDialogVisible" width="30%" v-cloak>
-        <el-form ref="form2">
-            <el-form-item label="銀行代碼">
-                <el-select v-model="bankForm.Code">
+        <el-form ref="form2" :rules="rules2" :model="bankForm">
+            <el-form-item prop="Code" label="銀行代碼">
+                <el-select class="w100p" v-model="bankForm.Code" filterable>
                     <el-option label="請選擇" :value="null"></el-option>
-                    <el-option v-for="item in banks" :key="item.code" :label="item.name" :value="item.code"></el-option>
+                    <el-option v-for="item in banks" :key="item.code" :label="`${item.code} ${item.name}`" :value="item.code"></el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item label="銀行帳號">
+            <el-form-item prop="Account" label="銀行帳號">
                 <el-input v-model="bankForm.Account"></el-input>
             </el-form-item>
-            <el-form-item label="存摺照片">
+            <el-form-item prop="Photo" label="存摺照片">
                 <input type="file" id="fileBA" accept=".jpg,.jpeg,.png" />
             </el-form-item>
         </el-form>
