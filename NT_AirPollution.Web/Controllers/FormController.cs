@@ -3,6 +3,7 @@ using NT_AirPollution.Model.Domain;
 using NT_AirPollution.Model.Enum;
 using NT_AirPollution.Model.View;
 using NT_AirPollution.Service;
+using NT_AirPollution.Web.ActionFilter;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -132,7 +133,7 @@ namespace NT_AirPollution.Web.Controllers
             }
         }
 
-        [Authorize(Roles = "NonMember")]
+        [CustomAuthorize(Roles = "Member2")]
         public ActionResult Update()
         {
             var filter = new Form
@@ -147,7 +148,7 @@ namespace NT_AirPollution.Web.Controllers
             return View();
         }
 
-        [Authorize(Roles = "NonMember")]
+        [CustomAuthorize(Roles = "Member2")]
         [HttpPost]
         public JsonResult Update(FormView form, HttpPostedFileBase file1, HttpPostedFileBase file2, HttpPostedFileBase file3, HttpPostedFileBase file4, HttpPostedFileBase file5, HttpPostedFileBase file6, HttpPostedFileBase file7, HttpPostedFileBase file8)
         {
@@ -245,7 +246,7 @@ namespace NT_AirPollution.Web.Controllers
             }
         }
 
-        [Authorize(Roles = "NonMember")]
+        [CustomAuthorize(Roles = "Member2")]
         public JsonResult GetMyForm()
         {
             var filter = new Form
@@ -261,7 +262,7 @@ namespace NT_AirPollution.Web.Controllers
         /// 下載繳費單
         /// </summary>
         /// <returns></returns>
-        [Authorize(Roles = "Member,NonMember")]
+        [CustomAuthorize(Roles = "Member1,Member2")]
         [HttpPost]
         public FileResult DownloadPayment(FormView form)
         {
@@ -288,7 +289,7 @@ namespace NT_AirPollution.Web.Controllers
         /// <summary>
         /// 結算申請
         /// </summary>
-        [Authorize(Roles = "Member,NonMember")]
+        [CustomAuthorize(Roles = "Member1,Member2")]
         [HttpPost]
         public JsonResult FinalCalc(FormView form)
         {
@@ -313,7 +314,7 @@ namespace NT_AirPollution.Web.Controllers
         /// 下載補繳費單
         /// </summary>
         /// <returns></returns>
-        [Authorize(Roles = "Member,NonMember")]
+        [CustomAuthorize(Roles = "Member1,Member2")]
         [HttpPost]
         public FileResult DownloadRePayment(FormView form)
         {
@@ -337,6 +338,7 @@ namespace NT_AirPollution.Web.Controllers
         /// <summary>
         /// 新增退款帳戶
         /// </summary>
+        [CustomAuthorize(Roles = "Member1,Member2")]
         [HttpPost]
         public JsonResult UpdateBankAccount(RefundBank bank, HttpPostedFileBase file)
         {
@@ -382,6 +384,28 @@ namespace NT_AirPollution.Web.Controllers
             {
                 return Json(new AjaxResult { Status = false, Message = ex.Message });
             }
+        }
+
+        /// <summary>
+        /// 下載補繳費單
+        /// </summary>
+        /// <returns></returns>
+        [CustomAuthorize(Roles = "Member1,Member2")]
+        [HttpPost]
+        public FileResult DownloadProof(FormView form)
+        {
+            var formInDB = _formService.GetFormByID(form.ID);
+            if (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email)
+                throw new Exception("無法下載他人申請單");
+
+            string fileName = $"結清證明{form.C_NO}-{form.SER_NO}.pdf";
+            string pdfPath = _formService.CreateProofPDF(fileName, form);
+
+            // 傳到前端的檔名
+            // Uri.EscapeDataString 防中文亂碼
+            Response.Headers.Add("file-name", Uri.EscapeDataString(Path.GetFileName(pdfPath)));
+
+            return File(pdfPath, System.Net.Mime.MediaTypeNames.Application.Octet, Path.GetFileName(pdfPath));
         }
     }
 }

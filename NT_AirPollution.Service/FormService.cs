@@ -852,7 +852,7 @@ namespace NT_AirPollution.Service
                     string body = string.Format(content, form.C_NO, diffMoney.ToString("N0"));
                     string fileName = $"結清證明{form.C_NO}-{form.SER_NO}.pdf";
                     // 產生結清證明
-                    string docPath = this.CreateRefundPDF(fileName, form);
+                    string docPath = this.CreateProofPDF(fileName, form);
 
                     using (var cn = new SqlConnection(connStr))
                     {
@@ -1158,7 +1158,7 @@ namespace NT_AirPollution.Service
         /// <param name="fileName">產生檔名</param>
         /// <param name="form"></param>
         /// <returns>檔案完整路徑</returns>
-        public string CreateRefundPDF(string fileName, FormView form)
+        public string CreateProofPDF(string fileName, FormView form)
         {
             try
             {
@@ -1169,7 +1169,7 @@ namespace NT_AirPollution.Service
 
                 string templatePath = $@"{_paymentPath}\Template\結清證明.xlsx";
                 var wb = new XLWorkbook(templatePath);
-                var ws = wb.Worksheet(0);
+                var ws = wb.Worksheet(1);
                 ws.Cell("B2").SetValue(form.COMP_NAM);
                 ws.Cell("B3").SetValue(form.C_NO);
                 ws.Cell("F3").SetValue($"-{form.SER_NO}");
@@ -1179,21 +1179,19 @@ namespace NT_AirPollution.Service
 
                 int idx = 0;
                 // 應繳金額
-                string[] payableStrAry = new[] { form.TotalMoney2.ToString() };
-                foreach (var item in payableStrAry)
+                foreach (char item in form.TotalMoney2.ToString().Reverse())
                 {
-                    ws.Row(9).Cell(16 - idx).SetValue(item);
-                    idx -= 2;
+                    ws.Row(9).Cell(16 - idx).SetValue(item.ToString());
+                    idx += 2;
                 }
 
                 idx = 0;
                 // 已繳金額
                 int paidAmount = form.Payments.Sum(o => o.Amount);
-                string[] paidStrAry = new[] { paidAmount.ToString() };
-                foreach (var item in paidStrAry)
+                foreach (char item in paidAmount.ToString().Reverse())
                 {
-                    ws.Row(10).Cell(16 - idx).SetValue(item);
-                    idx -= 2;
+                    ws.Row(10).Cell(16 - idx).SetValue(item.ToString());
+                    idx += 2;
                 }
 
                 idx = 0;
@@ -1201,11 +1199,10 @@ namespace NT_AirPollution.Service
                 if (form.CalcStatus == CalcStatus.通過待退費小於4000 || form.CalcStatus == CalcStatus.通過待退費大於4000)
                 {
                     int diffMoney = form.TotalMoney1 - form.TotalMoney2;
-                    string[] diffStrAry = new[] { diffMoney.ToString() };
-                    foreach (var item in diffStrAry)
+                    foreach (char item in diffMoney.ToString().Reverse())
                     {
-                        ws.Row(11).Cell(16 - idx).SetValue(item);
-                        idx -= 2;
+                        ws.Row(11).Cell(16 - idx).SetValue(item.ToString());
+                        idx += 2;
                     }
                 }
 
@@ -1214,11 +1211,10 @@ namespace NT_AirPollution.Service
                 if (form.CalcStatus == CalcStatus.通過待繳費)
                 {
                     int diffMoney = form.TotalMoney2 - form.TotalMoney1;
-                    string[] diffStrAry = new[] { diffMoney.ToString() };
-                    foreach (var item in diffStrAry)
+                    foreach (char item in diffMoney.ToString().Reverse())
                     {
-                        ws.Row(12).Cell(16 - idx).SetValue(item);
-                        idx -= 2;
+                        ws.Row(12).Cell(16 - idx).SetValue(item.ToString());
+                        idx += 2;
                     }
                 }
 
@@ -1226,7 +1222,13 @@ namespace NT_AirPollution.Service
                 wb.SaveAs(tmpFile);
 
                 // 轉PDF
+                Aspose.Cells.License license = new Aspose.Cells.License();
+                license.SetLicense(HostingEnvironment.MapPath(@"~/license/Aspose.total.lic"));
                 var workbook = new Workbook(tmpFile);
+                foreach (Worksheet worksheet in workbook.Worksheets)
+                {
+                    worksheet.PageSetup.FitToPagesWide = 1;
+                }
                 workbook.Save(existFile);
 
                 return existFile;

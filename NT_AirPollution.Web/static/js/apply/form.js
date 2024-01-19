@@ -428,6 +428,7 @@
                         this.showBankAccountModal(row);
                         break;
                     case 'DOWNLOAD_PROOF':
+                        this.downloadProof(row);
                         break;
                 }
             },
@@ -542,7 +543,30 @@
                             console.log(err);
                         });
                 });
-            }
+            },
+            downloadProof(row) {
+                const loading = this.$loading();
+                axios
+                    .post('/Form/DownloadProof', row, {
+                        responseType: 'blob'
+                    })
+                    .then(res => {
+                        loading.close();
+                        const url = window.URL.createObjectURL(new Blob([res.data]));
+                        const link = document.createElement('a');
+                        link.href = url;
+                        const fileName = decodeURI(res.headers['file-name']);
+                        link.setAttribute('download', fileName);
+                        document.body.appendChild(link);
+                        link.click();
+                        link.remove();
+                    })
+                    .catch(err => {
+                        loading.close();
+                        alert('系統發生未預期錯誤');
+                        console.log(err);
+                    });
+            },
         }
     });
 });
