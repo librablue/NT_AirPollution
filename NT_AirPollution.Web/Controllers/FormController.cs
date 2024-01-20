@@ -144,7 +144,7 @@ namespace NT_AirPollution.Web.Controllers
         /// 下載繳費單
         /// </summary>
         /// <returns></returns>
-        [CustomAuthorize(Roles = "Member1,Member2")]
+        [CustomAuthorize(Roles = "Member1,NonMember")]
         [HttpPost]
         public FileResult DownloadPayment(FormView form)
         {
@@ -171,7 +171,7 @@ namespace NT_AirPollution.Web.Controllers
         /// <summary>
         /// 結算申請
         /// </summary>
-        [CustomAuthorize(Roles = "Member1,Member2")]
+        [CustomAuthorize(Roles = "Member1,NonMember")]
         [HttpPost]
         public JsonResult FinalCalc(FormView form)
         {
@@ -196,7 +196,7 @@ namespace NT_AirPollution.Web.Controllers
         /// 下載補繳費單
         /// </summary>
         /// <returns></returns>
-        [CustomAuthorize(Roles = "Member1,Member2")]
+        [CustomAuthorize(Roles = "Member1,NonMember")]
         [HttpPost]
         public FileResult DownloadRePayment(FormView form)
         {
@@ -220,7 +220,7 @@ namespace NT_AirPollution.Web.Controllers
         /// <summary>
         /// 新增退款帳戶
         /// </summary>
-        [CustomAuthorize(Roles = "Member1,Member2")]
+        [CustomAuthorize(Roles = "Member1,NonMember")]
         [HttpPost]
         public JsonResult UpdateBankAccount(RefundBank bank, HttpPostedFileBase file)
         {
@@ -272,7 +272,7 @@ namespace NT_AirPollution.Web.Controllers
         /// 下載補繳費單
         /// </summary>
         /// <returns></returns>
-        [CustomAuthorize(Roles = "Member1,Member2")]
+        [CustomAuthorize(Roles = "Member1,NonMember")]
         [HttpPost]
         public FileResult DownloadProof(FormView form)
         {
@@ -288,6 +288,56 @@ namespace NT_AirPollution.Web.Controllers
             Response.Headers.Add("file-name", Uri.EscapeDataString(Path.GetFileName(pdfPath)));
 
             return File(pdfPath, System.Net.Mime.MediaTypeNames.Application.Octet, Path.GetFileName(pdfPath));
+        }
+
+        /// <summary>
+        /// 上傳繳費證明
+        /// </summary>
+        [CustomAuthorize(Roles = "Member1,NonMember")]
+        [HttpPost]
+        public JsonResult UploadPaymentProof(PaymentProof proof, HttpPostedFileBase file)
+        {
+            try
+            {
+                var formInDB = _formService.GetFormByID(proof.FormID);
+                if (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email)
+                    throw new Exception("無法修改他人申請單");
+
+                if (formInDB.CalcStatus == CalcStatus.繳退費完成)
+                    throw new Exception("申請單已繳退費完成，無法修改帳戶");
+
+
+                if (file != null)
+                {
+                    // 設定資料夾
+                    string absoluteDirPath = $"{_uploadPath}";
+                    if (!Directory.Exists(absoluteDirPath))
+                        Directory.CreateDirectory(absoluteDirPath);
+
+                    string absoluteFilePath = "";
+                    List<string> allowExt = new List<string> { ".doc", ".docx", ".pdf", ".jpg", ".jpeg", ".png" };
+                    string ext = Path.GetExtension(file.FileName).ToLower();
+                    if (!allowExt.Any(o => o == ext))
+                        throw new Exception("附件只允許上傳 doc/docx/pdf/jpg/png 等文件");
+
+                    // 生成檔名
+                    string fileName = $@"{Guid.NewGuid().ToString()}{Path.GetExtension(file.FileName)}";
+                    // 設定儲存路徑
+                    absoluteFilePath = absoluteDirPath + $@"\{fileName}";
+                    // 儲存檔案
+                    file.SaveAs(absoluteFilePath);
+                    proof.ProofFile = fileName;
+                }
+
+                proof.CreateDate = DateTime.Now;
+                _formService.UpdatePaymentProof(proof);
+
+                return Json(new AjaxResult { Status = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new AjaxResult { Status = false, Message = ex.Message });
+            }
         }
     }
 }

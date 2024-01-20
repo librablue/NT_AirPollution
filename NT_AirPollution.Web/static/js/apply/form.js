@@ -85,12 +85,14 @@
                     BUD_DOC2: '無',
                     Attachment: {},
                     StopWorks: [],
-                    RefundBank: {}
+                    RefundBank: {},
+                    PaymentProof: {}
                 },
                 banks: Object.freeze(banksAry),
                 dialogVisible: false,
                 failReasonDialogVisible: false,
                 bankAccountDialogVisible: false,
+                paymentProofModal: false,
                 activeTab: 'first',
                 rules1: Object.freeze({
                     PUB_COMP: [{ required: true, message: '請選擇案件類型', trigger: 'change' }],
@@ -145,6 +147,9 @@
                     Code: [{ required: true, message: '請選擇銀行代碼', trigger: 'change' }],
                     Account: [{ required: true, message: '請輸入銀行帳號', trigger: 'blur' }],
                     Photo: [{ required: true, message: '請上傳存摺照片' }]
+                }),
+                rules3: Object.freeze({
+                    ProofFile: [{ required: true, message: '請上傳繳費證明' }]
                 })
             };
         },
@@ -424,6 +429,9 @@
                     case 'DOWNLOAD_REPAYMENT':
                         this.downloadRePayment(row);
                         break;
+                    case 'UPLOAD_PAYMENT_PROOF':
+                        this.showPaymentProofModal(row);
+                        break;
                     case 'BANK_ACCOUNT':
                         this.showBankAccountModal(row);
                         break;
@@ -496,8 +504,63 @@
                         console.log(err);
                     });
             },
+            showPaymentProofModal(row) {
+                this.selectRow = row;
+                this.selectRow.PaymentProof = this.selectRow.PaymentProof || {
+                    FormID: row.ID
+                };
+                this.paymentProofModal = true;
+            },
+            deletePaymentProof() {
+                if (!confirm('是否確認刪除?')) return false;
+                this.selectRow.PaymentProof.ProofFile = null;
+            },
+            savePaymentProof() {
+                const formData = new FormData();
+                // 附件
+                const file = document.querySelector(`#filePF`);
+                if (file && file.files.length > 0) {
+                    formData.append('file', file.files[0]);
+                    this.selectRow.PaymentProof.ProofFile = file.files[0].name;
+                }
+
+                this.$refs.form3.validate((valid, object) => {
+                    if (!valid) {
+                        alert('欄位驗證錯誤，請檢查修正後重新送出');
+                        return false;
+                    }
+
+                    if (!confirm('是否確認繼續?')) return false;
+
+                    const loading = this.$loading();
+                    for (const key in this.selectRow.PaymentProof) {
+                        if (typeof this.selectRow.PaymentProof[key] !== 'object') formData.append(key, this.selectRow.PaymentProof[key]);
+                    }
+
+                    axios
+                        .post('/Form/UploadPaymentProof', formData)
+                        .then(res => {
+                            loading.close();
+                            if (!res.data.Status) {
+                                alert(res.data.Message);
+                                return;
+                            }
+
+                            alert('上傳成功');
+                            this.bankAccountDialogVisible = false;
+                        })
+                        .catch(err => {
+                            loading.close();
+                            alert('系統發生未預期錯誤');
+                            console.log(err);
+                        });
+                });
+            },
             showBankAccountModal(row) {
                 this.selectRow = row;
+                this.selectRow.RefundBank = this.selectRow.RefundBank || {
+                    FormID: row.ID
+                };
                 this.bankAccountDialogVisible = true;
             },
             deleteBankPhoto() {
@@ -512,7 +575,7 @@
                     formData.append('file', file.files[0]);
                     this.selectRow.RefundBank.Photo = file.files[0].name;
                 }
-                this.$refs.form2.validate(valid => {
+                this.$refs.form2.validate((valid, object) => {
                     if (!valid) {
                         alert('欄位驗證錯誤，請檢查修正後重新送出');
                         return false;
@@ -535,6 +598,7 @@
                             }
 
                             alert('退款帳戶資料已儲存');
+                            this.getForms();
                             this.bankAccountDialogVisible = false;
                         })
                         .catch(err => {
@@ -566,7 +630,7 @@
                         alert('系統發生未預期錯誤');
                         console.log(err);
                     });
-            },
+            }
         }
     });
 });

@@ -2,7 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Web;
 using System.Web.Mvc;
 
@@ -27,6 +29,9 @@ namespace NT_AirPollution.Web.Controllers
         public FileResult Download(string f)
         {
             string fileName = $@"{_uploadPath}\{f}";
+            if (!System.IO.File.Exists(fileName))
+                return null;
+
             byte[] fileBytes = System.IO.File.ReadAllBytes(fileName);
             return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, f);
         }

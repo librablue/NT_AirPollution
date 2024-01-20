@@ -175,6 +175,10 @@ namespace NT_AirPollution.Service
                         SELECT * FROM RefundBank WHERE FormID=@FormID",
                         new { FormID = item.ID });
 
+                    item.PaymentProof = cn.QueryFirstOrDefault<PaymentProof>(@"
+                        SELECT * FROM PaymentProof WHERE FormID=@FormID",
+                        new { FormID = item.ID });
+
                     if (!string.IsNullOrEmpty(item.B_DATE))
                         item.B_DATE2 = base.ChineseDateToWestDate(item.B_DATE);
                     if (!string.IsNullOrEmpty(item.E_DATE))
@@ -233,6 +237,10 @@ namespace NT_AirPollution.Service
 
                     item.RefundBank = cn.QueryFirstOrDefault<RefundBank>(@"
                         SELECT * FROM RefundBank WHERE FormID=@FormID",
+                        new { FormID = item.ID });
+
+                    item.PaymentProof = cn.QueryFirstOrDefault<PaymentProof>(@"
+                        SELECT * FROM PaymentProof WHERE FormID=@FormID",
                         new { FormID = item.ID });
 
                     if (!string.IsNullOrEmpty(item.B_DATE))
@@ -315,6 +323,10 @@ namespace NT_AirPollution.Service
                         SELECT * FROM RefundBank WHERE FormID=@FormID",
                         new { FormID = result.ID });
 
+                    result.PaymentProof = cn.QueryFirstOrDefault<PaymentProof>(@"
+                        SELECT * FROM PaymentProof WHERE FormID=@FormID",
+                        new { FormID = result.ID });
+
                     if (!string.IsNullOrEmpty(result.B_DATE))
                         result.B_DATE2 = base.ChineseDateToWestDate(result.B_DATE);
                     if (!string.IsNullOrEmpty(result.E_DATE))
@@ -365,6 +377,10 @@ namespace NT_AirPollution.Service
 
                     item.RefundBank = cn.QueryFirstOrDefault<RefundBank>(@"
                         SELECT * FROM RefundBank WHERE FormID=@FormID",
+                        new { FormID = item.ID });
+
+                    item.PaymentProof = cn.QueryFirstOrDefault<PaymentProof>(@"
+                        SELECT * FROM PaymentProof WHERE FormID=@FormID",
                         new { FormID = item.ID });
 
                     if (!string.IsNullOrEmpty(item.B_DATE))
@@ -569,7 +585,8 @@ namespace NT_AirPollution.Service
             {
                 try
                 {
-                    var bankInDB = cn.QueryFirstOrDefault<RefundBank>(@"SELECT * FROM RefundBank WHERE FormID=@FormID",
+                    var bankInDB = cn.QueryFirstOrDefault<RefundBank>(@"
+                        SELECT * FROM RefundBank WHERE FormID=@FormID",
                         new { FormID = bank.FormID });
 
                     if (bankInDB == null)
@@ -582,6 +599,37 @@ namespace NT_AirPollution.Service
                 catch (Exception ex)
                 {
                     Logger.Error($"UpdateRefundBank: {ex.Message}");
+                    throw new Exception("系統發生未預期錯誤");
+                }
+            }
+        }
+
+        /// <summary>
+        /// 新增補繳費證明
+        /// </summary>
+        /// <param name="proof"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public bool UpdatePaymentProof(PaymentProof proof)
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                try
+                {
+                    var proofInDB = cn.QueryFirstOrDefault<PaymentProof>(@"
+                        SELECT * FROM PaymentProof WHERE FormID=@FormID",
+                        new { FormID = proof.FormID });
+
+                    if (proofInDB == null)
+                        cn.Insert(proof);
+                    else
+                        cn.Update(proof);
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"UpdatePaymentProof: {ex.Message}");
                     throw new Exception("系統發生未預期錯誤");
                 }
             }
@@ -1129,18 +1177,17 @@ namespace NT_AirPollution.Service
 
                 Aspose.Pdf.HtmlLoadOptions options = new Aspose.Pdf.HtmlLoadOptions
                 {
-                    PageInfo =
-                {
-                    Margin =
-                    {
-                        Left = 0,
-                        Top = 0,
-                        Right = 0,
-                        Bottom = 0
+                    PageInfo = {
+                        Margin = {
+                            Left = 0,
+                            Top = 0,
+                            Right = 0,
+                            Bottom = 0
+                        }
                     }
-                }
                 };
                 Document pdfDocument = new Document(templatePath, options);
+                pdfDocument.Info.Title = $"{form.C_NO}-{form.SER_NO}";
                 pdfDocument.Save(existFile);
 
                 return existFile;

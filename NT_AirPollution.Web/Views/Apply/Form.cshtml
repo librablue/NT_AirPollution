@@ -91,7 +91,7 @@
                         <el-dropdown-menu slot="dropdown">
                             <el-dropdown-item :disabled="!(scope.row.CalcStatus === 0 || scope.row.CalcStatus === 2)" :command="beforeCommand(scope.row, 'CALC')">{{scope.row.CalcStatus === 0 ? '申請結算' : '已補件重新申請'}}</el-dropdown-item>
                             <el-dropdown-item :disabled="!(scope.row.CalcStatus === 3)" :command="beforeCommand(scope.row, 'DOWNLOAD_REPAYMENT')">下載繳費單</el-dropdown-item>
-                            <el-dropdown-item :disabled="!(scope.row.CalcStatus === 3)" :command="beforeCommand(scope.row, 'UPLOAD_PAYMENT')">上傳繳費證明</el-dropdown-item>
+                            <el-dropdown-item :disabled="!(scope.row.CalcStatus === 3)" :command="beforeCommand(scope.row, 'UPLOAD_PAYMENT_PROOF')">上傳繳費證明</el-dropdown-item>
                             <el-dropdown-item :disabled="!(scope.row.CalcStatus === 5)" :command="beforeCommand(scope.row, 'BANK_ACCOUNT')">退費帳戶</el-dropdown-item>
                             <el-dropdown-item :disabled="!(scope.row.CalcStatus > 3)" :command="beforeCommand(scope.row, 'DOWNLOAD_PROOF')">下載結清證明</el-dropdown-item>
                         </el-dropdown-menu>
@@ -723,6 +723,22 @@
         <span slot="footer" class="dialog-footer">
             <el-button @@click="bankAccountDialogVisible = false">取 消</el-button>
             <el-button type="primary" @@click="saveBankAccount">確 定</el-button>
+        </span>
+    </el-dialog>
+
+    <el-dialog title="上傳繳費證明" :visible.sync="paymentProofModal" width="30%" v-cloak>
+        <el-form ref="form3" :rules="rules3" :model="selectRow.PaymentProof" label-position="top">
+            <el-form-item prop="ProofFile">
+                <div v-if="selectRow.PaymentProof.ProofFile">
+                    <a href="javascript:;" class="link-delete" @@click="deletePaymentProof"><i class="el-icon-delete"></i></a>
+                    <a :href="`/Option/Download?f=${selectRow.PaymentProof.ProofFile}`">{{selectRow.PaymentProof.ProofFile}}</a>
+                </div>
+                <input v-else type="file" id="filePF" accept=".doc,.docx,.pdf,.jpg,.jpeg,.png" />
+            </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+            <el-button @@click="paymentProofModal = false">取 消</el-button>
+            <el-button type="primary" @@click="savePaymentProof">確 定</el-button>
         </span>
     </el-dialog>
 </div>
