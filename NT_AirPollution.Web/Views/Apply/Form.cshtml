@@ -54,7 +54,7 @@
             </el-form-item>
         </el-form>
 
-        <el-table :data="forms" :loading="loading" border stripe>
+        <el-table :data="forms" border stripe>
             <el-table-column label="功能" width="100" align="center" fixed>
                 <template slot-scope="scope">
                     <el-dropdown trigger="click" @@command="handleCommand">
@@ -68,27 +68,28 @@
                     </el-dropdown>
                 </template>
             </el-table-column>
-            <el-table-column prop="Status" label="案件狀態" align="center" width="120">
+            <el-table-column prop="Status" label="申請進度" align="center" width="120" fixed>
                 <template slot-scope="scope">
-                    <span v-if="scope.row.FormStatus === 4">{{ scope.row.FormStatus | formStatus }}</span>
+                    <span v-if="scope.row.FormStatus === 1 || scope.row.FormStatus === 2 || scope.row.FormStatus === 4">{{ scope.row.FormStatus | formStatus }}</span>
                     <el-dropdown v-else trigger="click" @@command="handleCommand">
                         <a href="javascript:;" class="el-dropdown-link">
                             {{ scope.row.FormStatus | formStatus }}<i class="el-icon-arrow-down el-icon--right"></i>
                         </a>
                         <el-dropdown-menu slot="dropdown">
-                            <el-dropdown-item :disabled="!(scope.row.FormStatus === 3)" :command="beforeCommand(scope.row, 'DOWNLOAD_PAYMENT')">下載繳費單</el-dropdown-item>
+                            <el-dropdown-item :command="beforeCommand(scope.row, 'DOWNLOAD_PAYMENT')">下載繳費單</el-dropdown-item>
                         </el-dropdown-menu>
                     </el-dropdown>
                 </template>
             </el-table-column>
-            <el-table-column prop="Status" label="結算狀態" align="center" width="120">
+            <el-table-column prop="Status" label="結算進度" align="center" width="120" fixed>
                 <template slot-scope="scope">
-                    <el-dropdown trigger="click" @@command="handleCommand">
+                    <span v-if="scope.row.FormStatus < 4 || scope.row.CalcStatus === 1">{{ scope.row.CalcStatus | calcStatus }}</span>
+                    <el-dropdown v-else trigger="click" @@command="handleCommand">
                         <a href="javascript:;" class="el-dropdown-link">
                             {{ scope.row.CalcStatus | calcStatus }}<i class="el-icon-arrow-down el-icon--right"></i>
                         </a>
                         <el-dropdown-menu slot="dropdown">
-                            <el-dropdown-item :disabled="!(scope.row.CalcStatus === 0 || scope.row.CalcStatus === 2)" :command="beforeCommand(scope.row, 'CALC')">申請結算</el-dropdown-item>
+                            <el-dropdown-item :disabled="!(scope.row.CalcStatus === 0 || scope.row.CalcStatus === 2)" :command="beforeCommand(scope.row, 'CALC')">{{scope.row.CalcStatus === 0 ? '申請結算' : '已補件重新申請'}}</el-dropdown-item>
                             <el-dropdown-item :disabled="!(scope.row.CalcStatus === 3)" :command="beforeCommand(scope.row, 'DOWNLOAD_REPAYMENT')">下載繳費單</el-dropdown-item>
                             <el-dropdown-item :disabled="!(scope.row.CalcStatus === 3)" :command="beforeCommand(scope.row, 'UPLOAD_PAYMENT')">上傳繳費證明</el-dropdown-item>
                             <el-dropdown-item :disabled="!(scope.row.CalcStatus === 5)" :command="beforeCommand(scope.row, 'BANK_ACCOUNT')">退費帳戶</el-dropdown-item>

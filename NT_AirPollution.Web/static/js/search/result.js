@@ -63,7 +63,8 @@
                 callback();
             };
             return {
-                loading: false,
+                sendText: '寄送驗證信',
+                sending: false,
                 district: Object.freeze([]),
                 projectCode: Object.freeze([]),
                 companies: Object.freeze([]),
@@ -159,6 +160,29 @@
             }
         },
         methods: {
+            resend() {
+                axios
+                    .post('/Search/Resend')
+                    .then(res => {
+                        this.sending = true;
+                        var seconds = 180;
+                        this.sendText = '重新寄送(' + seconds + ')';
+                        seconds -= 1;
+                        var id = setInterval(() => {
+                            this.sendText = '重新寄送(' + seconds + ')';
+                            seconds--;
+                            if (seconds < 0) {
+                                clearInterval(id);
+                                this.sending = false;
+                                this.sendText = '寄送驗證信';
+                            }
+                        }, 1000);
+                    })
+                    .catch(err => {
+                        console.log(err);
+                        alert('發生錯誤');
+                    });
+            },
             getDistrict() {
                 axios.get('/Option/GetDistrict').then(res => {
                     this.district = Object.freeze(res.data);
@@ -170,20 +194,20 @@
                 });
             },
             getMyForm() {
-                this.loading = true;
+                const loading = this.$loading();
                 axios
                     .get('/Search/GetMyForm')
                     .then(res => {
                         this.forms = [res.data];
-                        this.loading = false;
+                        this.selectRow = res.data;
+                        loading.close();
                     })
                     .catch(err => {
-                        this.loading = false;
+                        loading.close();
                         console.log(err);
                     });
             },
             showModal(row) {
-                this.selectRow = JSON.parse(JSON.stringify(row));
                 this.dialogVisible = true;
                 if (this.selectRow.FormStatus === 2) {
                     this.failReasonDialogVisible = true;

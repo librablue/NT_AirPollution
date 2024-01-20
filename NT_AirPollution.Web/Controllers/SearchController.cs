@@ -99,10 +99,10 @@ namespace NT_AirPollution.Web.Controllers
             try
             {
                 if (!ModelState.IsValid)
-                    throw new Exception("欄位驗證錯誤");
-
-                if (form.B_DATE2 > form.E_DATE2)
-                    throw new Exception("施工期程起始日期不能大於結束日期");
+                {
+                    string firstError = ModelState.Values.SelectMany(o => o.Errors).First().ErrorMessage;
+                    throw new Exception(firstError);
+                }
 
                 var filter = new Form
                 {
@@ -111,7 +111,10 @@ namespace NT_AirPollution.Web.Controllers
                 };
                 var formInDB = _formService.GetFormByUser(filter);
                 if (formInDB == null)
-                    throw new Exception("修改申請單不存在");
+                    throw new Exception("申請單不存在");
+
+                if (form.B_DATE2 > form.E_DATE2)
+                    throw new Exception("施工期程起始日期不能大於結束日期");
 
 
                 var attachFile = new AttachmentFile();
@@ -130,6 +133,7 @@ namespace NT_AirPollution.Web.Controllers
                     var file = (HttpPostedFileBase)attachFile[$"File{i}"];
                     if (file == null)
                         continue;
+
                     string ext = Path.GetExtension(file.FileName).ToLower();
                     if (!allowExt.Any(o => o == ext))
                         throw new Exception("附件只允許上傳 doc/docx/pdf/jpg/png 等文件");
@@ -165,7 +169,11 @@ namespace NT_AirPollution.Web.Controllers
                 form.CreateUserEmail = formInDB.CreateUserEmail;
                 form.ActiveCode = formInDB.ActiveCode;
                 form.IsActive = formInDB.IsActive;
+                form.TotalMoney1 = formInDB.TotalMoney1;
+                form.TotalMoney2 = formInDB.TotalMoney2;
                 form.C_DATE = formInDB.C_DATE;
+                form.VerifyDate = formInDB.VerifyDate;
+                form.FailReason = formInDB.FailReason;
                 // 可修改的欄位
                 form.TOWN_NA = allDists.First(o => o.Code == form.TOWN_NO).Name;
                 form.KIND = allProjectCode.First(o => o.ID == form.KIND_NO).Name;

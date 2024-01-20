@@ -326,7 +326,6 @@ namespace NT_AirPollution.Web.Controllers
                 attachFile.File7 = file7;
                 attachFile.File8 = file8;
 
-
                 List<string> allowExt = new List<string> { ".doc", ".docx", ".pdf", ".jpg", ".jpeg", ".png" };
                 for (int i = 1; i <= 8; i++)
                 {
@@ -369,7 +368,11 @@ namespace NT_AirPollution.Web.Controllers
                 form.CreateUserEmail = formInDB.CreateUserEmail;
                 form.ActiveCode = formInDB.ActiveCode;
                 form.IsActive = formInDB.IsActive;
+                form.TotalMoney1 = formInDB.TotalMoney1;
+                form.TotalMoney2 = formInDB.TotalMoney2;
                 form.C_DATE = formInDB.C_DATE;
+                form.VerifyDate = formInDB.VerifyDate;
+                form.FailReason = formInDB.FailReason;
                 // 可修改的欄位
                 form.TOWN_NA = allDists.First(o => o.Code == form.TOWN_NO).Name;
                 form.KIND = allProjectCode.First(o => o.ID == form.KIND_NO).Name;

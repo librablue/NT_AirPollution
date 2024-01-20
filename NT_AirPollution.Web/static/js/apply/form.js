@@ -64,7 +64,6 @@
             };
             return {
                 mode: '',
-                loading: false,
                 filter: {
                     StartDate: moment().format('YYYY-MM-01'),
                     EndDate: moment().format('YYYY-MM-DD'),
@@ -226,15 +225,15 @@
                 this.selectRow.R_C_NAM = result.R_C_NAM;
             },
             getForms() {
-                this.loading = true;
+                const loading = this.$loading();
                 axios
                     .post('/Apply/GetForms', this.filter)
                     .then(res => {
                         this.forms = res.data;
-                        this.loading = false;
+                        loading.close();
                     })
                     .catch(err => {
-                        this.loading = false;
+                        loading.close();
                         console.log(err);
                     });
             },
