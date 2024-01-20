@@ -683,8 +683,13 @@
             </el-tab-pane>
         </el-tabs>
         <span slot="footer" class="dialog-footer">
-            <el-button @@click="dialogVisible = false">取 消</el-button>
-            <el-button type="primary" @@click="sendForm">儲 存</el-button>
+            <template v-if="selectRow.FormStatus === 2">
+                <el-button @@click="dialogVisible = false">取 消</el-button>
+                <el-button type="primary" @@click="sendForm">儲 存</el-button>
+            </template>
+            <template v-else>
+                <el-button @@click="dialogVisible = false">關 閉</el-button>
+            </template>
         </span>
     </el-dialog>
 

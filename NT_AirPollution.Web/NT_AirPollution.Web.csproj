@@ -116,7 +116,6 @@
     <Content Include="static\js\apply\contractor.js" />
     <Content Include="static\js\apply\form.js" />
     <Content Include="static\js\bank.js" />
-    <Content Include="static\js\form\update.js" />
     <Content Include="static\js\manage\form.js" />
     <Content Include="static\js\road\index.js" />
     <Content Include="static\js\search\result.js" />
@@ -189,7 +188,6 @@
     <Content Include="Views\Form\Create.cshtml" />
     <Content Include="Views\Search\Index.cshtml" />
     <Content Include="Views\Search\Result.cshtml" />
-    <Content Include="Views\Form\Update.cshtml" />
     <Content Include="Views\Verify\Index.cshtml" />
     <Content Include="Views\Manage\Form.cshtml" />
     <Content Include="Views\Air\Index.cshtml" />
