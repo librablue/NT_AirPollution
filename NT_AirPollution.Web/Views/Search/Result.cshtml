@@ -529,7 +529,7 @@
                                     <td>
                                         <div v-if="selectRow.Attachment.File1">
                                             <a href="javascript:;" class="link-delete" @@click="deleteFile(1)"><i class="el-icon-delete"></i></a>
-                                            <a :href="`/Option/Download?f=${selectRow.Attachment.File1}`">{{selectRow.Attachment.File1}}</a>
+                                            <a :href="`/Option/Download?f=${selectRow.Attachment.File1}`" class="link-download">{{selectRow.Attachment.File1}}</a>
                                         </div>
                                         <input type="file" id="file1" accept=".doc,.docx,.pdf,.jpg,.jpeg,.png" v-else />
                                     </td>
@@ -540,7 +540,7 @@
                                     <td>
                                         <div v-if="selectRow.Attachment.File2">
                                             <a href="javascript:;" class="link-delete" @@click="deleteFile(2)"><i class="el-icon-delete"></i></a>
-                                            <a :href="`/Option/Download?f=${selectRow.Attachment.File2}`">{{selectRow.Attachment.File2}}</a>
+                                            <a :href="`/Option/Download?f=${selectRow.Attachment.File2}`" class="link-download">{{selectRow.Attachment.File2}}</a>
                                         </div>
                                         <input type="file" id="file2" accept=".doc,.docx,.pdf,.jpg,.jpeg,.png" v-else />
                                     </td>
@@ -551,7 +551,7 @@
                                     <td>
                                         <div v-if="selectRow.Attachment.File3">
                                             <a href="javascript:;" class="link-delete" @@click="deleteFile(3)"><i class="el-icon-delete"></i></a>
-                                            <a :href="`/Option/Download?f=${selectRow.Attachment.File3}`">{{selectRow.Attachment.File3}}</a>
+                                            <a :href="`/Option/Download?f=${selectRow.Attachment.File3}`" class="link-download">{{selectRow.Attachment.File3}}</a>
                                         </div>
                                         <input type="file" id="file3" accept=".doc,.docx,.pdf,.jpg,.jpeg,.png" v-else />
                                     </td>
@@ -562,7 +562,7 @@
                                     <td>
                                         <div v-if="selectRow.Attachment.File4">
                                             <a href="javascript:;" class="link-delete" @@click="deleteFile(4)"><i class="el-icon-delete"></i></a>
-                                            <a :href="`/Option/Download?f=${selectRow.Attachment.File4}`">{{selectRow.Attachment.File4}}</a>
+                                            <a :href="`/Option/Download?f=${selectRow.Attachment.File4}`" class="link-download">{{selectRow.Attachment.File4}}</a>
                                         </div>
                                         <input type="file" id="file4" accept=".doc,.docx,.pdf,.jpg,.jpeg,.png" v-else />
                                     </td>
@@ -573,7 +573,7 @@
                                     <td>
                                         <div v-if="selectRow.Attachment.File5">
                                             <a href="javascript:;" class="link-delete" @@click="deleteFile(5)"><i class="el-icon-delete"></i></a>
-                                            <a :href="`/Option/Download?f=${selectRow.Attachment.File5}`">{{selectRow.Attachment.File5}}</a>
+                                            <a :href="`/Option/Download?f=${selectRow.Attachment.File5}`" class="link-download">{{selectRow.Attachment.File5}}</a>
                                         </div>
                                         <input type="file" id="file5" accept=".doc,.docx,.pdf,.jpg,.jpeg,.png" v-else />
                                     </td>
@@ -584,7 +584,7 @@
                                     <td>
                                         <div v-if="selectRow.Attachment.File6">
                                             <a href="javascript:;" class="link-delete" @@click="deleteFile(6)"><i class="el-icon-delete"></i></a>
-                                            <a :href="`/Option/Download?f=${selectRow.Attachment.File6}`">{{selectRow.Attachment.File6}}</a>
+                                            <a :href="`/Option/Download?f=${selectRow.Attachment.File6}`" class="link-download">{{selectRow.Attachment.File6}}</a>
                                         </div>
                                         <input type="file" id="file6" accept=".doc,.docx,.pdf,.jpg,.jpeg,.png" v-else />
                                     </td>
@@ -595,7 +595,7 @@
                                     <td>
                                         <div v-if="selectRow.Attachment.File7">
                                             <a href="javascript:;" class="link-delete" @@click="deleteFile(7)"><i class="el-icon-delete"></i></a>
-                                            <a :href="`/Option/Download?f=${selectRow.Attachment.File7}`">{{selectRow.Attachment.File7}}</a>
+                                            <a :href="`/Option/Download?f=${selectRow.Attachment.File7}`" class="link-download">{{selectRow.Attachment.File7}}</a>
                                         </div>
                                         <input type="file" id="file7" accept=".doc,.docx,.pdf,.jpg,.jpeg,.png" v-else />
                                     </td>
@@ -606,7 +606,7 @@
                                     <td>
                                         <div v-if="selectRow.Attachment.File8">
                                             <a href="javascript:;" class="link-delete" @@click="deleteFile(8)"><i class="el-icon-delete"></i></a>
-                                            <a :href="`/Option/Download?f=${selectRow.Attachment.File8}`">{{selectRow.Attachment.File8}}</a>
+                                            <a :href="`/Option/Download?f=${selectRow.Attachment.File8}`" class="link-download">{{selectRow.Attachment.File8}}</a>
                                         </div>
                                         <input type="file" id="file8" accept=".doc,.docx,.pdf,.jpg,.jpeg,.png" v-else />
                                     </td>
@@ -654,6 +654,57 @@
             <div v-html="selectRow.FailReason"></div>
             <span slot="footer" class="dialog-footer">
                 <el-button type="primary" @@click="failReasonDialogVisible = false">確 定</el-button>
+            </span>
+        </el-dialog>
+
+        <el-dialog title="退款帳戶" :visible.sync="bankAccountDialogVisible" width="30%" v-cloak>
+            <el-form ref="form2" :rules="rules2" :model="selectRow.RefundBank" label-position="top">
+                <el-form-item prop="Code" label="銀行代碼">
+                    <el-select class="w100p" v-model="selectRow.RefundBank.Code" filterable>
+                        <el-option label="請選擇" :value="null"></el-option>
+                        <el-option v-for="item in banks" :key="item.code" :label="`${item.code} ${item.name}`" :value="item.code"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item prop="Account" label="銀行帳號">
+                    <el-input v-model="selectRow.RefundBank.Account"></el-input>
+                </el-form-item>
+                <el-form-item prop="File" label="存摺照片">
+                    <div v-if="selectRow.RefundBank.Photo" class="photo-wrap">
+                        <el-button class="btn-remove" type="danger" size="mini" icon="el-icon-delete" circle @@click="deleteBankPhoto"></el-button>
+                        <img class="w100p" :src="`/Option/Download?f=${selectRow.RefundBank.Photo}`" />
+                    </div>
+                    <input v-else type="file" id="fileBA" accept=".jpg,.jpeg,.png" />
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <template v-if="selectRow.RefundBank.Photo">
+                    <el-button type="primary" @@click="bankAccountDialogVisible = false">確 定</el-button>
+                </template>
+                <template v-else>
+                    <el-button @@click="bankAccountDialogVisible = false">取 消</el-button>
+                    <el-button type="primary" @@click="saveBankAccount">確 定</el-button>
+                </template>
+            </span>
+        </el-dialog>
+
+        <el-dialog title="上傳繳費證明" :visible.sync="paymentProofModalVisible" width="30%" v-cloak>
+            <el-form ref="form3" :rules="rules3" :model="selectRow.PaymentProof" label-position="top">
+                <el-form-item prop="File">
+                    <div v-if="selectRow.PaymentProof.ProofFile" class="photo-wrap">
+                        <el-button class="btn-remove" type="danger" size="mini" icon="el-icon-delete" circle @@click="deletePaymentProof"></el-button>
+                        <img class="w100p" :src="`/Option/Download?f=${selectRow.PaymentProof.ProofFile}`" />
+                    </div>
+                    <input v-else type="file" id="filePF" accept=".doc,.docx,.pdf,.jpg,.jpeg,.png" />
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <template v-if="selectRow.PaymentProof.ProofFile">
+                    <el-button type="primary" @@click="paymentProofModalVisible = false">確 定</el-button>
+                </template>
+                <template v-else>
+                    <el-button @@click="paymentProofModalVisible = false">取 消</el-button>
+                    <el-button type="primary" @@click="savePaymentProof">上 傳</el-button>
+                </template>
             </span>
         </el-dialog>
     </div>

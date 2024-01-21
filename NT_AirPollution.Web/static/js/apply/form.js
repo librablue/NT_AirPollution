@@ -92,7 +92,7 @@
                 dialogVisible: false,
                 failReasonDialogVisible: false,
                 bankAccountDialogVisible: false,
-                paymentProofModal: false,
+                paymentProofModalVisible: false,
                 activeTab: 'first',
                 rules1: Object.freeze({
                     PUB_COMP: [{ required: true, message: '請選擇案件類型', trigger: 'change' }],
@@ -146,10 +146,10 @@
                 rules2: Object.freeze({
                     Code: [{ required: true, message: '請選擇銀行代碼', trigger: 'change' }],
                     Account: [{ required: true, message: '請輸入銀行帳號', trigger: 'blur' }],
-                    Photo: [{ required: true, message: '請上傳存摺照片' }]
+                    File: [{ required: true, message: '請上傳存摺照片' }]
                 }),
                 rules3: Object.freeze({
-                    ProofFile: [{ required: true, message: '請上傳繳費證明' }]
+                    File: [{ required: true, message: '請上傳繳費證明' }]
                 })
             };
         },
@@ -505,11 +505,12 @@
                     });
             },
             showPaymentProofModal(row) {
-                this.selectRow = row;
-                this.selectRow.PaymentProof = this.selectRow.PaymentProof || {
-                    FormID: row.ID
-                };
-                this.paymentProofModal = true;
+                this.selectRow = JSON.parse(JSON.stringify(row));
+                this.selectRow.PaymentProof = Object.assign({}, row.PaymentProof, {
+                    FormID: row.ID,
+                    File: null
+                });
+                this.paymentProofModalVisible = true;
             },
             deletePaymentProof() {
                 if (!confirm('是否確認刪除?')) return false;
@@ -521,7 +522,7 @@
                 const file = document.querySelector(`#filePF`);
                 if (file && file.files.length > 0) {
                     formData.append('file', file.files[0]);
-                    this.selectRow.PaymentProof.ProofFile = file.files[0].name;
+                    this.selectRow.PaymentProof.File = file.files[0].name;
                 }
 
                 this.$refs.form3.validate((valid, object) => {
@@ -547,7 +548,8 @@
                             }
 
                             alert('上傳成功');
-                            this.bankAccountDialogVisible = false;
+                            this.getForms();
+                            this.paymentProofModalVisible = false;
                         })
                         .catch(err => {
                             loading.close();
@@ -557,10 +559,11 @@
                 });
             },
             showBankAccountModal(row) {
-                this.selectRow = row;
-                this.selectRow.RefundBank = this.selectRow.RefundBank || {
-                    FormID: row.ID
-                };
+                this.selectRow = JSON.parse(JSON.stringify(row));
+                this.selectRow.RefundBank = Object.assign({}, row.RefundBank, {
+                    FormID: row.ID,
+                    File: null
+                });
                 this.bankAccountDialogVisible = true;
             },
             deleteBankPhoto() {
@@ -573,7 +576,7 @@
                 const file = document.querySelector(`#fileBA`);
                 if (file && file.files.length > 0) {
                     formData.append('file', file.files[0]);
-                    this.selectRow.RefundBank.Photo = file.files[0].name;
+                    this.selectRow.RefundBank.File = file.files[0].name;
                 }
                 this.$refs.form2.validate((valid, object) => {
                     if (!valid) {

@@ -149,8 +149,8 @@ namespace NT_AirPollution.Web.Controllers
         public FileResult DownloadPayment(FormView form)
         {
             var formInDB = _formService.GetFormByID(form.ID);
-            if (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email)
-                throw new Exception("無法下載他人申請單");
+            if (formInDB == null || (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email))
+                throw new Exception("申請單不存在");
 
             int payableAmount = form.TotalMoney1;
             if (form.P_KIND == "分兩次繳清")
@@ -178,8 +178,8 @@ namespace NT_AirPollution.Web.Controllers
             try
             {
                 var formInDB = _formService.GetFormByID(form.ID);
-                if (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email)
-                    throw new Exception("無法修改他人申請單");
+                if (formInDB == null || (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email))
+                    throw new Exception("申請單不存在");
 
                 formInDB.CalcStatus = CalcStatus.審理中;
                 _formService.UpdateForm(formInDB);
@@ -201,8 +201,8 @@ namespace NT_AirPollution.Web.Controllers
         public FileResult DownloadRePayment(FormView form)
         {
             var formInDB = _formService.GetFormByID(form.ID);
-            if (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email)
-                throw new Exception("無法下載他人申請單");
+            if (formInDB == null || (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email))
+                throw new Exception("申請單不存在");
 
             int payableAmount = form.TotalMoney2 - form.TotalMoney1;
             string bankAccount = _formService.GetBankAccount(form.ID.ToString(), payableAmount);
@@ -227,8 +227,8 @@ namespace NT_AirPollution.Web.Controllers
             try
             {
                 var formInDB = _formService.GetFormByID(bank.FormID);
-                if (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email)
-                    throw new Exception("無法修改他人申請單");
+                if (formInDB == null || (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email))
+                    throw new Exception("申請單不存在");
 
                 if (formInDB.CalcStatus == CalcStatus.繳退費完成)
                     throw new Exception("申請單已繳退費完成，無法修改帳戶");
@@ -277,8 +277,8 @@ namespace NT_AirPollution.Web.Controllers
         public FileResult DownloadProof(FormView form)
         {
             var formInDB = _formService.GetFormByID(form.ID);
-            if (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email)
-                throw new Exception("無法下載他人申請單");
+            if (formInDB == null || (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email))
+                throw new Exception("申請單不存在");
 
             string fileName = $"結清證明{form.C_NO}-{form.SER_NO}.pdf";
             string pdfPath = _formService.CreateProofPDF(fileName, form);
@@ -300,8 +300,8 @@ namespace NT_AirPollution.Web.Controllers
             try
             {
                 var formInDB = _formService.GetFormByID(proof.FormID);
-                if (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email)
-                    throw new Exception("無法修改他人申請單");
+                if (formInDB == null || (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email))
+                    throw new Exception("申請單不存在");
 
                 if (formInDB.CalcStatus == CalcStatus.繳退費完成)
                     throw new Exception("申請單已繳退費完成，無法修改帳戶");

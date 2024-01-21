@@ -174,10 +174,12 @@ namespace NT_AirPollution.Service
                     item.RefundBank = cn.QueryFirstOrDefault<RefundBank>(@"
                         SELECT * FROM RefundBank WHERE FormID=@FormID",
                         new { FormID = item.ID });
+                    if (item.RefundBank == null) item.RefundBank = new RefundBank();
 
                     item.PaymentProof = cn.QueryFirstOrDefault<PaymentProof>(@"
                         SELECT * FROM PaymentProof WHERE FormID=@FormID",
                         new { FormID = item.ID });
+                    if (item.PaymentProof == null) item.PaymentProof = new PaymentProof();
 
                     if (!string.IsNullOrEmpty(item.B_DATE))
                         item.B_DATE2 = base.ChineseDateToWestDate(item.B_DATE);
@@ -238,10 +240,12 @@ namespace NT_AirPollution.Service
                     item.RefundBank = cn.QueryFirstOrDefault<RefundBank>(@"
                         SELECT * FROM RefundBank WHERE FormID=@FormID",
                         new { FormID = item.ID });
+                    if (item.RefundBank == null) item.RefundBank = new RefundBank();
 
                     item.PaymentProof = cn.QueryFirstOrDefault<PaymentProof>(@"
                         SELECT * FROM PaymentProof WHERE FormID=@FormID",
                         new { FormID = item.ID });
+                    if (item.PaymentProof == null) item.PaymentProof = new PaymentProof();
 
                     if (!string.IsNullOrEmpty(item.B_DATE))
                         item.B_DATE2 = base.ChineseDateToWestDate(item.B_DATE);
@@ -322,10 +326,12 @@ namespace NT_AirPollution.Service
                     result.RefundBank = cn.QueryFirstOrDefault<RefundBank>(@"
                         SELECT * FROM RefundBank WHERE FormID=@FormID",
                         new { FormID = result.ID });
+                    if (result.RefundBank == null) result.RefundBank = new RefundBank();
 
                     result.PaymentProof = cn.QueryFirstOrDefault<PaymentProof>(@"
                         SELECT * FROM PaymentProof WHERE FormID=@FormID",
                         new { FormID = result.ID });
+                    if (result.PaymentProof == null) result.PaymentProof = new PaymentProof();
 
                     if (!string.IsNullOrEmpty(result.B_DATE))
                         result.B_DATE2 = base.ChineseDateToWestDate(result.B_DATE);
@@ -378,10 +384,12 @@ namespace NT_AirPollution.Service
                     item.RefundBank = cn.QueryFirstOrDefault<RefundBank>(@"
                         SELECT * FROM RefundBank WHERE FormID=@FormID",
                         new { FormID = item.ID });
+                    if (item.RefundBank == null) item.RefundBank = new RefundBank();
 
                     item.PaymentProof = cn.QueryFirstOrDefault<PaymentProof>(@"
                         SELECT * FROM PaymentProof WHERE FormID=@FormID",
                         new { FormID = item.ID });
+                    if (item.PaymentProof == null) item.PaymentProof = new PaymentProof();
 
                     if (!string.IsNullOrEmpty(item.B_DATE))
                         item.B_DATE2 = base.ChineseDateToWestDate(item.B_DATE);
