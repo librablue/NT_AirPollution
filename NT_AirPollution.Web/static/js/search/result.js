@@ -378,6 +378,7 @@
             showPaymentProofModal(row) {
                 this.selectRow = JSON.parse(JSON.stringify(row));
                 this.selectRow.PaymentProof = Object.assign({}, row.PaymentProof, {
+                    FormID: row.ID,
                     File: null
                 });
                 this.paymentProofModalVisible = true;
@@ -430,12 +431,10 @@
             },
             showBankAccountModal(row) {
                 this.selectRow = JSON.parse(JSON.stringify(row));
-                if (!this.selectRow.RefundBank) {
-                    this.selectRow.RefundBank = {
-                        FormID: row.ID,
-                        File: null
-                    };
-                }
+                this.selectRow.RefundBank = Object.assign({}, row.RefundBank, {
+                    FormID: row.ID,
+                    File: null
+                });
                 this.bankAccountDialogVisible = true;
             },
             deleteBankPhoto() {
