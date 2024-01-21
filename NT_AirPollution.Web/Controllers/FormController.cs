@@ -315,10 +315,10 @@ namespace NT_AirPollution.Web.Controllers
                         Directory.CreateDirectory(absoluteDirPath);
 
                     string absoluteFilePath = "";
-                    List<string> allowExt = new List<string> { ".doc", ".docx", ".pdf", ".jpg", ".jpeg", ".png" };
+                    List<string> allowExt = new List<string> { ".jpg", ".jpeg", ".png" };
                     string ext = Path.GetExtension(file.FileName).ToLower();
                     if (!allowExt.Any(o => o == ext))
-                        throw new Exception("附件只允許上傳 doc/docx/pdf/jpg/png 等文件");
+                        throw new Exception("附件只允許上傳 jpg/png 等文件");
 
                     // 生成檔名
                     string fileName = $@"{Guid.NewGuid().ToString()}{Path.GetExtension(file.FileName)}";

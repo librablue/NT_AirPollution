@@ -738,7 +738,7 @@
                     <el-button class="btn-remove" type="danger" size="mini" icon="el-icon-delete" circle @@click="deletePaymentProof"></el-button>
                     <img class="w100p" :src="`/Option/Download?f=${selectRow.PaymentProof.ProofFile}`" />
                 </div>
-                <input v-else type="file" id="filePF" accept=".doc,.docx,.pdf,.jpg,.jpeg,.png" />
+                <input v-else type="file" id="filePF" accept=".jpg,.jpeg,.png" />
             </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
