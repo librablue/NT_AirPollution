@@ -17,15 +17,11 @@ namespace NT_AirPollution.Model.Domain
             set { this.GetType().GetProperty(propertyName).SetValue(this, value, null); }
         }
 
-        [ExplicitKey]
+        [Key]
+        public long ID { get; set; }
         public long FormID { get; set; }
-        public string File1 { get; set; }
-        public string File2 { get; set; }
-        public string File3 { get; set; }
-        public string File4 { get; set; }
-        public string File5 { get; set; }
-        public string File6 { get; set; }
-        public string File7 { get; set; }
-        public string File8 { get; set; }
+        public long InfoID { get; set; }
+        public string FileName { get; set; }
+        public DateTime CreateDate { get; set; }
     }
 }

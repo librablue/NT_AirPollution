@@ -75,6 +75,7 @@
                 },
                 district: Object.freeze([]),
                 projectCode: Object.freeze([]),
+                attachmentInfo: Object.freeze([]),
                 companies: Object.freeze([]),
                 selectCompany: null,
                 contractors: Object.freeze([]),
@@ -83,7 +84,7 @@
                 selectRow: {
                     P_KIND: '一次全繳',
                     BUD_DOC2: '無',
-                    Attachment: {},
+                    Attachments: {},
                     StopWorks: [],
                     RefundBank: {},
                     PaymentProof: {}
@@ -156,6 +157,7 @@
         mounted() {
             this.getDistrict();
             this.getProjectCode();
+            this.getAttachmentInfo();
             this.getCompanies();
             this.getContractor();
         },
@@ -171,6 +173,9 @@
                 var dayDiff = Math.ceil(diff / (1000 * 60 * 60 * 24));
 
                 return dayDiff;
+            },
+            filterAttachmentInfo() {
+                return this.attachmentInfo.filter(item => item.PUB_COMP === this.selectRow.PUB_COMP);
             }
         },
         methods: {
@@ -182,6 +187,11 @@
             getProjectCode() {
                 axios.get('/Option/GetProjectCode').then(res => {
                     this.projectCode = Object.freeze(res.data);
+                });
+            },
+            getAttachmentInfo() {
+                axios.get('/Option/GetAttachmentInfo').then(res => {
+                    this.attachmentInfo = Object.freeze(res.data);
                 });
             },
             getCompanies() {
@@ -251,7 +261,7 @@
                 //	BUD_DOC2: '無',
                 //	CreateUserName: document.querySelector('#hfUserName').value,
                 //	CreateUserEmail: document.querySelector('#hfUserEmail').value,
-                //	Attachment: {},
+                //	Attachments: {},
                 //	StopWorks: []
                 //};
 
@@ -330,7 +340,7 @@
             },
             deleteFile(idx) {
                 if (!confirm('是否確認刪除?')) return;
-                this.selectRow.Attachment[`File${idx}`] = null;
+                this.selectRow.Attachments[idx].FileName = null;
             },
             sendForm() {
                 this.$refs.form1.validate(valid => {

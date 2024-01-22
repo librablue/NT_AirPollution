@@ -53,6 +53,7 @@
     <Compile Include="Domain\AdminUser.cs" />
     <Compile Include="Domain\Air.cs" />
     <Compile Include="Domain\AirFile.cs" />
+    <Compile Include="Domain\AttachmentInfo.cs" />
     <Compile Include="Domain\Attachment.cs" />
     <Compile Include="Domain\News.cs" />
     <Compile Include="Domain\PaymentProof.cs" />
@@ -77,6 +78,7 @@
     <Compile Include="Enum\UserType.cs" />
     <Compile Include="Enum\FormStatus.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="View\AttachmentInfoView.cs" />
     <Compile Include="View\RoadFilter.cs" />
     <Compile Include="View\AirReport.cs" />
     <Compile Include="View\AirFilter.cs" />

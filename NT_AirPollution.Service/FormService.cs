@@ -48,9 +48,9 @@ namespace NT_AirPollution.Service
 
                 foreach (var item in forms)
                 {
-                    item.Attachment = cn.QueryFirstOrDefault<Attachment>(@"
-                        SELECT * FROM Attachment
-                        WHERE FormID=@FormID", new { FormID = item.ID });
+                    item.Attachments = cn.Query<Attachment>(@"
+                        SELECT * FROM Attachment WHERE FormID=@FormID",
+                        new { FormID = item.ID }).ToList();
 
                     item.RefundBank = cn.QueryFirstOrDefault<RefundBank>(@"
                         SELECT * FROM RefundBank WHERE FormID=@FormID",
@@ -99,9 +99,9 @@ namespace NT_AirPollution.Service
 
                 if (result != null)
                 {
-                    result.Attachment = cn.QueryFirstOrDefault<Attachment>(@"
+                    result.Attachments = cn.Query<Attachment>(@"
                         SELECT * FROM Attachment WHERE FormID=@FormID",
-                        new { FormID = result.ID });
+                        new { FormID = result.ID }).ToList();
 
                     result.RefundBank = cn.QueryFirstOrDefault<RefundBank>(@"
                         SELECT * FROM RefundBank WHERE FormID=@FormID",
@@ -167,9 +167,9 @@ namespace NT_AirPollution.Service
 
                 foreach (var item in result)
                 {
-                    item.Attachment = cn.QueryFirstOrDefault<Attachment>(@"
+                    item.Attachments = cn.Query<Attachment>(@"
                         SELECT * FROM Attachment WHERE FormID=@FormID",
-                        new { FormID = item.ID });
+                        new { FormID = item.ID }).ToList();
 
                     item.RefundBank = cn.QueryFirstOrDefault<RefundBank>(@"
                         SELECT * FROM RefundBank WHERE FormID=@FormID",
@@ -233,9 +233,9 @@ namespace NT_AirPollution.Service
                 var now = DateTime.Now;
                 foreach (var item in result)
                 {
-                    item.Attachment = cn.QueryFirstOrDefault<Attachment>(@"
+                    item.Attachments = cn.Query<Attachment>(@"
                         SELECT * FROM Attachment WHERE FormID=@FormID",
-                        new { FormID = item.ID });
+                        new { FormID = item.ID }).ToList();
 
                     item.RefundBank = cn.QueryFirstOrDefault<RefundBank>(@"
                         SELECT * FROM RefundBank WHERE FormID=@FormID",
@@ -319,9 +319,9 @@ namespace NT_AirPollution.Service
 
                 if (result != null)
                 {
-                    result.Attachment = cn.QueryFirstOrDefault<Attachment>(@"
-                    SELECT * FROM Attachment WHERE FormID=@FormID",
-                        new { FormID = result.ID });
+                    result.Attachments = cn.Query<Attachment>(@"
+                        SELECT * FROM Attachment WHERE FormID=@FormID",
+                        new { FormID = result.ID }).ToList();
 
                     result.RefundBank = cn.QueryFirstOrDefault<RefundBank>(@"
                         SELECT * FROM RefundBank WHERE FormID=@FormID",
@@ -377,9 +377,9 @@ namespace NT_AirPollution.Service
 
                 foreach (var item in result)
                 {
-                    item.Attachment = cn.QueryFirstOrDefault<Attachment>(@"
+                    item.Attachments = cn.Query<Attachment>(@"
                         SELECT * FROM Attachment WHERE FormID=@FormID",
-                        new { FormID = item.ID });
+                        new { FormID = item.ID }).ToList();
 
                     item.RefundBank = cn.QueryFirstOrDefault<RefundBank>(@"
                         SELECT * FROM RefundBank WHERE FormID=@FormID",
@@ -436,8 +436,12 @@ namespace NT_AirPollution.Service
                         long id = cn.Insert(form, trans);
 
                         // 附件
-                        form.Attachment.FormID = id;
-                        cn.Insert(form.Attachment, trans);
+                        foreach (var item in form.Attachments)
+                        {
+                            item.FormID = id;
+                            item.CreateDate = DateTime.Now;
+                        }
+                        cn.Insert(form.Attachments, trans);
 
                         trans.Commit();
                         return id;
@@ -469,8 +473,10 @@ namespace NT_AirPollution.Service
                         cn.Update(form, trans);
 
                         // 附件
-                        form.Attachment.FormID = form.ID;
-                        cn.Update(form.Attachment, trans);
+                        foreach (var item in form.Attachments)
+                            item.FormID = form.ID;
+
+                        cn.Update(form.Attachments, trans);
 
                         trans.Commit();
                         return true;

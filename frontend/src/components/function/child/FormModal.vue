@@ -7,7 +7,7 @@
 						<el-form-item prop="C_NO" label="管制編號">{{form.C_NO}}</el-form-item>
 					</div>
 					<div class="form-item-col">
-						<el-form-item prop="TotalMoney" label="應繳總金額">{{form.TotalMoney | comma}}</el-form-item>
+						<el-form-item prop="TotalMoney" label="應繳總金額">{{form.TotalMoney1 | comma}}</el-form-item>
 					</div>
 					<div class="form-item-col">
 						<el-form-item prop="FormStatus" label="審核狀態">

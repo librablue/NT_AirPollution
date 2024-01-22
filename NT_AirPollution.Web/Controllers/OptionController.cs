@@ -26,6 +26,12 @@ namespace NT_AirPollution.Web.Controllers
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
+        public JsonResult GetAttachmentInfo()
+        {
+            var result = _optionService.GetAttachmentInfo();
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
         public FileResult Download(string f)
         {
             string fileName = $@"{_uploadPath}\{f}";

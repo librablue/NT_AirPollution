@@ -13,7 +13,7 @@ namespace NT_AirPollution.Model.View
     public class FormView : Form
     {
         [Computed]
-        public Attachment Attachment { get; set; } = new Attachment();
+        public List<Attachment> Attachments { get; set; } = new List<Attachment>();
         [Computed]
         public RefundBank RefundBank { get; set; } = new RefundBank();
         [Computed]
