@@ -20,6 +20,7 @@ namespace NT_AirPollution.Admin.Controllers
     {
         private readonly string _uploadPath = ConfigurationManager.AppSettings["UploadPath"].ToString();
         private readonly FormService _formService = new FormService();
+        private readonly AccessService _accessService = new AccessService();
 
         [HttpPost]
         public List<FormView> GetForms(FormFilter filter)
@@ -45,6 +46,11 @@ namespace NT_AirPollution.Admin.Controllers
         {
             try
             {
+                // 修改 access
+                bool isAccessOK = _accessService.UpdateABUDF(form);
+                if (!isAccessOK)
+                    throw new Exception("更新 Access 發生未預期錯誤");
+
                 _formService.UpdateForm(form);
                 _formService.UpdateStopWork(form);
                 _formService.UpdatePayment(form);
@@ -57,6 +63,11 @@ namespace NT_AirPollution.Admin.Controllers
             }
         }
 
+        /// <summary>
+        /// 更新申請進度
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
         public bool UpdateFormStatus(FormView form)
         {
             try
@@ -85,6 +96,11 @@ namespace NT_AirPollution.Admin.Controllers
             }
         }
 
+        /// <summary>
+        /// 更新結算進度
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
         public bool UpdateCalcStatus(FormView form)
         {
             try
