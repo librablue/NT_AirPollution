@@ -206,11 +206,15 @@ namespace NT_AirPollution.Web.Controllers
                 if (form.B_DATE2 > form.E_DATE2)
                     throw new Exception("施工期程起始日期不能大於結束日期");
 
+                var info = _optionService.GetAttachmentInfo().Where(o => o.PUB_COMP == form.PUB_COMP).ToList();
+                if (info.Count() != files.Count() || form.Attachments.Count() != info.Count())
+                    throw new Exception("檔案上傳數量異常");
+
 
                 List<string> allowExt = new List<string> { ".doc", ".docx", ".pdf", ".jpg", ".jpeg", ".png" };
                 foreach (var file in files)
                 {
-                    if (file == null)
+                    if (file == null || file.ContentLength == 0)
                         continue;
 
                     string ext = Path.GetExtension(file.FileName).ToLower();
@@ -227,8 +231,11 @@ namespace NT_AirPollution.Web.Controllers
                 int i = 0;
                 foreach (var file in files)
                 {
-                    if (file == null)
+                    if (file == null || file.ContentLength == 0)
+                    {
+                        i++;
                         continue;
+                    }
 
                     // 生成檔名
                     string fileName = $@"{Guid.NewGuid().ToString()}{Path.GetExtension(file.FileName)}";
@@ -243,6 +250,7 @@ namespace NT_AirPollution.Web.Controllers
 
                 var allDists = _optionService.GetDistrict();
                 var allProjectCode = _optionService.GetProjectCode();
+                form.SER_NO = 1;
                 form.TOWN_NA = allDists.First(o => o.Code == form.TOWN_NO).Name;
                 form.KIND = allProjectCode.First(o => o.ID == form.KIND_NO).Name;
                 form.AP_DATE = DateTime.Now.AddYears(-1911).ToString("yyyMMdd");
@@ -306,11 +314,15 @@ namespace NT_AirPollution.Web.Controllers
                 if (form.B_DATE2 > form.E_DATE2)
                     throw new Exception("施工期程起始日期不能大於結束日期");
 
+                var info = _optionService.GetAttachmentInfo().Where(o => o.PUB_COMP == form.PUB_COMP).ToList();
+                if(info.Count() != files.Count() || form.Attachments.Count() != info.Count())
+                    throw new Exception("檔案上傳數量異常");
+
 
                 List<string> allowExt = new List<string> { ".doc", ".docx", ".pdf", ".jpg", ".jpeg", ".png" };
                 foreach (var file in files)
                 {
-                    if (file == null)
+                    if (file == null || file.ContentLength == 0)
                         continue;
 
                     string ext = Path.GetExtension(file.FileName).ToLower();
@@ -327,8 +339,11 @@ namespace NT_AirPollution.Web.Controllers
                 int i = 0;
                 foreach (var file in files)
                 {
-                    if (file == null)
+                    if (file == null || file.ContentLength == 0)
+                    {
+                        i++;
                         continue;
+                    }
 
                     // 生成檔名
                     string fileName = $@"{Guid.NewGuid().ToString()}{Path.GetExtension(file.FileName)}";

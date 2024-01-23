@@ -30,7 +30,7 @@ namespace NT_AirPollution.Web.Controllers
         }
 
         [HttpPost]
-        public JsonResult Create(FormView form, HttpPostedFileBase file1, HttpPostedFileBase file2, HttpPostedFileBase file3, HttpPostedFileBase file4, HttpPostedFileBase file5, HttpPostedFileBase file6, HttpPostedFileBase file7, HttpPostedFileBase file8)
+        public JsonResult Create(FormView form, List<HttpPostedFileBase> files)
         {
             try
             {
@@ -43,22 +43,15 @@ namespace NT_AirPollution.Web.Controllers
                 if (form.B_DATE2 > form.E_DATE2)
                     throw new Exception("施工期程起始日期不能大於結束日期");
 
+                var info = _optionService.GetAttachmentInfo().Where(o => o.PUB_COMP == form.PUB_COMP).ToList();
+                if (info.Count() != files.Count() || form.Attachments.Count() != info.Count())
+                    throw new Exception("檔案上傳數量異常");
 
-                var attachFile = new AttachmentFile();
-                attachFile.File1 = file1;
-                attachFile.File2 = file2;
-                attachFile.File3 = file3;
-                attachFile.File4 = file4;
-                attachFile.File5 = file5;
-                attachFile.File6 = file6;
-                attachFile.File7 = file7;
-                attachFile.File8 = file8;
 
                 List<string> allowExt = new List<string> { ".doc", ".docx", ".pdf", ".jpg", ".jpeg", ".png" };
-                for (int i = 1; i <= 8; i++)
+                foreach (var file in files)
                 {
-                    var file = (HttpPostedFileBase)attachFile[$"File{i}"];
-                    if (file == null)
+                    if (file == null || file.ContentLength == 0)
                         continue;
 
                     string ext = Path.GetExtension(file.FileName).ToLower();
@@ -72,11 +65,14 @@ namespace NT_AirPollution.Web.Controllers
                     Directory.CreateDirectory(absoluteDirPath);
 
                 string absoluteFilePath = "";
-                for (int i = 1; i <= 8; i++)
+                int i = 0;
+                foreach (var file in files)
                 {
-                    var file = (HttpPostedFileBase)attachFile[$"File{i}"];
-                    if (file == null)
+                    if (file == null || file.ContentLength == 0)
+                    {
+                        i++;
                         continue;
+                    }
 
                     // 生成檔名
                     string fileName = $@"{Guid.NewGuid().ToString()}{Path.GetExtension(file.FileName)}";
@@ -84,12 +80,13 @@ namespace NT_AirPollution.Web.Controllers
                     absoluteFilePath = absoluteDirPath + $@"\{fileName}";
                     // 儲存檔案
                     file.SaveAs(absoluteFilePath);
-                    form.Attachment[$"File{i}"] = fileName;
+                    form.Attachments[i].InfoID = i + 1;
+                    form.Attachments[i].FileName = fileName;
+                    i++;
                 }
 
                 var allDists = _optionService.GetDistrict();
                 var allProjectCode = _optionService.GetProjectCode();
-                //var sn = _formService.GetSerialNumber();
                 form.SER_NO = 1;
                 form.TOWN_NA = allDists.First(o => o.Code == form.TOWN_NO).Name;
                 form.KIND = allProjectCode.First(o => o.ID == form.KIND_NO).Name;

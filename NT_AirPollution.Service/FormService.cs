@@ -473,10 +473,13 @@ namespace NT_AirPollution.Service
                         cn.Update(form, trans);
 
                         // 附件
-                        foreach (var item in form.Attachments)
+                        var updateItem = form.Attachments.Where(o => !string.IsNullOrEmpty(o.FileName));
+                        foreach (var item in updateItem)
+                        {
                             item.FormID = form.ID;
-
-                        cn.Update(form.Attachments, trans);
+                            item.CreateDate = DateTime.Now;
+                        }
+                        cn.Update(updateItem, trans);
 
                         trans.Commit();
                         return true;

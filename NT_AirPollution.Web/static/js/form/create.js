@@ -32,11 +32,12 @@
 			return {
 				district: Object.freeze([]),
 				projectCode: Object.freeze([]),
+				attachmentInfo: Object.freeze([]),
 				form: {
 					SER_NO: 1,
 					P_KIND: '一次全繳',
 					BUD_DOC2: '無',
-					Attachment: {}
+					Attachments: []
 				},
 				activeTab: 'first',
 				rules: Object.freeze({
@@ -93,6 +94,7 @@
 		mounted() {
 			this.getDistrict();
 			this.getProjectCode();
+			this.getAttachmentInfo();
 			this.form = {
 				SER_NO: 1,
 				P_KIND: '一次全繳',
@@ -145,8 +147,7 @@
 				VOLUMEL: null,
 				B_DATE2: '2024-01-01',
 				E_DATE2: '2024-01-31',
-				Attachment: {},
-				StopWorks: []
+				Attachments: []
 			};
 		},
 		computed: {
@@ -161,6 +162,9 @@
 				var dayDiff = Math.ceil(diff / (1000 * 60 * 60 * 24));
 
 				return dayDiff;
+			},
+			filterAttachmentInfo() {
+				return this.attachmentInfo.filter(item => item.PUB_COMP === this.form.PUB_COMP);
 			}
 		},
 		methods: {
@@ -174,9 +178,14 @@
 					this.projectCode = Object.freeze(res.data);
 				});
 			},
+			getAttachmentInfo() {
+				axios.get('/Option/GetAttachmentInfo').then(res => {
+					this.attachmentInfo = Object.freeze(res.data);
+				});
+			},
 			deleteFile(idx) {
 				if (!confirm('是否確認刪除?')) return;
-				this.form.Attachment[`File${idx}`] = null;
+				this.form.Attachments[idx].FileName = null;
 			},
 			sendForm() {
 				this.form.Captcha = grecaptcha.getResponse();
@@ -191,10 +200,23 @@
 					for (const key in this.form) {
 						if (typeof this.form[key] !== 'object') formData.append(key, this.form[key]);
 					}
+
 					// 附件
-					for (let i = 1; i <= 8; i++) {
+					this.form.Attachments = this.filterAttachmentInfo.map((item, idx) => ({
+						ID: this.form.Attachments[idx] ? this.form.Attachments[idx].ID : 0,
+						InfoID: item.ID
+					}));
+					for (let i = 0; i < this.form.Attachments.length; i++) {
+						formData.append(`Attachments[${i}].ID`, this.form.Attachments[i].ID);
+						formData.append(`Attachments[${i}].InfoID`, this.form.Attachments[i].InfoID);
+					}
+					for (let i = 0; i < this.filterAttachmentInfo.length; i++) {
 						const file = document.querySelector(`#file${i}`);
-						if (file.files.length > 0) formData.append(`file${i}`, file.files[0]);
+						if (file && file.files.length > 0) {
+							formData.append('files', file.files[0]);
+						} else {
+							formData.append('files', new Blob([], { type: 'application/octet-stream' }));
+						}
 					}
 
 					axios
@@ -206,7 +228,7 @@
 								return;
 							}
 
-							alert('申請資料已送出。\n系統將於5分鐘內傳送認證信給您，請點選郵件中的連結進行驗證。\n完成驗證之案件才會進入審核程序。');
+							alert('申請資料已送出。\n系統將於3分鐘內傳送認證信給您，請點選郵件中的連結進行驗證。\n完成驗證之案件才會進入審核程序。');
 							alert('繳款金額請依人工審核後之繳費單內容為主。');
 							location.href = `${document.baseURI}Home/Index`;
 						})
@@ -216,18 +238,6 @@
 							console.log(err);
 						});
 				});
-			},
-			getStopDays(row) {
-				if (!row.DOWN_DATE2 || !row.UP_DATE2) return '';
-				var date1 = new Date(row.DOWN_DATE2);
-				var date2 = new Date(row.UP_DATE2);
-
-				// 計算毫秒差異
-				var diff = Math.abs(date2 - date1 + 1000 * 60 * 60 * 24);
-				// 轉換為天數
-				var dayDiff = Math.ceil(diff / (1000 * 60 * 60 * 24));
-
-				return dayDiff;
 			}
 		}
 	});

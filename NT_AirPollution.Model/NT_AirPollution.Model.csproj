@@ -78,7 +78,6 @@
     <Compile Include="Enum\UserType.cs" />
     <Compile Include="Enum\FormStatus.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="View\AttachmentInfoView.cs" />
     <Compile Include="View\RoadFilter.cs" />
     <Compile Include="View\AirReport.cs" />
     <Compile Include="View\AirFilter.cs" />
@@ -87,7 +86,6 @@
     <Compile Include="View\RoadPromiseView.cs" />
     <Compile Include="View\AirView.cs" />
     <Compile Include="View\AjaxResult.cs" />
-    <Compile Include="View\AttachmentFile.cs" />
     <Compile Include="View\FormFIlter.cs" />
     <Compile Include="View\FormView.cs" />
     <Compile Include="View\UserData.cs" />

@@ -43,14 +43,11 @@ namespace NT_AirPollution.Service
         /// 取得附件說明清單
         /// </summary>
         /// <returns></returns>
-        public List<AttachmentInfoView> GetAttachmentInfo()
+        public List<AttachmentInfo> GetAttachmentInfo()
         {
             using (var cn = new SqlConnection(connStr))
             {
-                var result = cn.Query<AttachmentInfoView>(@"
-                    SELECT a1.*,a2.FileName
-                    FROM AttachmentInfo AS a1
-                    LEFT JOIN Attachment AS a2 ON a1.ID=a2.InfoID").ToList();
+                var result = cn.GetAll<AttachmentInfo>().ToList();
                 return result;
             }
         }
