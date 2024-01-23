@@ -29,8 +29,37 @@
 					<el-button type="primary" size="mini" icon="el-icon-search" circle @click="showDetail(row)"></el-button>
 				</template>
 			</vxe-table-column>
-			<vxe-table-column field="FormStatus" title="審核狀態" width="100" align="center" sortable fixed="left">
-				<template #default="{ row }">{{ row.FormStatus | formStatus }}</template>
+			<vxe-table-column field="FormStatus" title="審核進度" width="120" align="center" sortable fixed="left">
+				<template #default="{ row }">
+					<el-dropdown trigger="click" @command="handleCommand1">
+						<a href="javascript:;" class="el-dropdown-link">
+							{{ row.FormStatus | formStatus }}
+							<i class="el-icon-arrow-down el-icon--right"></i>
+						</a>
+						<el-dropdown-menu slot="dropdown">
+							<el-dropdown-item :command="beforeCommand1(row, 2)">需補件</el-dropdown-item>
+							<el-dropdown-item :command="beforeCommand1(row, 3)">通過待繳費</el-dropdown-item>
+							<el-dropdown-item :command="beforeCommand1(row, 4)">已繳費完成</el-dropdown-item>
+						</el-dropdown-menu>
+					</el-dropdown>
+				</template>
+			</vxe-table-column>
+			<vxe-table-column field="FormStatus" title="結算進度" width="120" align="center" sortable fixed="left">
+				<template #default="{ row }">
+					<el-dropdown trigger="click" @command="handleCommand2">
+						<a href="javascript:;" class="el-dropdown-link">
+							{{ row.CalcStatus | calcStatus }}
+							<i class="el-icon-arrow-down el-icon--right"></i>
+						</a>
+						<el-dropdown-menu slot="dropdown">
+							<el-dropdown-item :command="beforeCommand2(row, 2)">需補件</el-dropdown-item>
+							<el-dropdown-item :command="beforeCommand2(row, 3)">通過待繳費</el-dropdown-item>
+							<el-dropdown-item :command="beforeCommand2(row, 4)">通過待退費(小於4000)</el-dropdown-item>
+							<el-dropdown-item :command="beforeCommand2(row, 5)">通過待繳費(大於4000)</el-dropdown-item>
+							<el-dropdown-item :command="beforeCommand2(row, 6)">繳退費完成</el-dropdown-item>
+						</el-dropdown-menu>
+					</el-dropdown>
+				</template>
 			</vxe-table-column>
 			<vxe-table-column field="C_NO" title="管制編號" width="140" align="center" sortable fixed="left">
 				<template #default="{ row }">{{ row.C_NO || '(取號中)' }}</template>
@@ -53,16 +82,19 @@
 				<template #default="{ row }">{{ row.VerifyDate | date }}</template>
 			</vxe-table-column>
 		</vxe-table>
-		<FormModal :show.sync="modalVisible" :data="selectForm" @on-updated="onUpdated" />
+		<FormModal :show.sync="formModalVisible" :data="selectRow" @on-updated="onUpdated" />
+		<FailReasonModal :show.sync="failReasonModalVisible" :data="selectRow" :callback="selectCallBack" @on-confirm="onFailReasonConfirm" />>
 	</div>
 </template>
 <script>
 import { dateTime, form } from '@/mixins/filter';
 import FormModal from '@/components/function/child/FormModal';
+import FailReasonModal from '@/components/function/child/FailReasonModal';
+
 export default {
 	name: 'forms',
 	mixins: [dateTime, form],
-	components: { FormModal },
+	components: { FormModal, FailReasonModal },
 	data() {
 		return {
 			loading: false,
@@ -72,8 +104,10 @@ export default {
 				Status: 1
 			},
 			forms: [],
-			selectForm: {},
-			modalVisible: false
+			selectRow: {},
+			selectCallBack: null,
+			formModalVisible: false,
+			failReasonModalVisible: false
 		};
 	},
 	mounted() {
@@ -89,11 +123,105 @@ export default {
 			});
 		},
 		showDetail(row) {
-			this.selectForm = row;
-			this.modalVisible = true;
+			this.selectRow = row;
+			this.formModalVisible = true;
 		},
 		onUpdated() {
 			this.getForms();
+		},
+		onFailReasonConfirm(val, callback) {
+			this.selectRow.FailReason = val.FailReason;
+			if(callback.name === 'bound updateFormStatus') {
+				this.selectRow.FormStatus = 2;
+			}
+			if(callback.name === 'bound updateCalcStatus') {
+				this.selectRow.CalcStatus = 2;
+			}
+			callback(this.selectRow);
+		},
+		beforeCommand1(row, cmd) {
+			return {
+				row,
+				cmd
+			};
+		},
+		handleCommand1(arg) {
+			const { row, cmd } = arg;
+			this.selectRow = row;
+			switch (cmd) {
+				case 2:
+					if (!confirm(`管制編號 ${row.C_NO} 進度改成需補件，是否確認繼續?`)) return false;
+					this.selectCallBack = this.updateFormStatus;
+					this.failReasonModalVisible = true;
+					return;
+				case 3:
+					if (!confirm(`管制編號 ${row.C_NO} 進度改成通過待繳費，是否確認繼續?`)) return false;
+					break;
+				case 4:
+					if (!confirm(`管制編號 ${row.C_NO} 進度改成已繳費完成，是否確認繼續?`)) return false;
+					break;
+			}
+
+			row.FormStatus = cmd;
+			this.updateFormStatus(row);
+		},
+		beforeCommand2(row, cmd) {
+			return {
+				row,
+				cmd
+			};
+		},
+		handleCommand2(arg) {
+			const { row, cmd } = arg;
+			this.selectRow = row;
+			switch (cmd) {
+				case 2:
+					if (!confirm(`管制編號 ${row.C_NO} 進度改成需補件，是否確認繼續?`)) return false;
+					this.selectCallBack = this.updateCalcStatus;
+					this.failReasonModalVisible = true;
+					return;
+				case 3:
+					if (!confirm(`管制編號 ${row.C_NO} 進度改成通過待繳費，是否確認繼續?`)) return false;
+					break;
+				case 4:
+				case 5:
+					if (!confirm(`管制編號 ${row.C_NO} 進度改成通過待退費，是否確認繼續?`)) return false;
+					break;
+				case 6:
+					if (!confirm(`管制編號 ${row.C_NO} 進度改成繳退費完成，是否確認繼續?`)) return false;
+					break;
+			}
+
+			row.CalcStatus = cmd;
+			this.updateCalcStatus(row);
+		},
+		updateFormStatus(row) {
+			const loading = this.$loading();
+			this.axios
+				.post('api/Form/UpdateFormStatus', row)
+				.then(res => {
+					this.getForms();
+					this.$message.success('畫面資料已儲存');
+					loading.close();
+				})
+				.catch(err => {
+					this.$message.error(err.response.data.ExceptionMessage);
+					loading.close();
+				});
+		},
+		updateCalcStatus(row) {
+			const loading = this.$loading();
+			this.axios
+				.post('api/Form/UpdateCalcStatus', row)
+				.then(res => {
+					this.getForms();
+					this.$message.success('畫面資料已儲存');
+					loading.close();
+				})
+				.catch(err => {
+					this.$message.error(err.response.data.ExceptionMessage);
+					loading.close();
+				});
 		}
 	}
 };

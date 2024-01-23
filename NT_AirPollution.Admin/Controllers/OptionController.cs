@@ -4,6 +4,7 @@ using NT_AirPollution.Model.View;
 using NT_AirPollution.Service;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -16,6 +17,7 @@ namespace NT_AirPollution.Admin.Controllers
 {
     public class OptionController : ApiController
     {
+        private readonly string _uploadPath = ConfigurationManager.AppSettings["UploadPath"].ToString();
         private readonly OptionService _optionService = new OptionService();
 
         public List<District> GetDistrict()
@@ -28,12 +30,20 @@ namespace NT_AirPollution.Admin.Controllers
             return _optionService.GetProjectCode();
         }
 
+        public List<AttachmentInfo> GetAttachmentInfo()
+        {
+            return _optionService.GetAttachmentInfo();
+        }
+
         [HttpGet]
         public HttpResponseMessage Download(string f)
         {
             try
             {
-                string filePath = HostingEnvironment.MapPath($@"~/App_Data/Download/{f}");
+                string filePath = $@"{_uploadPath}\{f}";
+                if (!System.IO.File.Exists(filePath))
+                    return null;
+
                 var stream = new FileStream(filePath, FileMode.Open);
                 HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
                 response.Content = new StreamContent(stream);

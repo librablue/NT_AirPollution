@@ -44,51 +44,71 @@ namespace NT_AirPollution.Admin.Controllers
         {
             try
             {
-                var formInDB = _formService.GetFormByID(form.ID);
-                if (form.FormStatus != formInDB.FormStatus)
-                {
-                    switch (form.FormStatus)
-                    {
-                        case FormStatus.需補件:
-                            _formService.SendStatus2(form);
-                            break;
-                        case FormStatus.通過待繳費:
-                            form.TotalMoney1 = _formService.CalcTotalMoney(form);
-                            form.VerifyDate = DateTime.Now;
-                            _formService.SendFormStatus3(form);
-                            break;
-                        case FormStatus.已繳費完成:
-                            _formService.SendFormStatus4(form);
-                            break;
-                    }
-                }
-
-                if (form.CalcStatus != formInDB.CalcStatus)
-                {
-                    switch (form.CalcStatus)
-                    {
-                        case CalcStatus.需補件:
-                            _formService.SendStatus2(form);
-                            break;
-                        case CalcStatus.通過待繳費:
-                            _formService.SendCalcStatus3(form);
-                            break;
-                        case CalcStatus.通過待退費小於4000:
-                        case CalcStatus.通過待退費大於4000:
-                            _formService.SendCalcStatus45(form);
-                            break;
-                        case CalcStatus.繳退費完成:
-                            _formService.SendCalcStatus6(form);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-
                 _formService.UpdateForm(form);
                 _formService.UpdateStopWork(form);
                 _formService.UpdatePayment(form);
 
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public bool UpdateFormStatus(FormView form)
+        {
+            try
+            {
+                switch (form.FormStatus)
+                {
+                    case FormStatus.需補件:
+                        _formService.SendStatus2(form);
+                        break;
+                    case FormStatus.通過待繳費:
+                        form.TotalMoney1 = _formService.CalcTotalMoney(form);
+                        _formService.SendFormStatus3(form);
+                        break;
+                    case FormStatus.已繳費完成:
+                        _formService.SendFormStatus4(form);
+                        break;
+                }
+
+                form.VerifyDate = DateTime.Now;
+                _formService.UpdateForm(form);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public bool UpdateCalcStatus(FormView form)
+        {
+            try
+            {
+                switch (form.CalcStatus)
+                {
+                    case CalcStatus.需補件:
+                        _formService.SendStatus2(form);
+                        break;
+                    case CalcStatus.通過待繳費:
+                        _formService.SendCalcStatus3(form);
+                        break;
+                    case CalcStatus.通過待退費小於4000:
+                    case CalcStatus.通過待退費大於4000:
+                        _formService.SendCalcStatus45(form);
+                        break;
+                    case CalcStatus.繳退費完成:
+                        _formService.SendCalcStatus6(form);
+                        break;
+                    default:
+                        break;
+                }
+
+                form.VerifyDate = DateTime.Now;
+                _formService.UpdateForm(form);
                 return true;
             }
             catch (Exception ex)

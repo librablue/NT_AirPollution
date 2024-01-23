@@ -7,7 +7,7 @@
 						<el-form-item prop="C_NO" label="管制編號">{{form.C_NO}}</el-form-item>
 					</div>
 					<div class="form-item-col">
-						<el-form-item prop="TotalMoney" label="應繳總金額">{{form.TotalMoney1 | comma}}</el-form-item>
+						<el-form-item prop="TotalMoney1" label="應繳總金額">{{form.TotalMoney1 | comma}}</el-form-item>
 					</div>
 					<div class="form-item-col">
 						<el-form-item prop="FormStatus" label="審核狀態">
@@ -25,7 +25,7 @@
 						</el-form-item>
 					</div>
 					<div class="form-item-col">
-						<el-form-item prop="TotalMoney" label="應繳金額" v-if="form.FormStatus === 2">{{form.TotalMoney}}</el-form-item>
+						<el-form-item prop="TotalMoney1" label="應繳金額" v-if="form.FormStatus === 2">{{form.TotalMoney1 | comma}}</el-form-item>
 					</div>
 				</div>
 
@@ -428,60 +428,13 @@
 									</tr>
 								</thead>
 								<tbody>
-									<tr>
-										<th>空氣污染防制費申報表</th>
-										<td>建照起造人為公司行號請加蓋公司大小章，建照起造人為私人請加蓋個人私章</td>
+									<tr v-for="(item, idx) in filterAttachmentInfo" :key="idx">
+										<th>{{item.FileTitle}}</th>
+										<td>{{item.Description}}</td>
 										<td>
-											<a :href="`/api/Form/Download?f=${form.Attachment.File1}`" v-if="form.Attachment.File1">{{form.Attachment.File1}}</a>
-										</td>
-									</tr>
-									<tr>
-										<th>建築執照影印本</th>
-										<td></td>
-										<td>
-											<a :href="`/api/Form/Download?f=${form.Attachment.File2}`" v-if="form.Attachment.File2">{{form.Attachment.File2}}</a>
-										</td>
-									</tr>
-									<tr>
-										<th>營建業主身分證影本</th>
-										<td>業主為建設公司檢附建設公司執照或營業事業登記證，若無營利事業登記證可用公司登記函取代</td>
-										<td>
-											<a :href="`/api/Form/Download?f=${form.Attachment.File3}`" v-if="form.Attachment.File3">{{form.Attachment.File3}}</a>
-										</td>
-									</tr>
-									<tr>
-										<th>簡易位置圖</th>
-										<td>附註路名或大地標</td>
-										<td>
-											<a :href="`/api/Form/Download?f=${form.Attachment.File4}`" v-if="form.Attachment.File4">{{form.Attachment.File4}}</a>
-										</td>
-									</tr>
-									<tr>
-										<th>承包商營利事業登記證</th>
-										<td>承包商第一次申報需檢附。若無營利事業登記證可用公司登記函取代</td>
-										<td>
-											<a :href="`/api/Form/Download?f=${form.Attachment.File5}`" v-if="form.Attachment.File5">{{form.Attachment.File5}}</a>
-										</td>
-									</tr>
-									<tr>
-										<th>承包商負責人身分證影本</th>
-										<td>承包商第一次申報需檢附。空污費二萬元以上，請配合本局辦理道路認養。</td>
-										<td>
-											<a :href="`/api/Form/Download?f=${form.Attachment.File6}`" v-if="form.Attachment.File6">{{form.Attachment.File6}}</a>
-										</td>
-									</tr>
-									<tr>
-										<th>其它文件</th>
-										<td></td>
-										<td>
-											<a :href="`/api/Form/Download?f=${form.Attachment.File7}`" v-if="form.Attachment.File7">{{form.Attachment.File7}}</a>
-										</td>
-									</tr>
-									<tr>
-										<th>免徵案件證明</th>
-										<td>免徵案件需上傳免徵證明</td>
-										<td>
-											<a :href="`/api/Form/Download?f=${form.Attachment.File8}`" v-if="form.Attachment.File8">{{form.Attachment.File8}}</a>
+											<div v-if="form.Attachments[idx] && form.Attachments[idx].FileName">
+												<a :href="`api/Option/Download?f=${form.Attachments[idx].FileName}`" class="link-download">{{form.Attachments[idx].FileName}}</a>
+											</div>
 										</td>
 									</tr>
 								</tbody>
@@ -591,7 +544,7 @@ export default {
 			callback();
 		};
 		const checkVolumel = (rule, value, callback) => {
-			if (this.form.AREA && !value) {
+			if (!this.form.AREA && !value) {
 				callback(new Error('如果為疏濬工程，請輸入清運土石體積'));
 			}
 			callback();
@@ -608,6 +561,7 @@ export default {
 			form: {},
 			district: Object.freeze([]),
 			projectCode: Object.freeze([]),
+			attachmentInfo: Object.freeze([]),
 			activeTab: 'first',
 			newPayment: null,
 			rules: Object.freeze({
@@ -665,6 +619,7 @@ export default {
 	mounted() {
 		this.getDistrict();
 		this.getProjectCode();
+		this.getAttachmentInfo();
 	},
 	computed: {
 		...mapGetters(['currentUser']),
@@ -684,6 +639,9 @@ export default {
 			return this.form.Payments.reduce((prev, current) => {
 				return prev + current.Amount;
 			}, 0);
+		},
+		filterAttachmentInfo() {
+			return this.attachmentInfo.filter(item => item.PUB_COMP === this.form.PUB_COMP);
 		}
 	},
 	methods: {
@@ -695,6 +653,11 @@ export default {
 		getProjectCode() {
 			this.axios.get('api/Option/GetProjectCode').then(res => {
 				this.projectCode = Object.freeze(res.data);
+			});
+		},
+		getAttachmentInfo() {
+			this.axios.get('api/Option/GetAttachmentInfo').then(res => {
+				this.attachmentInfo = Object.freeze(res.data);
 			});
 		},
 		getStopDays(row) {
@@ -743,6 +706,9 @@ export default {
 					alert('欄位驗證錯誤，請檢查修正後重新送出');
 					return false;
 				}
+
+				if(!confirm('是否確認繼續?')) return false;
+
 				if (this.data.FormStatus !== 3 && this.form.FormStatus === 3) {
 					if (!confirm(`你確定要將管制編號 ${this.form.C_NO} 通過審查產生繳費單?`)) return false;
 				}

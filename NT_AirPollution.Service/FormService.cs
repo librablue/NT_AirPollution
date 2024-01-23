@@ -477,7 +477,7 @@ namespace NT_AirPollution.Service
                         foreach (var item in updateItem)
                         {
                             item.FormID = form.ID;
-                            item.CreateDate = DateTime.Now;
+                            item.CreateDate = item.CreateDate ?? DateTime.Now;
                         }
                         cn.Update(updateItem, trans);
 
@@ -823,12 +823,6 @@ namespace NT_AirPollution.Service
                 string content = sr.ReadToEnd();
                 string body = string.Format(content, form.C_NO);
 
-                // 產生收據
-                string pdfTemplateFile = $@"{HostingEnvironment.ApplicationPhysicalPath}\App_Data\Template\Receipt.html";
-                //var fileBytes = this.GeneratePDF(pdfTemplateFile, form);
-                // 儲存實體檔案
-                string receiptFile = $@"{_paymentPath}\收據{form.C_NO}.pdf";
-
                 try
                 {
                     using (var cn = new SqlConnection(connStr))
@@ -839,7 +833,6 @@ namespace NT_AirPollution.Service
                             Address = form.CreateUserEmail,
                             Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件繳費完成(管制編號 {form.C_NO})",
                             Body = body,
-                            Attachment = receiptFile,
                             FailTimes = 0,
                             CreateDate = DateTime.Now
                         });
@@ -957,6 +950,10 @@ namespace NT_AirPollution.Service
                 {
                     string content = sr.ReadToEnd();
                     string body = string.Format(content, form.C_NO);
+                    string fileName = $"結清證明{form.C_NO}-{form.SER_NO}.pdf";
+                    // 產生結清證明
+                    string docPath = this.CreateProofPDF(fileName, form);
+
                     using (var cn = new SqlConnection(connStr))
                     {
                         // 寄件夾
@@ -965,6 +962,7 @@ namespace NT_AirPollution.Service
                             Address = form.CreateUserEmail,
                             Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件結算通知(已結清)(管制編號 {form.C_NO})",
                             Body = body,
+                            Attachment = docPath,
                             FailTimes = 0,
                             CreateDate = DateTime.Now
                         });
