@@ -38,12 +38,14 @@ namespace NT_AirPollution.Service
                     SELECT * FROM Form
                     WHERE (@C_NO='' OR C_NO=@C_NO)
                         AND (@CreateUserEmail='' OR CreateUserEmail=@CreateUserEmail)
-                        AND (@FormStatus=0 OR FormStatus=@FormStatus)",
+                        AND (@FormStatus=-1 OR FormStatus=@FormStatus)
+                        AND (@CalcStatus=-1 OR CalcStatus=@CalcStatus)",
                     new
                     {
                         C_NO = filter.C_NO ?? "",
                         CreateUserEmail = filter.CreateUserEmail ?? "",
-                        FormStatus = filter.FormStatus
+                        FormStatus = filter.FormStatus,
+                        CalcStatus = filter.CalcStatus
                     }).ToList();
 
                 foreach (var item in forms)
@@ -55,6 +57,12 @@ namespace NT_AirPollution.Service
                     item.RefundBank = cn.QueryFirstOrDefault<RefundBank>(@"
                         SELECT * FROM RefundBank WHERE FormID=@FormID",
                         new { FormID = item.ID });
+                    if (item.RefundBank == null) item.RefundBank = new RefundBank();
+
+                    item.PaymentProof = cn.QueryFirstOrDefault<PaymentProof>(@"
+                        SELECT * FROM PaymentProof WHERE FormID=@FormID",
+                        new { FormID = item.ID });
+                    if (item.PaymentProof == null) item.PaymentProof = new PaymentProof();
 
                     if (!string.IsNullOrEmpty(item.B_DATE))
                         item.B_DATE2 = base.ChineseDateToWestDate(item.B_DATE);
@@ -106,6 +114,12 @@ namespace NT_AirPollution.Service
                     result.RefundBank = cn.QueryFirstOrDefault<RefundBank>(@"
                         SELECT * FROM RefundBank WHERE FormID=@FormID",
                         new { FormID = result.ID });
+                    if (result.RefundBank == null) result.RefundBank = new RefundBank();
+
+                    result.PaymentProof = cn.QueryFirstOrDefault<PaymentProof>(@"
+                        SELECT * FROM PaymentProof WHERE FormID=@FormID",
+                        new { FormID = result.ID });
+                    if (result.PaymentProof == null) result.PaymentProof = new PaymentProof();
 
                     if (!string.IsNullOrEmpty(result.B_DATE))
                         result.B_DATE2 = base.ChineseDateToWestDate(result.B_DATE);
@@ -860,7 +874,8 @@ namespace NT_AirPollution.Service
             {
                 try
                 {
-                    int diffMoney = form.TotalMoney2 - form.TotalMoney1;
+                    int paidAmount = form.Payments.Sum(o => o.Amount);
+                    int diffMoney = form.TotalMoney2 - paidAmount;
                     string content = sr.ReadToEnd();
                     string body = string.Format(content, form.C_NO, diffMoney.ToString("N0"));
                     string bankAccount = this.GetBankAccount(form.ID.ToString(), diffMoney);
@@ -900,12 +915,13 @@ namespace NT_AirPollution.Service
         /// <returns></returns>
         public bool SendCalcStatus45(FormView form)
         {
-            string template = ($@"{HostingEnvironment.ApplicationPhysicalPath}\App_Data\Template\CalcStatus{form.CalcStatus}.txt");
+            string template = ($@"{HostingEnvironment.ApplicationPhysicalPath}\App_Data\Template\CalcStatus{(int)form.CalcStatus}.txt");
             using (StreamReader sr = new StreamReader(template))
             {
                 try
                 {
-                    int diffMoney = form.TotalMoney1 - form.TotalMoney2;
+                    int paidAmount = form.Payments.Sum(o => o.Amount);
+                    int diffMoney = paidAmount - form.TotalMoney2;
                     string content = sr.ReadToEnd();
                     string body = string.Format(content, form.C_NO, diffMoney.ToString("N0"));
                     string fileName = $"結清證明{form.C_NO}-{form.SER_NO}.pdf";
@@ -1168,8 +1184,8 @@ namespace NT_AirPollution.Service
             {
                 // 如果已經產生過檔案，直接下載
                 string existFile = $@"{_paymentPath}\Download\{fileName}";
-                if (File.Exists(existFile))
-                    return existFile;
+                //if (File.Exists(existFile))
+                //    return existFile;
 
 
                 string templatePath = $@"{_paymentPath}\Template\Payment.html";
@@ -1226,8 +1242,8 @@ namespace NT_AirPollution.Service
             {
                 // 如果已經產生過檔案，直接下載
                 string existFile = $@"{_paymentPath}\Download\{fileName}";
-                if (File.Exists(existFile))
-                    return existFile;
+                //if (File.Exists(existFile))
+                //    return existFile;
 
                 string templatePath = $@"{_paymentPath}\Template\結清證明.xlsx";
                 var wb = new XLWorkbook(templatePath);
@@ -1260,7 +1276,7 @@ namespace NT_AirPollution.Service
                 // 應退金額
                 if (form.CalcStatus == CalcStatus.通過待退費小於4000 || form.CalcStatus == CalcStatus.通過待退費大於4000)
                 {
-                    int diffMoney = form.TotalMoney1 - form.TotalMoney2;
+                    int diffMoney = paidAmount - form.TotalMoney2;
                     foreach (char item in diffMoney.ToString().Reverse())
                     {
                         ws.Row(11).Cell(16 - idx).SetValue(item.ToString());
@@ -1272,7 +1288,7 @@ namespace NT_AirPollution.Service
                 // 補繳金額
                 if (form.CalcStatus == CalcStatus.通過待繳費)
                 {
-                    int diffMoney = form.TotalMoney2 - form.TotalMoney1;
+                    int diffMoney = form.TotalMoney2 - paidAmount;
                     foreach (char item in diffMoney.ToString().Reverse())
                     {
                         ws.Row(12).Cell(16 - idx).SetValue(item.ToString());

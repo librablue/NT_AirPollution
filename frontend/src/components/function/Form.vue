@@ -8,13 +8,25 @@
 			<el-form-item label="Email">
 				<el-input v-model="filter.ClientUserEmail"></el-input>
 			</el-form-item>
-			<el-form-item label="審核狀態">
-				<el-select style="width: 140px" v-model="filter.Status">
-					<el-option label="全部" :value="0"></el-option>
+			<el-form-item label="申請進度">
+				<el-select style="width: 140px" v-model="filter.FormStatus">
+					<el-option label="全部" :value="-1"></el-option>
 					<el-option label="審理中" :value="1"></el-option>
 					<el-option label="需補件" :value="2"></el-option>
 					<el-option label="通過待繳費" :value="3"></el-option>
 					<el-option label="已繳費完成" :value="4"></el-option>
+				</el-select>
+			</el-form-item>
+			<el-form-item label="結算進度">
+				<el-select style="width: 180px" v-model="filter.CalcStatus">
+					<el-option label="全部" :value="-1"></el-option>
+					<el-option label="未申請" :value="0"></el-option>
+					<el-option label="審理中" :value="1"></el-option>
+					<el-option label="需補件" :value="2"></el-option>
+					<el-option label="通過待繳費" :value="3"></el-option>
+					<el-option label="通過待退費(<4000)" :value="4"></el-option>
+					<el-option label="通過待退費(>=4000)" :value="5"></el-option>
+					<el-option label="繳退費完成" :value="6"></el-option>
 				</el-select>
 			</el-form-item>
 			<el-form-item>
@@ -44,7 +56,7 @@
 					</el-dropdown>
 				</template>
 			</vxe-table-column>
-			<vxe-table-column field="FormStatus" title="結算進度" width="120" align="center" sortable fixed="left">
+			<vxe-table-column field="CalcStatus" title="結算進度" width="120" align="center" sortable fixed="left">
 				<template #default="{ row }">
 					<el-dropdown trigger="click" @command="handleCommand2">
 						<a href="javascript:;" class="el-dropdown-link">
@@ -54,15 +66,15 @@
 						<el-dropdown-menu slot="dropdown">
 							<el-dropdown-item :command="beforeCommand2(row, 2)">需補件</el-dropdown-item>
 							<el-dropdown-item :command="beforeCommand2(row, 3)">通過待繳費</el-dropdown-item>
-							<el-dropdown-item :command="beforeCommand2(row, 4)">通過待退費(小於4000)</el-dropdown-item>
-							<el-dropdown-item :command="beforeCommand2(row, 5)">通過待繳費(大於4000)</el-dropdown-item>
+							<el-dropdown-item :command="beforeCommand2(row, 4)">通過待退費</el-dropdown-item>
+							<!-- <el-dropdown-item :command="beforeCommand2(row, 5)">通過待繳費(大於4000)</el-dropdown-item> -->
 							<el-dropdown-item :command="beforeCommand2(row, 6)">繳退費完成</el-dropdown-item>
 						</el-dropdown-menu>
 					</el-dropdown>
 				</template>
 			</vxe-table-column>
-			<vxe-table-column field="C_NO" title="管制編號" width="140" align="center" sortable fixed="left">
-				<template #default="{ row }">{{ row.C_NO || '(取號中)' }}</template>
+			<vxe-table-column field="C_NO" title="管制編號" width="120" align="center" sortable fixed="left">
+				<template #default="{ row }">{{ row.C_NO ? `${row.C_NO}-${row.SER_NO}` : '(取號中)' }}</template>
 			</vxe-table-column>
 			<vxe-table-column field="CreateUserEmail" title="Email" width="240" align="center" fixed="left">
 				<template #default="{ row }">{{ row.CreateUserEmail }}({{ row.ClientUserID ? '會員' : (row.IsActive ? "已驗證" : "未驗證") }})</template>
@@ -83,7 +95,7 @@
 			</vxe-table-column>
 		</vxe-table>
 		<FormModal :show.sync="formModalVisible" :data="selectRow" @on-updated="onUpdated" />
-		<FailReasonModal :show.sync="failReasonModalVisible" :data="selectRow" :callback="selectCallBack" @on-confirm="onFailReasonConfirm" />>
+		<FailReasonModal :show.sync="failReasonModalVisible" :data="selectRow" :callback="selectCallBack" @on-confirm="onFailReasonConfirm" />
 	</div>
 </template>
 <script>
@@ -101,7 +113,8 @@ export default {
 			filter: {
 				C_NO: '',
 				ClientUserEmail: '',
-				Status: 1
+				FormStatus: 1,
+				CalcStatus: -1
 			},
 			forms: [],
 			selectRow: {},
@@ -131,10 +144,10 @@ export default {
 		},
 		onFailReasonConfirm(val, callback) {
 			this.selectRow.FailReason = val.FailReason;
-			if(callback.name === 'bound updateFormStatus') {
+			if (callback.name === 'bound updateFormStatus') {
 				this.selectRow.FormStatus = 2;
 			}
-			if(callback.name === 'bound updateCalcStatus') {
+			if (callback.name === 'bound updateCalcStatus') {
 				this.selectRow.CalcStatus = 2;
 			}
 			callback(this.selectRow);
@@ -174,6 +187,10 @@ export default {
 		handleCommand2(arg) {
 			const { row, cmd } = arg;
 			this.selectRow = row;
+			if (!this.selectRow.TotalMoney2) {
+				alert('請先進入編輯畫面結算並儲存後才可修改狀態');
+				return false;
+			}
 			switch (cmd) {
 				case 2:
 					if (!confirm(`管制編號 ${row.C_NO} 進度改成需補件，是否確認繼續?`)) return false;
@@ -192,8 +209,16 @@ export default {
 					break;
 			}
 
-			row.CalcStatus = cmd;
-			this.updateCalcStatus(row);
+			this.selectRow.CalcStatus = cmd;
+			// 4.5指令共用，用退費金額<4000判斷4，>=4000判斷5
+			const paidAmount = this.selectRow.Payments.reduce((prev, current) => {
+				return prev + current.Amount;
+			}, 0);
+			if (cmd === 4 && paidAmount - this.selectRow.TotalMoney2 >= 4000) {
+				this.selectRow.CalcStatus = 5;
+			}
+
+			this.updateCalcStatus(this.selectRow);
 		},
 		updateFormStatus(row) {
 			const loading = this.$loading();

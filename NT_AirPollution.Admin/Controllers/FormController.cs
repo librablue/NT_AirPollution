@@ -33,6 +33,7 @@ namespace NT_AirPollution.Admin.Controllers
         /// </summary>
         /// <param name="form"></param>
         /// <returns></returns>
+        [HttpPost]
         public int GetFinalCalc(FormView form)
         {
             int TotalMoney2 = _formService.CalcTotalMoney(form);

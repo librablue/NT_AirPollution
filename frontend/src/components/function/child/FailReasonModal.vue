@@ -1,17 +1,17 @@
 <template>
 	<vxe-modal title="退件原因" v-model="visible" width="30%" :lock-scroll="false" esc-closable resize show-footer>
 		<template #default>
-			<el-form ref="form" size="small" :rules="rules" :model="form">
+			<el-form ref="form" :rules="rules" :model="form">
 				<el-form-item prop="FailReason" label="退件原因">
-					<el-input type="textarea" :autosize="{ minRows: 2, maxRows: 6 }" v-model="form.FailReason" />
+					<el-input type="textarea" :autosize="{ minRows: 3, maxRows: 6 }" v-model="form.FailReason" />
 				</el-form-item>
 			</el-form>
 		</template>
 		<template #footer>
-			<el-button size="small" @click="visible = false">
+			<el-button @click="visible = false">
 				<i class="fa fa-ban"></i> 取 消
 			</el-button>
-			<el-button type="primary" size="small" @click="sendForm">
+			<el-button type="primary" @click="sendForm">
 				<i class="fa fa-ban"></i> 確 定
 			</el-button>
 		</template>

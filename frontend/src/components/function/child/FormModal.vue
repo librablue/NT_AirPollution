@@ -7,25 +7,16 @@
 						<el-form-item prop="C_NO" label="管制編號">{{form.C_NO}}</el-form-item>
 					</div>
 					<div class="form-item-col">
-						<el-form-item prop="TotalMoney1" label="應繳總金額">{{form.TotalMoney1 | comma}}</el-form-item>
+						<el-form-item label="申報應繳金額">{{form.TotalMoney1 | comma}}</el-form-item>
+					</div>
+					<div v-if="form.FormStatus === 1 || form.FormStatus === 2" class="form-item-col">
+						<el-link type="primary" @click="finalCalc('TotalMoney1')">結算</el-link>
 					</div>
 					<div class="form-item-col">
-						<el-form-item prop="FormStatus" label="審核狀態">
-							<el-select style="width:140px" v-model="form.FormStatus">
-								<el-option label="審理中" :value="1" v-if="data.FormStatus <= 1"></el-option>
-								<el-option label="需補件" :value="2" v-if="data.FormStatus <= 2"></el-option>
-								<el-option label="通過待繳費" :value="3" v-if="data.FormStatus <= 3"></el-option>
-								<el-option label="已繳費完成" :value="4" v-if="data.FormStatus <= 4"></el-option>
-							</el-select>
-						</el-form-item>
+						<el-form-item label="結算應繳金額">{{form.TotalMoney2 | comma}}</el-form-item>
 					</div>
-					<div class="form-item-col">
-						<el-form-item prop="FailReason" label="補件原因" v-if="form.FormStatus === 2">
-							<el-input type="textarea" :autosize="{ minRows: 2, maxRows: 6 }" v-model="form.FailReason" />
-						</el-form-item>
-					</div>
-					<div class="form-item-col">
-						<el-form-item prop="TotalMoney1" label="應繳金額" v-if="form.FormStatus === 2">{{form.TotalMoney1 | comma}}</el-form-item>
+					<div v-if="form.CalcStatus === 1 || form.CalcStatus === 2" class="form-item-col">
+						<el-link type="primary" @click="finalCalc('TotalMoney2')">結算</el-link>
 					</div>
 				</div>
 
@@ -417,7 +408,7 @@
 					</table>
 				</div>
 				<el-tabs v-model="activeTab">
-					<el-tab-pane label="檢附資料" name="first">
+					<el-tab-pane label="檢附資料" name="tab1">
 						<div class="table-responsive">
 							<table class="table">
 								<thead>
@@ -441,7 +432,7 @@
 							</table>
 						</div>
 					</el-tab-pane>
-					<el-tab-pane label="停復工" name="second">
+					<el-tab-pane label="停復工" name="tab2">
 						<el-button type="primary" size="small" icon="el-icon-plus" @click="addStopWork()">新 增</el-button>
 						<div class="table-responsive" style="max-width:500px; margin-top:10px">
 							<table class="table stopwork-table">
@@ -470,7 +461,7 @@
 							</table>
 						</div>
 					</el-tab-pane>
-					<el-tab-pane label="收款金額" name="third">
+					<el-tab-pane label="收款金額" name="tab3">
 						<div class="form-item-inline">
 							<div class="form-item-col">
 								<el-input type="number" size="small" v-model="newPayment"></el-input>
@@ -500,13 +491,25 @@
 								<tfoot>
 									<tr>
 										<td>合計</td>
-										<td>{{totalPayment}}</td>
+										<td>{{totalPayment | comma}}</td>
 										<td></td>
 									</tr>
 								</tfoot>
 							</table>
 						</div>
 					</el-tab-pane>
+                    <el-tab-pane v-if="form.RefundBank.ID" label="退款帳戶" name="tab4">
+                        <el-form-item label="銀行代碼">{{form.RefundBank.Code}}</el-form-item>
+                        <el-form-item label="銀行帳號">{{form.RefundBank.Account}}</el-form-item>
+                        <el-form-item label="存摺照片">
+                            <img style="width:640px" :src="`api/Option/Download?f=${form.RefundBank.Photo}`" />
+                        </el-form-item>
+                    </el-tab-pane>
+                    <el-tab-pane v-if="form.PaymentProof.ID" label="繳費證明" name="tab5">
+                        <el-form-item label="繳費證明">
+                            <img style="width:640px" :src="`api/Option/Download?f=${form.PaymentProof.ProofFile}`" />
+                        </el-form-item>
+                    </el-tab-pane>
 				</el-tabs>
 			</el-form>
 		</template>
@@ -562,7 +565,7 @@ export default {
 			district: Object.freeze([]),
 			projectCode: Object.freeze([]),
 			attachmentInfo: Object.freeze([]),
-			activeTab: 'first',
+			activeTab: 'tab1',
 			newPayment: null,
 			rules: Object.freeze({
 				PUB_COMP: [{ required: true, message: '請選擇案件類型', trigger: 'change' }],
@@ -637,7 +640,7 @@ export default {
 		},
 		totalPayment() {
 			return this.form.Payments.reduce((prev, current) => {
-				return prev + current.Amount;
+				return prev + +current.Amount;
 			}, 0);
 		},
 		filterAttachmentInfo() {
@@ -707,18 +710,37 @@ export default {
 					return false;
 				}
 
-				if(!confirm('是否確認繼續?')) return false;
-
-				if (this.data.FormStatus !== 3 && this.form.FormStatus === 3) {
-					if (!confirm(`你確定要將管制編號 ${this.form.C_NO} 通過審查產生繳費單?`)) return false;
+				const isStopWorksError = this.form.StopWorks.some(item => !item.DOWN_DATE2 || !item.UP_DATE2);
+				if (isStopWorksError) {
+					alert('停復工日期未輸入完整，請檢查修正後重新送出');
+					return false;
 				}
 
+				if (!confirm('是否確認繼續?')) return false;
 				this.axios
 					.post('api/Form/UpdateForm', this.form)
 					.then(res => {
 						this.$emit('on-updated');
 						this.$message.success('畫面資料已儲存');
 						this.visible = false;
+					})
+					.catch(err => {
+						this.$message.error(err.response.data.ExceptionMessage);
+					});
+			});
+		},
+		finalCalc(key) {
+			this.$refs.form.validate(valid => {
+				if (!valid) {
+					alert('欄位驗證錯誤，請檢查修正後重新送出');
+					return false;
+				}
+
+				this.axios
+					.post('api/Form/GetFinalCalc', this.form)
+					.then(res => {
+						this.form[key] = res.data;
+						this.$message.success('已更新應繳金額');
 					})
 					.catch(err => {
 						this.$message.error(err.response.data.ExceptionMessage);
@@ -753,12 +775,16 @@ export default {
 	}
 	.form-item-inline {
 		display: flex;
+		align-items: center;
 		.form-item-col {
 			margin: 0 8px;
 		}
 		.el-form-item__label,
 		.el-form-item__content {
 			display: inline-block;
+		}
+		.el-form-item {
+			margin-bottom: 0;
 		}
 	}
 }

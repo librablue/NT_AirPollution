@@ -21,6 +21,7 @@ namespace NT_AirPollution.Model.View
         public long ClientUserID { get; set; }
         public string CreateUserEmail { get; set; }
         public FormStatus FormStatus { get; set; }
+        public CalcStatus CalcStatus { get; set; }
         /// <summary>
         /// 統一編號
         /// </summary>
