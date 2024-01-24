@@ -70,3 +70,23 @@
 .btn-block {
     width: 100%;
 }
+
+.bottom-btn-row {
+    text-align: center;
+    padding: 20px 0;
+    .btn-send {
+        display: inline-block;
+        font-size: 1.25rem;
+        padding: 10px 48px;
+        margin: 0 6px 20px auto;
+        background-color: #428bca;
+        color: #fff;
+        border: none;
+        border-radius: 50px;
+        margin-bottom: 10px;
+        cursor: pointer;
+        &:hover {
+            opacity: 0.9;
+        }
+    }
+}

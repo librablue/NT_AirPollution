@@ -25,9 +25,9 @@
                 <el-form-item prop="Captcha">
                     @ReCaptcha.GetCaptcha()
                 </el-form-item>
-                <el-form-item>
-                    <el-button type="primary" class="btn-block" @@click="formSubmit">登 入</el-button>
-                </el-form-item>
+                <div class="bottom-btn-row">
+                    <el-button type="primary" class="btn-send btn-block" @@click="formSubmit">登 入</el-button>
+                </div>
             </el-form>
         </el-col>
     </el-row>

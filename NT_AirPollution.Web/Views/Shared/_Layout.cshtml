@@ -33,19 +33,19 @@
                 <span>選單按鈕</span>
             </label>
             <ul class="navbar-menu">
-                <li>
+                <li class="@($"{controllerName}/{actionName}" == "Home/Index" ? "active" : "")">
                     <a href="@Url.Content("~/Home/Index")">首頁</a>
                 </li>
-                <li>
+                <li class="@($"{controllerName}/{actionName}" == "News/Index" ? "active" : "")">
                     <a href="@Url.Content("~/News/Index")">最新消息</a>
                 </li>
-                <li>
+                <li class="@($"{controllerName}/{actionName}" == "Form/Calc" ? "active" : "")">
                     <a href="@Url.Content("~/Form/Calc")">營建空污費試算</a>
                 </li>
-                <li>
+                <li class="@($"{controllerName}/{actionName}" == "Form/Create" ? "active" : "")">
                     <a href="@Url.Content("~/Form/Create")">營建空污費申報</a>
                 </li>
-                <li>
+                <li class="@($"{controllerName}/{actionName}" == "Search/Index" ? "active" : "")">
                     <a href="@Url.Content("~/Search/Index")">進度查詢</a>
                 </li>
                 @if (User.IsInRole("Member1"))
@@ -53,16 +53,16 @@
                     <li class="dropdown">
                         <a href="javascript:;">會員中心 <i class="fa fa-angle-down"></i></a>
                         <ul class="dropdown-menu">
-                            <li>
+                            <li class="@($"{controllerName}/{actionName}" == "Apply/Form" ? "active" : "")">
                                 <a href="@Url.Content("~/Apply/Form")">申報案件管理</a>
                             </li>
-                            <li>
+                            <li class="@($"{controllerName}/{actionName}" == "Apply/Company" ? "active" : "")">
                                 <a href="@Url.Content("~/Apply/Company")">營建業主資料管理</a>
                             </li>
-                            <li>
+                            <li class="@($"{controllerName}/{actionName}" == "Apply/Contractor" ? "active" : "")">
                                 <a href="@Url.Content("~/Apply/Contractor")">承包(造)資料管理</a>
                             </li>
-                            <li>
+                            <li class="@($"{controllerName}/{actionName}" == "Member/Edit" ? "active" : "")">
                                 <a href="@Url.Content("~/Member/Edit")">會員資料修改</a>
                             </li>
                             <li>
@@ -76,10 +76,10 @@
                     <li class="dropdown">
                         <a href="javascript:;">會員中心 <i class="fa fa-angle-down"></i></a>
                         <ul class="dropdown-menu">
-                            <li>
+                            <li class="@($"{controllerName}/{actionName}" == "Manage/Form" ? "active" : "")">
                                 <a href="@Url.Content("~/Manage/Form")">工地自主管理</a>
                             </li>
-                            <li>
+                            <li class="@($"{controllerName}/{actionName}" == "Member/Edit" ? "active" : "")">
                                 <a href="@Url.Content("~/Member/Edit")">會員資料修改</a>
                             </li>
                             <li>
@@ -91,7 +91,7 @@
                 }
                 else
                 {
-                    <li>
+                    <li class="@($"{controllerName}/{actionName}" == "Member/Login" ? "active" : "")">
                         <a href="@Url.Content("~/Member/Login")">會員中心</a>
                     </li>
                 }

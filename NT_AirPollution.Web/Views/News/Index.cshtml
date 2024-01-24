@@ -14,8 +14,9 @@
         @foreach (var item in Model)
         {
             <li>
+                <a href="@Url.Content($"~/News/Content?id={item.ID}")" class="title">@item.Title</a>
                 <div class="date">@item.CreateDate.ToString("yyyy-MM-dd")</div>
-                <a href="@Url.Content($"~/News/Content?id={item.ID}")">@item.Title</a>
+                <p>@Html.Raw(item.Content.Replace("\n", "<br>"))</p>
             </li>
         }
     </ul>

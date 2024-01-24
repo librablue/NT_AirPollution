@@ -10,7 +10,7 @@
                 },
                 rules: Object.freeze({
                     C_NO: [{ required: true, message: '請輸入管制編號', trigger: 'blur' }],
-                    CreateUserEmail: [{ required: true, message: '請輸入Email', trigger: 'blur' }],
+                    CreateUserEmail: [{ required: true, message: '請輸入申報 Email', trigger: 'blur' }],
                     Captcha: [{ required: true, message: '請勾選我不是機器人' }]
                 })
             };

@@ -47,7 +47,7 @@ h3 {
     }
     .link {
         display: inline-block;
-        padding: 10px 20px;
+        padding: 12px 20px;
         margin: 0 6px 20px;
         background-color: #265073;
         color: #fff;
@@ -102,7 +102,7 @@ h3 {
     h3 {
         text-align: center;
     }
-    .news-list {
+    .index-news-list {
         margin-bottom: 20px;
         li {
             padding: 10px 0 8px;
@@ -111,6 +111,7 @@ h3 {
         .date {
             font-size: 0.875rem;
             color: #999;
+            margin-right: 10px;
         }
     }
     .btn-more {
@@ -152,9 +153,9 @@ h3 {
 }
 
 .main-wrap {
-	max-width: 1170px;
-	padding: 40px 20px;
-	margin: 0 auto;
+    max-width: 1170px;
+    padding: 40px 20px;
+    margin: 0 auto;
 }
 
 .headline {
@@ -170,15 +171,61 @@ h3 {
     width: 90%;
     margin: 0 auto 20px;
     li {
-        display: flex;
-        align-items: center;
         padding: 20px 15px 10px;
         border-bottom: 1px solid #ccc;
     }
-    .date {
-        color: #999;
-        margin-right: 20px;
+    .title {
+        font-size: 1.5rem;
+        line-height: 30px;
+        font-weight: 700;
+        margin-bottom: 10px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        color: #020202;
     }
+    .date {
+        color: #db3b00;
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+    p {
+        max-height: 90px;
+        margin-bottom: 4px;
+        line-height: 30px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+    }
+}
+
+.news-title-wrap {
+    border-bottom: 1px #c8c8c8 solid;
+    padding: 20px 0;
+    margin-bottom: 20px;
+}
+.pub-date {
+    font-size: 1rem;
+    line-height: 1.8;
+    b {
+        color: #db3b00;
+    }
+}
+.news-content {
+    font-size: 18px;
+    line-height: 1.8;
+    margin-bottom: 40px;
+}
+.link-back {
+    display: inline-block;
+    padding: 6px 18px;
+    border: 1px solid #ccc;
+    border-radius: 50px;
 }
 
 @import './footer';

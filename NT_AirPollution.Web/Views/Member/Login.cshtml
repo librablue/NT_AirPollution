@@ -27,7 +27,9 @@
                 <el-form-item prop="Captcha">
                     @ReCaptcha.GetCaptcha()
                 </el-form-item>
-                <el-button type="primary" class="btn-block" @@click="login">登入</el-button>
+                <div class="bottom-btn-row">
+                    <button type="button" class="btn-send btn-block" @@click="login">登 入</button>
+                </div>
             </el-form>
             <div class="oth-links">
                 <a href="@Url.Content("~/Member/Forget")">忘記密碼</a>

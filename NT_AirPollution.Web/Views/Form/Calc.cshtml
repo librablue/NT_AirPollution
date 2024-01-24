@@ -5,7 +5,7 @@
 }
 
 @section styles {
-    <link rel="stylesheet" href="@Url.Content("~/static/css/member.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/static/css/form.css")" />
     <style>
         .el-col {
             padding: 0 12px;
@@ -21,7 +21,7 @@
         <h2>營建空污費試算</h2>
         <el-form ref="form" :rules="rules" :model="form" label-position="top">
             <el-form-item prop="KIND_NO" label="工程類別">
-                <el-select class="w100p" v-model="form.KIND_NO">
+                <el-select v-model="form.KIND_NO">
                     <el-option label="請選擇" :value="null"></el-option>
                     <el-option v-for="item in projectCode" :key="item.ID" :label="`${item.ID}. ${item.Name}`" :value="item.ID"></el-option>
                 </el-select>
@@ -60,9 +60,9 @@
                     </el-form-item>
                 </el-col>
             </el-row>
-            <el-form-item>
-                <el-button type="primary" class="btn-block" @@click="sendForm">試 算</el-button>
-            </el-form-item>
+            <div class="bottom-btn-row">
+                <button type="button" class="btn-send" @@click="sendForm">試 算</button>
+            </div>
         </el-form>
     </div>
 </div>
