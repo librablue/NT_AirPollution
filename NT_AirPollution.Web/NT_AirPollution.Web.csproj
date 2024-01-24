@@ -116,6 +116,7 @@
     <Content Include="static\js\apply\contractor.js" />
     <Content Include="static\js\apply\form.js" />
     <Content Include="static\js\bank.js" />
+    <Content Include="static\js\form\calc.js" />
     <Content Include="static\js\manage\form.js" />
     <Content Include="static\js\road\index.js" />
     <Content Include="static\js\search\result.js" />
