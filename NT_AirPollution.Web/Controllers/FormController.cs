@@ -34,6 +34,12 @@ namespace NT_AirPollution.Web.Controllers
             return View();
         }
 
+        public JsonResult GetTotalMoney(FormView form)
+        {
+            int totalMoney = _formService.TryCalcTotalMoney(form);
+            return Json(new AjaxResult { Status = true, Message = totalMoney }, JsonRequestBehavior.AllowGet);
+        }
+
         [HttpPost]
         public JsonResult Create(FormView form, List<HttpPostedFileBase> files)
         {

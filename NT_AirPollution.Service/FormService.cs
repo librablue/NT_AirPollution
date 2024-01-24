@@ -743,6 +743,56 @@ namespace NT_AirPollution.Service
         }
 
         /// <summary>
+        /// 試算
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        public int TryCalcTotalMoney(FormView form)
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                // 計算施工天數
+                var diffDays = (form.E_DATE2 - form.B_DATE2).TotalDays + 1;
+                var projectCodes = cn.GetAll<ProjectCode>().ToList();
+                var projectCode = projectCodes.First(o => o.ID == form.KIND_NO);
+                // 基數
+                double basicNum = 0;
+                // 費率
+                double rate = 0;
+                switch (form.KIND_NO)
+                {
+                    case "1":
+                    case "2":
+                    case "4":
+                    case "5":
+                    case "6":
+                    case "7":
+                    case "8":
+                    case "9":
+                    case "A":
+                        basicNum = form.AREA.Value * diffDays / 30;
+                        break;
+                    case "3":
+                    case "B":
+                        basicNum = form.VOLUMEL.Value;
+                        break;
+                    case "Z":
+                        basicNum = form.MONEY;
+                        break;
+                }
+
+                if (basicNum >= projectCode.Level1)
+                    rate = projectCode.Rate1;
+                else if (basicNum * projectCode.Rate3 >= projectCode.Level2)
+                    rate = projectCode.Rate2;
+                else
+                    rate = projectCode.Rate3;
+
+                return Convert.ToInt32(Math.Round(basicNum * rate, 0, MidpointRounding.AwayFromZero));
+            }
+        }
+
+        /// <summary>
         /// 需補件
         /// </summary>
         /// <param name="form"></param>
