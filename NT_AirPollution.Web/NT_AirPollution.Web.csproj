@@ -195,6 +195,7 @@
     <Content Include="Views\Soil\Index.cshtml" />
     <Content Include="Views\News\Index.cshtml" />
     <Content Include="Views\News\Content.cshtml" />
+    <Content Include="Views\Form\Calc.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

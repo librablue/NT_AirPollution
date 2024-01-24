@@ -29,6 +29,11 @@ namespace NT_AirPollution.Web.Controllers
             return View();
         }
 
+        public ActionResult Calc()
+        {
+            return View();
+        }
+
         [HttpPost]
         public JsonResult Create(FormView form, List<HttpPostedFileBase> files)
         {

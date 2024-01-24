@@ -436,42 +436,16 @@
                                 </td>
                             </tr>
                             <tr>
-                                <th>基地面積</th>
+                                <th>施工面積</th>
                                 <td>
-                                    <el-form-item prop="AREA_F">
-                                        <el-input type="number" v-model="selectRow.AREA_F"></el-input>
+                                    <el-form-item prop="AREA">
+                                        <el-input type="number" v-model="selectRow.AREA" placeholder="非疏濬工程"></el-input>
                                     </el-form-item>
                                 </td>
-                                <th>建築面積</th>
+                                <th>清運土石體積</th>
                                 <td>
-                                    <el-form-item prop="AREA_B">
-                                        <el-input type="number" v-model="selectRow.AREA_B"></el-input>
-                                    </el-form-item>
-                                </td>
-                                <th>總樓地板面積</th>
-                                <td>
-                                    <el-form-item prop="AREA2">
-                                        <el-input type="number" v-model="selectRow.AREA2"></el-input>
-                                    </el-form-item>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>遮蔽率</th>
-                                <td>
-                                    <el-form-item prop="PERC_B">
-                                        <el-input type="number" v-model="selectRow.PERC_B"></el-input>
-                                    </el-form-item>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>實方體積</th>
-                                <td>
-                                    <el-form-item prop="PERC_B">
-                                    </el-form-item>
-                                </td>
-                                <th>鬆方體積</th>
-                                <td colspan="3">
-                                    <el-form-item prop="PERC_B">
+                                    <el-form-item prop="VOLUMEL">
+                                        <el-input type="number" v-model="selectRow.VOLUMEL" placeholder="疏濬工程"></el-input>
                                     </el-form-item>
                                 </td>
                             </tr>

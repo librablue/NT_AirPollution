@@ -1,0 +1,35 @@
+﻿
+@{
+    ViewBag.Title = "Calc";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div id="app">
+    <div class="main-wrap">
+        <h2>營建空污費試算</h2>
+        <el-form>
+            <el-form-item prop="KIND_NO" label="工程類別">
+                <el-select class="w100p" v-model="form.KIND_NO">
+                    <el-option label="請選擇" :value="null"></el-option>
+                    <el-option v-for="item in projectCode" :key="item.ID" :label="`${item.ID}. ${item.Name}`" :value="item.ID"></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item prop="B_DATE2" label="預計施工開始日期">
+                <el-date-picker class="w100p" v-model="form.B_DATE2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
+            </el-form-item>
+            <el-form-item prop="B_DATE2" label="預計施工完成日期">
+                <el-date-picker class="w100p" v-model="form.B_DATE2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
+            </el-form-item>
+            <el-form-item prop="AREA" label="預計施工天數">{{totalDays}}</el-form-item>
+            <el-form-item label="施工面積">
+                <el-input type="number" v-model="form.AREA" placeholder="非疏濬工程"></el-input>
+            </el-form-item>
+            <el-form-item prop="VOLUMEL" label="清運土石體積">
+                <el-input type="number" v-model="form.VOLUMEL" placeholder="疏濬工程"></el-input>
+            </el-form-item>
+            <el-form-item prop="MONEY" label="工程合約經費">
+                <el-input type="number" v-model="selectRow.MONEY"></el-input>
+            </el-form-item>
+        </el-form>
+    </div>
+</div>
