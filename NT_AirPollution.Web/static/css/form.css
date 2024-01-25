@@ -161,7 +161,7 @@ input[type=number] {
 .prompt-text {
   display: inline-block;
   font-size: 14px;
-  color: #3081D0;
+  color: #3081d0;
   line-height: 1;
   padding: 4px 0;
 }
@@ -188,6 +188,18 @@ input[type=number] {
 }
 .bottom-btn-row .btn-send:hover {
   opacity: 0.9;
+}
+
+.round .el-form-item__label {
+  padding: 15px 0 6px;
+  line-height: 1.5;
+}
+.round .el-input__inner {
+  border-radius: 50px;
+}
+.round .el-input-group__append {
+  border-radius: 50px;
+  border-radius: 50px;
 }
 
 .navbar {

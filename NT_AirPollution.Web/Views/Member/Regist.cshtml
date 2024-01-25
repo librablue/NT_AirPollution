@@ -22,7 +22,7 @@
         </div>
         <div class="side-form">
             <h1>註冊帳號</h1>
-            <el-form :rules="rules" ref="form" :model="form" label-position="top">
+            <el-form class="round" :rules="rules" ref="form" :model="form" label-position="top">
                 <el-form-item prop="UserType" label="會員類型">
                     <el-select class="w100p" v-model="form.UserType">
                         <el-option label="營建空污費申報" :value="1"></el-option>

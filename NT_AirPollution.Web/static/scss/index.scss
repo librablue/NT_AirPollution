@@ -9,8 +9,11 @@ h3 {
 
 .banner {
     position: relative;
-    background-color: #f2ffe9;
-    box-shadow: 0 5px 15px 0 rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    height: 500px;
     padding: 20px 0;
     .container {
         position: relative;
@@ -27,13 +30,13 @@ h3 {
         padding: 0 15px;
     }
     h2 {
-        font-size: 2.5rem;
+        font-size: 2rem;
         margin-bottom: 20px;
         .sub {
             color: #00c6a9;
         }
     }
-    .illu-building {
+    .bg-building {
         width: 100%;
         max-width: 360px;
         animation: moveUpDown 2s ease infinite;
@@ -42,19 +45,36 @@ h3 {
         position: absolute;
         width: 450px;
         right: 0;
-        bottom: 0;
-        transform: translateY(50%);
+        top: 100%;
     }
     .link {
         display: inline-block;
-        padding: 12px 20px;
+        font-size: 15px;
+        font-weight: 400;
+        background-color: #fff;
+        text-transform: capitalize;
+        padding: 12px 25px;
         margin: 0 6px 20px;
-        background-color: #265073;
-        color: #fff;
-        border-radius: 5px;
-        margin-bottom: 10px;
-        &:hover {
-            opacity: 0.9;
+        border-radius: 23px;
+        letter-spacing: 0.25px;
+        transition: all 0.3s;
+        &:last-child {
+            margin-bottom: 0;
+        }
+        &.blue {
+            color: #17094c;
+            border: 2px solid #17094c;
+            &:hover {
+                color: #fff;
+                background-color: #17094c;
+            }
+        }
+        &.red {
+            color: #fff;
+            background-color: #17094c;
+            &:hover {
+                opacity: .6;
+            }
         }
     }
 }
@@ -67,10 +87,12 @@ h3 {
             width: 50%;
         }
         h2 {
+            font-size: 2.5rem;
             margin-bottom: 40px;
         }
-        .illu-building {
-            max-width: inherit;
+        .bg-building {
+            max-width: 960px;
+            margin-left: -100px;
         }
     }
 }

@@ -15,7 +15,7 @@
     <el-row type="flex" justify="center">
         <el-col :xs="24" :sm="12">
             <h2>進度查詢</h2>
-            <el-form :rules="rules" ref="form" :model="form">
+            <el-form class="round" :rules="rules" ref="form" :model="form">
                 <el-form-item prop="C_NO" label="管制編號">
                     <el-input v-model="form.C_NO" maxlength="20" placeholder="管制編號可於您的 Email 認證信中查詢"></el-input>
                 </el-form-item>
@@ -26,7 +26,7 @@
                     @ReCaptcha.GetCaptcha()
                 </el-form-item>
                 <div class="bottom-btn-row">
-                    <el-button type="primary" class="btn-send btn-block" @@click="formSubmit">登 入</el-button>
+                    <button type="button" class="btn-send btn-block" @@click="formSubmit">登 入</button>
                 </div>
             </el-form>
         </el-col>

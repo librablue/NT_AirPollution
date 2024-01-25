@@ -106,6 +106,7 @@
     <Content Include="static\css\index.css" />
     <Content Include="static\css\member.css" />
     <Content Include="static\css\pagination.css" />
+    <Content Include="static\image\architect.png" />
     <Content Include="static\image\bg-dots.png" />
     <Content Include="static\image\illu-access.svg" />
     <Content Include="static\image\illu-building.svg" />

@@ -161,7 +161,7 @@ input[type=number] {
 .prompt-text {
   display: inline-block;
   font-size: 14px;
-  color: #3081D0;
+  color: #3081d0;
   line-height: 1;
   padding: 4px 0;
 }
@@ -188,6 +188,18 @@ input[type=number] {
 }
 .bottom-btn-row .btn-send:hover {
   opacity: 0.9;
+}
+
+.round .el-form-item__label {
+  padding: 15px 0 6px;
+  line-height: 1.5;
+}
+.round .el-input__inner {
+  border-radius: 50px;
+}
+.round .el-input-group__append {
+  border-radius: 50px;
+  border-radius: 50px;
 }
 
 .navbar {
@@ -376,8 +388,11 @@ h3 {
 
 .banner {
   position: relative;
-  background-color: #f2ffe9;
-  box-shadow: 0 5px 15px 0 rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  height: 500px;
   padding: 20px 0;
 }
 .banner .container {
@@ -395,13 +410,13 @@ h3 {
   padding: 0 15px;
 }
 .banner h2 {
-  font-size: 2.5rem;
+  font-size: 2rem;
   margin-bottom: 20px;
 }
 .banner h2 .sub {
   color: #00c6a9;
 }
-.banner .illu-building {
+.banner .bg-building {
   width: 100%;
   max-width: 360px;
   animation: moveUpDown 2s ease infinite;
@@ -410,20 +425,37 @@ h3 {
   position: absolute;
   width: 450px;
   right: 0;
-  bottom: 0;
-  transform: translateY(50%);
+  top: 100%;
 }
 .banner .link {
   display: inline-block;
-  padding: 12px 20px;
+  font-size: 15px;
+  font-weight: 400;
+  background-color: #fff;
+  text-transform: capitalize;
+  padding: 12px 25px;
   margin: 0 6px 20px;
-  background-color: #265073;
-  color: #fff;
-  border-radius: 5px;
-  margin-bottom: 10px;
+  border-radius: 23px;
+  letter-spacing: 0.25px;
+  transition: all 0.3s;
 }
-.banner .link:hover {
-  opacity: 0.9;
+.banner .link:last-child {
+  margin-bottom: 0;
+}
+.banner .link.blue {
+  color: #17094c;
+  border: 2px solid #17094c;
+}
+.banner .link.blue:hover {
+  color: #fff;
+  background-color: #17094c;
+}
+.banner .link.red {
+  color: #fff;
+  background-color: #17094c;
+}
+.banner .link.red:hover {
+  opacity: 0.6;
 }
 
 @media (min-width: 768px) {
@@ -435,10 +467,12 @@ h3 {
     width: 50%;
   }
   .banner h2 {
+    font-size: 2.5rem;
     margin-bottom: 40px;
   }
-  .banner .illu-building {
-    max-width: inherit;
+  .banner .bg-building {
+    max-width: 960px;
+    margin-left: -100px;
   }
 }
 .news-wrapper {
