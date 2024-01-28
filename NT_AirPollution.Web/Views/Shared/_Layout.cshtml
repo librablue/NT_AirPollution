@@ -53,16 +53,16 @@
                     <li class="dropdown">
                         <a href="javascript:;">會員中心 <i class="fa fa-angle-down"></i></a>
                         <ul class="dropdown-menu">
-                            <li class="@($"{controllerName}/{actionName}" == "Apply/Form" ? "active" : "")">
+                            <li>
                                 <a href="@Url.Content("~/Apply/Form")">申報案件管理</a>
                             </li>
-                            <li class="@($"{controllerName}/{actionName}" == "Apply/Company" ? "active" : "")">
+                            <li>
                                 <a href="@Url.Content("~/Apply/Company")">營建業主資料管理</a>
                             </li>
-                            <li class="@($"{controllerName}/{actionName}" == "Apply/Contractor" ? "active" : "")">
+                            <li>
                                 <a href="@Url.Content("~/Apply/Contractor")">承包(造)資料管理</a>
                             </li>
-                            <li class="@($"{controllerName}/{actionName}" == "Member/Edit" ? "active" : "")">
+                            <li>
                                 <a href="@Url.Content("~/Member/Edit")">會員資料修改</a>
                             </li>
                             <li>
@@ -76,10 +76,10 @@
                     <li class="dropdown">
                         <a href="javascript:;">會員中心 <i class="fa fa-angle-down"></i></a>
                         <ul class="dropdown-menu">
-                            <li class="@($"{controllerName}/{actionName}" == "Manage/Form" ? "active" : "")">
+                            <li>
                                 <a href="@Url.Content("~/Manage/Form")">工地自主管理</a>
                             </li>
-                            <li class="@($"{controllerName}/{actionName}" == "Member/Edit" ? "active" : "")">
+                            <li>
                                 <a href="@Url.Content("~/Member/Edit")">會員資料修改</a>
                             </li>
                             <li>

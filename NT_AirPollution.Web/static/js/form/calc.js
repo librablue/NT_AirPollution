@@ -50,7 +50,7 @@
                 },
                 rules: Object.freeze({
                     KIND_NO: [{ required: true, message: '請選擇工程類別', trigger: 'change' }],
-                    MONEY: [{validator: checkMoney}],
+                    MONEY: [{ validator: checkMoney }],
                     AREA: [{ validator: checkArea }],
                     VOLUMEL: [{ validator: checkVolumel }],
                     B_DATE2: [{ required: true, message: '請輸入預計施工開始日期', trigger: 'blur' }],
@@ -81,6 +81,27 @@
                     this.projectCode = Object.freeze(res.data);
                 });
             },
+            isShowAREA() {
+                const kindAry = ['1', '2', '4', '5', '6', '7', '8', '9', 'A'];
+                if (kindAry.includes(this.form.KIND_NO)) {
+                    return true;
+                }
+                return false;
+            },
+            isShowVOLUMEL() {
+                const kindAry = ['3', 'B'];
+                if (kindAry.includes(this.form.KIND_NO)) {
+                    return true;
+                }
+                return false;
+            },
+            isShowMONEY() {
+                const kindAry = ['Z'];
+                if (kindAry.includes(this.form.KIND_NO)) {
+                    return true;
+                }
+                return false;
+            },
             sendForm() {
                 this.$refs.form.validate(valid => {
                     if (!valid) {
@@ -96,7 +117,7 @@
                                 return;
                             }
 
-                            const comma=/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g;
+                            const comma = /\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g;
                             const totalMoney = res.data.Message.toString().replace(comma, ',');
                             alert(`核算申報繳納營建空污費為新台幣 ${totalMoney} 元整`);
                         })

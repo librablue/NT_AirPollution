@@ -487,13 +487,14 @@ namespace NT_AirPollution.Service
                         cn.Update(form, trans);
 
                         // 附件
-                        var updateItem = form.Attachments.Where(o => !string.IsNullOrEmpty(o.FileName));
-                        foreach (var item in updateItem)
+                        cn.Execute(@"DELETE FROM Attachment WHERE FormID=@FormID", new { FormID = form.ID }, trans);
+                        foreach (var item in form.Attachments)
                         {
                             item.FormID = form.ID;
                             item.CreateDate = item.CreateDate ?? DateTime.Now;
                         }
-                        cn.Update(updateItem, trans);
+
+                        cn.Insert(form.Attachments, trans);
 
                         trans.Commit();
                         return true;
@@ -701,7 +702,7 @@ namespace NT_AirPollution.Service
                 form.B_DATE2 = base.ChineseDateToWestDate(form.B_DATE);
                 form.E_DATE2 = base.ChineseDateToWestDate(form.E_DATE);
                 // 計算施工天數
-                double downDays = form.StopWorks.Sum(o => o.DOWN_DAY);
+                double downDays = form.StopWorks.Sum(o => (o.UP_DATE2 - o.DOWN_DATE2).TotalDays + 1);
                 var diffDays = ((form.E_DATE2 - form.B_DATE2).TotalDays + 1) - downDays;
                 var projectCodes = cn.GetAll<ProjectCode>().ToList();
                 var projectCode = projectCodes.First(o => o.ID == form.KIND_NO);
@@ -1299,11 +1300,15 @@ namespace NT_AirPollution.Service
                 var wb = new XLWorkbook(templatePath);
                 var ws = wb.Worksheet(1);
                 ws.Cell("B2").SetValue(form.COMP_NAM);
-                ws.Cell("B3").SetValue(form.C_NO);
-                ws.Cell("F3").SetValue($"-{form.SER_NO}");
+                ws.Cell("B3").SetValue($"{form.C_NO}-{form.SER_NO}");
                 ws.Cell("C4").SetValue(form.ADDR);
                 ws.Cell("C5").SetValue(form.B_SERNO);
                 ws.Cell("C6").SetValue(form.S_NAME);
+                ws.Cell("E28").SetValue(DateTime.Now.AddYears(-1911).ToString("yyy"));
+                ws.Cell("I28").SetValue(DateTime.Now.ToString("MM"));
+                ws.Cell("N28").SetValue(DateTime.Now.ToString("dd"));
+
+
 
                 int idx = 0;
                 // 應繳金額

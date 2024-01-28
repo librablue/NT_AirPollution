@@ -253,14 +253,20 @@
 					}
 
 					// 附件
-					this.selectRow.Attachments = this.filterAttachmentInfo.map((item, idx) => ({
-						ID: this.selectRow.Attachments[idx] ? this.selectRow.Attachments[idx].ID : 0,
-						InfoID: item.ID
-					}));
-					for (let i = 0; i < this.selectRow.Attachments.length; i++) {
-						formData.append(`Attachments[${i}].ID`, this.selectRow.Attachments[i].ID);
-						formData.append(`Attachments[${i}].InfoID`, this.selectRow.Attachments[i].InfoID);
-					}
+                    this.selectRow.Attachments = this.filterAttachmentInfo.map((item, idx) => ({
+                        ID: this.selectRow.Attachments[idx] ? this.selectRow.Attachments[idx].ID : 0,
+                        InfoID: item.ID,
+                        FileName: this.selectRow.Attachments[idx] ? this.selectRow.Attachments[idx].FileName : null,
+                        CreateDate: this.selectRow.Attachments[idx] ? this.selectRow.Attachments[idx].CreateDate : null
+                    }));
+                    for (let i = 0; i < this.selectRow.Attachments.length; i++) {
+                        formData.append(`Attachments[${i}].ID`, this.selectRow.Attachments[i].ID);
+                        formData.append(`Attachments[${i}].InfoID`, this.selectRow.Attachments[i].InfoID);
+                        if(this.selectRow.Attachments[i].FileName)
+                            formData.append(`Attachments[${i}].FileName`, this.selectRow.Attachments[i].FileName);
+                        if(this.selectRow.Attachments[i].CreateDate)
+                            formData.append(`Attachments[${i}].CreateDate`, this.selectRow.Attachments[i].CreateDate);
+                    }
 					for (let i = 0; i < this.filterAttachmentInfo.length; i++) {
 						const file = document.querySelector(`#file${i}`);
 						if (file && file.files.length > 0) {

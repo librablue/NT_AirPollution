@@ -581,7 +581,7 @@
             </el-tab-pane>
         </el-tabs>
         <span slot="footer" class="dialog-footer">
-            <template v-if="mode === 'Add' || selectRow.FormStatus === 2">
+            <template v-if="mode === 'Add' || selectRow.FormStatus <= 2">
                 <el-button @@click="dialogVisible = false">取 消</el-button>
                 <el-button type="primary" @@click="sendForm">儲 存</el-button>
             </template>
