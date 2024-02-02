@@ -845,8 +845,8 @@ namespace NT_AirPollution.Service
                 {
                     string content = sr.ReadToEnd();
                     string body = string.Format(content, form.C_NO);
-                    string bankAccount = this.GetBankAccount(form.ID.ToString(), form.TotalMoney1);
-                    string postAccount = this.GetPostAccount(form.ID.ToString(), form.TotalMoney1);
+                    string bankAccount = this.GetBankAccount(form.ID.ToString(), form.P_AMT.Value);
+                    string postAccount = this.GetPostAccount(form.ID.ToString(), form.P_AMT.Value);
                     string fileName = $"繳款單{form.C_NO}-{form.SER_NO}({(form.P_KIND == "一次繳清" ? "一次繳清" : "第一期")}).pdf";
                     // 產生繳款單
                     string docPath = this.CreatePaymentPDF(bankAccount, postAccount, fileName, form);
@@ -1051,9 +1051,9 @@ namespace NT_AirPollution.Service
         /// <param name="autoID">產品自動編號</param>
         /// <param name="price">價格</param>
         /// <returns></returns>
-        public string GetBankAccount(string autoID, int price)
+        public string GetBankAccount(string autoID, double price)
         {
-            DateTime maxPayDay = Convert.ToDateTime(DateTime.Now.AddDays(6).ToString("yyyy/MM/dd"));
+            DateTime maxPayDay = DateTime.Now.AddDays(6);
             DateTime firstDayOfYear = Convert.ToDateTime(maxPayDay.ToString("yyyy/01/01"));
 
             TimeSpan ts = new TimeSpan(maxPayDay.Ticks - firstDayOfYear.Ticks);
@@ -1063,7 +1063,7 @@ namespace NT_AirPollution.Service
             // 到期年末碼
             string code7 = maxPayDay.ToString("yyyy").Substring(3, 1);
             // 到期天(離1/1相差幾天)
-            string code8_10 = (ts.TotalDays + 1).ToString().PadLeft(3, '0');
+            string code8_10 = (ts.Days + 1).ToString().PadLeft(3, '0');
             // 客戶自用編號(產品自動編號5碼)
             if (autoID.Length <= 5)
                 autoID = autoID.PadLeft(5, '0');
@@ -1103,9 +1103,9 @@ namespace NT_AirPollution.Service
         /// <param name="autoID">產品自動編號</param>
         /// <param name="price">價格</param>
         /// <returns></returns>
-        public string GetPostAccount(string autoID, int price)
+        public string GetPostAccount(string autoID, double price)
         {
-            DateTime maxPayDay = Convert.ToDateTime(DateTime.Now.AddDays(6).ToString("yyyy/MM/dd"));
+            DateTime maxPayDay = DateTime.Now.AddDays(6);
             DateTime firstDayOfYear = Convert.ToDateTime(maxPayDay.ToString("yyyy/01/01"));
 
             TimeSpan ts = new TimeSpan(maxPayDay.Ticks - firstDayOfYear.Ticks);
@@ -1233,26 +1233,30 @@ namespace NT_AirPollution.Service
         {
             try
             {
-                // 如果已經產生過檔案，直接下載
                 string existFile = $@"{_paymentPath}\Download\{fileName}";
-                //if (File.Exists(existFile))
-                //    return existFile;
+                string tempFile = $@"{_paymentPath}\Download\{fileName.Replace(".pdf", ".html")}";
 
 
                 string templatePath = $@"{_paymentPath}\Template\Payment.html";
                 string readText = File.ReadAllText(templatePath);
-                readText = readText.Replace("#ProjectID#", $"{form.C_NO}-{form.SER_NO}")
-                                    .Replace("#PaymentID#", "")
-                                    .Replace("#ProjectName#", form.KIND)
-                                    .Replace("#ContractID#", form.B_SERNO)
-                                    .Replace("#BizCompany#", form.S_NAME)
-                                    .Replace("#TotalMoney#", "")
-                                    .Replace("#TotalMoneyChinese#", this.GetChineseMoney("") + "整")
-                                    .Replace("#CurrentMoney#", "")
+                readText = readText.Replace("#Today#", DateTime.Now.ToString("yyyy-MM-dd"))
+                                    .Replace("#C_NO#", $"{form.C_NO}-{form.SER_NO}")
+                                    .Replace("#COMP_NAM#", form.COMP_NAM)
+                                    .Replace("#S_B_NAM#", form.S_B_NAM)
+                                    .Replace("#S_NAME#", form.S_NAME)
+                                    .Replace("#TotalPeriod#", form.P_KIND == "一次全繳" ? "1" : "2")
+                                    .Replace("#CurrentPeriod#", "1")
+                                    .Replace("#PayEndDate#", DateTime.Now.AddDays(6).ToString("yyyy-MM-dd"))
+                                    .Replace("#TotalMoney#", form.P_AMT.Value.ToString("N0"))
+                                    .Replace("#ChineseMoney#", this.GetChineseMoney(form.P_AMT.Value.ToString()))
                                     .Replace("#BankAccount#", bankAccount)
-                                    .Replace("#PayWay#", "一次全繳<br>共分 1 期，本期為第 1 期")
-                                    .Replace("#StartDate#", $"民國 {form.B_DATE2.Year - 1911} 年 {form.B_DATE2.Month} 月 {form.B_DATE2.Day} 日");
+                                    .Replace("#PostAccount#", postAccount)
+                                    .Replace("#PostPrice#", form.P_AMT.Value.ToString().PadLeft(6, '0'))
+                                    .Replace("#Store1#", this.GetStore1Barcode())
+                                    .Replace("#Store2#", bankAccount)
+                                    .Replace("#Store3#", this.GetStore3Barcode(bankAccount, form.P_AMT.Value.ToString()));
 
+                File.WriteAllText(tempFile, readText);
 
                 Aspose.Pdf.License license = new Aspose.Pdf.License();
                 license.SetLicense(HostingEnvironment.MapPath(@"~/license/Aspose.total.lic"));
@@ -1268,7 +1272,7 @@ namespace NT_AirPollution.Service
                         }
                     }
                 };
-                Document pdfDocument = new Document(templatePath, options);
+                Document pdfDocument = new Document(tempFile, options);
                 pdfDocument.Info.Title = $"{form.C_NO}-{form.SER_NO}";
                 pdfDocument.Save(existFile);
 

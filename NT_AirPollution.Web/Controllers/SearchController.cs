@@ -167,8 +167,8 @@ namespace NT_AirPollution.Web.Controllers
                 form.CreateUserEmail = formInDB.CreateUserEmail;
                 form.ActiveCode = formInDB.ActiveCode;
                 form.IsActive = formInDB.IsActive;
-                form.TotalMoney1 = formInDB.TotalMoney1;
-                form.TotalMoney2 = formInDB.TotalMoney2;
+                //form.TotalMoney1 = formInDB.TotalMoney1;
+                //form.TotalMoney2 = formInDB.TotalMoney2;
                 form.C_DATE = formInDB.C_DATE;
                 form.VerifyDate = formInDB.VerifyDate;
                 form.FailReason = formInDB.FailReason;

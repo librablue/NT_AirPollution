@@ -78,7 +78,12 @@ namespace NT_AirPollution.Admin.Controllers
                         _formService.SendStatus2(form);
                         break;
                     case FormStatus.通過待繳費:
-                        form.TotalMoney1 = _formService.CalcTotalMoney(form);
+                        form.S_AMT = _formService.CalcTotalMoney(form);
+                        form.P_NUM = form.P_KIND == "一次全繳" ? 1 : 2;
+                        form.P_AMT = form.S_AMT;
+                        if(form.P_KIND == "分兩次繳清")
+                            form.P_AMT = form.S_AMT / 2;
+
                         _formService.SendFormStatus3(form);
                         break;
                     case FormStatus.已繳費完成:
@@ -118,6 +123,7 @@ namespace NT_AirPollution.Admin.Controllers
                         _formService.SendCalcStatus45(form);
                         break;
                     case CalcStatus.繳退費完成:
+                        form.FIN_DATE = DateTime.Now.AddYears(-1911).ToString("yyyMMdd");
                         _formService.SendCalcStatus6(form);
                         break;
                     default:
