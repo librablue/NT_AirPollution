@@ -46,6 +46,8 @@ namespace NT_AirPollution.Admin.Controllers
         {
             try
             {
+                form.B_DATE = form.B_DATE2.AddYears(-1911).ToString("yyyMMdd");
+                form.E_DATE = form.E_DATE2.AddYears(-1911).ToString("yyyMMdd");
                 // 修改 access
                 bool isAccessOK = _accessService.UpdateABUDF(form);
                 if (!isAccessOK)

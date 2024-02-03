@@ -188,7 +188,7 @@ export default {
 			const { row, cmd } = arg;
 			this.selectRow = row;
 			if (!this.selectRow.S_AMT2) {
-				alert('請先進入編輯畫面結算並儲存後才可修改狀態');
+				alert('請先結算並儲存後才可修改狀態');
 				return false;
 			}
 			switch (cmd) {

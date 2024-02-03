@@ -442,14 +442,14 @@ namespace NT_AirPollution.Service
                 try
                 {
                     cn.Execute(@"
-                        INSERT INTO ABUDF ([C_NO],[SER_NO],[AP_DATE1],[B_STAT],[KIND_NO],[KIND],[YEAR],[A_KIND],[MONEY],[AREA],[VOLUMEL],[B_DAY],[B_DATE],[E_DATE],[S_AMT],[T_DAY],[PRE_C_AMT],[PRE_C_AMT1],[KEYIN],[C_DATE],[M_DATE])
+                        INSERT INTO ABUDF_B ([C_NO],[SER_NO],[AP_DATE1],[B_STAT],[KIND_NO],[KIND],[YEAR],[A_KIND],[MONEY],[AREA],[VOLUMEL],[B_DAY],[B_DATE],[E_DATE],[S_AMT],[T_DAY],[PRE_C_AMT],[PRE_C_AMT1],[KEYIN],[C_DATE],[M_DATE])
                         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                         new
                         {
                             C_NO = form.C_NO,
                             SER_NO = form.SER_NO,
                             AP_DATE1 = form.AP_DATE1,
-                            B_STAT = "",
+                            B_STAT = "A一次繳清無結算",
                             KIND_NO = form.KIND_NO,
                             KIND = form.KIND,
                             YEAR = form.YEAR,
@@ -465,8 +465,8 @@ namespace NT_AirPollution.Service
                             PRE_C_AMT = form.S_AMT > form.S_AMT2 ? form.S_AMT - form.S_AMT2 : 0,
                             PRE_C_AMT1 = form.S_AMT2 > form.S_AMT ? form.S_AMT2 - form.S_AMT : 0,
                             KEYIN = "EPB02",
-                            C_DATE = DateTime.Now,
-                            M_DATE = DateTime.Now
+                            C_DATE = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                            M_DATE = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
                         });
 
                     return true;
