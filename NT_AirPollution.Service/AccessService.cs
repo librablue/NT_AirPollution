@@ -1,5 +1,9 @@
-﻿using Dapper;
+﻿using Aspose.Cells.Drawing;
+using Dapper;
 using Dapper.Contrib.Extensions;
+using DocumentFormat.OpenXml.Bibliography;
+using DocumentFormat.OpenXml.InkML;
+using DocumentFormat.OpenXml.VariantTypes;
 using NT_AirPollution.Model.Access;
 using NT_AirPollution.Model.Domain;
 using NT_AirPollution.Model.View;
@@ -418,6 +422,58 @@ namespace NT_AirPollution.Service
                 catch (Exception ex)
                 {
                     Logger.Error($"UpdateABUDF: {ex.Message}");
+                    throw new Exception("系統發生未預期錯誤");
+                }
+            }
+        }
+
+        /// <summary>
+        /// 寫入ABUDF_B
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public bool AddABUDF_B(FormView form)
+        {
+            double workDays = (form.E_DATE2 - form.B_DATE2).TotalDays + 1;
+            double downDays = form.StopWorks.Sum(o => o.DOWN_DAY);
+            using (var cn = new OleDbConnection(accessConnStr))
+            {
+                try
+                {
+                    cn.Execute(@"
+                        INSERT INTO ABUDF ([C_NO],[SER_NO],[AP_DATE1],[B_STAT],[KIND_NO],[KIND],[YEAR],[A_KIND],[MONEY],[AREA],[VOLUMEL],[B_DAY],[B_DATE],[E_DATE],[S_AMT],[T_DAY],[PRE_C_AMT],[PRE_C_AMT1],[KEYIN],[C_DATE],[M_DATE])
+                        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                        new
+                        {
+                            C_NO = form.C_NO,
+                            SER_NO = form.SER_NO,
+                            AP_DATE1 = form.AP_DATE1,
+                            B_STAT = "",
+                            KIND_NO = form.KIND_NO,
+                            KIND = form.KIND,
+                            YEAR = form.YEAR,
+                            A_KIND = form.A_KIND,
+                            MONEY = form.MONEY,
+                            AREA = form.AREA,
+                            VOLUMEL = form.VOLUMEL,
+                            B_DAY = downDays,
+                            B_DATE = form.B_DATE,
+                            E_DATE = form.E_DATE,
+                            S_AMT = form.S_AMT,
+                            T_DAY = workDays - downDays + 1,
+                            PRE_C_AMT = form.S_AMT > form.S_AMT2 ? form.S_AMT - form.S_AMT2 : 0,
+                            PRE_C_AMT1 = form.S_AMT2 > form.S_AMT ? form.S_AMT2 - form.S_AMT : 0,
+                            KEYIN = "EPB02",
+                            C_DATE = DateTime.Now,
+                            M_DATE = DateTime.Now
+                        });
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"AddABUDF_B: {ex.Message}");
                     throw new Exception("系統發生未預期錯誤");
                 }
             }

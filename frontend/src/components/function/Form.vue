@@ -187,7 +187,7 @@ export default {
 		handleCommand2(arg) {
 			const { row, cmd } = arg;
 			this.selectRow = row;
-			if (!this.selectRow.TotalMoney2) {
+			if (!this.selectRow.S_AMT2) {
 				alert('請先進入編輯畫面結算並儲存後才可修改狀態');
 				return false;
 			}
@@ -214,7 +214,7 @@ export default {
 			const paidAmount = this.selectRow.Payments.reduce((prev, current) => {
 				return prev + current.Amount;
 			}, 0);
-			if (cmd === 4 && paidAmount - this.selectRow.TotalMoney2 >= 4000) {
+			if (cmd === 4 && paidAmount - this.selectRow.S_AMT2 >= 4000) {
 				this.selectRow.CalcStatus = 5;
 			}
 

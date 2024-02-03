@@ -926,7 +926,7 @@ namespace NT_AirPollution.Service
                 try
                 {
                     int paidAmount = form.Payments.Sum(o => o.Amount);
-                    int diffMoney = form.TotalMoney2 - paidAmount;
+                    double diffMoney = form.S_AMT2.Value - paidAmount;
                     string content = sr.ReadToEnd();
                     string body = string.Format(content, form.C_NO, diffMoney.ToString("N0"));
                     string bankAccount = this.GetBankAccount(form.ID.ToString(), diffMoney);
@@ -972,7 +972,7 @@ namespace NT_AirPollution.Service
                 try
                 {
                     int paidAmount = form.Payments.Sum(o => o.Amount);
-                    int diffMoney = paidAmount - form.TotalMoney2;
+                    double diffMoney = paidAmount - form.S_AMT2.Value;
                     string content = sr.ReadToEnd();
                     string body = string.Format(content, form.C_NO, diffMoney.ToString("N0"));
                     string fileName = $"結清證明{form.C_NO}-{form.SER_NO}.pdf";
@@ -1316,7 +1316,7 @@ namespace NT_AirPollution.Service
 
                 int idx = 0;
                 // 應繳金額
-                foreach (char item in form.TotalMoney2.ToString().Reverse())
+                foreach (char item in form.S_AMT2.ToString().Reverse())
                 {
                     ws.Row(9).Cell(16 - idx).SetValue(item.ToString());
                     idx += 2;
@@ -1335,7 +1335,7 @@ namespace NT_AirPollution.Service
                 // 應退金額
                 if (form.CalcStatus == CalcStatus.通過待退費小於4000 || form.CalcStatus == CalcStatus.通過待退費大於4000)
                 {
-                    int diffMoney = paidAmount - form.TotalMoney2;
+                    double diffMoney = paidAmount - form.S_AMT2.Value;
                     foreach (char item in diffMoney.ToString().Reverse())
                     {
                         ws.Row(11).Cell(16 - idx).SetValue(item.ToString());
@@ -1347,7 +1347,7 @@ namespace NT_AirPollution.Service
                 // 補繳金額
                 if (form.CalcStatus == CalcStatus.通過待繳費)
                 {
-                    int diffMoney = form.TotalMoney2 - paidAmount;
+                    double diffMoney = form.S_AMT2.Value - paidAmount;
                     foreach (char item in diffMoney.ToString().Reverse())
                     {
                         ws.Row(12).Cell(16 - idx).SetValue(item.ToString());

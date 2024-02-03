@@ -37,8 +37,8 @@ namespace NT_AirPollution.Admin.Controllers
         [HttpPost]
         public int GetFinalCalc(FormView form)
         {
-            int TotalMoney2 = _formService.CalcTotalMoney(form);
-            return TotalMoney2;
+            int S_AMT2 = _formService.CalcTotalMoney(form);
+            return S_AMT2;
         }
 
         [HttpPost]
@@ -116,6 +116,7 @@ namespace NT_AirPollution.Admin.Controllers
                         _formService.SendStatus2(form);
                         break;
                     case CalcStatus.通過待繳費:
+                        
                         _formService.SendCalcStatus3(form);
                         break;
                     case CalcStatus.通過待退費小於4000:
@@ -123,6 +124,10 @@ namespace NT_AirPollution.Admin.Controllers
                         _formService.SendCalcStatus45(form);
                         break;
                     case CalcStatus.繳退費完成:
+                        var isAccessOK = _accessService.AddABUDF_B(form);
+                        if (!isAccessOK)
+                            throw new Exception("更新 Access 發生未預期錯誤");
+
                         form.FIN_DATE = DateTime.Now.AddYears(-1911).ToString("yyyMMdd");
                         _formService.SendCalcStatus6(form);
                         break;

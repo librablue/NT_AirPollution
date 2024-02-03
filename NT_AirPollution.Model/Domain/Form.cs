@@ -58,6 +58,11 @@ namespace NT_AirPollution.Model.Domain
         public string AP_DATE { get; set; }
 
         /// <summary>
+        /// 結算日期
+        /// </summary>
+        public string AP_DATE1 { get; set; }
+
+        /// <summary>
         /// 建照字號或合約編號
         /// </summary>
         [Required(ErrorMessage = "請輸入建照字號或合約編號")]
@@ -252,7 +257,7 @@ namespace NT_AirPollution.Model.Domain
         /// <summary>
         /// 費率年度
         /// </summary>
-        public string YEAR { get; set; }
+        public string YEAR { get; set; } = "103";
 
         /// <summary>
         /// 預計施工期程(起日)
@@ -272,6 +277,11 @@ namespace NT_AirPollution.Model.Domain
         /// 應繳總金額
         /// </summary>
         public double? S_AMT { get; set; }
+
+        /// <summary>
+        /// 結算應繳金額
+        /// </summary>
+        public double? S_AMT2 { get; set; }
 
         /// <summary>
         /// 繳款方式
@@ -544,14 +554,6 @@ namespace NT_AirPollution.Model.Domain
         /// 是否啟用
         /// </summary>
         public bool? IsActive { get; set; }
-        /// <summary>
-        /// 第一期應繳費用
-        /// </summary>
-        public int TotalMoney1 { get; set; }
-        /// <summary>
-        /// 結算應繳費用
-        /// </summary>
-        public int TotalMoney2 { get; set; }
         /// <summary>
         /// 申請單狀態
         /// </summary>

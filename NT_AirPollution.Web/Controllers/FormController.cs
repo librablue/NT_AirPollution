@@ -36,8 +36,8 @@ namespace NT_AirPollution.Web.Controllers
 
         public JsonResult GetTotalMoney(FormView form)
         {
-            int totalMoney = _formService.TryCalcTotalMoney(form);
-            return Json(new AjaxResult { Status = true, Message = totalMoney }, JsonRequestBehavior.AllowGet);
+            int S_AMT = _formService.TryCalcTotalMoney(form);
+            return Json(new AjaxResult { Status = true, Message = S_AMT }, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]
@@ -189,6 +189,7 @@ namespace NT_AirPollution.Web.Controllers
                 if (formInDB == null || (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email))
                     throw new Exception("申請單不存在");
 
+                formInDB.AP_DATE1 = DateTime.Now.AddYears(-1911).ToString("yyyMMdd");
                 formInDB.CalcStatus = CalcStatus.審理中;
                 _formService.UpdateForm(formInDB);
 

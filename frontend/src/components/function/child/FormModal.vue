@@ -7,16 +7,16 @@
 						<el-form-item prop="C_NO" label="管制編號">{{form.C_NO}}</el-form-item>
 					</div>
 					<div class="form-item-col">
-						<el-form-item label="申報應繳金額">{{form.TotalMoney1 | comma}}</el-form-item>
+						<el-form-item label="申報應繳金額">{{form.S_AMT | comma}}</el-form-item>
 					</div>
 					<div v-if="form.FormStatus === 1 || form.FormStatus === 2" class="form-item-col">
-						<el-link type="primary" @click="finalCalc('TotalMoney1')">結算</el-link>
+						<el-link type="primary" @click="finalCalc('S_AMT')">結算</el-link>
 					</div>
 					<div class="form-item-col">
-						<el-form-item label="結算應繳金額">{{form.TotalMoney2 | comma}}</el-form-item>
+						<el-form-item label="結算應繳金額">{{form.S_AMT2 | comma}}</el-form-item>
 					</div>
 					<div v-if="form.CalcStatus === 1 || form.CalcStatus === 2" class="form-item-col">
-						<el-link type="primary" @click="finalCalc('TotalMoney2')">結算</el-link>
+						<el-link type="primary" @click="finalCalc('S_AMT2')">結算</el-link>
 					</div>
 				</div>
 

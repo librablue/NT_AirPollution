@@ -366,7 +366,8 @@ namespace NT_AirPollution.Web.Controllers
                 form.ActiveCode = formInDB.ActiveCode;
                 form.IsActive = formInDB.IsActive;
                 form.P_AMT = formInDB.P_AMT;
-                form.TotalMoney2 = formInDB.TotalMoney2;
+                form.S_AMT = formInDB.S_AMT;
+                form.S_AMT2 = formInDB.S_AMT2;
                 form.C_DATE = formInDB.C_DATE;
                 form.VerifyDate = formInDB.VerifyDate;
                 form.FailReason = formInDB.FailReason;
