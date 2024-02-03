@@ -1246,7 +1246,7 @@ namespace NT_AirPollution.Service
                                     .Replace("#S_NAME#", form.S_NAME)
                                     .Replace("#TotalPeriod#", form.P_KIND == "一次全繳" ? "1" : "2")
                                     .Replace("#CurrentPeriod#", "1")
-                                    .Replace("#PayEndDate#", DateTime.Now.AddDays(6).ToString("yyyy-MM-dd"))
+                                    .Replace("#PayEndDate#", DateTime.Now.AddDays(6).AddYears(-1911).ToString("yyy年MM月dd日"))
                                     .Replace("#TotalMoney#", form.P_AMT.Value.ToString("N0"))
                                     .Replace("#ChineseMoney#", this.GetChineseMoney(form.P_AMT.Value.ToString()))
                                     .Replace("#BankAccount#", bankAccount)
