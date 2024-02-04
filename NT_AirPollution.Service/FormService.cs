@@ -1239,6 +1239,7 @@ namespace NT_AirPollution.Service
 
                 string templatePath = $@"{_paymentPath}\Template\Payment.html";
                 string readText = File.ReadAllText(templatePath);
+                double price = string.IsNullOrEmpty(form.AP_DATE1) ? form.P_AMT.Value : (form.S_AMT2.Value - form.P_AMT.Value);
                 readText = readText.Replace("#Today#", DateTime.Now.ToString("yyyy-MM-dd"))
                                     .Replace("#C_NO#", $"{form.C_NO}-{form.SER_NO}")
                                     .Replace("#COMP_NAM#", form.COMP_NAM)
@@ -1247,14 +1248,14 @@ namespace NT_AirPollution.Service
                                     .Replace("#TotalPeriod#", form.P_KIND == "一次全繳" ? "1" : "2")
                                     .Replace("#CurrentPeriod#", string.IsNullOrEmpty(form.AP_DATE1) ? "1": "2")
                                     .Replace("#PayEndDate#", DateTime.Now.AddDays(6).AddYears(-1911).ToString("yyy年MM月dd日"))
-                                    .Replace("#TotalMoney#", form.P_AMT.Value.ToString("N0"))
+                                    .Replace("#TotalMoney#", price.ToString("N0"))
                                     .Replace("#ChineseMoney#", this.GetChineseMoney(form.P_AMT.Value.ToString()))
                                     .Replace("#BankAccount#", bankAccount)
                                     .Replace("#PostAccount#", postAccount)
-                                    .Replace("#PostPrice#", form.P_AMT.Value.ToString().PadLeft(6, '0'))
+                                    .Replace("#PostPrice#", string.IsNullOrEmpty(form.AP_DATE1) ? price.ToString().PadLeft(6, '0') : price.ToString().PadLeft(6, '0'))
                                     .Replace("#Store1#", this.GetStore1Barcode())
                                     .Replace("#Store2#", bankAccount)
-                                    .Replace("#Store3#", this.GetStore3Barcode(bankAccount, form.P_AMT.Value.ToString()));
+                                    .Replace("#Store3#", this.GetStore3Barcode(bankAccount, price.ToString()));
 
                 File.WriteAllText(tempFile, readText);
 
