@@ -1263,9 +1263,15 @@ namespace NT_AirPollution.Service
                 string templatePath = $@"{_paymentPath}\Template\Payment.xlsx";
                 var wb = new XLWorkbook(templatePath);
                 var ws = wb.Worksheet(1);
-                ws.Cell("B1").SetValue(DateTime.Now.AddYears(-1911).ToString("yyyMMdd"));
+
+                ws.Cell("B2").SetValue(ws.Cell("B2").GetText().Replace("#PrintDate#", DateTime.Now.AddYears(-1911).ToString("yyy年MM月dd日")));
+                ws.Cell("M2").SetValue(ws.Cell("M2").GetText().Replace("#PrintDate#", DateTime.Now.AddYears(-1911).ToString("yyy年MM月dd日")));
+                ws.Cell("D3").SetValue($"{form.C_NO}-{form.SER_NO}");
+                ws.Cell("O3").SetValue($"{form.C_NO}-{form.SER_NO}");
+                ws.Cell("D4").SetValue(form.COMP_NAM);
+                ws.Cell("O4").SetValue(form.S_NAME);
+
                 ws.Cell("B2").SetValue(form.COMP_NAM);
-                ws.Cell("B3").SetValue($"{form.C_NO}-{form.SER_NO}");
                 ws.Cell("B4").SetValue(form.B_SERNO);
                 ws.Cell("B5").SetValue(form.S_NAME);
                 ws.Cell("B6").SetValue(form.P_KIND);
@@ -1288,17 +1294,18 @@ namespace NT_AirPollution.Service
                 var workbook = new Aspose.Cells.Workbook(tempFile);
                 foreach (Aspose.Cells.Worksheet worksheet in workbook.Worksheets)
                 {
-                    //worksheet.PageSetup.TopMargin = 2;
-                    //worksheet.PageSetup.RightMargin = 1;
-                    //worksheet.PageSetup.BottomMargin = 2;
-                    //worksheet.PageSetup.LeftMargin = 1;
-                    //worksheet.PageSetup.FitToPagesWide = 1;
-                    worksheet.PageSetup.FitToPagesWide = 1;
-                    workbook.Worksheets[0].VerticalPageBreaks.Add("Q49");
+                    Aspose.Cells.PageSetup pageSetup = worksheet.PageSetup;
+                    pageSetup.TopMargin = 1;
+                    pageSetup.RightMargin = 0;
+                    pageSetup.BottomMargin = 1;
+                    pageSetup.LeftMargin = 0;
+                    pageSetup.FitToPagesWide = 1;
+                    pageSetup.CenterHorizontally = true;
+                    pageSetup.Zoom = 90;
+                    pageSetup.PaperSize = PaperSizeType.PaperA4;
                 }
 
                 workbook.Save(existFile);
-
                 return existFile;
             }
             catch (Exception ex)
