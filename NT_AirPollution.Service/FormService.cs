@@ -3,6 +3,7 @@ using Aspose.Pdf;
 using ClosedXML.Excel;
 using Dapper;
 using Dapper.Contrib.Extensions;
+using DocumentFormat.OpenXml.Spreadsheet;
 using NT_AirPollution.Model.Domain;
 using NT_AirPollution.Model.Enum;
 using NT_AirPollution.Model.View;
@@ -1234,48 +1235,69 @@ namespace NT_AirPollution.Service
             try
             {
                 string existFile = $@"{_paymentPath}\Download\{fileName}";
-                string tempFile = $@"{_paymentPath}\Download\{fileName.Replace(".pdf", ".html")}";
+                string tempFile = $@"{_paymentPath}\Download\{fileName.Replace(".pdf", ".xlsx")}";
 
 
-                string templatePath = $@"{_paymentPath}\Template\Payment.html";
-                string readText = File.ReadAllText(templatePath);
+                //string templatePath = $@"{_paymentPath}\Template\Payment.html";
+                //string readText = File.ReadAllText(templatePath);
+                //readText = readText.Replace("#Today#", DateTime.Now.ToString("yyyy-MM-dd"))
+                //                    .Replace("#C_NO#", $"{form.C_NO}-{form.SER_NO}")
+                //                    .Replace("#COMP_NAM#", form.COMP_NAM)
+                //                    .Replace("#S_B_NAM#", form.S_B_NAM)
+                //                    .Replace("#S_NAME#", form.S_NAME)
+                //                    .Replace("#TotalPeriod#", form.P_KIND == "一次全繳" ? "1" : "2")
+                //                    .Replace("#CurrentPeriod#", string.IsNullOrEmpty(form.AP_DATE1) ? "1": "2")
+                //                    .Replace("#PayEndDate#", DateTime.Now.AddDays(6).AddYears(-1911).ToString("yyy年MM月dd日"))
+                //                    .Replace("#TotalMoney#", price.ToString("N0"))
+                //                    .Replace("#ChineseMoney#", this.GetChineseMoney(form.P_AMT.Value.ToString()))
+                //                    .Replace("#BankAccount#", bankAccount)
+                //                    .Replace("#PostAccount#", postAccount)
+                //                    .Replace("#PostPrice#", string.IsNullOrEmpty(form.AP_DATE1) ? price.ToString().PadLeft(6, '0') : price.ToString().PadLeft(6, '0'))
+                //                    .Replace("#Store1#", this.GetStore1Barcode())
+                //                    .Replace("#Store2#", bankAccount)
+                //                    .Replace("#Store3#", this.GetStore3Barcode(bankAccount, price.ToString()));
+
+                //File.WriteAllText(tempFile, readText);
+
                 double price = string.IsNullOrEmpty(form.AP_DATE1) ? form.P_AMT.Value : (form.S_AMT2.Value - form.P_AMT.Value);
-                readText = readText.Replace("#Today#", DateTime.Now.ToString("yyyy-MM-dd"))
-                                    .Replace("#C_NO#", $"{form.C_NO}-{form.SER_NO}")
-                                    .Replace("#COMP_NAM#", form.COMP_NAM)
-                                    .Replace("#S_B_NAM#", form.S_B_NAM)
-                                    .Replace("#S_NAME#", form.S_NAME)
-                                    .Replace("#TotalPeriod#", form.P_KIND == "一次全繳" ? "1" : "2")
-                                    .Replace("#CurrentPeriod#", string.IsNullOrEmpty(form.AP_DATE1) ? "1": "2")
-                                    .Replace("#PayEndDate#", DateTime.Now.AddDays(6).AddYears(-1911).ToString("yyy年MM月dd日"))
-                                    .Replace("#TotalMoney#", price.ToString("N0"))
-                                    .Replace("#ChineseMoney#", this.GetChineseMoney(form.P_AMT.Value.ToString()))
-                                    .Replace("#BankAccount#", bankAccount)
-                                    .Replace("#PostAccount#", postAccount)
-                                    .Replace("#PostPrice#", string.IsNullOrEmpty(form.AP_DATE1) ? price.ToString().PadLeft(6, '0') : price.ToString().PadLeft(6, '0'))
-                                    .Replace("#Store1#", this.GetStore1Barcode())
-                                    .Replace("#Store2#", bankAccount)
-                                    .Replace("#Store3#", this.GetStore3Barcode(bankAccount, price.ToString()));
+                string templatePath = $@"{_paymentPath}\Template\Payment.xlsx";
+                var wb = new XLWorkbook(templatePath);
+                var ws = wb.Worksheet(1);
+                ws.Cell("B1").SetValue(DateTime.Now.AddYears(-1911).ToString("yyyMMdd"));
+                ws.Cell("B2").SetValue(form.COMP_NAM);
+                ws.Cell("B3").SetValue($"{form.C_NO}-{form.SER_NO}");
+                ws.Cell("B4").SetValue(form.B_SERNO);
+                ws.Cell("B5").SetValue(form.S_NAME);
+                ws.Cell("B6").SetValue(form.P_KIND);
+                ws.Cell("B7").SetValue($"共分{(form.P_KIND == "一次全繳" ? "1" : "2")}期，本期為第{(string.IsNullOrEmpty(form.AP_DATE1) ? "1": "2")}期");
+                ws.Cell("B8").SetValue(string.IsNullOrEmpty(form.AP_DATE1) ? "1" : "2");
+                ws.Cell("B10").SetValue(DateTime.Now.AddDays(6).AddYears(-1911).ToString("yyy年MM月dd日"));
+                ws.Cell("B11").SetValue(price.ToString("N0"));
+                ws.Cell("B12").SetValue(price.ToString("N0"));
+                ws.Cell("B15").SetValue(price.ToString("N0"));
+                ws.Cell("B29").SetValue(this.GetStore1Barcode());
+                ws.Cell("B31").SetValue(bankAccount);
+                ws.Cell("B33").SetValue(this.GetStore3Barcode(bankAccount, price.ToString()));
+                ws.Cell("B37").SetValue(postAccount);
+                ws.Cell("B39").SetValue(price.ToString().PadLeft(6, '0'));
+                wb.SaveAs(tempFile);
 
-                File.WriteAllText(tempFile, readText);
-
-                Aspose.Pdf.License license = new Aspose.Pdf.License();
+                // 轉PDF
+                Aspose.Cells.License license = new Aspose.Cells.License();
                 license.SetLicense(HostingEnvironment.MapPath(@"~/license/Aspose.total.lic"));
-
-                Aspose.Pdf.HtmlLoadOptions options = new Aspose.Pdf.HtmlLoadOptions
+                var workbook = new Aspose.Cells.Workbook(tempFile);
+                foreach (Aspose.Cells.Worksheet worksheet in workbook.Worksheets)
                 {
-                    PageInfo = {
-                        Margin = {
-                            Left = 0,
-                            Top = 0,
-                            Right = 0,
-                            Bottom = 0
-                        }
-                    }
-                };
-                Document pdfDocument = new Document(tempFile, options);
-                pdfDocument.Info.Title = $"{form.C_NO}-{form.SER_NO}";
-                pdfDocument.Save(existFile);
+                    //worksheet.PageSetup.TopMargin = 2;
+                    //worksheet.PageSetup.RightMargin = 1;
+                    //worksheet.PageSetup.BottomMargin = 2;
+                    //worksheet.PageSetup.LeftMargin = 1;
+                    //worksheet.PageSetup.FitToPagesWide = 1;
+                    worksheet.PageSetup.FitToPagesWide = 1;
+                    workbook.Worksheets[0].VerticalPageBreaks.Add("Q49");
+                }
+
+                workbook.Save(existFile);
 
                 return existFile;
             }
@@ -1356,14 +1378,14 @@ namespace NT_AirPollution.Service
                     }
                 }
 
-                string tmpFile = $@"{_paymentPath}\Download\結清證明{form.C_NO}-{form.SER_NO}.xlsx";
-                wb.SaveAs(tmpFile);
+                string tempFile = $@"{_paymentPath}\Download\結清證明{form.C_NO}-{form.SER_NO}.xlsx";
+                wb.SaveAs(tempFile);
 
                 // 轉PDF
                 Aspose.Cells.License license = new Aspose.Cells.License();
                 license.SetLicense(HostingEnvironment.MapPath(@"~/license/Aspose.total.lic"));
-                var workbook = new Workbook(tmpFile);
-                foreach (Worksheet worksheet in workbook.Worksheets)
+                var workbook = new Aspose.Cells.Workbook(tempFile);
+                foreach (Aspose.Cells.Worksheet worksheet in workbook.Worksheets)
                 {
                     worksheet.PageSetup.FitToPagesWide = 1;
                 }
