@@ -423,9 +423,11 @@
 										<th>{{item.FileTitle}}</th>
 										<td>{{item.Description}}</td>
 										<td>
-											<div v-if="form.Attachments[idx] && form.Attachments[idx].FileName">
-												<a :href="`api/Option/Download?f=${form.Attachments[idx].FileName}`" class="link-download">{{form.Attachments[idx].FileName}}</a>
-											</div>
+											<ul class="file-list">
+												<li v-for="sub in filterAttachments(item.ID)" :key="sub.ID">
+													<a :href="`/Option/Download?f=${sub.FileName}`" class="link-download">{{sub.FileName}}</a>
+												</li>
+											</ul>
 										</td>
 									</tr>
 								</tbody>
@@ -498,18 +500,18 @@
 							</table>
 						</div>
 					</el-tab-pane>
-                    <el-tab-pane v-if="form.RefundBank.ID" label="退款帳戶" name="tab4">
-                        <el-form-item label="銀行代碼">{{form.RefundBank.Code}}</el-form-item>
-                        <el-form-item label="銀行帳號">{{form.RefundBank.Account}}</el-form-item>
-                        <el-form-item label="存摺照片">
-                            <img style="width:640px" :src="`api/Option/Download?f=${form.RefundBank.Photo}`" />
-                        </el-form-item>
-                    </el-tab-pane>
-                    <el-tab-pane v-if="form.PaymentProof.ID" label="繳費證明" name="tab5">
-                        <el-form-item label="繳費證明">
-                            <img style="width:640px" :src="`api/Option/Download?f=${form.PaymentProof.ProofFile}`" />
-                        </el-form-item>
-                    </el-tab-pane>
+					<el-tab-pane v-if="form.RefundBank.ID" label="退款帳戶" name="tab4">
+						<el-form-item label="銀行代碼">{{form.RefundBank.Code}}</el-form-item>
+						<el-form-item label="銀行帳號">{{form.RefundBank.Account}}</el-form-item>
+						<el-form-item label="存摺照片">
+							<img style="width:640px" :src="`api/Option/Download?f=${form.RefundBank.Photo}`" />
+						</el-form-item>
+					</el-tab-pane>
+					<el-tab-pane v-if="form.PaymentProof.ID" label="繳費證明" name="tab5">
+						<el-form-item label="繳費證明">
+							<img style="width:640px" :src="`api/Option/Download?f=${form.PaymentProof.ProofFile}`" />
+						</el-form-item>
+					</el-tab-pane>
 				</el-tabs>
 			</el-form>
 		</template>
@@ -663,6 +665,9 @@ export default {
 				this.attachmentInfo = Object.freeze(res.data);
 			});
 		},
+		filterAttachments(infoID) {
+			return this.form.Attachments.filter(item => item.InfoID === infoID);
+		},
 		getStopDays(row) {
 			if (!row.DOWN_DATE2 || !row.UP_DATE2) return '';
 			var date1 = new Date(row.DOWN_DATE2);
@@ -815,5 +820,8 @@ export default {
 }
 .modal-header {
 	margin: 10px 0;
+}
+.file-list {
+	list-style-type: none;
 }
 </style>

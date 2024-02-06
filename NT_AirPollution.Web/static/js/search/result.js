@@ -215,6 +215,9 @@
 					this.attachmentInfo = Object.freeze(res.data);
 				});
 			},
+			filterAttachments(infoID) {
+				return this.selectRow.Attachments.filter(item => item.InfoID === infoID);
+			},
 			getMyForm() {
 				const loading = this.$loading();
 				axios
@@ -235,9 +238,49 @@
 					this.failReasonDialogVisible = true;
 				}
 			},
-			deleteFile(idx) {
+			addFile(infoID) {
+				const lastID = this.selectRow.Attachments.length === 0 ? 0 : this.selectRow.Attachments[this.selectRow.Attachments.length - 1].ID;
+				this.selectRow.Attachments.push({
+					ID: lastID + 1,
+					InfoID: infoID,
+                    FileName: null
+				});
+			},
+			deleteFile(row) {
 				if (!confirm('是否確認刪除?')) return;
-				this.selectRow.Attachments[idx].FileName = null;
+				const findIdx = this.selectRow.Attachments.findIndex((item, idx) => item.ID === row.ID);
+				this.selectRow.Attachments.splice(findIdx, 1);
+			},
+			uploadAttachment(e, row) {
+				if (e.target.files.length === 0) {
+					alert('請選擇檔案');
+					return false;
+				}
+
+				const ext = e.target.files[0].name.split('.').pop();
+				const allowExt = ['doc', 'docx', 'pdf', 'jpg', 'jpeg', 'png'];
+				if (!allowExt.includes(ext)) {
+					alert('附件只允許上傳 doc/docx/pdf/jpg/png 等文件');
+					return false;
+				}
+
+				const formData = new FormData();
+				formData.append('file', e.target.files[0]);
+				axios
+					.post('/Form/UploadAttachment', formData)
+					.then(res => {
+						if (!res.data.Status) {
+							alert(res.data.Message);
+							return;
+						}
+
+                        row.FileName = res.data.Message;
+                        this.$message.success('檔案上傳完成');
+					})
+					.catch(err => {
+						alert('系統發生未預期錯誤');
+						console.log(err);
+					});
 			},
 			sendForm() {
 				this.$refs.form1.validate(valid => {
@@ -247,37 +290,8 @@
 					}
 
 					if (!confirm('是否確認繼續?')) return false;
-					const formData = new FormData();
-					for (const key in this.selectRow) {
-						if (typeof this.selectRow[key] !== 'object') formData.append(key, this.selectRow[key]);
-					}
-
-					// 附件
-                    this.selectRow.Attachments = this.filterAttachmentInfo.map((item, idx) => ({
-                        ID: this.selectRow.Attachments[idx] ? this.selectRow.Attachments[idx].ID : 0,
-                        InfoID: item.ID,
-                        FileName: this.selectRow.Attachments[idx] ? this.selectRow.Attachments[idx].FileName : null,
-                        CreateDate: this.selectRow.Attachments[idx] ? this.selectRow.Attachments[idx].CreateDate : null
-                    }));
-                    for (let i = 0; i < this.selectRow.Attachments.length; i++) {
-                        formData.append(`Attachments[${i}].ID`, this.selectRow.Attachments[i].ID);
-                        formData.append(`Attachments[${i}].InfoID`, this.selectRow.Attachments[i].InfoID);
-                        if(this.selectRow.Attachments[i].FileName)
-                            formData.append(`Attachments[${i}].FileName`, this.selectRow.Attachments[i].FileName);
-                        if(this.selectRow.Attachments[i].CreateDate)
-                            formData.append(`Attachments[${i}].CreateDate`, this.selectRow.Attachments[i].CreateDate);
-                    }
-					for (let i = 0; i < this.filterAttachmentInfo.length; i++) {
-						const file = document.querySelector(`#file${i}`);
-						if (file && file.files.length > 0) {
-							formData.append('files', file.files[0]);
-						} else {
-							formData.append('files', new Blob([], { type: 'application/octet-stream' }));
-						}
-					}
-
 					axios
-						.post('/Search/UpdateForm', formData)
+						.post('/Search/UpdateForm', this.selectRow)
 						.then(res => {
 							if (!res.data.Status) {
 								alert(res.data.Message);

@@ -451,12 +451,14 @@ namespace NT_AirPollution.Service
                         long id = cn.Insert(form, trans);
 
                         // 附件
-                        foreach (var item in form.Attachments)
+                        var attachments = form.Attachments.Where(o => !string.IsNullOrEmpty(o.FileName));
+                        foreach (var item in attachments)
                         {
+                            item.ID = 0;
                             item.FormID = id;
                             item.CreateDate = DateTime.Now;
                         }
-                        cn.Insert(form.Attachments, trans);
+                        cn.Insert(attachments, trans);
 
                         trans.Commit();
                         return id;
@@ -489,13 +491,15 @@ namespace NT_AirPollution.Service
 
                         // 附件
                         cn.Execute(@"DELETE FROM Attachment WHERE FormID=@FormID", new { FormID = form.ID }, trans);
-                        foreach (var item in form.Attachments)
+                        var attachments = form.Attachments.Where(o => !string.IsNullOrEmpty(o.FileName));
+                        foreach (var item in attachments)
                         {
+                            item.ID = 0;
                             item.FormID = form.ID;
                             item.CreateDate = item.CreateDate ?? DateTime.Now;
                         }
 
-                        cn.Insert(form.Attachments, trans);
+                        cn.Insert(attachments, trans);
 
                         trans.Commit();
                         return true;

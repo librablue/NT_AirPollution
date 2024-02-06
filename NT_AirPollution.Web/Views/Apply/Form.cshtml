@@ -545,11 +545,14 @@
                                 <th>{{item.FileTitle}}</th>
                                 <td>{{item.Description}}</td>
                                 <td>
-                                    <div v-if="selectRow.Attachments[idx] && selectRow.Attachments[idx].FileName">
-                                        <a href="javascript:;" class="link-delete" @@click="deleteFile(idx)"><i class="el-icon-delete"></i></a>
-                                        <a :href="`/Option/Download?f=${selectRow.Attachments[idx].FileName}`" class="link-download">{{selectRow.Attachments[idx].FileName}}</a>
-                                    </div>
-                                    <input v-else type="file" :id="`file${idx}`" accept=".doc,.docx,.pdf,.jpg,.jpeg,.png" />
+                                    <a href="javascript:;" v-if="mode === 'Add' || selectRow.FormStatus <= 2" class="link-add" title="新增檔案" @@click="addFile(item.ID)"><i class="el-icon-circle-plus-outline"></i></a>
+                                    <ul class="file-list">
+                                        <li v-for="sub in filterAttachments(item.ID)" :key="sub.ID">
+                                            <a href="javascript:;" class="link-delete" @@click="deleteFile(sub)"><i class="el-icon-delete"></i></a>
+                                            <a :href="`/Option/Download?f=${sub.FileName}`" class="link-download">{{sub.FileName}}</a>
+                                            <input v-if="!sub.FileName" type="file" accept=".doc,.docx,.pdf,.jpg,.jpeg,.png" @@change="uploadAttachment($event, sub)" />
+                                        </li>
+                                    </ul>
                                 </td>
                             </tr>
                         </tbody>

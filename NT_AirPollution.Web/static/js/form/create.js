@@ -183,9 +183,52 @@
 					this.attachmentInfo = Object.freeze(res.data);
 				});
 			},
-			deleteFile(idx) {
+			filterAttachments(infoID) {
+				return this.form.Attachments.filter(item => item.InfoID === infoID);
+			},
+			addFile(infoID) {
+				const lastID = this.form.Attachments.length === 0 ? 0 : this.form.Attachments[this.form.Attachments.length - 1].ID;
+				this.form.Attachments.push({
+					ID: lastID + 1,
+					InfoID: infoID,
+                    FileName: null
+				});
+			},
+			deleteFile(row) {
 				if (!confirm('是否確認刪除?')) return;
-				this.form.Attachments[idx].FileName = null;
+				const findIdx = this.form.Attachments.findIndex((item, idx) => item.ID === row.ID);
+				this.form.Attachments.splice(findIdx, 1);
+			},
+			uploadAttachment(e, row) {
+				if (e.target.files.length === 0) {
+					alert('請選擇檔案');
+					return false;
+				}
+
+				const ext = e.target.files[0].name.split('.').pop();
+				const allowExt = ['doc', 'docx', 'pdf', 'jpg', 'jpeg', 'png'];
+				if (!allowExt.includes(ext)) {
+					alert('附件只允許上傳 doc/docx/pdf/jpg/png 等文件');
+					return false;
+				}
+
+				const formData = new FormData();
+				formData.append('file', e.target.files[0]);
+				axios
+					.post('/Form/UploadAttachment', formData)
+					.then(res => {
+						if (!res.data.Status) {
+							alert(res.data.Message);
+							return;
+						}
+
+                        row.FileName = res.data.Message;
+                        this.$message.success('檔案上傳完成');
+					})
+					.catch(err => {
+						alert('系統發生未預期錯誤');
+						console.log(err);
+					});
 			},
 			sendForm() {
 				this.form.Captcha = grecaptcha.getResponse();
@@ -196,37 +239,8 @@
 					}
 
 					if (!confirm('是否確認繼續?')) return false;
-					const formData = new FormData();
-					for (const key in this.form) {
-						if (typeof this.form[key] !== 'object') formData.append(key, this.form[key]);
-					}
-
-					// 附件
-					this.form.Attachments = this.filterAttachmentInfo.map((item, idx) => ({
-						ID: this.form.Attachments[idx] ? this.form.Attachments[idx].ID : 0,
-						InfoID: item.ID,
-                        FileName: this.form.Attachments[idx] ? this.form.Attachments[idx].FileName : null,
-                        CreateDate: this.form.Attachments[idx] ? this.form.Attachments[idx].CreateDate : null
-					}));
-					for (let i = 0; i < this.form.Attachments.length; i++) {
-						formData.append(`Attachments[${i}].ID`, this.form.Attachments[i].ID);
-						formData.append(`Attachments[${i}].InfoID`, this.form.Attachments[i].InfoID);
-                        if(this.form.Attachments[i].FileName)
-                            formData.append(`Attachments[${i}].FileName`, this.form.Attachments[i].FileName);
-                        if(this.form.Attachments[i].CreateDate)
-                            formData.append(`Attachments[${i}].CreateDate`, this.form.Attachments[i].CreateDate);
-					}
-					for (let i = 0; i < this.filterAttachmentInfo.length; i++) {
-						const file = document.querySelector(`#file${i}`);
-						if (file && file.files.length > 0) {
-							formData.append('files', file.files[0]);
-						} else {
-							formData.append('files', new Blob([], { type: 'application/octet-stream' }));
-						}
-					}
-
 					axios
-						.post(`/Form/Create`, formData)
+						.post('/Form/Create', this.form)
 						.then(res => {
 							if (!res.data.Status) {
 								grecaptcha.reset();

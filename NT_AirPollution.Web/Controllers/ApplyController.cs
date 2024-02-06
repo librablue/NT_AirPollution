@@ -193,7 +193,7 @@ namespace NT_AirPollution.Web.Controllers
         }
 
         [HttpPost]
-        public JsonResult AddForm(FormView form, List<HttpPostedFileBase> files)
+        public JsonResult AddForm(FormView form)
         {
             try
             {
@@ -205,48 +205,6 @@ namespace NT_AirPollution.Web.Controllers
 
                 if (form.B_DATE2 > form.E_DATE2)
                     throw new Exception("施工期程起始日期不能大於結束日期");
-
-                var info = _optionService.GetAttachmentInfo().Where(o => o.PUB_COMP == form.PUB_COMP).ToList();
-                if (info.Count() != files.Count() || form.Attachments.Count() != info.Count())
-                    throw new Exception("檔案上傳數量異常");
-
-
-                List<string> allowExt = new List<string> { ".doc", ".docx", ".pdf", ".jpg", ".jpeg", ".png" };
-                foreach (var file in files)
-                {
-                    if (file == null || file.ContentLength == 0)
-                        continue;
-
-                    string ext = Path.GetExtension(file.FileName).ToLower();
-                    if (!allowExt.Any(o => o == ext))
-                        throw new Exception("附件只允許上傳 doc/docx/pdf/jpg/png 等文件");
-                }
-
-                // 設定資料夾
-                string absoluteDirPath = $"{_uploadPath}";
-                if (!Directory.Exists(absoluteDirPath))
-                    Directory.CreateDirectory(absoluteDirPath);
-
-                string absoluteFilePath = "";
-                int i = 0;
-                foreach (var file in files)
-                {
-                    if (file == null || file.ContentLength == 0)
-                    {
-                        i++;
-                        continue;
-                    }
-
-                    // 生成檔名
-                    string fileName = $@"{Guid.NewGuid().ToString()}{Path.GetExtension(file.FileName)}";
-                    // 設定儲存路徑
-                    absoluteFilePath = absoluteDirPath + $@"\{fileName}";
-                    // 儲存檔案
-                    file.SaveAs(absoluteFilePath);
-                    form.Attachments[i].InfoID = i + 1;
-                    form.Attachments[i].FileName = fileName;
-                    i++;
-                }
 
                 var allDists = _optionService.GetDistrict();
                 var allProjectCode = _optionService.GetProjectCode();
@@ -297,7 +255,7 @@ namespace NT_AirPollution.Web.Controllers
         }
 
         [HttpPost]
-        public JsonResult UpdateForm(FormView form, List<HttpPostedFileBase> files)
+        public JsonResult UpdateForm(FormView form)
         {
             try
             {
@@ -314,53 +272,14 @@ namespace NT_AirPollution.Web.Controllers
                 if (form.B_DATE2 > form.E_DATE2)
                     throw new Exception("施工期程起始日期不能大於結束日期");
 
-                var info = _optionService.GetAttachmentInfo().Where(o => o.PUB_COMP == form.PUB_COMP).ToList();
-                if(info.Count() != files.Count() || form.Attachments.Count() != info.Count())
-                    throw new Exception("檔案上傳數量異常");
-
-
-                List<string> allowExt = new List<string> { ".doc", ".docx", ".pdf", ".jpg", ".jpeg", ".png" };
-                foreach (var file in files)
-                {
-                    if (file == null || file.ContentLength == 0)
-                        continue;
-
-                    string ext = Path.GetExtension(file.FileName).ToLower();
-                    if (!allowExt.Any(o => o == ext))
-                        throw new Exception("附件只允許上傳 doc/docx/pdf/jpg/png 等文件");
-                }
-
-                // 設定資料夾
-                string absoluteDirPath = $"{_uploadPath}";
-                if (!Directory.Exists(absoluteDirPath))
-                    Directory.CreateDirectory(absoluteDirPath);
-
-                string absoluteFilePath = "";
-                int i = 0;
-                foreach (var file in files)
-                {
-                    if (file == null || file.ContentLength == 0)
-                    {
-                        i++;
-                        continue;
-                    }
-
-                    // 生成檔名
-                    string fileName = $@"{Guid.NewGuid().ToString()}{Path.GetExtension(file.FileName)}";
-                    // 設定儲存路徑
-                    absoluteFilePath = absoluteDirPath + $@"\{fileName}";
-                    // 儲存檔案
-                    file.SaveAs(absoluteFilePath);
-                    form.Attachments[i].InfoID = i + 1;
-                    form.Attachments[i].FileName = fileName;
-                    i++;
-                }
 
                 var allDists = _optionService.GetDistrict();
                 var allProjectCode = _optionService.GetProjectCode();
                 // 避免被修改的欄位
                 form.C_NO = formInDB.C_NO;
                 form.SER_NO = formInDB.SER_NO;
+                form.AP_DATE = formInDB.AP_DATE;
+                form.AP_DATE1 = formInDB.AP_DATE1;
                 form.ClientUserID = formInDB.ClientUserID;
                 form.CreateUserEmail = formInDB.CreateUserEmail;
                 form.ActiveCode = formInDB.ActiveCode;
