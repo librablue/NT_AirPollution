@@ -852,9 +852,9 @@ namespace NT_AirPollution.Service
                     string body = string.Format(content, form.C_NO);
                     string bankAccount = this.GetBankAccount(form.ID.ToString(), form.P_AMT.Value);
                     string postAccount = this.GetPostAccount(form.ID.ToString(), form.P_AMT.Value);
-                    string fileName = $"繳款單{form.C_NO}-{form.SER_NO}({(form.P_KIND == "一次繳清" ? "一次繳清" : "第一期")}).pdf";
+                    string fileName = $"繳款單{form.C_NO}-{form.SER_NO}({(form.P_KIND == "一次繳清" ? "一次繳清" : "第一期")})";
                     // 產生繳款單
-                    string docPath = this.CreatePaymentPDF(bankAccount, postAccount, fileName, form);
+                    string pdfPath = this.CreatePaymentPDF(bankAccount, postAccount, fileName, form);
 
                     using (var cn = new SqlConnection(connStr))
                     {
@@ -864,7 +864,7 @@ namespace NT_AirPollution.Service
                             Address = form.CreateUserEmail,
                             Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件繳費通知(管制編號 {form.C_NO})",
                             Body = body,
-                            Attachment = docPath,
+                            Attachment = pdfPath,
                             FailTimes = 0,
                             CreateDate = DateTime.Now
                         });
@@ -936,7 +936,7 @@ namespace NT_AirPollution.Service
                     string body = string.Format(content, form.C_NO, diffMoney.ToString("N0"));
                     string bankAccount = this.GetBankAccount(form.ID.ToString(), diffMoney);
                     string postAccount = this.GetPostAccount(form.ID.ToString(), diffMoney);
-                    string fileName = $"繳款單{form.C_NO}-{form.SER_NO}(結算補繳).pdf";
+                    string fileName = $"繳款單{form.C_NO}-{form.SER_NO}(結算補繳)";
                     // 產生繳款單
                     string docPath = this.CreatePaymentPDF(bankAccount, postAccount, fileName, form);
 
@@ -980,9 +980,8 @@ namespace NT_AirPollution.Service
                     double diffMoney = paidAmount - form.S_AMT2.Value;
                     string content = sr.ReadToEnd();
                     string body = string.Format(content, form.C_NO, diffMoney.ToString("N0"));
-                    string fileName = $"結清證明{form.C_NO}-{form.SER_NO}.pdf";
                     // 產生結清證明
-                    string docPath = this.CreateProofPDF(fileName, form);
+                    string pdfPath = this.CreateProofPDF(form);
 
                     using (var cn = new SqlConnection(connStr))
                     {
@@ -992,7 +991,7 @@ namespace NT_AirPollution.Service
                             Address = form.CreateUserEmail,
                             Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件結算通知(可退費)(管制編號 {form.C_NO})",
                             Body = body,
-                            Attachment = docPath,
+                            Attachment = pdfPath,
                             FailTimes = 0,
                             CreateDate = DateTime.Now
                         });
@@ -1022,9 +1021,8 @@ namespace NT_AirPollution.Service
                 {
                     string content = sr.ReadToEnd();
                     string body = string.Format(content, form.C_NO);
-                    string fileName = $"結清證明{form.C_NO}-{form.SER_NO}.pdf";
                     // 產生結清證明
-                    string docPath = this.CreateProofPDF(fileName, form);
+                    string pdfPath = this.CreateProofPDF(form);
 
                     using (var cn = new SqlConnection(connStr))
                     {
@@ -1034,7 +1032,7 @@ namespace NT_AirPollution.Service
                             Address = form.CreateUserEmail,
                             Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件結算通知(已結清)(管制編號 {form.C_NO})",
                             Body = body,
-                            Attachment = docPath,
+                            Attachment = pdfPath,
                             FailTimes = 0,
                             CreateDate = DateTime.Now
                         });
@@ -1238,15 +1236,14 @@ namespace NT_AirPollution.Service
         {
             try
             {
-                string existFile = $@"{_paymentPath}\Download\{fileName}";
-                string tempFile = $@"{_paymentPath}\Download\{fileName.Replace(".pdf", ".xlsx")}";
+                string templateFile = $@"{_paymentPath}\Template\Payment.xlsx";
+                string tempFile = $@"{_paymentPath}\Download\{fileName}.xlsx";
+                string pdfFile = $@"{_paymentPath}\Download\{fileName}.pdf";
 
                 double totalPrice = string.IsNullOrEmpty(form.AP_DATE1) ? form.S_AMT.Value : form.S_AMT2.Value;
                 double price = string.IsNullOrEmpty(form.AP_DATE1) ? form.P_AMT.Value : (form.S_AMT2.Value - form.P_AMT.Value);
-                string templatePath = $@"{_paymentPath}\Template\Payment.xlsx";
-                var wb = new XLWorkbook(templatePath);
+                var wb = new XLWorkbook(templateFile);
                 var ws = wb.Worksheet(1);
-
                 ws.Cell("B2").SetValue(ws.Cell("B2").GetText().Replace("#PrintDate#", DateTime.Now.AddYears(-1911).ToString("yyy年MM月dd日")));
                 ws.Cell("M2").SetValue(ws.Cell("M2").GetText().Replace("#PrintDate#", DateTime.Now.AddYears(-1911).ToString("yyy年MM月dd日")));
                 ws.Cell("D3").SetValue($"{form.C_NO}-{form.SER_NO}");
@@ -1316,8 +1313,8 @@ namespace NT_AirPollution.Service
                 }
 
                 FontConfigs.SetFontFolder($@"{_paymentPath}\Template", false);
-                workbook.Save(existFile);
-                return existFile;
+                workbook.Save(pdfFile);
+                return pdfFile;
             }
             catch (Exception ex)
             {
@@ -1329,20 +1326,20 @@ namespace NT_AirPollution.Service
         /// <summary>
         /// 產生結清證明
         /// </summary>
-        /// <param name="fileName">產生檔名</param>
         /// <param name="form"></param>
         /// <returns>檔案完整路徑</returns>
-        public string CreateProofPDF(string fileName, FormView form)
+        public string CreateProofPDF(FormView form)
         {
             try
             {
+                // 範本檔
+                string templateFile = $@"{_paymentPath}\Template\結清證明.xlsx";
                 // 如果已經產生過檔案，直接下載
-                string existFile = $@"{_paymentPath}\Download\{fileName}";
+                string existFile = $@"{_paymentPath}\Download\{form.C_NO}-{form.SER_NO}結清證明.pdf";
                 //if (File.Exists(existFile))
                 //    return existFile;
 
-                string templatePath = $@"{_paymentPath}\Template\結清證明.xlsx";
-                var wb = new XLWorkbook(templatePath);
+                var wb = new XLWorkbook(templateFile);
                 var ws = wb.Worksheet(1);
                 ws.Cell("B2").SetValue(form.COMP_NAM);
                 ws.Cell("B3").SetValue($"{form.C_NO}-{form.SER_NO}");
@@ -1352,8 +1349,6 @@ namespace NT_AirPollution.Service
                 ws.Cell("E28").SetValue(DateTime.Now.AddYears(-1911).ToString("yyy"));
                 ws.Cell("I28").SetValue(DateTime.Now.ToString("MM"));
                 ws.Cell("N28").SetValue(DateTime.Now.ToString("dd"));
-
-
 
                 int idx = 0;
                 // 應繳金額
@@ -1413,7 +1408,7 @@ namespace NT_AirPollution.Service
             }
             catch (Exception ex)
             {
-                Logger.Error($"CreateRefundPDF: {ex.Message}");
+                Logger.Error($"CreateProofPDF: {ex.Message}");
                 throw ex;
             }
         }
