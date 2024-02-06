@@ -1237,28 +1237,7 @@ namespace NT_AirPollution.Service
                 string existFile = $@"{_paymentPath}\Download\{fileName}";
                 string tempFile = $@"{_paymentPath}\Download\{fileName.Replace(".pdf", ".xlsx")}";
 
-
-                //string templatePath = $@"{_paymentPath}\Template\Payment.html";
-                //string readText = File.ReadAllText(templatePath);
-                //readText = readText.Replace("#Today#", DateTime.Now.ToString("yyyy-MM-dd"))
-                //                    .Replace("#C_NO#", $"{form.C_NO}-{form.SER_NO}")
-                //                    .Replace("#COMP_NAM#", form.COMP_NAM)
-                //                    .Replace("#S_B_NAM#", form.S_B_NAM)
-                //                    .Replace("#S_NAME#", form.S_NAME)
-                //                    .Replace("#TotalPeriod#", form.P_KIND == "一次全繳" ? "1" : "2")
-                //                    .Replace("#CurrentPeriod#", string.IsNullOrEmpty(form.AP_DATE1) ? "1": "2")
-                //                    .Replace("#PayEndDate#", DateTime.Now.AddDays(6).AddYears(-1911).ToString("yyy年MM月dd日"))
-                //                    .Replace("#TotalMoney#", price.ToString("N0"))
-                //                    .Replace("#ChineseMoney#", this.GetChineseMoney(form.P_AMT.Value.ToString()))
-                //                    .Replace("#BankAccount#", bankAccount)
-                //                    .Replace("#PostAccount#", postAccount)
-                //                    .Replace("#PostPrice#", string.IsNullOrEmpty(form.AP_DATE1) ? price.ToString().PadLeft(6, '0') : price.ToString().PadLeft(6, '0'))
-                //                    .Replace("#Store1#", this.GetStore1Barcode())
-                //                    .Replace("#Store2#", bankAccount)
-                //                    .Replace("#Store3#", this.GetStore3Barcode(bankAccount, price.ToString()));
-
-                //File.WriteAllText(tempFile, readText);
-
+                double totalPrice = string.IsNullOrEmpty(form.AP_DATE1) ? form.S_AMT.Value : form.S_AMT2.Value;
                 double price = string.IsNullOrEmpty(form.AP_DATE1) ? form.P_AMT.Value : (form.S_AMT2.Value - form.P_AMT.Value);
                 string templatePath = $@"{_paymentPath}\Template\Payment.xlsx";
                 var wb = new XLWorkbook(templatePath);
@@ -1270,22 +1249,49 @@ namespace NT_AirPollution.Service
                 ws.Cell("O3").SetValue($"{form.C_NO}-{form.SER_NO}");
                 ws.Cell("D4").SetValue(form.COMP_NAM);
                 ws.Cell("O4").SetValue(form.S_NAME);
-
-                ws.Cell("B2").SetValue(form.COMP_NAM);
-                ws.Cell("B4").SetValue(form.B_SERNO);
-                ws.Cell("B5").SetValue(form.S_NAME);
-                ws.Cell("B6").SetValue(form.P_KIND);
-                ws.Cell("B7").SetValue($"共分{(form.P_KIND == "一次全繳" ? "1" : "2")}期，本期為第{(string.IsNullOrEmpty(form.AP_DATE1) ? "1": "2")}期");
-                ws.Cell("B8").SetValue(string.IsNullOrEmpty(form.AP_DATE1) ? "1" : "2");
-                ws.Cell("B10").SetValue(DateTime.Now.AddDays(6).AddYears(-1911).ToString("yyy年MM月dd日"));
-                ws.Cell("B11").SetValue(price.ToString("N0"));
-                ws.Cell("B12").SetValue(price.ToString("N0"));
-                ws.Cell("B15").SetValue(price.ToString("N0"));
-                ws.Cell("B29").SetValue(this.GetStore1Barcode());
-                ws.Cell("B31").SetValue(bankAccount);
-                ws.Cell("B33").SetValue(this.GetStore3Barcode(bankAccount, price.ToString()));
-                ws.Cell("B37").SetValue(postAccount);
-                ws.Cell("B39").SetValue(price.ToString().PadLeft(6, '0'));
+                ws.Cell("D5").SetValue(form.S_NAME);
+                ws.Cell("O5").SetValue(form.COMP_NAM);
+                ws.Cell("F6").SetValue(form.B_SERNO);
+                ws.Cell("D7").SetValue(form.P_KIND);
+                ws.Cell("F7").SetValue(ws.Cell("F7").GetText().Replace("#P_NUM#", form.P_KIND == "一次全繳" ? "1" : "2").Replace("#P_TIME#", string.IsNullOrEmpty(form.AP_DATE1) ? "1" : "2"));
+                ws.Cell("O7").SetValue(ws.Cell("O7").GetText().Replace("#P_NUM#", form.P_KIND == "一次全繳" ? "1" : "2").Replace("#P_TIME#", string.IsNullOrEmpty(form.AP_DATE1) ? "1" : "2"));
+                ws.Cell("D8").SetValue(ws.Cell("D8").GetText().Replace("#PayEndDate#", DateTime.Now.AddDays(6).AddYears(-1911).ToString("yyy年MM月dd日")));
+                ws.Cell("O8").SetValue(totalPrice.ToString("N0"));
+                ws.Cell("D9").SetValue(price.ToString("N0"));
+                ws.Cell("O9").SetValue(this.GetChineseMoney(totalPrice.ToString()));
+                ws.Cell("D12").SetValue(price.ToString("N0"));
+                ws.Cell("M12").SetValue(form.B_SERNO);
+                ws.Cell("D13").SetValue(this.GetChineseMoney(price.ToString()));
+                ws.Cell("D18").SetValue($"{form.C_NO}-{form.SER_NO}");
+                ws.Cell("I18").SetValue(form.COMP_NAM);
+                ws.Cell("D19").SetValue(form.S_NAME);
+                ws.Cell("P19").SetValue(form.B_SERNO);
+                ws.Cell("D20").SetValue(form.P_KIND);
+                ws.Cell("F20").SetValue(ws.Cell("F20").GetText().Replace("#P_NUM#", form.P_KIND == "一次全繳" ? "1" : "2").Replace("#P_TIME#", string.IsNullOrEmpty(form.AP_DATE1) ? "1" : "2"));
+                ws.Cell("D21").SetValue(ws.Cell("D21").GetText().Replace("#PayEndDate#", DateTime.Now.AddDays(6).AddYears(-1911).ToString("yyy年MM月dd日")));
+                ws.Cell("D22").SetValue(price.ToString("N0"));
+                ws.Cell("D24").SetValue(price.ToString("N0"));
+                ws.Cell("D25").SetValue(this.GetChineseMoney(price.ToString()));
+                ws.Cell("D30").SetValue($"{form.C_NO}-{form.SER_NO}");
+                ws.Cell("I30").SetValue(form.COMP_NAM);
+                ws.Cell("D31").SetValue(form.S_NAME);
+                ws.Cell("P31").SetValue(form.B_SERNO);
+                ws.Cell("D32").SetValue(form.P_KIND);
+                ws.Cell("F32").SetValue(ws.Cell("F32").GetText().Replace("#P_NUM#", form.P_KIND == "一次全繳" ? "1" : "2").Replace("#P_TIME#", string.IsNullOrEmpty(form.AP_DATE1) ? "1" : "2"));
+                ws.Cell("O32").SetValue(DateTime.Now.AddDays(6).AddYears(-1911).ToString("yyy年MM月dd日"));
+                ws.Cell("D34").SetValue(price.ToString("N0"));
+                ws.Cell("D35").SetValue(price.ToString("N0"));
+                ws.Cell("G35").SetValue(ws.Cell("G35").GetText().Replace("#F_AMTC#", this.GetChineseMoney(price.ToString())));
+                ws.Cell("K37").SetValue($"*{this.GetStore1Barcode()}*");
+                ws.Cell("K38").SetValue(this.GetStore1Barcode());
+                ws.Cell("K39").SetValue($"*{bankAccount}*");
+                ws.Cell("K40").SetValue(bankAccount);
+                ws.Cell("K41").SetValue($"*{this.GetStore3Barcode(bankAccount, price.ToString())}*");
+                ws.Cell("K42").SetValue(this.GetStore3Barcode(bankAccount, price.ToString()));
+                ws.Cell("K45").SetValue($"*{postAccount}*");
+                ws.Cell("K46").SetValue(postAccount);
+                ws.Cell("K47").SetValue($"*{(price + 15).ToString().PadLeft(6, '0')}*");
+                ws.Cell("K48").SetValue((price + 15).ToString().PadLeft(6, '0'));
                 wb.SaveAs(tempFile);
 
                 // 轉PDF
@@ -1305,6 +1311,7 @@ namespace NT_AirPollution.Service
                     pageSetup.PaperSize = PaperSizeType.PaperA4;
                 }
 
+                FontConfigs.SetFontFolder($@"{_paymentPath}\Template", false);
                 workbook.Save(existFile);
                 return existFile;
             }
