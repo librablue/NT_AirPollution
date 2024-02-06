@@ -11,7 +11,9 @@ using System;
 using System.Collections.Generic;
 using System.Data.OleDb;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -19,6 +21,50 @@ namespace NT_AirPollution.Service
 {
     public class AccessService : BaseService
     {
+        private readonly string domain = "192.168.96.16";
+        private readonly string userName = "cpc";
+        private readonly string password = "Ciohe@2565!";
+        private readonly int LOGON32_PROVIDER_DEFAULT;
+        private readonly int LOGON32_LOGON_NEW_CREDENTIALS = 9;
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        public static extern bool LogonUser(string lpszUsername, string lpszDomain, string lpszPassword,
+        int dwLogonType, int dwLogonProvider, out IntPtr phToken);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool CloseHandle(IntPtr hObject);
+
+        public AccessService()
+        {
+#if !DEBUG
+            IntPtr tokenHandle;
+            // 將登入的Token放在tokenHandle
+            bool success = LogonUser(userName, domain, password, LOGON32_LOGON_NEW_CREDENTIALS, LOGON32_PROVIDER_DEFAULT, out tokenHandle);
+            if (success)
+            {
+                try
+                {
+                    // 讓程式模擬登入的使用者
+                    WindowsIdentity newId = new WindowsIdentity(tokenHandle);
+                    WindowsImpersonationContext impersonatedUser = newId.Impersonate();
+
+                    // 結束模擬登入
+                    //impersonatedUser.Undo();
+                }
+                finally
+                {
+                    // 關閉 tokenHandle
+                    //CloseHandle(tokenHandle);
+                }
+            }
+            else
+            {
+                int error = Marshal.GetLastWin32Error();
+                Console.WriteLine($"登入 192.168.96.16 錯誤 {error}");
+            }
+#endif
+        }
+
         /// <summary>
         /// 取得最新管制編號
         /// </summary>
