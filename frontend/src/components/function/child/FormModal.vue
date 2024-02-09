@@ -447,6 +447,9 @@
 									</tr>
 								</thead>
 								<tbody>
+                                    <tr v-if="form.StopWorks.length === 0">
+                                        <td colspan="4">暫無資料</td>
+                                    </tr>
 									<tr v-for="(item, idx) in form.StopWorks" :key="idx">
 										<td style="width: 50px">
 											<el-button type="danger" size="mini" icon="el-icon-delete" circle @click="deleteStopWork(idx)"></el-button>
@@ -482,6 +485,9 @@
 									</tr>
 								</thead>
 								<tbody>
+                                    <tr v-if="form.Payments.length === 0">
+                                        <td colspan="3">暫無資料</td>
+                                    </tr>
 									<tr v-for="(item, idx) in form.Payments" :key="idx">
 										<td style="width: 50px">
 											<el-button type="danger" size="mini" icon="el-icon-delete" circle @click="deletePayment(idx)"></el-button>
@@ -530,7 +536,7 @@ import { mapGetters } from 'vuex';
 import { dateTime, comma, form } from '@/mixins/filter';
 export default {
 	name: 'FormModal',
-	props: ['show', 'data'],
+	props: ['show', 'mode', 'data'],
 	mixins: [dateTime, comma, form],
 	data() {
 		const checkE_DATE2 = (rule, value, callback) => {
@@ -723,7 +729,7 @@ export default {
 
 				if (!confirm('是否確認繼續?')) return false;
 				this.axios
-					.post('api/Form/UpdateForm', this.form)
+					.post(`api/Form/${this.mode}Form`, this.form)
 					.then(res => {
 						this.$emit('on-updated');
 						this.$message.success('畫面資料已儲存');

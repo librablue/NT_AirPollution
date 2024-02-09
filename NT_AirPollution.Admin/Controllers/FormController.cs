@@ -42,6 +42,46 @@ namespace NT_AirPollution.Admin.Controllers
         }
 
         [HttpPost]
+        public bool AddForm(FormView form)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    string firstError = ModelState.Values.SelectMany(o => o.Errors).First().ErrorMessage;
+                    throw new Exception(firstError);
+                }
+
+                if (form.B_DATE2 > form.E_DATE2)
+                    throw new Exception("施工期程起始日期不能大於結束日期");
+
+                form.SER_NO += 1;
+                form.AP_DATE = DateTime.Now.AddYears(-1911).ToString("yyyMMdd");
+                form.B_DATE = form.B_DATE2.AddYears(-1911).ToString("yyyMMdd");
+                form.E_DATE = form.E_DATE2.AddYears(-1911).ToString("yyyMMdd");
+                form.S_B_BDATE = form.S_B_BDATE2.AddYears(-1911).ToString("yyyMMdd");
+                form.R_B_BDATE = form.R_B_BDATE2.AddYears(-1911).ToString("yyyMMdd");
+                form.C_DATE = DateTime.Now;
+                form.M_DATE = DateTime.Now;
+                form.FormStatus = FormStatus.審理中;
+                form.CalcStatus = CalcStatus.未申請;
+
+                // 寫入 Access
+                bool isAccessOK = _accessService.AddABUDF(form);
+                if (!isAccessOK)
+                    throw new Exception("系統發生未預期錯誤");
+
+                _formService.AddForm(form);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        [HttpPost]
         public bool UpdateForm(FormView form)
         {
             try
@@ -83,7 +123,7 @@ namespace NT_AirPollution.Admin.Controllers
                         form.S_AMT = _formService.CalcTotalMoney(form);
                         form.P_NUM = form.P_KIND == "一次全繳" ? 1 : 2;
                         form.P_AMT = form.S_AMT;
-                        if(form.P_KIND == "分兩次繳清")
+                        if (form.P_KIND == "分兩次繳清")
                             form.P_AMT = form.S_AMT / 2;
 
                         _formService.SendFormStatus3(form);
@@ -118,7 +158,7 @@ namespace NT_AirPollution.Admin.Controllers
                         _formService.SendStatus2(form);
                         break;
                     case CalcStatus.通過待繳費:
-                        
+
                         _formService.SendCalcStatus3(form);
                         break;
                     case CalcStatus.通過待退費小於4000:

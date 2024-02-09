@@ -72,7 +72,7 @@ namespace NT_AirPollution.Service
         /// <returns></returns>
         public string GetC_NO(FormView form)
         {
-            string chineseYear = form.C_DATE.AddYears(-1911).ToString("yyy");
+            string chineseYear = form.C_DATE.Value.AddYears(-1911).ToString("yyy");
             using (var cn = new OleDbConnection(accessConnStr))
             {
                 var result = cn.QueryFirstOrDefault(@"
@@ -207,8 +207,8 @@ namespace NT_AirPollution.Service
                             RCE = form.RCE,
                             COMMENT = form.COMMENT,
                             EIACOMMENTS = form.EIACOMMENTS,
-                            C_DATE = form.C_DATE.ToString("yyyy-MM-dd HH:mm:ss"),
-                            M_DATE = form.M_DATE.ToString("yyyy-MM-dd HH:mm:ss"),
+                            C_DATE = form.C_DATE.Value.ToString("yyyy-MM-dd HH:mm:ss"),
+                            M_DATE = form.M_DATE.Value.ToString("yyyy-MM-dd HH:mm:ss"),
                             KEYIN = "EPB02",
                             RECCOMMENTS = form.RECCOMMENTS
                         });
@@ -435,7 +435,7 @@ namespace NT_AirPollution.Service
                             RCE = form.RCE,
                             COMMENT = form.COMMENT,
                             EIACOMMENTS = form.EIACOMMENTS,
-                            M_DATE = form.M_DATE.ToString("yyyy-MM-dd HH:mm:ss"),
+                            M_DATE = form.M_DATE.Value.ToString("yyyy-MM-dd HH:mm:ss"),
                             C_NO = form.C_NO,
                             SER_NO = form.SER_NO
                         });

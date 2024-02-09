@@ -11,6 +11,7 @@ namespace NT_AirPollution.Model.Enum
     /// </summary>
     public enum FormStatus
     {
+        未申請 = 0,
         審理中 = 1,
         需補件 = 2,
         通過待繳費 = 3,

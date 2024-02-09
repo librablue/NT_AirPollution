@@ -221,23 +221,8 @@ namespace NT_AirPollution.Web.Controllers
                 form.ClientUserID = BaseService.CurrentUser.ID;
                 form.FormStatus = FormStatus.審理中;
                 form.CalcStatus = CalcStatus.未申請;
-
-                // 如果管制編號有值，表示用複製的
-                if (string.IsNullOrEmpty(form.C_NO))
-                {
-                    string c_no = _accessService.GetC_NO(form);
-                    form.C_NO = c_no;
-                }
-                else
-                {
-                    var filter = new FormFilter { C_NO = form.C_NO, ClientUserID = BaseService.CurrentUser.ID };
-                    var formsInDB = _formService.GetFormsByC_NO(filter);
-                    if (formsInDB.Count() == 0)
-                        throw new Exception("查無複製的管制編號");
-
-                    // 相同管制編號的序號最大值+1
-                    form.SER_NO = formsInDB.Last().SER_NO + 1;
-                }
+                string c_no = _accessService.GetC_NO(form);
+                form.C_NO = c_no;
 
                 // 寫入 Access
                 bool isAccessOK = _accessService.AddABUDF(form);

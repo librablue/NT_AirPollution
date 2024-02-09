@@ -36,9 +36,10 @@
 			</el-form-item>
 		</el-form>
 		<vxe-table :data="forms" size="small" :loading="loading" max-height="640px" show-overflow border resizable auto-resize :sort-config="{ trigger: 'cell' }">
-			<vxe-table-column title="明細" width="60" align="center" fixed="left">
+			<vxe-table-column title="功能" width="100" align="center" fixed="left">
 				<template v-slot="{ row }">
-					<el-button type="primary" size="mini" icon="el-icon-search" circle @click="showDetail(row)"></el-button>
+					<el-button type="primary" size="mini" icon="el-icon-search" circle title="查看內容" @click="showDetail(row)"></el-button>
+					<el-button type="success" size="mini" icon="el-icon-copy-document" circle title="追加序號" @click="copyRow(row)"></el-button>
 				</template>
 			</vxe-table-column>
 			<vxe-table-column field="FormStatus" title="審核進度" width="120" align="center" sortable fixed="left">
@@ -94,7 +95,7 @@
 				<template #default="{ row }">{{ row.VerifyDate | date }}</template>
 			</vxe-table-column>
 		</vxe-table>
-		<FormModal :show.sync="formModalVisible" :data="selectRow" @on-updated="onUpdated" />
+		<FormModal :show.sync="formModalVisible" :mode="mode" :data="selectRow" @on-updated="onUpdated" />
 		<FailReasonModal :show.sync="failReasonModalVisible" :data="selectRow" :callback="selectCallBack" @on-confirm="onFailReasonConfirm" />
 	</div>
 </template>
@@ -109,6 +110,7 @@ export default {
 	components: { FormModal, FailReasonModal },
 	data() {
 		return {
+            mode: '',
 			loading: false,
 			filter: {
 				C_NO: '',
@@ -136,8 +138,23 @@ export default {
 			});
 		},
 		showDetail(row) {
+            this.mode = 'Update';
 			this.selectRow = row;
 			this.formModalVisible = true;
+		},
+		copyRow(row) {
+            this.mode = 'Add';
+			this.selectRow = JSON.parse(JSON.stringify(row));
+			this.selectRow.FormStatus = 0;
+            this.selectRow.calcStatus = 0;
+			this.selectRow.Attachments.length = 0;
+			this.selectRow.StopWorks.length = 0;
+            this.selectRow.Payments.length = 0;
+			const clearAry = ['AP_DATE', 'C_DATE', 'S_AMT', 'S_AMT2'];
+			for (const key of clearAry) {
+				this.selectRow[key] = null;
+			}
+            this.formModalVisible = true;
 		},
 		onUpdated() {
 			this.getForms();

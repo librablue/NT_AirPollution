@@ -516,12 +516,12 @@ namespace NT_AirPollution.Model.Domain
         /// <summary>
         /// 資料首次輸入日期
         /// </summary>
-        public DateTime C_DATE { get; set; }
+        public DateTime? C_DATE { get; set; }
 
         /// <summary>
         /// 資料修改輸入日期
         /// </summary>
-        public DateTime M_DATE { get; set; }
+        public DateTime? M_DATE { get; set; }
 
         /// <summary>
         /// 資料異動職工編號

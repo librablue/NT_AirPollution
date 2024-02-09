@@ -419,8 +419,9 @@
 				this.mode = 'Add';
 				this.selectRow = JSON.parse(JSON.stringify(row));
 				this.selectRow.FormStatus = 1;
+                this.selectRow.Attachments.length = 0;
 				this.selectRow.StopWorks.length = 0;
-				const clearAry = ['SER_NO', 'AP_DATE', 'C_DATE'];
+				const clearAry = ['C_NO', 'SER_NO', 'AP_DATE', 'C_DATE'];
 				for (const key of clearAry) {
 					this.selectRow[key] = null;
 				}
@@ -428,10 +429,10 @@
 				this.dialogVisible = true;
 				this.$nextTick(() => {
 					// 清空附件
-					for (let i = 1; i <= 8; i++) {
-						const file = document.querySelector(`#file${i}`);
-						if (file) file.value = '';
-					}
+                    const files = document.querySelectorAll('[type="file"]');
+                    files.forEach(item => {
+                        item.value = '';
+                    });
 				});
 			},
 			getStopDays(row) {
