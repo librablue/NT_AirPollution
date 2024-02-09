@@ -40,19 +40,20 @@ namespace NT_AirPollution.Web.Controllers
                     throw new Exception("請勾選我不是機器人");
 
                 var result = _formService.GetFormByUser(form);
-                if (result == null)
+                if (result.Count() == 0)
                     throw new Exception("登入失敗，案件編號或 Email 錯誤");
 
+                var firstResult = result.First();
                 FormsAuthenticationTicket ticket = new FormsAuthenticationTicket(1,
-                        result.ID.ToString(),
+                        firstResult.ID.ToString(),
                         DateTime.Now,
                         DateTime.Now.AddHours(8),
                         true,
                         JsonConvert.SerializeObject(new UserData
                         {
-                            ID = result.ID,
-                            Email = result.CreateUserEmail,
-                            C_NO = result.C_NO,
+                            ID = firstResult.ID,
+                            Email = firstResult.CreateUserEmail,
+                            C_NO = firstResult.C_NO,
                             Role = new string[] { "NonMember" }
                         }),
                         FormsAuthentication.FormsCookiePath);
@@ -71,13 +72,7 @@ namespace NT_AirPollution.Web.Controllers
         [CustomAuthorize(Roles = "NonMember")]
         public ActionResult Result()
         {
-            var fiter = new Form
-            {
-                CreateUserEmail = BaseService.CurrentUser.Email,
-                C_NO = BaseService.CurrentUser.C_NO
-            };
-            var result = _formService.GetFormByUser(fiter);
-            return View(result);
+            return View();
         }
 
         [CustomAuthorize(Roles = "NonMember")]
@@ -109,7 +104,7 @@ namespace NT_AirPollution.Web.Controllers
                     CreateUserEmail = BaseService.CurrentUser.Email,
                     C_NO = BaseService.CurrentUser.C_NO
                 };
-                var formInDB = _formService.GetFormByUser(filter);
+                var formInDB = _formService.GetFormByUser(filter).FirstOrDefault(o => o.SER_NO == form.SER_NO);
                 if (formInDB == null)
                     throw new Exception("申請單不存在");
 
@@ -190,48 +185,6 @@ namespace NT_AirPollution.Web.Controllers
                     throw new Exception("系統發生未預期錯誤");
 
                 _formService.UpdateForm(form);
-
-                return Json(new AjaxResult { Status = true });
-            }
-            catch (Exception ex)
-            {
-                return Json(new AjaxResult { Status = false, Message = ex.Message });
-            }
-        }
-
-        [CustomAuthorize(Roles = "NonMember")]
-        public JsonResult Resend()
-        {
-            try
-            {
-                var sendbox = _sendBoxService.CheckSendBoxFrequency(BaseService.CurrentUser.Email);
-                if (sendbox != null && sendbox.CreateDate > DateTime.Now.AddMinutes(-3))
-                    throw new Exception("寄送次數太頻繁，請 3 分鐘後再試。");
-
-                var fiter = new Form
-                {
-                    CreateUserEmail = BaseService.CurrentUser.Email,
-                    C_NO = BaseService.CurrentUser.C_NO
-                };
-                var form = _formService.GetFormByUser(fiter);
-
-                // 寄驗證信
-                string template = ($@"{HostingEnvironment.ApplicationPhysicalPath}/App_Data/Template/ActiveMail.txt");
-                using (StreamReader sr = new StreamReader(template))
-                {
-                    String content = sr.ReadToEnd();
-                    string url = string.Format("{0}/Verify/Index?code={1}", _configDomain, form.ActiveCode);
-                    string body = string.Format(content, form.C_NO, form.CreateUserEmail, url, url);
-
-                    _sendBoxService.AddSendBox(new SendBox
-                    {
-                        Address = form.CreateUserEmail,
-                        Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統認證信(管制編號-{form.C_NO})",
-                        Body = body,
-                        FailTimes = 0,
-                        CreateDate = DateTime.Now
-                    });
-                }
 
                 return Json(new AjaxResult { Status = true });
             }

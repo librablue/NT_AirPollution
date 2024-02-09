@@ -61,6 +61,7 @@
                     {{ scope.row.C_NO || '(待取號)' }}
                 </template>
             </el-table-column>
+            <el-table-column prop="SER_NO" label="序號" align="center" width="50"></el-table-column>
             <el-table-column prop="C_DATE" label="申報日期" align="center" width="120">
                 <template slot-scope="scope">
                     {{ scope.row.C_DATE | date }}
@@ -501,7 +502,7 @@
                                     <th>{{item.FileTitle}}</th>
                                     <td>{{item.Description}}</td>
                                     <td>
-                                        <a href="javascript:;" v-if="mode === 'Add' || selectRow.FormStatus <= 2" class="link-add" title="新增檔案" @@click="addFile(item.ID)"><i class="el-icon-circle-plus-outline"></i></a>
+                                        <a href="javascript:;" v-if="selectRow.FormStatus <= 2" class="link-add" title="新增檔案" @@click="addFile(item.ID)"><i class="el-icon-circle-plus-outline"></i></a>
                                         <ul class="file-list">
                                             <li v-for="sub in filterAttachments(item.ID)" :key="sub.ID">
                                                 <a href="javascript:;" class="link-delete" @@click="deleteFile(sub)"><i class="el-icon-delete"></i></a>

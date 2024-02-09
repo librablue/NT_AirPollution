@@ -318,11 +318,11 @@ namespace NT_AirPollution.Service
         /// </summary>
         /// <param name="filter"></param>
         /// <returns></returns>
-        public FormView GetFormByUser(Form filter)
+        public List<FormView> GetFormByUser(Form filter)
         {
             using (var cn = new SqlConnection(connStr))
             {
-                var result = cn.QueryFirstOrDefault<FormView>(@"
+                var result = cn.Query<FormView>(@"
                     SELECT * FROM Form 
                     WHERE CreateUserEmail=@CreateUserEmail
                         AND C_NO=@C_NO",
@@ -330,46 +330,46 @@ namespace NT_AirPollution.Service
                     {
                         CreateUserEmail = filter.CreateUserEmail,
                         C_NO = filter.C_NO
-                    });
+                    }).ToList();
 
-                if (result != null)
+                foreach (var item in result)
                 {
-                    result.Attachments = cn.Query<Attachment>(@"
+                    item.Attachments = cn.Query<Attachment>(@"
                         SELECT * FROM Attachment WHERE FormID=@FormID",
-                        new { FormID = result.ID }).ToList();
+                        new { FormID = item.ID }).ToList();
 
-                    result.RefundBank = cn.QueryFirstOrDefault<RefundBank>(@"
+                    item.RefundBank = cn.QueryFirstOrDefault<RefundBank>(@"
                         SELECT * FROM RefundBank WHERE FormID=@FormID",
-                        new { FormID = result.ID });
-                    if (result.RefundBank == null) result.RefundBank = new RefundBank();
+                        new { FormID = item.ID });
+                    if (item.RefundBank == null) item.RefundBank = new RefundBank();
 
-                    result.PaymentProof = cn.QueryFirstOrDefault<PaymentProof>(@"
+                    item.PaymentProof = cn.QueryFirstOrDefault<PaymentProof>(@"
                         SELECT * FROM PaymentProof WHERE FormID=@FormID",
-                        new { FormID = result.ID });
-                    if (result.PaymentProof == null) result.PaymentProof = new PaymentProof();
+                        new { FormID = item.ID });
+                    if (item.PaymentProof == null) item.PaymentProof = new PaymentProof();
 
-                    if (!string.IsNullOrEmpty(result.B_DATE))
-                        result.B_DATE2 = base.ChineseDateToWestDate(result.B_DATE);
-                    if (!string.IsNullOrEmpty(result.E_DATE))
-                        result.E_DATE2 = base.ChineseDateToWestDate(result.E_DATE);
-                    if (!string.IsNullOrEmpty(result.S_B_BDATE))
-                        result.S_B_BDATE2 = base.ChineseDateToWestDate(result.S_B_BDATE);
-                    if (!string.IsNullOrEmpty(result.R_B_BDATE))
-                        result.R_B_BDATE2 = base.ChineseDateToWestDate(result.R_B_BDATE);
+                    if (!string.IsNullOrEmpty(item.B_DATE))
+                        item.B_DATE2 = base.ChineseDateToWestDate(item.B_DATE);
+                    if (!string.IsNullOrEmpty(item.E_DATE))
+                        item.E_DATE2 = base.ChineseDateToWestDate(item.E_DATE);
+                    if (!string.IsNullOrEmpty(item.S_B_BDATE))
+                        item.S_B_BDATE2 = base.ChineseDateToWestDate(item.S_B_BDATE);
+                    if (!string.IsNullOrEmpty(item.R_B_BDATE))
+                        item.R_B_BDATE2 = base.ChineseDateToWestDate(item.R_B_BDATE);
 
-                    result.StopWorks = cn.Query<StopWork>(@"
+                    item.StopWorks = cn.Query<StopWork>(@"
                         SELECT * FROM StopWork WHERE FormID=@FormID",
-                        new { FormID = result.ID }).ToList();
+                        new { FormID = item.ID }).ToList();
 
-                    foreach (var sub in result.StopWorks)
+                    foreach (var sub in item.StopWorks)
                     {
                         sub.DOWN_DATE2 = base.ChineseDateToWestDate(sub.DOWN_DATE);
                         sub.UP_DATE2 = base.ChineseDateToWestDate(sub.UP_DATE);
                     }
 
-                    result.Payments = cn.Query<Payment>(@"
+                    item.Payments = cn.Query<Payment>(@"
                         SELECT * FROM Payment WHERE FormID=@FormID",
-                        new { FormID = result.ID }).ToList();
+                        new { FormID = item.ID }).ToList();
                 }
 
                 return result;

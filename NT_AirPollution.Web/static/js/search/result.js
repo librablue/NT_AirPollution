@@ -170,36 +170,6 @@
 			}
 		},
 		methods: {
-			resend() {
-				axios
-					.post('/Search/Resend')
-					.then(res => {
-						if (!res.data.Status) {
-							alert(res.data.Message);
-							return;
-						}
-
-						this.sending = true;
-						var seconds = 180;
-						this.sendText = '重新寄送(' + seconds + ')';
-						seconds -= 1;
-						var id = setInterval(() => {
-							this.sendText = '重新寄送(' + seconds + ')';
-							seconds--;
-							if (seconds < 0) {
-								clearInterval(id);
-								this.sending = false;
-								this.sendText = '寄送驗證信';
-							}
-						}, 1000);
-
-						alert('系統將於3分鐘內傳送認證信給您，請點選郵件中的連結進行驗證。\n完成驗證之案件才會進入審核程序。');
-					})
-					.catch(err => {
-						console.log(err);
-						alert('發生錯誤');
-					});
-			},
 			getDistrict() {
 				axios.get('/Option/GetDistrict').then(res => {
 					this.district = Object.freeze(res.data);
@@ -223,8 +193,7 @@
 				axios
 					.get('/Search/GetMyForm')
 					.then(res => {
-						this.forms = [res.data];
-						this.selectRow = res.data;
+						this.forms = res.data;
 						loading.close();
 					})
 					.catch(err => {
@@ -233,6 +202,7 @@
 					});
 			},
 			showModal(row) {
+                this.selectRow = row;
 				this.dialogVisible = true;
 				if (this.selectRow.FormStatus === 2) {
 					this.failReasonDialogVisible = true;
