@@ -37,6 +37,8 @@ namespace NT_AirPollution.Admin.Controllers
         [HttpPost]
         public int GetFinalCalc(FormView form)
         {
+            form.B_DATE = form.B_DATE2.AddYears(-1911).ToString("yyyMMdd");
+            form.E_DATE = form.E_DATE2.AddYears(-1911).ToString("yyyMMdd");
             int S_AMT2 = _formService.CalcTotalMoney(form);
             return S_AMT2;
         }

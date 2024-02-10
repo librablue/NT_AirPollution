@@ -1298,7 +1298,7 @@ namespace NT_AirPollution.Service
                     // 利息－依繳納當日郵政儲金匯業局一年期定期存款固定利率按日加計
                     interest = Math.Round(currentPrice * rate / 100 / 365 * delayDays, 0, MidpointRounding.AwayFromZero);
                     // 滯納金－每逾一日按滯納之金額加徵百分之○．五滯納金
-                    delayPrice = currentPrice * 0.005 * delayDays;
+                    delayPrice = Math.Round(currentPrice * 0.005 * delayDays, 0, MidpointRounding.AwayFromZero);
                 }
 
                 double sumPrice = currentPrice + interest + delayPrice;
@@ -1358,12 +1358,12 @@ namespace NT_AirPollution.Service
                 ws.Cell("K38").SetValue(this.GetStore1Barcode());
                 ws.Cell("K39").SetValue($"*{bankAccount}*");
                 ws.Cell("K40").SetValue(bankAccount);
-                ws.Cell("K41").SetValue($"*{this.GetStore3Barcode(bankAccount, sumPrice.ToString())}*");
-                ws.Cell("K42").SetValue(this.GetStore3Barcode(bankAccount, sumPrice.ToString()));
+                ws.Cell("K41").SetValue($"*{this.GetStore3Barcode(bankAccount, (sumPrice + 8).ToString())}*");
+                ws.Cell("K42").SetValue(this.GetStore3Barcode(bankAccount, (sumPrice + 8).ToString()));
                 ws.Cell("K45").SetValue($"*{postAccount}*");
                 ws.Cell("K46").SetValue(postAccount);
-                ws.Cell("K47").SetValue($"*{(sumPrice + 15).ToString().PadLeft(6, '0')}*");
-                ws.Cell("K48").SetValue((sumPrice + 15).ToString().PadLeft(6, '0'));
+                ws.Cell("K47").SetValue($"*{sumPrice.ToString().PadLeft(6, '0')}*");
+                ws.Cell("K48").SetValue(sumPrice.ToString().PadLeft(6, '0'));
                 wb.SaveAs(tempFile);
 
                 // 轉PDF

@@ -203,7 +203,7 @@ namespace NT_AirPollution.Web.Controllers
             if (formInDB == null || (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email))
                 throw new Exception("申請單不存在");
 
-            string fileName = $"繳款單{form.C_NO}-{form.SER_NO}(補繳)";
+            string fileName = $"繳款單{form.C_NO}-{form.SER_NO}(結算補繳)";
             string pdfPath = _formService.CreatePaymentPDF(fileName, form);
 
             // 傳到前端的檔名
