@@ -25,6 +25,7 @@ namespace NT_AirPollution.Service
         private readonly string _configDomain = ConfigurationManager.AppSettings["Domain"].ToString();
         private readonly string _uploadPath = ConfigurationManager.AppSettings["UploadPath"].ToString();
         private readonly string _paymentPath = ConfigurationManager.AppSettings["Payment"].ToString();
+        private readonly OptionService _optionService = new OptionService();
 
         /// <summary>
         /// 取得全部表單
@@ -1282,10 +1283,29 @@ namespace NT_AirPollution.Service
                 DateTime verifyDate = string.IsNullOrEmpty(form.AP_DATE1) ? form.VerifyDate1.Value : form.VerifyDate2.Value;
                 double totalPrice = string.IsNullOrEmpty(form.AP_DATE1) ? form.S_AMT.Value : form.S_AMT2.Value;
                 double price = string.IsNullOrEmpty(form.AP_DATE1) ? form.P_AMT.Value : (form.S_AMT2.Value - form.P_AMT.Value);
+
                 // 繳款期限：1、2類3天，其他30天
                 DateTime payEndDate = verifyDate.AddDays(30);
                 if (form.KIND_NO == "1" || form.KIND_NO == "2")
                     payEndDate = verifyDate.AddDays(3);
+
+                // 利息
+                double interest = 0;
+                // 滯納金
+                double delayPrice = 0;
+                var delayDays = (DateTime.Now - payEndDate).Days;
+                if (delayDays > 0)
+                {
+                    double rate = 0;
+                    var interestRate = _optionService.GetRates().FirstOrDefault();
+                    if (interestRate != null)
+                        rate = interestRate.Rate;
+
+                    // 利息－依繳納當日郵政儲金匯業局一年期定期存款固定利率按日加計
+                    interest = Math.Round(price * rate / 100 / 365 * delayDays, 0, MidpointRounding.AwayFromZero);
+                    // 滯納金－每逾一日按滯納之金額加徵百分之○．五滯納金
+                    delayPrice = price * 0.005 * delayDays;
+                }
 
                 var wb = new XLWorkbook(templateFile);
                 var ws = wb.Worksheet(1);
@@ -1305,8 +1325,8 @@ namespace NT_AirPollution.Service
                 ws.Cell("O8").SetValue(totalPrice.ToString("N0"));
                 ws.Cell("D9").SetValue(price.ToString("N0"));
                 ws.Cell("O9").SetValue(this.GetChineseMoney(totalPrice.ToString()));
-                ws.Cell("D10").SetValue("");
-                ws.Cell("D11").SetValue("");
+                ws.Cell("D10").SetValue(delayPrice.ToString("N0"));
+                ws.Cell("D11").SetValue(interest.ToString("N0"));
                 ws.Cell("D12").SetValue(price.ToString("N0"));
                 ws.Cell("M12").SetValue(form.B_SERNO);
                 ws.Cell("D13").SetValue(this.GetChineseMoney(price.ToString()));
@@ -1319,8 +1339,8 @@ namespace NT_AirPollution.Service
                 ws.Cell("F20").SetValue(ws.Cell("F20").GetText().Replace("#P_NUM#", form.P_KIND == "一次全繳" ? "1" : "2").Replace("#P_TIME#", string.IsNullOrEmpty(form.AP_DATE1) ? "1" : "2"));
                 ws.Cell("D21").SetValue(ws.Cell("D21").GetText().Replace("#PayEndDate#", payEndDate.AddYears(-1911).ToString("yyy年MM月dd日")));
                 ws.Cell("D22").SetValue(price.ToString("N0"));
-                ws.Cell("D23").SetValue("");
-                ws.Cell("I23").SetValue("");
+                ws.Cell("D23").SetValue(delayPrice.ToString("N0"));
+                ws.Cell("I23").SetValue(interest.ToString("N0"));
                 ws.Cell("D24").SetValue(price.ToString("N0"));
                 ws.Cell("D25").SetValue(this.GetChineseMoney(price.ToString()));
                 ws.Cell("B29").SetValue(ws.Cell("B29").GetText().Replace("#VerifyDate#", verifyDate.AddYears(-1911).ToString("yyy年MM月dd日")));
@@ -1332,8 +1352,8 @@ namespace NT_AirPollution.Service
                 ws.Cell("F32").SetValue(ws.Cell("F32").GetText().Replace("#P_NUM#", form.P_KIND == "一次全繳" ? "1" : "2").Replace("#P_TIME#", string.IsNullOrEmpty(form.AP_DATE1) ? "1" : "2"));
                 ws.Cell("O32").SetValue(DateTime.Now.AddDays(6).AddYears(-1911).ToString("yyy年MM月dd日"));
                 ws.Cell("D34").SetValue(price.ToString("N0"));
-                ws.Cell("I34").SetValue("");
-                ws.Cell("O34").SetValue("");
+                ws.Cell("I34").SetValue(delayPrice.ToString("N0"));
+                ws.Cell("O34").SetValue(interest.ToString("N0"));
                 ws.Cell("D35").SetValue(price.ToString("N0"));
                 ws.Cell("G35").SetValue(ws.Cell("G35").GetText().Replace("#F_AMTC#", this.GetChineseMoney(price.ToString())));
                 ws.Cell("K37").SetValue($"*{this.GetStore1Barcode()}*");
