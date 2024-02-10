@@ -160,12 +160,13 @@ export default {
 			this.getForms();
 		},
 		onFailReasonConfirm(val, callback) {
-			this.selectRow.FailReason = val.FailReason;
 			if (callback.name === 'bound updateFormStatus') {
 				this.selectRow.FormStatus = 2;
+                this.selectRow.FailReason1 = val.FailReason;
 			}
 			if (callback.name === 'bound updateCalcStatus') {
 				this.selectRow.CalcStatus = 2;
+                this.selectRow.FailReason2 = val.FailReason;
 			}
 			callback(this.selectRow);
 		},

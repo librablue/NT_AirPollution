@@ -559,16 +559,24 @@ namespace NT_AirPollution.Model.Domain
         /// </summary>
         public FormStatus FormStatus { get; set; }
         /// <summary>
+        /// 審核日期
+        /// </summary>
+        public DateTime? VerifyDate1 { get; set; }
+        /// <summary>
+        /// 退件原因
+        /// </summary>
+        public string FailReason1 { get; set; }
+        /// <summary>
         /// 結算狀態
         /// </summary>
         public CalcStatus CalcStatus { get; set; }
         /// <summary>
-        /// 審核日期
+        /// 結算審核日期
         /// </summary>
-        public DateTime? VerifyDate { get; set; }
+        public DateTime? VerifyDate2 { get; set; }
         /// <summary>
-        /// 退件原因
+        /// 結算退件原因
         /// </summary>
-        public string FailReason { get; set; }
+        public string FailReason2 { get; set; }
     }
 }

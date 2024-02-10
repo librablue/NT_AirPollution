@@ -594,10 +594,17 @@
         </span>
     </el-dialog>
 
-    <el-dialog title="退件原因" :visible.sync="failReasonDialogVisible" width="30%" v-cloak>
-        <div v-html="selectRow.FailReason"></div>
+    <el-dialog title="退件原因" :visible.sync="failReason1DialogVisible" width="30%" v-cloak>
+        <div v-html="selectRow.FailReason1"></div>
         <span slot="footer" class="dialog-footer">
-            <el-button type="primary" @@click="failReasonDialogVisible = false">確 定</el-button>
+            <el-button type="primary" @@click="failReason1DialogVisible = false">確 定</el-button>
+        </span>
+    </el-dialog>
+
+    <el-dialog title="退件原因" :visible.sync="failReason2DialogVisible" width="30%" v-cloak>
+        <div v-html="selectRow.FailReason2"></div>
+        <span slot="footer" class="dialog-footer">
+            <el-button type="primary" @@click="failReason2DialogVisible = false">確 定</el-button>
         </span>
     </el-dialog>
 

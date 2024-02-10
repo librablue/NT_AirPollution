@@ -273,8 +273,10 @@ namespace NT_AirPollution.Web.Controllers
                 form.S_AMT = formInDB.S_AMT;
                 form.S_AMT2 = formInDB.S_AMT2;
                 form.C_DATE = formInDB.C_DATE;
-                form.VerifyDate = formInDB.VerifyDate;
-                form.FailReason = formInDB.FailReason;
+                form.VerifyDate1 = formInDB.VerifyDate1;
+                form.VerifyDate2 = formInDB.VerifyDate2;
+                form.FailReason1 = formInDB.FailReason1;
+                form.FailReason2 = formInDB.FailReason2;
                 // 可修改的欄位
                 form.TOWN_NA = allDists.First(o => o.Code == form.TOWN_NO).Name;
                 form.KIND = allProjectCode.First(o => o.ID == form.KIND_NO).Name;

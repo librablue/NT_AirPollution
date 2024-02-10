@@ -803,13 +803,13 @@ namespace NT_AirPollution.Service
         /// </summary>
         /// <param name="form"></param>
         /// <returns></returns>
-        public bool SendStatus2(FormView form)
+        public bool SendFormStatus2(FormView form)
         {
             string template = ($@"{HostingEnvironment.ApplicationPhysicalPath}\App_Data\Template\Status2.txt");
             using (StreamReader sr = new StreamReader(template))
             {
                 string content = sr.ReadToEnd();
-                string body = string.Format(content, form.C_NO, form.FailReason.Replace("\n", "<br>"));
+                string body = string.Format(content, form.C_NO, form.FailReason1.Replace("\n", "<br>"));
 
                 try
                 {
@@ -819,7 +819,7 @@ namespace NT_AirPollution.Service
                         cn.Insert(new SendBox
                         {
                             Address = form.CreateUserEmail,
-                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件需補件通知(管制編號 {form.C_NO})",
+                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件需補件通知(管制編號 {form.C_NO}-{form.SER_NO})",
                             Body = body,
                             FailTimes = 0,
                             CreateDate = DateTime.Now
@@ -854,7 +854,7 @@ namespace NT_AirPollution.Service
                     string postAccount = this.GetPostAccount(form.ID.ToString(), form.P_AMT.Value);
                     string fileName = $"繳款單{form.C_NO}-{form.SER_NO}({(form.P_KIND == "一次繳清" ? "一次繳清" : "第一期")})";
                     // 產生繳款單
-                    string pdfPath = this.CreatePaymentPDF(bankAccount, postAccount, fileName, form);
+                    string pdfPath = this.CreatePaymentPDF(bankAccount, postAccount, fileName, form, form.VerifyDate1.Value);
 
                     using (var cn = new SqlConnection(connStr))
                     {
@@ -862,7 +862,7 @@ namespace NT_AirPollution.Service
                         cn.Insert(new SendBox
                         {
                             Address = form.CreateUserEmail,
-                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件繳費通知(管制編號 {form.C_NO})",
+                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件繳費通知(管制編號 {form.C_NO}-{form.SER_NO})",
                             Body = body,
                             Attachment = pdfPath,
                             FailTimes = 0,
@@ -901,7 +901,7 @@ namespace NT_AirPollution.Service
                         cn.Insert(new SendBox
                         {
                             Address = form.CreateUserEmail,
-                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件繳費完成(管制編號 {form.C_NO})",
+                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件繳費完成(管制編號 {form.C_NO}-{form.SER_NO})",
                             Body = body,
                             FailTimes = 0,
                             CreateDate = DateTime.Now
@@ -913,6 +913,44 @@ namespace NT_AirPollution.Service
                 catch (Exception ex)
                 {
                     Logger.Error($"SendFormStatus4: {ex.Message}");
+                    throw ex;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 結算需補件
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        public bool SendCalcStatus2(FormView form)
+        {
+            string template = ($@"{HostingEnvironment.ApplicationPhysicalPath}\App_Data\Template\Status2.txt");
+            using (StreamReader sr = new StreamReader(template))
+            {
+                string content = sr.ReadToEnd();
+                string body = string.Format(content, form.C_NO, form.FailReason2.Replace("\n", "<br>"));
+
+                try
+                {
+                    using (var cn = new SqlConnection(connStr))
+                    {
+                        // 寄件夾
+                        cn.Insert(new SendBox
+                        {
+                            Address = form.CreateUserEmail,
+                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件結算通知(需補件)(管制編號 {form.C_NO}-{form.SER_NO})",
+                            Body = body,
+                            FailTimes = 0,
+                            CreateDate = DateTime.Now
+                        });
+                    }
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"SendFormStatus2: {ex.Message}");
                     throw ex;
                 }
             }
@@ -938,7 +976,7 @@ namespace NT_AirPollution.Service
                     string postAccount = this.GetPostAccount(form.ID.ToString(), diffMoney);
                     string fileName = $"繳款單{form.C_NO}-{form.SER_NO}(結算補繳)";
                     // 產生繳款單
-                    string docPath = this.CreatePaymentPDF(bankAccount, postAccount, fileName, form);
+                    string docPath = this.CreatePaymentPDF(bankAccount, postAccount, fileName, form, form.VerifyDate2);
 
                     using (var cn = new SqlConnection(connStr))
                     {
@@ -946,7 +984,7 @@ namespace NT_AirPollution.Service
                         cn.Insert(new SendBox
                         {
                             Address = form.CreateUserEmail,
-                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件結算通知(需補繳)(管制編號 {form.C_NO})",
+                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件結算通知(需補繳)(管制編號 {form.C_NO}-{form.SER_NO})",
                             Body = body,
                             Attachment = docPath,
                             FailTimes = 0,
@@ -989,7 +1027,7 @@ namespace NT_AirPollution.Service
                         cn.Insert(new SendBox
                         {
                             Address = form.CreateUserEmail,
-                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件結算通知(可退費)(管制編號 {form.C_NO})",
+                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件結算通知(可退費)(管制編號 {form.C_NO}-{form.SER_NO})",
                             Body = body,
                             Attachment = pdfPath,
                             FailTimes = 0,
@@ -1030,7 +1068,7 @@ namespace NT_AirPollution.Service
                         cn.Insert(new SendBox
                         {
                             Address = form.CreateUserEmail,
-                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件結算通知(已結清)(管制編號 {form.C_NO})",
+                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件結算通知(已結清)(管制編號 {form.C_NO}-{form.SER_NO})",
                             Body = body,
                             Attachment = pdfPath,
                             FailTimes = 0,
@@ -1231,8 +1269,9 @@ namespace NT_AirPollution.Service
         /// <param name="postAccount">郵局帳號</param>
         /// <param name="fileName">產生檔名</param>
         /// <param name="form"></param>
+        /// <param name="verifyDate">填發日期</param>
         /// <returns>文件完整路徑</returns>
-        public string CreatePaymentPDF(string bankAccount, string postAccount, string fileName, Form form)
+        public string CreatePaymentPDF(string bankAccount, string postAccount, string fileName, Form form, DateTime verifyDate)
         {
             try
             {
@@ -1244,8 +1283,8 @@ namespace NT_AirPollution.Service
                 double price = string.IsNullOrEmpty(form.AP_DATE1) ? form.P_AMT.Value : (form.S_AMT2.Value - form.P_AMT.Value);
                 var wb = new XLWorkbook(templateFile);
                 var ws = wb.Worksheet(1);
-                ws.Cell("B2").SetValue(ws.Cell("B2").GetText().Replace("#PrintDate#", DateTime.Now.AddYears(-1911).ToString("yyy年MM月dd日")));
-                ws.Cell("M2").SetValue(ws.Cell("M2").GetText().Replace("#PrintDate#", DateTime.Now.AddYears(-1911).ToString("yyy年MM月dd日")));
+                ws.Cell("B2").SetValue(ws.Cell("B2").GetText().Replace("#VerifyDate#", verifyDate.AddYears(-1911).ToString("yyy年MM月dd日")));
+                ws.Cell("M2").SetValue(ws.Cell("M2").GetText().Replace("#VerifyDate#", verifyDate.AddYears(-1911).ToString("yyy年MM月dd日")));
                 ws.Cell("D3").SetValue($"{form.C_NO}-{form.SER_NO}");
                 ws.Cell("O3").SetValue($"{form.C_NO}-{form.SER_NO}");
                 ws.Cell("D4").SetValue(form.COMP_NAM);
@@ -1263,6 +1302,7 @@ namespace NT_AirPollution.Service
                 ws.Cell("D12").SetValue(price.ToString("N0"));
                 ws.Cell("M12").SetValue(form.B_SERNO);
                 ws.Cell("D13").SetValue(this.GetChineseMoney(price.ToString()));
+                ws.Cell("B17").SetValue(ws.Cell("B17").GetText().Replace("#VerifyDate#", verifyDate.AddYears(-1911).ToString("yyy年MM月dd日")));
                 ws.Cell("D18").SetValue($"{form.C_NO}-{form.SER_NO}");
                 ws.Cell("I18").SetValue(form.COMP_NAM);
                 ws.Cell("D19").SetValue(form.S_NAME);
@@ -1273,6 +1313,7 @@ namespace NT_AirPollution.Service
                 ws.Cell("D22").SetValue(price.ToString("N0"));
                 ws.Cell("D24").SetValue(price.ToString("N0"));
                 ws.Cell("D25").SetValue(this.GetChineseMoney(price.ToString()));
+                ws.Cell("B29").SetValue(ws.Cell("B29").GetText().Replace("#VerifyDate#", verifyDate.AddYears(-1911).ToString("yyy年MM月dd日")));
                 ws.Cell("D30").SetValue($"{form.C_NO}-{form.SER_NO}");
                 ws.Cell("I30").SetValue(form.COMP_NAM);
                 ws.Cell("D31").SetValue(form.S_NAME);

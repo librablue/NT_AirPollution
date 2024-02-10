@@ -91,7 +91,8 @@
 				},
 				banks: Object.freeze(banksAry),
 				dialogVisible: false,
-				failReasonDialogVisible: false,
+				failReason1DialogVisible: false,
+				failReason2DialogVisible: false,
 				bankAccountDialogVisible: false,
 				paymentProofModalVisible: false,
 				activeTab: 'first',
@@ -342,7 +343,10 @@
 				this.selectRow = JSON.parse(JSON.stringify(row));
 				this.dialogVisible = true;
 				if (this.selectRow.FormStatus === 2) {
-					this.failReasonDialogVisible = true;
+					this.failReason1DialogVisible = true;
+				}
+                if (this.selectRow.CalcStatus === 2) {
+					this.failReason2DialogVisible = true;
 				}
 			},
 			addFile(infoID) {

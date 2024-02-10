@@ -560,12 +560,6 @@ export default {
 			}
 			callback();
 		};
-		const checkFailReason = (rule, value, callback) => {
-			if (this.form.FormStatus === 2 && !value) {
-				callback(new Error('請輸入補件原因'));
-			}
-			callback();
-		};
 		return {
 			visible: false,
 			loading: false,
@@ -622,8 +616,7 @@ export default {
 				AREA: [{ validator: checkArea }],
 				VOLUMEL: [{ validator: checkVolumel }],
 				B_DATE2: [{ required: true, message: '請輸入預計施工開始日期', trigger: 'blur' }],
-				E_DATE2: [{ validator: checkE_DATE2 }],
-				FailReason: [{ validator: checkFailReason }]
+				E_DATE2: [{ validator: checkE_DATE2 }]
 			})
 		};
 	},

@@ -163,7 +163,7 @@ namespace NT_AirPollution.Web.Controllers
             string bankAccount = _formService.GetBankAccount(form.ID.ToString(), payableAmount);
             string postAccount = _formService.GetPostAccount(form.ID.ToString(), payableAmount);
             string fileName = $"繳款單{form.C_NO}-{form.SER_NO}({(form.P_KIND == "一次繳清" ? "一次繳清" : "第一期")})";
-            string pdfPath = _formService.CreatePaymentPDF(bankAccount, postAccount, fileName, form);
+            string pdfPath = _formService.CreatePaymentPDF(bankAccount, postAccount, fileName, form, form.VerifyDate1.Value);
 
             // 傳到前端的檔名
             // Uri.EscapeDataString 防中文亂碼
@@ -213,7 +213,7 @@ namespace NT_AirPollution.Web.Controllers
             string bankAccount = _formService.GetBankAccount(form.ID.ToString(), payableAmount);
             string postAccount = _formService.GetPostAccount(form.ID.ToString(), payableAmount);
             string fileName = $"繳款單{form.C_NO}-{form.SER_NO}(補繳)";
-            string pdfPath = _formService.CreatePaymentPDF(bankAccount, postAccount, fileName, form);
+            string pdfPath = _formService.CreatePaymentPDF(bankAccount, postAccount, fileName, form, form.VerifyDate2.Value);
 
             // 傳到前端的檔名
             // Uri.EscapeDataString 防中文亂碼

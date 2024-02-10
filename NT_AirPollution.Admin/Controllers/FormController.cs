@@ -117,9 +117,10 @@ namespace NT_AirPollution.Admin.Controllers
                 switch (form.FormStatus)
                 {
                     case FormStatus.需補件:
-                        _formService.SendStatus2(form);
+                        _formService.SendFormStatus2(form);
                         break;
                     case FormStatus.通過待繳費:
+                        form.VerifyDate1 = DateTime.Now;
                         form.S_AMT = _formService.CalcTotalMoney(form);
                         form.P_NUM = form.P_KIND == "一次全繳" ? 1 : 2;
                         form.P_AMT = form.S_AMT;
@@ -133,7 +134,6 @@ namespace NT_AirPollution.Admin.Controllers
                         break;
                 }
 
-                form.VerifyDate = DateTime.Now;
                 _formService.UpdateForm(form);
                 return true;
             }
@@ -155,10 +155,10 @@ namespace NT_AirPollution.Admin.Controllers
                 switch (form.CalcStatus)
                 {
                     case CalcStatus.需補件:
-                        _formService.SendStatus2(form);
+                        _formService.SendCalcStatus2(form);
                         break;
                     case CalcStatus.通過待繳費:
-
+                        form.VerifyDate2 = DateTime.Now;
                         _formService.SendCalcStatus3(form);
                         break;
                     case CalcStatus.通過待退費小於4000:
@@ -177,7 +177,6 @@ namespace NT_AirPollution.Admin.Controllers
                         break;
                 }
 
-                form.VerifyDate = DateTime.Now;
                 _formService.UpdateForm(form);
                 return true;
             }
