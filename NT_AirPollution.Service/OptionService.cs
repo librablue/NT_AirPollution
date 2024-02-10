@@ -51,5 +51,65 @@ namespace NT_AirPollution.Service
                 return result;
             }
         }
+
+        /// <summary>
+        /// 取得利率
+        /// </summary>
+        /// <returns></returns>
+        public List<InterestRate> GetRates()
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                var result = cn.GetAll<InterestRate>()
+                    .OrderByDescending(o => o.YearMth).ToList();
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// 新增郵局利率
+        /// </summary>
+        /// <param name="rate"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public bool AddRate(InterestRate rate)
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                try
+                {
+                    cn.Insert(rate);
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"AddRate: {ex.Message}");
+                    throw new Exception("系統發生未預期錯誤");
+                }
+            }
+        }
+
+        /// <summary>
+        /// 刪除郵局利率
+        /// </summary>
+        /// <param name="rate"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public bool DeleteRate(InterestRate rate)
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                try
+                {
+                    cn.Delete(rate);
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"DeleteRate: {ex.Message}");
+                    throw new Exception("系統發生未預期錯誤");
+                }
+            }
+        }
     }
 }

@@ -34,6 +34,11 @@ export default new Router({
 					path: '/function/road',
 					name: 'function_road',
 					component: (resolve) => require(['@/components/function/Road'], resolve)
+				},
+                {
+					path: '/function/rate',
+					name: 'function_rate',
+					component: (resolve) => require(['@/components/function/Rate'], resolve)
 				}
 			]
 		}

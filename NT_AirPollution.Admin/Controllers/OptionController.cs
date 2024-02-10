@@ -35,6 +35,38 @@ namespace NT_AirPollution.Admin.Controllers
             return _optionService.GetAttachmentInfo();
         }
 
+        public List<InterestRate> GetRates()
+        {
+            return _optionService.GetRates();
+        }
+
+        public bool AddRate(InterestRate rate)
+        {
+            try
+            {
+                _optionService.AddRate(rate);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        [HttpPost]
+        public bool DeleteRate(InterestRate rate)
+        {
+            try
+            {
+                _optionService.DeleteRate(rate);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         [HttpGet]
         public HttpResponseMessage Download(string f)
         {

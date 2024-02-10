@@ -55,6 +55,7 @@
     <Compile Include="Domain\AirFile.cs" />
     <Compile Include="Domain\AttachmentInfo.cs" />
     <Compile Include="Domain\Attachment.cs" />
+    <Compile Include="Domain\InterestRate.cs" />
     <Compile Include="Domain\News.cs" />
     <Compile Include="Domain\PaymentProof.cs" />
     <Compile Include="Domain\RefundBank.cs" />
