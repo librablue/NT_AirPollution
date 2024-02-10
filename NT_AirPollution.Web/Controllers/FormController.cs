@@ -156,14 +156,8 @@ namespace NT_AirPollution.Web.Controllers
             if (formInDB == null || (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email))
                 throw new Exception("申請單不存在");
 
-            double payableAmount = form.S_AMT.Value;
-            if (form.P_KIND == "分兩次繳清")
-                payableAmount = form.P_AMT.Value;
-
-            string bankAccount = _formService.GetBankAccount(form.ID.ToString(), payableAmount);
-            string postAccount = _formService.GetPostAccount(form.ID.ToString(), payableAmount);
             string fileName = $"繳款單{form.C_NO}-{form.SER_NO}({(form.P_KIND == "一次繳清" ? "一次繳清" : "第一期")})";
-            string pdfPath = _formService.CreatePaymentPDF(bankAccount, postAccount, fileName, form);
+            string pdfPath = _formService.CreatePaymentPDF(fileName, form);
 
             // 傳到前端的檔名
             // Uri.EscapeDataString 防中文亂碼
@@ -209,11 +203,8 @@ namespace NT_AirPollution.Web.Controllers
             if (formInDB == null || (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email))
                 throw new Exception("申請單不存在");
 
-            double payableAmount = form.S_AMT.Value - form.P_AMT.Value;
-            string bankAccount = _formService.GetBankAccount(form.ID.ToString(), payableAmount);
-            string postAccount = _formService.GetPostAccount(form.ID.ToString(), payableAmount);
             string fileName = $"繳款單{form.C_NO}-{form.SER_NO}(補繳)";
-            string pdfPath = _formService.CreatePaymentPDF(bankAccount, postAccount, fileName, form);
+            string pdfPath = _formService.CreatePaymentPDF(fileName, form);
 
             // 傳到前端的檔名
             // Uri.EscapeDataString 防中文亂碼
