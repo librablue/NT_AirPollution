@@ -149,7 +149,6 @@ export default {
             this.selectRow.calcStatus = 0;
 			this.selectRow.Attachments.length = 0;
 			this.selectRow.StopWorks.length = 0;
-            this.selectRow.Payments.length = 0;
 			const clearAry = ['AP_DATE', 'C_DATE', 'S_AMT', 'S_AMT2'];
 			for (const key of clearAry) {
 				this.selectRow[key] = null;
@@ -229,10 +228,7 @@ export default {
 
 			this.selectRow.CalcStatus = cmd;
 			// 4.5指令共用，用退費金額<4000判斷4，>=4000判斷5
-			const paidAmount = this.selectRow.Payments.reduce((prev, current) => {
-				return prev + current.Amount;
-			}, 0);
-			if (cmd === 4 && paidAmount - this.selectRow.S_AMT2 >= 4000) {
+			if (cmd === 4 && this.selectRow.S_AMT2 - this.selectRow.P_AMT >= 4000) {
 				this.selectRow.CalcStatus = 5;
 			}
 

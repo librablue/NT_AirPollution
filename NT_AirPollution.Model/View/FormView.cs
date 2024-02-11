@@ -21,8 +21,6 @@ namespace NT_AirPollution.Model.View
         [Computed]
         public List<StopWork> StopWorks { get; set; } = new List<StopWork>();
         [Computed]
-        public List<Payment> Payments { get; set; } = new List<Payment>();
-        [Computed]
         public string Captcha { get; set; }
         [Computed]
         public WorkStatus WorkStatus { get; set; }

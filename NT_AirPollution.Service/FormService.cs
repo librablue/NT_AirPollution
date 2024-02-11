@@ -84,10 +84,6 @@ namespace NT_AirPollution.Service
                         sub.DOWN_DATE2 = base.ChineseDateToWestDate(sub.DOWN_DATE);
                         sub.UP_DATE2 = base.ChineseDateToWestDate(sub.UP_DATE);
                     }
-
-                    item.Payments = cn.Query<Payment>(@"
-                        SELECT * FROM Payment WHERE FormID=@FormID",
-                        new { FormID = item.ID }).ToList();
                 }
 
                 return forms;
@@ -141,10 +137,6 @@ namespace NT_AirPollution.Service
                         sub.DOWN_DATE2 = base.ChineseDateToWestDate(sub.DOWN_DATE);
                         sub.UP_DATE2 = base.ChineseDateToWestDate(sub.UP_DATE);
                     }
-
-                    result.Payments = cn.Query<Payment>(@"
-                        SELECT * FROM Payment WHERE FormID=@FormID",
-                        new { FormID = result.ID }).ToList();
                 }
 
                 return result;
@@ -215,10 +207,6 @@ namespace NT_AirPollution.Service
                         sub.DOWN_DATE2 = base.ChineseDateToWestDate(sub.DOWN_DATE);
                         sub.UP_DATE2 = base.ChineseDateToWestDate(sub.UP_DATE);
                     }
-
-                    item.Payments = cn.Query<Payment>(@"
-                        SELECT * FROM Payment WHERE FormID=@FormID",
-                        new { FormID = item.ID }).ToList();
                 }
 
                 return result;
@@ -281,11 +269,6 @@ namespace NT_AirPollution.Service
                         sub.DOWN_DATE2 = base.ChineseDateToWestDate(sub.DOWN_DATE);
                         sub.UP_DATE2 = base.ChineseDateToWestDate(sub.UP_DATE);
                     }
-
-                    item.Payments = cn.Query<Payment>(@"
-                        SELECT * FROM Payment WHERE FormID=@FormID",
-                        new { FormID = item.ID }).ToList();
-
 
                     // 檢查今天是否在停復工日期範圍內
                     bool isPause = result.Any(o => o.StopWorks.Any(x => x.DOWN_DATE2 < now && now > x.UP_DATE2));
@@ -367,10 +350,6 @@ namespace NT_AirPollution.Service
                         sub.DOWN_DATE2 = base.ChineseDateToWestDate(sub.DOWN_DATE);
                         sub.UP_DATE2 = base.ChineseDateToWestDate(sub.UP_DATE);
                     }
-
-                    item.Payments = cn.Query<Payment>(@"
-                        SELECT * FROM Payment WHERE FormID=@FormID",
-                        new { FormID = item.ID }).ToList();
                 }
 
                 return result;
@@ -425,10 +404,6 @@ namespace NT_AirPollution.Service
                         sub.DOWN_DATE2 = base.ChineseDateToWestDate(sub.DOWN_DATE);
                         sub.UP_DATE2 = base.ChineseDateToWestDate(sub.UP_DATE);
                     }
-
-                    item.Payments = cn.Query<Payment>(@"
-                        SELECT * FROM Payment WHERE FormID=@FormID",
-                        new { FormID = item.ID }).ToList();
                 }
 
                 return result;
@@ -559,52 +534,6 @@ namespace NT_AirPollution.Service
                     {
                         trans.Rollback();
                         Logger.Error($"UpdateStopWork: {ex.Message}");
-                        throw new Exception("系統發生未預期錯誤");
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// 修改付款紀錄
-        /// </summary>
-        /// <param name="form"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        public bool UpdatePayment(FormView form)
-        {
-            using (var cn = new SqlConnection(connStr))
-            {
-                cn.Open();
-                using (var trans = cn.BeginTransaction())
-                {
-                    try
-                    {
-                        foreach (var item in form.Payments)
-                        {
-                            item.FormID = form.ID;
-
-                            // ID=0表示新增
-                            if (item.ID == 0)
-                            {
-                                item.CreateDate = DateTime.Now;
-                            }
-                        }
-
-                        // 清空
-                        cn.Execute(@"DELETE FROM Payment WHERE FormID=@FormID",
-                            new { FormID = form.ID }, trans);
-
-                        // 新增
-                        cn.Insert(form.Payments, trans);
-
-                        trans.Commit();
-                        return true;
-                    }
-                    catch (Exception ex)
-                    {
-                        trans.Rollback();
-                        Logger.Error($"UpdatePayment: {ex.Message}");
                         throw new Exception("系統發生未預期錯誤");
                     }
                 }
@@ -1009,10 +938,8 @@ namespace NT_AirPollution.Service
             {
                 try
                 {
-                    int paidAmount = form.Payments.Sum(o => o.Amount);
-                    double diffMoney = paidAmount - form.S_AMT2.Value;
                     string content = sr.ReadToEnd();
-                    string body = string.Format(content, form.C_NO, diffMoney.ToString("N0"));
+                    string body = string.Format(content, form.C_NO);
                     // 產生結清證明
                     string pdfPath = this.CreateProofPDF(form);
 
@@ -1260,11 +1187,8 @@ namespace NT_AirPollution.Service
         /// <summary>
         /// 產生繳款單
         /// </summary>
-        /// <param name="bankAccount">銀行帳號</param>
-        /// <param name="postAccount">郵局帳號</param>
         /// <param name="fileName">產生檔名</param>
         /// <param name="form"></param>
-        /// <param name="verifyDate">填發日期</param>
         /// <returns>文件完整路徑</returns>
         public string CreatePaymentPDF(string fileName, Form form)
         {
@@ -1431,7 +1355,7 @@ namespace NT_AirPollution.Service
 
                 idx = 0;
                 // 已繳金額
-                int paidAmount = form.Payments.Sum(o => o.Amount);
+                double paidAmount = form.S_AMT2.Value - form.P_AMT.Value;
                 foreach (char item in paidAmount.ToString().Reverse())
                 {
                     ws.Row(10).Cell(16 - idx).SetValue(item.ToString());

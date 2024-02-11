@@ -466,47 +466,7 @@
 							</table>
 						</div>
 					</el-tab-pane>
-					<el-tab-pane label="收款金額" name="tab3">
-						<div class="form-item-inline">
-							<div class="form-item-col">
-								<el-input type="number" size="small" v-model="newPayment"></el-input>
-							</div>
-							<div class="form-item-col">
-								<el-button type="primary" size="small" icon="el-icon-plus" @click="addPayment()">新 增</el-button>
-							</div>
-						</div>
-						<div class="table-responsive" style="max-width:300px; margin-top:10px">
-							<table class="table stopwork-table">
-								<thead>
-									<tr>
-										<th style="width:50px">刪除</th>
-										<th style="width:120px">收款金額</th>
-										<th style="width:120px;">日期</th>
-									</tr>
-								</thead>
-								<tbody>
-                                    <tr v-if="form.Payments.length === 0">
-                                        <td colspan="3">暫無資料</td>
-                                    </tr>
-									<tr v-for="(item, idx) in form.Payments" :key="idx">
-										<td style="width: 50px">
-											<el-button type="danger" size="mini" icon="el-icon-delete" circle @click="deletePayment(idx)"></el-button>
-										</td>
-										<td>{{item.Amount | comma}}</td>
-										<td>{{item.CreateDate | date}}</td>
-									</tr>
-								</tbody>
-								<tfoot>
-									<tr>
-										<td>合計</td>
-										<td>{{totalPayment | comma}}</td>
-										<td></td>
-									</tr>
-								</tfoot>
-							</table>
-						</div>
-					</el-tab-pane>
-					<el-tab-pane v-if="form.RefundBank.ID" label="退款帳戶" name="tab4">
+					<el-tab-pane v-if="form.RefundBank.ID" label="退款帳戶" name="tab3">
 						<el-form-item label="銀行代碼">{{form.RefundBank.Code}}</el-form-item>
 						<el-form-item label="銀行帳號">{{form.RefundBank.Account}}</el-form-item>
 						<el-form-item label="存摺照片">
@@ -568,7 +528,6 @@ export default {
 			projectCode: Object.freeze([]),
 			attachmentInfo: Object.freeze([]),
 			activeTab: 'tab1',
-			newPayment: null,
 			rules: Object.freeze({
 				PUB_COMP: [{ required: true, message: '請選擇案件類型', trigger: 'change' }],
 				TOWN_NO: [{ required: true, message: '請選擇鄉鎮分類', trigger: 'change' }],
@@ -639,11 +598,6 @@ export default {
 
 			return dayDiff;
 		},
-		totalPayment() {
-			return this.form.Payments.reduce((prev, current) => {
-				return prev + +current.Amount;
-			}, 0);
-		},
 		filterAttachmentInfo() {
 			return this.attachmentInfo.filter(item => item.PUB_COMP === this.form.PUB_COMP);
 		}
@@ -690,22 +644,6 @@ export default {
 		deleteStopWork(idx) {
 			if (!confirm('是否確認刪除?')) return;
 			this.form.StopWorks.splice(idx, 1);
-		},
-		addPayment() {
-			if (!this.newPayment) {
-				alert('請輸入收款金額');
-				return;
-			}
-			this.form.Payments.push({
-				Amount: this.newPayment,
-				CreateDate: moment().format('YYYY-MM-DD')
-			});
-
-			this.newPayment = null;
-		},
-		deletePayment(idx) {
-			if (!confirm('是否確認刪除?')) return false;
-			this.form.Payments.splice(idx, 1);
 		},
 		saveForm() {
 			this.$refs.form.validate(valid => {
