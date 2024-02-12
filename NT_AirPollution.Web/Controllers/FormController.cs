@@ -36,7 +36,7 @@ namespace NT_AirPollution.Web.Controllers
 
         public JsonResult GetTotalMoney(FormView form)
         {
-            int S_AMT = _formService.TryCalcTotalMoney(form);
+            int S_AMT = _formService.CalcTotalMoney(form, 0);
             return Json(new AjaxResult { Status = true, Message = S_AMT }, JsonRequestBehavior.AllowGet);
         }
 
