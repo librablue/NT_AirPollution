@@ -21,7 +21,7 @@ h3 {
 }
 
 .main-wrap {
-    max-width: 1170px;
+    max-width: 1280px;
     padding: 40px 20px;
     margin: 40px auto;
 }
@@ -32,6 +32,7 @@ h3 {
         white-space: nowrap;
     }
     td {
+        position: relative;
         min-width: 160px;
     }
 }
@@ -57,6 +58,30 @@ h3 {
 
 .el-tabs {
     margin-bottom: 22px;
+}
+
+.file-list {
+    margin-right: 30px;
+	li {
+		display: flex;
+		align-items: center;
+		padding: 4px 0;
+	}
+}
+
+.link-add {
+	display: inline-block;
+	position: absolute;
+	top: 4px;
+	right: 4px;
+	font-size: 24px;
+	line-height: 24px;
+	color: #67C23A;
+}
+
+.link-delete {
+	color: #f56c6c;
+	margin-right: 10px;
 }
 
 @import './footer';

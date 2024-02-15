@@ -64,7 +64,14 @@
                                 </el-form-item>
                             </td>
                             <th>2.工程類別</th>
-                            <td colspan="2">{{form.KIND_NA || '待審核'}}</td>
+                            <td colspan="2">
+                                <el-form-item prop="KIND_NO">
+                                    <el-select class="w100p" v-model="form.KIND_NO">
+                                        <el-option label="請選擇" :value="null"></el-option>
+                                        <el-option v-for="item in projectCode" :key="item.ID" :label="`${item.ID}. ${item.Name}`" :value="item.ID"></el-option>
+                                    </el-select>
+                                </el-form-item>
+                            </td>
                         </tr>
                         <tr>
                             <th>3.工地地址或地號</th>
@@ -408,12 +415,12 @@
             <el-tabs v-model="activeTab">
                 <el-tab-pane label="檢附資料" name="first">
                     <div class="table-responsive">
-                        <table class="table">
+                        <table class="table form-table">
                             <thead>
                                 <tr>
                                     <th>檢附資料名稱</th>
                                     <th>說明</th>
-                                    <th>檢附資料上傳</th>
+                                    <th style="width:430px">檢附資料上傳</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -421,14 +428,6 @@
                                     <th>{{item.FileTitle}}</th>
                                     <td>{{item.Description}}</td>
                                     <td>
-                                        <div v-if="form.Attachments[idx] && form.Attachments[idx].FileName">
-                                            <a href="javascript:;" class="link-delete" @@click="deleteFile(idx)"><i class="el-icon-delete"></i></a>
-                                            <a :href="`/Option/Download?f=${form.Attachments[idx].FileName}`" class="link-download">{{form.Attachments[idx].FileName}}</a>
-                                        </div>
-                                        <input v-else type="file" :id="`file${idx}`" accept=".doc,.docx,.pdf,.jpg,.jpeg,.png" />
-
-
-
                                         <a href="javascript:;" class="link-add" title="新增檔案" @@click="addFile(item.ID)"><i class="el-icon-circle-plus-outline"></i></a>
                                         <ul class="file-list">
                                             <li v-for="sub in filterAttachments(item.ID)" :key="sub.ID">
