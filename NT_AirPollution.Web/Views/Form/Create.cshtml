@@ -41,8 +41,6 @@
                             </td>
                         </tr>
                         <tr>
-                            <th>申請日期</th>
-                            <td>{{form.C_DATE | date}}</td>
                             <th>申請人</th>
                             <td>
                                 <el-form-item prop="CreateUserName">
@@ -52,7 +50,17 @@
                             <th>申請人電子信箱</th>
                             <td>
                                 <el-form-item prop="CreateUserEmail">
-                                    <el-input type="email" v-model="form.CreateUserEmail" maxlength="50"></el-input>
+                                    <el-row type="flex">
+                                        <el-input type="email" v-model="form.CreateUserEmail" maxlength="50">
+                                            <el-button slot="append" v-cloak :disabled="sending" @@click="sendActiveCode">{{sendText}}</el-button>
+                                        </el-input>
+                                    </el-row>
+                                </el-form-item>
+                            </td>
+                            <th>驗證碼</th>
+                            <td>
+                                <el-form-item prop="ActiveCode">
+                                    <el-input v-model="form.ActiveCode"></el-input>
                                 </el-form-item>
                             </td>
                         </tr>

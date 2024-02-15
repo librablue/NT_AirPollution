@@ -14,32 +14,65 @@ namespace NT_AirPollution.Service
     public class VerifyService : BaseService
     {
         /// <summary>
-        /// 檢查驗證碼
+        /// 新增驗證碼記錄
         /// </summary>
+        /// <param name="log"></param>
         /// <returns></returns>
-        public Form CheckActiveCode(string code)
+        public bool AddVerifyLog(VerifyLog log)
         {
             using (var cn = new SqlConnection(connStr))
             {
-                var form = cn.QueryFirstOrDefault<Form>(@"
-                    SELECT * FROM Form 
-                    WHERE ActiveCode=@ActiveCode",
-                    new { ActiveCode = code });
-
-                return form;
+                try
+                {
+                    cn.Insert(log);
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"AddVerifyLog: {ex.Message}");
+                    throw new Exception("系統發生未預期錯誤");
+                }
             }
         }
 
         /// <summary>
-        /// 更新驗證狀態
+        /// 註冊檢查驗證碼
         /// </summary>
-        /// <param name="id"></param>
-        public void VerifyForm(long id)
+        /// <param name="email"></param>
+        /// <returns></returns>
+        public VerifyLog CheckVerifyLog(string email)
         {
             using (var cn = new SqlConnection(connStr))
             {
-                cn.Execute(@"UPDATE Form SET IsActive=1 WHERE ID=@ID",
-                    new { ID = id });
+                var result = cn.QueryFirstOrDefault<VerifyLog>(@"
+                    SELECT TOP 1 * FROM VerifyLog
+                    WHERE Email=@Email
+                        AND ActiveDate IS NULL
+                    ORDER BY CreateDate DESC",
+                    new { Email = email });
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// 修改驗證碼記錄
+        /// </summary>
+        /// <param name="log"></param>
+        /// <returns></returns>
+        public bool UpdateVerifyLog(VerifyLog log)
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                try
+                {
+                    cn.Update(log);
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"UpdateVerifyLog: {ex.Message}");
+                    throw new Exception("系統發生未預期錯誤");
+                }
             }
         }
     }

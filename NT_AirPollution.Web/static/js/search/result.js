@@ -63,8 +63,6 @@
 				callback();
 			};
 			return {
-				sendText: '寄送驗證信',
-				sending: false,
 				district: Object.freeze([]),
 				projectCode: Object.freeze([]),
 				attachmentInfo: Object.freeze([]),

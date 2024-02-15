@@ -419,15 +419,11 @@ h3 {
 }
 
 .main-wrap {
-  max-width: 1280px;
+  max-width: 1170px;
   padding: 40px 20px;
   margin: 40px auto;
 }
 
-.form-table th,
-.form-table td {
-  white-space: nowrap;
-}
 .form-table td {
   position: relative;
   min-width: 160px;

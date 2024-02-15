@@ -160,7 +160,6 @@ namespace NT_AirPollution.Web.Controllers
                 form.SER_NO = formInDB.SER_NO;
                 form.ClientUserID = formInDB.ClientUserID;
                 form.CreateUserEmail = formInDB.CreateUserEmail;
-                form.ActiveCode = formInDB.ActiveCode;
                 form.IsActive = formInDB.IsActive;
                 form.S_AMT = formInDB.S_AMT;
                 form.S_AMT2 = formInDB.S_AMT2;

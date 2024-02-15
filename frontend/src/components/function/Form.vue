@@ -78,7 +78,7 @@
 				<template #default="{ row }">{{ row.C_NO ? `${row.C_NO}-${row.SER_NO}` : '(取號中)' }}</template>
 			</vxe-table-column>
 			<vxe-table-column field="CreateUserEmail" title="Email" width="240" align="center" fixed="left">
-				<template #default="{ row }">{{ row.CreateUserEmail }}({{ row.ClientUserID ? '會員' : (row.IsActive ? "已驗證" : "未驗證") }})</template>
+				<template #default="{ row }">{{ row.CreateUserEmail }}({{ row.ClientUserID ? '會員' : '非會員' }})</template>
 			</vxe-table-column>
 			<vxe-table-column field="B_SERNO" title="建照字號" width="120" align="center"></vxe-table-column>
 			<vxe-table-column field="COMP_NAM" title="工程名稱" width="180" align="center"></vxe-table-column>

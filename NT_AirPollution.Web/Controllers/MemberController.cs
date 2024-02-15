@@ -25,6 +25,7 @@ namespace NT_AirPollution.Web.Controllers
         private readonly OptionService _optionService = new OptionService();
         private readonly SendBoxService _sendBoxService = new SendBoxService();
         private readonly AccessService _accessService = new AccessService();
+        private readonly VerifyService _verifyService = new VerifyService();
 
         public ActionResult Regist()
         {
@@ -111,7 +112,7 @@ namespace NT_AirPollution.Web.Controllers
                     throw new Exception("相同 Email 已存在。");
 
                 var sendbox = _sendBoxService.CheckSendBoxFrequency(verify.Email);
-                if (sendbox != null && sendbox.CreateDate > DateTime.Now.AddMinutes(-3))
+                if (sendbox != null && sendbox.CreateDate > DateTime.Now.AddSeconds(-180))
                     throw new Exception("寄送次數太頻繁，請 3 分鐘後再試。");
 
                 // 產生5碼亂數
@@ -140,7 +141,7 @@ namespace NT_AirPollution.Web.Controllers
 
                 verify.ActiveCode = code;
                 verify.CreateDate = DateTime.Now;
-                _clientUserService.AddVerifyLog(verify);
+                _verifyService.AddVerifyLog(verify);
 
                 return Json(new AjaxResult { Status = true, Message = "已發送驗證碼到您申請的信箱，請在5分鐘內收取驗證碼進行驗證。" });
             }
@@ -168,12 +169,12 @@ namespace NT_AirPollution.Web.Controllers
                 if (existUser != null)
                     throw new Exception("相同 Email 已存在。");
 
-                var verifyLog = _clientUserService.CheckVerifyLog(user.Email);
+                var verifyLog = _verifyService.CheckVerifyLog(user.Email);
                 if (verifyLog == null || verifyLog.ActiveCode != user.ActiveCode)
                     throw new Exception("驗證碼錯誤。");
 
                 verifyLog.ActiveDate = DateTime.Now;
-                _clientUserService.UpdateVerifyLog(verifyLog);
+                _verifyService.UpdateVerifyLog(verifyLog);
 
                 user.CreateDate = DateTime.Now;
                 _clientUserService.AddUser(user);
@@ -202,7 +203,7 @@ namespace NT_AirPollution.Web.Controllers
                     throw new Exception("查無此 Email 帳號。");
 
                 var sendbox = _sendBoxService.CheckSendBoxFrequency(verify.Email);
-                if (sendbox != null && sendbox.CreateDate > DateTime.Now.AddMinutes(-3))
+                if (sendbox != null && sendbox.CreateDate > DateTime.Now.AddSeconds(-180))
                     throw new Exception("寄送次數太頻繁，請 3 分鐘後再試。");
 
                 // 產生5碼亂數
@@ -231,7 +232,7 @@ namespace NT_AirPollution.Web.Controllers
 
                 verify.ActiveCode = code;
                 verify.CreateDate = DateTime.Now;
-                _clientUserService.AddVerifyLog(verify);
+                _verifyService.AddVerifyLog(verify);
 
                 return Json(new AjaxResult { Status = true, Message = "已發送驗證碼到您申請的信箱，請在5分鐘內收取驗證碼進行驗證。" });
             }
@@ -255,12 +256,12 @@ namespace NT_AirPollution.Web.Controllers
                     throw new Exception(firstError);
                 }
 
-                var verifyLog = _clientUserService.CheckVerifyLog(user.Email);
+                var verifyLog = _verifyService.CheckVerifyLog(user.Email);
                 if (verifyLog == null || verifyLog.ActiveCode != user.ActiveCode)
                     throw new Exception("驗證碼錯誤。");
 
                 verifyLog.ActiveDate = DateTime.Now;
-                _clientUserService.UpdateVerifyLog(verifyLog);
+                _verifyService.UpdateVerifyLog(verifyLog);
 
                 var userInDB = _clientUserService.GetUserByEmail(user.Email);
                 if (userInDB == null)

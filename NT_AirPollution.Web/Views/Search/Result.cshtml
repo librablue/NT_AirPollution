@@ -13,13 +13,6 @@
 <div id="app">
     <div class="main-wrap">
         <h2>申報案件管理</h2>
-        <el-form size="small" inline>
-            <el-form-item label="申請 Email" v-cloak>
-                {{selectRow.CreateUserEmail}}
-                ({{selectRow.IsActive ? "已驗證" : "未驗證"}})
-                <el-button v-if="!selectRow.IsActive" type="success" round @@click="resend()" :disabled="sending">{{sendText}}</el-button>
-            </el-form-item>
-        </el-form>
         <el-table :data="forms" border stripe>
             <el-table-column label="內容" width="60" align="center" fixed>
                 <template slot-scope="scope">

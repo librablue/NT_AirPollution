@@ -101,7 +101,7 @@
     <Content Include="App_Data\Payment\Template\Payment.html" />
     <Content Include="App_Data\Payment\Template\Receipt.html" />
     <Content Include="App_Data\Template\VerifyCode.txt" />
-    <Content Include="App_Data\Template\ActiveMail.txt" />
+    <Content Include="App_Data\Template\CreateFormMail.txt" />
     <Content Include="Global.asax" />
     <Content Include="static\css\index.css" />
     <Content Include="static\css\member.css" />
@@ -149,7 +149,6 @@
     <Compile Include="Controllers\OptionController.cs" />
     <Compile Include="Controllers\SearchController.cs" />
     <Compile Include="Controllers\SoilController.cs" />
-    <Compile Include="Controllers\VerifyController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -191,7 +190,6 @@
     <Content Include="Views\Form\Create.cshtml" />
     <Content Include="Views\Search\Index.cshtml" />
     <Content Include="Views\Search\Result.cshtml" />
-    <Content Include="Views\Verify\Index.cshtml" />
     <Content Include="Views\Manage\Form.cshtml" />
     <Content Include="Views\Air\Index.cshtml" />
     <Content Include="Views\Road\Index.cshtml" />

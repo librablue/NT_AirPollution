@@ -10,6 +10,7 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Web;
+using System.Web.Helpers;
 using System.Web.Hosting;
 using System.Web.Mvc;
 
@@ -19,10 +20,12 @@ namespace NT_AirPollution.Web.Controllers
     {
         private readonly string _uploadPath = ConfigurationManager.AppSettings["UploadPath"].ToString();
         private readonly string _configDomain = ConfigurationManager.AppSettings["Domain"].ToString();
+        private readonly ClientUserService _clientUserService = new ClientUserService();
         private readonly FormService _formService = new FormService();
         private readonly OptionService _optionService = new OptionService();
         private readonly SendBoxService _sendBoxService = new SendBoxService();
         private readonly AccessService _accessService = new AccessService();
+        private readonly VerifyService _verifyService = new VerifyService();
 
         public ActionResult Create()
         {
@@ -54,6 +57,11 @@ namespace NT_AirPollution.Web.Controllers
                 if (form.B_DATE2 > form.E_DATE2)
                     throw new Exception("施工期程起始日期不能大於結束日期");
 
+                var verifyLog = _verifyService.CheckVerifyLog(form.CreateUserEmail);
+                if (verifyLog == null || verifyLog.ActiveCode != form.ActiveCode)
+                    throw new Exception("電子信箱驗證碼錯誤");
+
+
                 var allDists = _optionService.GetDistrict();
                 var allProjectCode = _optionService.GetProjectCode();
                 form.SER_NO = 1;
@@ -66,7 +74,6 @@ namespace NT_AirPollution.Web.Controllers
                 form.R_B_BDATE = form.R_B_BDATE2.AddYears(-1911).ToString("yyyMMdd");
                 form.C_DATE = DateTime.Now;
                 form.M_DATE = DateTime.Now;
-                form.ActiveCode = Guid.NewGuid().ToString();
                 form.IsActive = false;
                 form.FormStatus = FormStatus.審理中;
                 form.CalcStatus = CalcStatus.未申請;
@@ -79,14 +86,15 @@ namespace NT_AirPollution.Web.Controllers
                     throw new Exception("系統發生未預期錯誤");
 
                 _formService.AddForm(form);
+                verifyLog.ActiveDate = DateTime.Now;
+                _verifyService.UpdateVerifyLog(verifyLog);
 
                 // 寄驗證信
-                string template = ($@"{HostingEnvironment.ApplicationPhysicalPath}/App_Data/Template/ActiveMail.txt");
+                string template = ($@"{HostingEnvironment.ApplicationPhysicalPath}/App_Data/Template/CreateFormMail.txt");
                 using (StreamReader sr = new StreamReader(template))
                 {
                     String content = sr.ReadToEnd();
-                    string url = string.Format("{0}/Verify/Index?code={1}", _configDomain, form.ActiveCode);
-                    string body = string.Format(content, form.C_NO, form.CreateUserEmail, url, url);
+                    string body = string.Format(content, form.C_NO, form.CreateUserEmail);
 
                     _sendBoxService.AddSendBox(new SendBox
                     {
@@ -98,6 +106,67 @@ namespace NT_AirPollution.Web.Controllers
                     });
                 }
 
+                return Json(new AjaxResult { Status = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new AjaxResult { Status = false, Message = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public JsonResult SendActiveCode(VerifyLog verify)
+        {
+            try
+            {
+                var sendbox = _sendBoxService.CheckSendBoxFrequency(verify.Email);
+                if (sendbox != null && sendbox.CreateDate > DateTime.Now.AddSeconds(-180))
+                    throw new Exception("寄送次數太頻繁，請 3 分鐘後再試。");
+
+                // 產生5碼亂數
+                string code = "";
+                Random rnd = new Random();
+                for (int i = 0; i < 5; i++)
+                {
+                    code += rnd.Next(0, 9);
+                }
+
+                // 寄驗證信
+                string template = ($@"{HostingEnvironment.ApplicationPhysicalPath}/App_Data/Template/VerifyCode.txt");
+                using (StreamReader sr = new StreamReader(template))
+                {
+                    String content = sr.ReadToEnd();
+                    string body = string.Format(content, verify.ActiveCode);
+
+                    _sendBoxService.AddSendBox(new SendBox
+                    {
+                        Address = verify.Email,
+                        Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統認證信",
+                        Body = body,
+                        FailTimes = 0,
+                        CreateDate = DateTime.Now
+                    });
+                }
+
+                var verifyInDB = _verifyService.CheckVerifyLog(verify.Email);
+                // 控制DB一個email只存一次
+                if (verifyInDB == null)
+                {
+                    verifyInDB = new VerifyLog
+                    {
+                        Email = verify.Email,
+                        ActiveCode= code,
+                        CreateDate= DateTime.Now
+                    };
+                    _verifyService.AddVerifyLog(verifyInDB);
+                }
+                else
+                {
+                    verifyInDB.ActiveCode = code;
+                    verifyInDB.CreateDate = DateTime.Now;
+                    _verifyService.UpdateVerifyLog(verifyInDB);
+                }
+                    
                 return Json(new AjaxResult { Status = true });
             }
             catch (Exception ex)
@@ -126,7 +195,7 @@ namespace NT_AirPollution.Web.Controllers
                 if (!allowExt.Any(o => o == ext))
                     throw new Exception("附件只允許上傳 doc/docx/pdf/jpg/png 等文件");
 
-                if(file.ContentLength >= 1024 * 1024 * 4)
+                if (file.ContentLength >= 1024 * 1024 * 4)
                     throw new Exception("附件大小限制 4MB");
 
                 // 生成檔名

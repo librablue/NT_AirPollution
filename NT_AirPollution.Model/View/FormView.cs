@@ -26,5 +26,10 @@ namespace NT_AirPollution.Model.View
         public WorkStatus WorkStatus { get; set; }
         [Computed]
         public Commitment Commitment { get; set; }
+        /// <summary>
+        /// 非會員啟用碼
+        /// </summary>
+        [Computed]
+        public string ActiveCode { get; set; }
     }
 }
