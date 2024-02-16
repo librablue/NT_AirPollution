@@ -9,15 +9,15 @@
 					<div class="form-item-col">
 						<el-form-item label="申報應繳金額">{{form.S_AMT | comma}}</el-form-item>
 					</div>
-					<div v-if="form.FormStatus === 1 || form.FormStatus === 2" class="form-item-col">
-						<el-link type="primary" style="line-height: 32px;" @click="finalCalc('S_AMT')">產生申報金額</el-link>
-					</div>
+					<!-- <div v-if="form.FormStatus === 1 || form.FormStatus === 2" class="form-item-col">
+						<el-link type="primary" style="line-height: 32px;" @click="finalCalc('S_AMT')">試算申報金額</el-link>
+					</div> -->
 					<div class="form-item-col">
 						<el-form-item label="結算應繳金額">{{form.S_AMT2 | comma}}</el-form-item>
 					</div>
-					<div v-if="form.CalcStatus === 1 || form.CalcStatus === 2" class="form-item-col">
-						<el-link type="primary" style="line-height: 32px;" @click="finalCalc('S_AMT2')">產生結算金額</el-link>
-					</div>
+					<!-- <div v-if="form.CalcStatus === 1 || form.CalcStatus === 2" class="form-item-col">
+						<el-link type="primary" style="line-height: 32px;" @click="finalCalc('S_AMT2')">試算結算金額</el-link>
+					</div> -->
 				</div>
 
 				<table class="table">

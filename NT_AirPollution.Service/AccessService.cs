@@ -487,6 +487,9 @@ namespace NT_AirPollution.Service
             {
                 try
                 {
+                    cn.Execute(@"DELETE FROM ABUDF_B WHERE [C_NO]=? AND [SER_NO]=?",
+                        new { C_NO = form.C_NO, SER_NO = form.SER_NO });
+
                     cn.Execute(@"
                         INSERT INTO ABUDF_B ([C_NO],[SER_NO],[AP_DATE1],[B_STAT],[KIND_NO],[KIND],[YEAR],[A_KIND],[MONEY],[AREA],[VOLUMEL],[B_DAY],[B_DATE],[E_DATE],[S_AMT],[T_DAY],[PRE_C_AMT],[PRE_C_AMT1],[KEYIN],[C_DATE],[M_DATE])
                         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",

@@ -629,7 +629,7 @@ namespace NT_AirPollution.Service
         /// <param name="form"></param>
         /// <param name="downDays">停工天數</param>
         /// <returns></returns>
-        public int CalcTotalMoney(FormView form, double downDays)
+        public double CalcTotalMoney(FormView form, double downDays)
         {
             using (var cn = new SqlConnection(connStr))
             {

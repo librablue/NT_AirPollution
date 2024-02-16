@@ -35,13 +35,13 @@ namespace NT_AirPollution.Admin.Controllers
         /// <param name="form"></param>
         /// <returns></returns>
         [HttpPost]
-        public int GetFinalCalc(FormView form)
+        public double GetFinalCalc(FormView form)
         {
             form.B_DATE = form.B_DATE2.AddYears(-1911).ToString("yyyMMdd");
             form.E_DATE = form.E_DATE2.AddYears(-1911).ToString("yyyMMdd");
             // 停工天數
             double downDays = form.StopWorks.Sum(o => (o.UP_DATE2 - o.DOWN_DATE2).TotalDays + 1);
-            int S_AMT2 = _formService.CalcTotalMoney(form, downDays);
+            double S_AMT2 = _formService.CalcTotalMoney(form, downDays);
             return S_AMT2;
         }
 
@@ -157,6 +157,26 @@ namespace NT_AirPollution.Admin.Controllers
         {
             try
             {
+                // 3.4.5指令共用，用退費金額<4000判斷4，>=4000判斷5
+                if(form.CalcStatus == CalcStatus.通過待繳費)
+                {
+                    form.B_DATE = form.B_DATE2.AddYears(-1911).ToString("yyyMMdd");
+                    form.E_DATE = form.E_DATE2.AddYears(-1911).ToString("yyyMMdd");
+                    // 停工天數
+                    double downDays = form.StopWorks.Sum(o => (o.UP_DATE2 - o.DOWN_DATE2).TotalDays + 1);
+                    form.S_AMT2 = _formService.CalcTotalMoney(form, downDays);
+
+                    if (form.S_AMT2 > form.S_AMT)
+                        form.CalcStatus = CalcStatus.通過待繳費;
+                    else if (form.P_AMT == form.S_AMT2)
+                        form.CalcStatus = CalcStatus.繳退費完成;
+                    else if (form.P_AMT - form.S_AMT2 < 4000)
+                        form.CalcStatus = CalcStatus.通過待退費小於4000;
+                    else if (form.P_AMT - form.S_AMT2 >= 4000)
+                        form.CalcStatus = CalcStatus.通過待退費大於4000;
+                }
+
+
                 switch (form.CalcStatus)
                 {
                     case CalcStatus.需補件:

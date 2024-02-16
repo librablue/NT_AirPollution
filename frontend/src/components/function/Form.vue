@@ -66,9 +66,7 @@
 						</a>
 						<el-dropdown-menu slot="dropdown">
 							<el-dropdown-item :command="beforeCommand2(row, 2)">需補件</el-dropdown-item>
-							<el-dropdown-item :command="beforeCommand2(row, 3)">通過待繳費</el-dropdown-item>
-							<el-dropdown-item :command="beforeCommand2(row, 4)">通過待退費</el-dropdown-item>
-							<!-- <el-dropdown-item :command="beforeCommand2(row, 5)">通過待繳費(大於4000)</el-dropdown-item> -->
+							<el-dropdown-item :command="beforeCommand2(row, 3)">審核通過</el-dropdown-item>
 							<el-dropdown-item :command="beforeCommand2(row, 6)">繳退費完成</el-dropdown-item>
 						</el-dropdown-menu>
 					</el-dropdown>
@@ -77,7 +75,7 @@
 			<vxe-table-column field="C_NO" title="管制編號" width="120" align="center" sortable fixed="left">
 				<template #default="{ row }">{{ row.C_NO ? `${row.C_NO}-${row.SER_NO}` : '(取號中)' }}</template>
 			</vxe-table-column>
-			<vxe-table-column field="CreateUserEmail" title="Email" width="240" align="center" fixed="left">
+			<vxe-table-column field="CreateUserEmail" title="Email" width="200" align="center" fixed="left">
 				<template #default="{ row }">{{ row.CreateUserEmail }}({{ row.ClientUserID ? '會員' : '非會員' }})</template>
 			</vxe-table-column>
 			<vxe-table-column field="B_SERNO" title="建照字號" width="120" align="center"></vxe-table-column>
@@ -91,8 +89,11 @@
 			<vxe-table-column field="M_DATE" title="修改日期" width="100" align="center" sortable>
 				<template #default="{ row }">{{ row.M_DATE | date }}</template>
 			</vxe-table-column>
-			<vxe-table-column field="VerifyDate" title="審核日期" width="100" align="center" sortable>
-				<template #default="{ row }">{{ row.VerifyDate | date }}</template>
+			<vxe-table-column field="VerifyDate1" title="申報審核日" width="120" align="center" sortable>
+				<template #default="{ row }">{{ row.VerifyDate1 | date }}</template>
+			</vxe-table-column>
+			<vxe-table-column field="VerifyDate2" title="結算審核日" width="120" align="center" sortable>
+				<template #default="{ row }">{{ row.VerifyDate2 | date }}</template>
 			</vxe-table-column>
 		</vxe-table>
 		<FormModal :show.sync="formModalVisible" :mode="mode" :data="selectRow" @on-updated="onUpdated" />
@@ -204,10 +205,6 @@ export default {
 		handleCommand2(arg) {
 			const { row, cmd } = arg;
 			this.selectRow = row;
-			if (!this.selectRow.S_AMT2) {
-				alert('請先結算並儲存後才可修改狀態');
-				return false;
-			}
 			switch (cmd) {
 				case 2:
 					if (!confirm(`管制編號 ${row.C_NO} 進度改成需補件，是否確認繼續?`)) return false;
@@ -215,11 +212,7 @@ export default {
 					this.failReasonModalVisible = true;
 					return;
 				case 3:
-					if (!confirm(`管制編號 ${row.C_NO} 進度改成通過待繳費，是否確認繼續?`)) return false;
-					break;
-				case 4:
-				case 5:
-					if (!confirm(`管制編號 ${row.C_NO} 進度改成通過待退費，是否確認繼續?`)) return false;
+					if (!confirm(`管制編號 ${row.C_NO} 審核通過，系統將進行結算判斷是否需繳退費，是否確認繼續?`)) return false;
 					break;
 				case 6:
 					if (!confirm(`管制編號 ${row.C_NO} 進度改成繳退費完成，是否確認繼續?`)) return false;
@@ -227,11 +220,6 @@ export default {
 			}
 
 			this.selectRow.CalcStatus = cmd;
-			// 4.5指令共用，用退費金額<4000判斷4，>=4000判斷5
-			if (cmd === 4 && this.selectRow.S_AMT2 - this.selectRow.P_AMT >= 4000) {
-				this.selectRow.CalcStatus = 5;
-			}
-
 			this.updateCalcStatus(this.selectRow);
 		},
 		updateFormStatus(row) {
