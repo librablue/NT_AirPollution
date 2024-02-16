@@ -92,6 +92,10 @@ input[type=number] {
   z-index: 0;
 }
 
+.el-input-group__append .el-button {
+  padding: 12px 10px;
+}
+
 @media (max-width: 992px) {
   .el-dialog {
     width: 90% !important;
@@ -148,6 +152,11 @@ input[type=number] {
 @media (min-width: 1200px) {
   .container {
     width: 1170px;
+  }
+}
+@media (min-width: 1400px) {
+  .container {
+    width: 1320px;
   }
 }
 @keyframes fadeIn {
@@ -225,7 +234,7 @@ input[type=number] {
 .navbar .navbar-logo {
   display: inline-block;
   width: 140px;
-  margin-right: 20px;
+  margin-right: 60px;
 }
 .navbar .navbar-logo img {
   width: 100%;
@@ -419,7 +428,7 @@ h3 {
 }
 
 .main-wrap {
-  max-width: 1170px;
+  max-width: 1320px;
   padding: 40px 20px;
   margin: 40px auto;
 }
