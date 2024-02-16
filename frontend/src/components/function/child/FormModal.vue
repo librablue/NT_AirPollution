@@ -4,16 +4,16 @@
 			<el-form class="modal-form" ref="form" size="small" :rules="rules" :model="form">
 				<div class="form-item-inline">
 					<div class="form-item-col">
-						<el-form-item prop="C_NO" label="管制編號">{{form.C_NO}}</el-form-item>
+						<el-form-item prop="C_NO" label="管制編號">{{form.C_NO}}-{{form.SER_NO}}</el-form-item>
 					</div>
 					<div class="form-item-col">
-						<el-form-item label="申報應繳金額">{{form.S_AMT | comma}}</el-form-item>
+						<el-form-item label="申報應繳金額">{{(form.S_AMT === null ? '未結算' : form.S_AMT) | comma}}</el-form-item>
 					</div>
 					<!-- <div v-if="form.FormStatus === 1 || form.FormStatus === 2" class="form-item-col">
 						<el-link type="primary" style="line-height: 32px;" @click="finalCalc('S_AMT')">試算申報金額</el-link>
 					</div> -->
 					<div class="form-item-col">
-						<el-form-item label="結算應繳金額">{{form.S_AMT2 | comma}}</el-form-item>
+						<el-form-item label="結算應繳金額">{{(form.S_AMT2 === null ? '未結算' : form.S_AMT2) | comma}}</el-form-item>
 					</div>
 					<!-- <div v-if="form.CalcStatus === 1 || form.CalcStatus === 2" class="form-item-col">
 						<el-link type="primary" style="line-height: 32px;" @click="finalCalc('S_AMT2')">試算結算金額</el-link>
