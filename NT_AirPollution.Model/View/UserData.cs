@@ -1,4 +1,5 @@
-﻿using NT_AirPollution.Model.Enum;
+﻿using Newtonsoft.Json;
+using NT_AirPollution.Model.Enum;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +23,9 @@ namespace NT_AirPollution.Model.View
         /// 角色
         /// </summary>
         public string[] Role { get; set; }
+        [JsonIgnore]
         public string ActiveCode { get; set; }
+        [JsonIgnore]
         public string Captcha { get; set; }
     }
 }
