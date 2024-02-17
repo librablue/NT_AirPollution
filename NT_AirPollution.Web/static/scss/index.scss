@@ -16,7 +16,7 @@ h3 {
     height: 80vh;
     height: 80dvh;
     padding: 20px 0;
-    .container {
+    .wrap {
         position: relative;
         display: flex;
         flex-wrap: wrap;
@@ -85,6 +85,9 @@ h3 {
 @media (min-width: 768px) {
     .banner {
         padding: 0;
+        .wrap {
+            width: 80%;
+        }
         .left,
         .right {
             width: 50%;
