@@ -22,7 +22,7 @@ namespace NT_AirPollution.Admin.Controllers
         private readonly NewsService newsService = new NewsService();
         public List<News> GetNews()
         {
-            var news = newsService.GetNews().OrderByDescending(o => o.CreateDate).ToList();
+            var news = newsService.GetNews().OrderByDescending(o => o.PublishDate).ToList();
             return news;
         }
 

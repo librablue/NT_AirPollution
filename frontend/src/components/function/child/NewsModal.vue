@@ -5,8 +5,8 @@
 				<el-form-item prop="Title" label="標題">
 					<el-input v-model="news.Title"></el-input>
 				</el-form-item>
-				<el-form-item prop="CreateDate" label="上架日期">
-					<el-date-picker v-model="news.CreateDate" type="date" value-format="yyyy-MM-dd" placeholder="上架日期"></el-date-picker>
+				<el-form-item prop="PublishDate" label="發佈日期">
+					<el-date-picker v-model="news.PublishDate" type="date" value-format="yyyy-MM-dd" placeholder="上架日期"></el-date-picker>
 				</el-form-item>
 				<el-form-item prop="Content" label="內容">
 					<el-tabs v-model="activeName" @tab-click="tabClick">

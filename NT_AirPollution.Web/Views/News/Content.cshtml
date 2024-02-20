@@ -9,7 +9,7 @@
 <div class="main-wrap">
     <div class="news-title-wrap">
         <h3 class="news-title">@Model.Title</h3>
-        <div class="pub-date">發佈日期：<b>@Model.CreateDate.ToString("yyyy-MM-dd")</b></div>
+        <div class="pub-date">發佈日期：<b>@Model.PublishDate.ToString("yyyy-MM-dd")</b></div>
     </div>
     <div class="news-content">@Html.Raw(Model.Content.Replace("\n", "<br>"))</div>
     <div class="text-center">

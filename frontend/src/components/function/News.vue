@@ -22,7 +22,10 @@
 			</vxe-table-column>
 			<vxe-table-column field="ID" title="系統編號" align="center" width="100"></vxe-table-column>
 			<vxe-table-column field="Title" title="標題"></vxe-table-column>
-			<vxe-table-column field="CreateDate" title="上架日期" align="center" width="140" sortable>
+            <vxe-table-column field="PublishDate" title="發佈日期" align="center" width="140" sortable>
+				<template v-slot="{ row }">{{ row.PublishDate | date }}</template>
+			</vxe-table-column>
+			<vxe-table-column field="CreateDate" title="建立日期" align="center" width="140" sortable>
 				<template v-slot="{ row }">{{ row.CreateDate | date }}</template>
 			</vxe-table-column>
 		</vxe-table>
