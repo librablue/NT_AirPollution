@@ -2,6 +2,8 @@
 using ClosedXML.Excel;
 using Dapper;
 using Dapper.Contrib.Extensions;
+using DocumentFormat.OpenXml.Wordprocessing;
+using NT_AirPollution.Model.Access;
 using NT_AirPollution.Model.Domain;
 using NT_AirPollution.Model.Enum;
 using NT_AirPollution.Model.View;
@@ -12,6 +14,7 @@ using System.Data.SqlClient;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Hosting;
@@ -24,6 +27,7 @@ namespace NT_AirPollution.Service
         private readonly string _uploadPath = ConfigurationManager.AppSettings["UploadPath"].ToString();
         private readonly string _paymentPath = ConfigurationManager.AppSettings["Payment"].ToString();
         private readonly OptionService _optionService = new OptionService();
+        private readonly AccessService _accessService = new AccessService();
 
         /// <summary>
         /// 取得全部表單
@@ -956,182 +960,6 @@ namespace NT_AirPollution.Service
         }
 
         /// <summary>
-        /// 產生銀行虛擬繳款帳號
-        /// </summary>
-        /// <param name="autoID">產品自動編號</param>
-        /// <param name="price">價格</param>
-        /// <returns></returns>
-        public string GetBankAccount(string autoID, double price)
-        {
-            DateTime maxPayDay = DateTime.Now.AddDays(6);
-            DateTime firstDayOfYear = Convert.ToDateTime(maxPayDay.ToString("yyyy/01/01"));
-
-            TimeSpan ts = new TimeSpan(maxPayDay.Ticks - firstDayOfYear.Ticks);
-
-            // 代收類別
-            string code1_6 = "713587";
-            // 到期年末碼
-            string code7 = maxPayDay.ToString("yyyy").Substring(3, 1);
-            // 到期天(離1/1相差幾天)
-            string code8_10 = (ts.Days + 1).ToString().PadLeft(3, '0');
-            // 客戶自用編號(產品自動編號5碼)
-            if (autoID.Length <= 5)
-                autoID = autoID.PadLeft(5, '0');
-            else
-                autoID = autoID.Substring(autoID.Length - 5, 5);
-            string code_11_15 = autoID;
-            string code1_15 = code1_6 + code7 + code8_10 + code_11_15;
-            string codePrice = price.ToString().PadLeft(10, '0');
-            string code1_15Price = code1_15 + codePrice;
-            int sum = 0;
-            for (int i = 0; i < code1_15Price.Length; i++)
-            {
-                switch (i % 3)
-                {
-                    case 0:
-                        sum += Convert.ToInt32(code1_15Price[i].ToString()) * 1;
-                        break;
-                    case 1:
-                        sum += Convert.ToInt32(code1_15Price[i].ToString()) * 3;
-                        break;
-                    case 2:
-                        sum += Convert.ToInt32(code1_15Price[i].ToString()) * 7;
-                        break;
-                }
-            }
-
-            // 總和取個位數
-            string code16 = (sum % 10).ToString();
-            string totalCode = code1_15 + code16;
-
-            return totalCode;
-        }
-
-        /// <summary>
-        /// 產生郵局虛擬繳款帳號
-        /// </summary>
-        /// <param name="autoID">產品自動編號</param>
-        /// <param name="price">價格</param>
-        /// <returns></returns>
-        public string GetPostAccount(string autoID, double price)
-        {
-            DateTime maxPayDay = DateTime.Now.AddDays(6);
-            DateTime firstDayOfYear = Convert.ToDateTime(maxPayDay.ToString("yyyy/01/01"));
-
-            TimeSpan ts = new TimeSpan(maxPayDay.Ticks - firstDayOfYear.Ticks);
-
-            // 代收類別
-            string code1_6 = "713587";
-            // 客戶自用編號(產品自動編號7碼)
-            if (autoID.Length <= 7)
-                autoID = autoID.PadLeft(7, '0');
-            else
-                autoID = autoID.Substring(autoID.Length - 7, 7);
-            string code_7_13 = autoID;
-            string code1_13 = code1_6 + code_7_13;
-            string codePrice = price.ToString().PadLeft(10, '0');
-            string code1_13Price = code1_13 + codePrice;
-            int sum = 0;
-            for (int i = 0; i < code1_13Price.Length; i++)
-            {
-                switch (i % 3)
-                {
-                    case 0:
-                        sum += Convert.ToInt32(code1_13Price[i].ToString()) * 1;
-                        break;
-                    case 1:
-                        sum += Convert.ToInt32(code1_13Price[i].ToString()) * 3;
-                        break;
-                    case 2:
-                        sum += Convert.ToInt32(code1_13Price[i].ToString()) * 7;
-                        break;
-                }
-            }
-
-            // 總和取個位數
-            string code14 = (sum % 10 + 1).ToString();
-            code14 = code14.Substring(code14.Length - 1, 1);
-            string totalCode = code1_13 + code14;
-
-            // 前面加繳款期限
-            CultureInfo culture = new CultureInfo("zh-TW");
-            culture.DateTimeFormat.Calendar = new TaiwanCalendar();
-            string strMaxPayDay = maxPayDay.ToString("yyMMdd", culture);
-
-            return strMaxPayDay + totalCode;
-        }
-
-        /// <summary>
-        /// 產生第一段超商條碼
-        /// </summary>
-        /// <returns></returns>
-        public string GetStore1Barcode()
-        {
-            DateTime maxPayDay = Convert.ToDateTime(DateTime.Now.AddDays(6).ToString("yyyy/MM/dd"));
-
-            CultureInfo culture = new CultureInfo("zh-TW");
-            culture.DateTimeFormat.Calendar = new TaiwanCalendar();
-            string strMaxPayDay = maxPayDay.ToString("yyMMdd", culture).Substring(1);
-            return strMaxPayDay + "63F";
-        }
-
-        /// <summary>
-        /// 產生第三段超商條碼
-        /// </summary>
-        /// <param name="bankAccount">銀行帳號</param>
-        /// <param name="priceStr">價格(字串)</param>
-        /// <returns></returns>
-        public string GetStore3Barcode(string bankAccount, string priceStr)
-        {
-            //Dictionary<string, int> charTable = new Dictionary<string, int>()
-            //{
-            //    {"A", 1},{"B", 2},{"C", 3},{"D", 4},{"E", 5},{"F", 6},{"G", 7},{"H", 8},{"I", 9},
-            //    {"J", 1},{"K", 2},{"L", 3},{"M", 4},{"N", 5},{"O", 6},{"P", 7},{"Q", 8},{"R", 9},
-            //    {"S", 2},{"T", 3},{"U", 4},{"V", 5},{"W", 6},{"X", 7},{"Y", 8},{"Z", 9}
-            //};
-
-            string part1 = GetStore1Barcode();
-            part1 = part1.Replace("F", "6");
-            string part2 = bankAccount;
-            string part3 = "0000" + priceStr;
-
-            int part1_sum1 = 0;
-            int part1_sum2 = 0;
-            int part2_sum1 = 0;
-            int part2_sum2 = 0;
-            int part3_sum1 = 0;
-            int part3_sum2 = 0;
-            for (int i = 0; i < part1.Length; i++)
-            {
-                if (i % 2 == 0)
-                    part1_sum1 += Convert.ToInt32(part1[i].ToString());
-                else
-                    part1_sum2 += Convert.ToInt32(part1[i].ToString());
-            }
-            for (int i = 0; i < part2.Length; i++)
-            {
-                if (i % 2 == 0)
-                    part2_sum1 += Convert.ToInt32(part2[i].ToString());
-                else
-                    part2_sum2 += Convert.ToInt32(part2[i].ToString());
-            }
-            for (int i = 0; i < part3.Length; i++)
-            {
-                if (i % 2 == 0)
-                    part3_sum1 += Convert.ToInt32(part3[i].ToString());
-                else
-                    part3_sum2 += Convert.ToInt32(part3[i].ToString());
-            }
-
-            string checkCode1 = ((part1_sum1 + part2_sum1 + part3_sum1) % 11).ToString();
-            string checkCode2 = ((part1_sum2 + part2_sum2 + part3_sum2) % 11).ToString();
-            checkCode1 = checkCode1.Replace("10", "B").Replace("0", "A");
-            checkCode2 = checkCode2.Replace("10", "Y").Replace("0", "X");
-
-            return "0000" + checkCode1 + checkCode2 + priceStr;
-        }
-
-        /// <summary>
         /// 產生繳款單
         /// </summary>
         /// <param name="fileName">產生檔名</param>
@@ -1173,8 +1001,39 @@ namespace NT_AirPollution.Service
                 }
 
                 double sumPrice = currentPrice + interest + delayPrice;
-                string bankAccount = this.GetBankAccount(form.ID.ToString(), sumPrice);
-                string postAccount = this.GetPostAccount(form.ID.ToString(), sumPrice);
+
+                ABUDF_1 abudf_1 = _accessService.GetABUDF_1(form);
+                if (abudf_1 == null)
+                {
+                    abudf_1 = new ABUDF_1();                   
+                    abudf_1.C_NO = form.C_NO;
+                    abudf_1.SER_NO = form.SER_NO;
+                    abudf_1.P_TIME = string.IsNullOrEmpty(form.AP_DATE1) ? "1" : "2";
+                    abudf_1.P_DATE = verifyDate.AddYears(-1911).ToString("yyyMMdd");
+                    abudf_1.E_DATE = payEndDate.AddYears(-1911).ToString("yyyMMdd");
+
+                    // 取得聯單序號
+                    string transNo = ((abudf_1.FLNO.Length == 16) ? abudf_1.FLNO.Substring(10, 6) : "000000");
+                    if (abudf_1.FLNO.Length < 16 || !abudf_1.FLNO.StartsWith("4750"))
+                        transNo = _accessService.GetFLNo(verifyDate.AddYears(-1911).ToString("yyyMMdd"));
+
+                    abudf_1.FLNO = BotHelper.GetPayNo(transNo, sumPrice.ToString(), abudf_1.E_DATE);
+                    abudf_1.F_AMT = sumPrice;
+                    abudf_1.B_AMT = 0;
+                    abudf_1.KEYIN = "EPB02";
+                    abudf_1.C_DATE = DateTime.Now;
+                    abudf_1.M_DATE = DateTime.Now;
+                    // 寫入 ABUDF_1
+                    _accessService.AddABUDF_1(abudf_1);
+                }
+                
+
+                string barcodeMarketA = BotHelper.GetMarketNo(abudf_1.E_DATE);
+                string barcodeMarketB = abudf_1.FLNO;
+                string barcodeMarketC = BotHelper.GetMarketAmt("0032", sumPrice.ToString(), abudf_1.FLNO, abudf_1.E_DATE);
+                string barcodePostA = "19834251";
+                string barcodePostB = BotHelper.GetPostNo(abudf_1.FLNO, abudf_1.F_AMT.ToString(), abudf_1.E_DATE);
+                string barcodePostC = BotHelper.GetPostAmt(abudf_1.F_AMT.ToString());
 
                 var wb = new XLWorkbook(templateFile);
                 var ws = wb.Worksheet(1);
@@ -1188,8 +1047,8 @@ namespace NT_AirPollution.Service
                 ws.Cell("O5").SetValue(form.COMP_NAM);
                 ws.Cell("F6").SetValue(form.B_SERNO);
                 ws.Cell("D7").SetValue(form.P_KIND);
-                ws.Cell("F7").SetValue(ws.Cell("F7").GetText().Replace("#P_NUM#", form.P_KIND == "一次全繳" ? "1" : "2").Replace("#P_TIME#", string.IsNullOrEmpty(form.AP_DATE1) ? "1" : "2"));
-                ws.Cell("O7").SetValue(ws.Cell("O7").GetText().Replace("#P_NUM#", form.P_KIND == "一次全繳" ? "1" : "2").Replace("#P_TIME#", string.IsNullOrEmpty(form.AP_DATE1) ? "1" : "2"));
+                ws.Cell("F7").SetValue(ws.Cell("F7").GetText().Replace("#P_NUM#", form.P_KIND == "一次全繳" ? "1" : "2").Replace("#P_TIME#", abudf_1.P_TIME));
+                ws.Cell("O7").SetValue(ws.Cell("O7").GetText().Replace("#P_NUM#", form.P_KIND == "一次全繳" ? "1" : "2").Replace("#P_TIME#", abudf_1.P_TIME));
                 ws.Cell("D8").SetValue(ws.Cell("D8").GetText().Replace("#PayEndDate#", payEndDate.AddYears(-1911).ToString("yyy年MM月dd日")));
                 ws.Cell("O8").SetValue(totalPrice.ToString("N0"));
                 ws.Cell("D9").SetValue(currentPrice.ToString("N0"));
@@ -1205,7 +1064,7 @@ namespace NT_AirPollution.Service
                 ws.Cell("D19").SetValue(form.S_NAME);
                 ws.Cell("P19").SetValue(form.B_SERNO);
                 ws.Cell("D20").SetValue(form.P_KIND);
-                ws.Cell("F20").SetValue(ws.Cell("F20").GetText().Replace("#P_NUM#", form.P_KIND == "一次全繳" ? "1" : "2").Replace("#P_TIME#", string.IsNullOrEmpty(form.AP_DATE1) ? "1" : "2"));
+                ws.Cell("F20").SetValue(ws.Cell("F20").GetText().Replace("#P_NUM#", form.P_KIND == "一次全繳" ? "1" : "2").Replace("#P_TIME#", abudf_1.P_TIME));
                 ws.Cell("D21").SetValue(ws.Cell("D21").GetText().Replace("#PayEndDate#", payEndDate.AddYears(-1911).ToString("yyy年MM月dd日")));
                 ws.Cell("D22").SetValue(currentPrice.ToString("N0"));
                 ws.Cell("D23").SetValue(delayPrice.ToString("N0"));
@@ -1218,23 +1077,24 @@ namespace NT_AirPollution.Service
                 ws.Cell("D31").SetValue(form.S_NAME);
                 ws.Cell("P31").SetValue(form.B_SERNO);
                 ws.Cell("D32").SetValue(form.P_KIND);
-                ws.Cell("F32").SetValue(ws.Cell("F32").GetText().Replace("#P_NUM#", form.P_KIND == "一次全繳" ? "1" : "2").Replace("#P_TIME#", string.IsNullOrEmpty(form.AP_DATE1) ? "1" : "2"));
+                ws.Cell("F32").SetValue(ws.Cell("F32").GetText().Replace("#P_NUM#", form.P_KIND == "一次全繳" ? "1" : "2").Replace("#P_TIME#", abudf_1.P_TIME));
                 ws.Cell("O32").SetValue(DateTime.Now.AddDays(6).AddYears(-1911).ToString("yyy年MM月dd日"));
                 ws.Cell("D34").SetValue(currentPrice.ToString("N0"));
                 ws.Cell("I34").SetValue(delayPrice.ToString("N0"));
                 ws.Cell("O34").SetValue(interest.ToString("N0"));
                 ws.Cell("D35").SetValue(sumPrice.ToString("N0"));
                 ws.Cell("G35").SetValue(ws.Cell("G35").GetText().Replace("#F_AMTC#", this.GetChineseMoney(sumPrice.ToString())));
-                ws.Cell("K37").SetValue($"*{this.GetStore1Barcode()}*");
-                ws.Cell("K38").SetValue(this.GetStore1Barcode());
-                ws.Cell("K39").SetValue($"*{bankAccount}*");
-                ws.Cell("K40").SetValue(bankAccount);
-                ws.Cell("K41").SetValue($"*{this.GetStore3Barcode(bankAccount, (sumPrice + 8).ToString())}*");
-                ws.Cell("K42").SetValue(this.GetStore3Barcode(bankAccount, (sumPrice + 8).ToString()));
-                ws.Cell("K45").SetValue($"*{postAccount}*");
-                ws.Cell("K46").SetValue(postAccount);
-                ws.Cell("K47").SetValue($"*{sumPrice.ToString().PadLeft(6, '0')}*");
-                ws.Cell("K48").SetValue(sumPrice.ToString().PadLeft(6, '0'));
+                ws.Cell("C37").SetValue($"*{abudf_1.FLNO}*");
+                ws.Cell("K37").SetValue($"*{barcodeMarketA}*");
+                ws.Cell("K38").SetValue(barcodeMarketA);
+                ws.Cell("K39").SetValue($"*{barcodeMarketB}*");
+                ws.Cell("K40").SetValue(barcodeMarketB);
+                ws.Cell("K41").SetValue($"*{barcodeMarketC}*");
+                ws.Cell("K42").SetValue(barcodeMarketC);
+                ws.Cell("K45").SetValue($"*{barcodePostB}*");
+                ws.Cell("K46").SetValue(barcodePostB);
+                ws.Cell("K47").SetValue($"*{barcodePostC}*");
+                ws.Cell("K48").SetValue(barcodePostC);
                 wb.SaveAs(tempFile);
 
                 // 轉PDF

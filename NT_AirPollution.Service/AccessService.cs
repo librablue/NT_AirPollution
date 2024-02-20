@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.OleDb;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 using System.Security.Principal;
@@ -523,6 +524,98 @@ namespace NT_AirPollution.Service
                 catch (Exception ex)
                 {
                     Logger.Error($"AddABUDF_B: {ex.Message}");
+                    throw new Exception("系統發生未預期錯誤");
+                }
+            }
+        }
+
+        /// <summary>
+        /// 取得聯單序號
+        /// </summary>
+        /// <param name="pdate">填單日期</param>
+        /// <returns></returns>
+        public string GetFLNo(string pdate)
+        {
+            int no = 1;
+            using (var cn = new OleDbConnection(accessConnStr))
+            {
+                var result = cn.QueryFirstOrDefault(@"
+                    SELECT TOP 1 * FROM ABUDF_1
+                    WHERE P_DATE=@P_DATE AND LEFT(FLNO,4)='4750'
+                    ORDER BY C_DATE DESC, M_DATE DESC",
+                    new { P_DATE = pdate });
+
+                if (result == null || result.FLNO == "" || !int.TryParse(result.FLNO, out int flno))
+                {
+                    no = 1;
+                }
+                else
+                {
+                    no = int.Parse(result.FLNO.Substring(result.FLNO.Length - 3, 3));
+                }
+
+                return pdate.Substring(2, 3) + no.ToString().PadLeft(3, '0');
+            }
+        }
+
+        /// <summary>
+        /// 查詢 ABUDF_1
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        public ABUDF_1 GetABUDF_1(Form form)
+        {
+            using (var cn = new OleDbConnection(accessConnStr))
+            {
+                var result = cn.QueryFirstOrDefault<ABUDF_1>(@"
+                    SELECT TOP 1 * FROM ABUDF_1
+                    WHERE C_NO=@C_NO AND SER_NO=@SER_NO AND P_TIME=@P_TIME",
+                    new
+                    {
+                        C_NO = form.C_NO,
+                        SER_NO = form.SER_NO,
+                        P_TIME = string.IsNullOrEmpty(form.AP_DATE1) ? "1" : "2"
+                    });
+
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// 寫入ABUDF_1
+        /// </summary>
+        /// <param name="abudf_1"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public bool AddABUDF_1(ABUDF_1 abudf_1)
+        {
+            using (var cn = new OleDbConnection(accessConnStr))
+            {
+                try
+                {
+                    cn.Execute(@"
+                        INSERT INTO ABUDF_1 ([C_NO],[SER_NO],[P_TIME],[P_DATE],[E_DATE],[FLNO],[F_AMT],[B_AMT],[KEYIN],[C_DATE],[M_DATE])
+                        VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+                        new
+                        {
+                            C_NO = abudf_1.C_NO,
+                            SER_NO = abudf_1.SER_NO,
+                            P_TIME = abudf_1.P_TIME,
+                            P_DATE = abudf_1.P_DATE,
+                            E_DATE = abudf_1.E_DATE,
+                            FLNO = abudf_1.FLNO,
+                            F_AMT = abudf_1.F_AMT,
+                            B_AMT = abudf_1.B_AMT,
+                            KEYIN = "EPB02",
+                            C_DATE = abudf_1.C_DATE.ToString("yyyy-MM-dd HH:mm:ss"),
+                            M_DATE = abudf_1.M_DATE.ToString("yyyy-MM-dd HH:mm:ss")
+                        });
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"AddABUDF_1: {ex.Message}");
                     throw new Exception("系統發生未預期錯誤");
                 }
             }
