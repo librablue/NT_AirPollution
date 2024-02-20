@@ -1001,8 +1001,8 @@ namespace NT_AirPollution.Service
                 }
 
                 double sumPrice = currentPrice + interest + delayPrice;
-
-                ABUDF_1 abudf_1 = _accessService.GetABUDF_1(form);
+                ABUDF_1 abudf_1 = _accessService.GetABUDF_1(form);          
+                string transNo = ((abudf_1?.FLNO?.Length == 16) ? abudf_1?.FLNO?.Substring(10, 6) : "000000");
                 if (abudf_1 == null)
                 {
                     abudf_1 = new ABUDF_1();                   
@@ -1013,8 +1013,7 @@ namespace NT_AirPollution.Service
                     abudf_1.E_DATE = payEndDate.AddYears(-1911).ToString("yyyMMdd");
 
                     // 取得聯單序號
-                    string transNo = ((abudf_1.FLNO.Length == 16) ? abudf_1.FLNO.Substring(10, 6) : "000000");
-                    if (abudf_1.FLNO.Length < 16 || !abudf_1.FLNO.StartsWith("4750"))
+                    if (transNo.Length < 16 || !transNo.StartsWith(base.botCode))
                         transNo = _accessService.GetFLNo(verifyDate.AddYears(-1911).ToString("yyyMMdd"));
 
                     abudf_1.FLNO = BotHelper.GetPayNo(transNo, sumPrice.ToString(), abudf_1.E_DATE);
@@ -1032,7 +1031,7 @@ namespace NT_AirPollution.Service
                 string barcodeMarketB = abudf_1.FLNO;
                 string barcodeMarketC = BotHelper.GetMarketAmt("0032", sumPrice.ToString(), abudf_1.FLNO, abudf_1.E_DATE);
                 string barcodePostA = "19834251";
-                string barcodePostB = BotHelper.GetPostNo(abudf_1.FLNO, abudf_1.F_AMT.ToString(), abudf_1.E_DATE);
+                string barcodePostB = BotHelper.GetPostNo(transNo, abudf_1.F_AMT.ToString(), abudf_1.E_DATE);
                 string barcodePostC = BotHelper.GetPostAmt(abudf_1.F_AMT.ToString());
 
                 var wb = new XLWorkbook(templateFile);

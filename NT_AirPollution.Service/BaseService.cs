@@ -17,6 +17,8 @@ namespace NT_AirPollution.Service
         protected readonly string connStr = ConfigurationManager.ConnectionStrings["NT_AirPollution"].ConnectionString;
         protected readonly string accessConnStr = ConfigurationManager.ConnectionStrings["Access"].ConnectionString;
         protected readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        // 台銀繳款單代收類別(固定)
+        protected readonly string botCode = "4750";
         public static UserData CurrentUser
         {
             get
