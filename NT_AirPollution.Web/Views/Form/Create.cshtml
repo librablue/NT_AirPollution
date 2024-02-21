@@ -14,7 +14,7 @@
     <div class="main-wrap">
         <h2>營建空污費申報</h2>
         <el-form :rules="rules" ref="form" :model="form">
-            <el-form-item label="案件類型">
+            <el-form-item prop="PUB_COMP" label="案件類型">
                 <el-select v-model="form.PUB_COMP">
                     <el-option label="請選擇" :value="null"></el-option>
                     <el-option label="私人工程" :value="false"></el-option>
