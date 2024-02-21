@@ -1077,7 +1077,7 @@ namespace NT_AirPollution.Service
                 ws.Cell("P31").SetValue(form.B_SERNO);
                 ws.Cell("D32").SetValue(form.P_KIND);
                 ws.Cell("F32").SetValue(ws.Cell("F32").GetText().Replace("#P_NUM#", form.P_KIND == "一次全繳" ? "1" : "2").Replace("#P_TIME#", abudf_1.P_TIME));
-                ws.Cell("O32").SetValue(DateTime.Now.AddDays(6).AddYears(-1911).ToString("yyy年MM月dd日"));
+                ws.Cell("O32").SetValue(payEndDate.AddYears(-1911).ToString("yyy年MM月dd日"));
                 ws.Cell("D34").SetValue(currentPrice.ToString("N0"));
                 ws.Cell("I34").SetValue(delayPrice.ToString("N0"));
                 ws.Cell("O34").SetValue(interest.ToString("N0"));
