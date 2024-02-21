@@ -13,7 +13,7 @@ namespace NT_AirPollution.MailTask
 {
     internal class Program
     {
-        protected static readonly string connStr = ConfigurationManager.ConnectionStrings["CY_AirPollution"].ConnectionString;
+        protected static readonly string connStr = ConfigurationManager.ConnectionStrings["NT_AirPollution"].ConnectionString;
 
         static void Main(string[] args)
         {

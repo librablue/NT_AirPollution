@@ -103,10 +103,13 @@
     <Content Include="App_Data\Template\VerifyCode.txt" />
     <Content Include="App_Data\Template\CreateFormMail.txt" />
     <Content Include="Global.asax" />
+    <Content Include="static\css\form.css" />
     <Content Include="static\css\index.css" />
     <Content Include="static\css\member.css" />
     <Content Include="static\css\pagination.css" />
+    <Content Include="static\image\architect.jpg" />
     <Content Include="static\image\architect.png" />
+    <Content Include="static\image\architect2.png" />
     <Content Include="static\image\bg-dots.png" />
     <Content Include="static\image\illu-access.svg" />
     <Content Include="static\image\illu-building.svg" />
@@ -161,8 +164,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="license\Aspose.total.lic" />
-    <Content Include="App_Data\Payment\Template\結清證明.xls" />
     <Content Include="App_Data\Payment\Template\Payment.xlsx" />
+    <Content Include="App_Data\Payment\Template\結清證明.xlsx" />
+    <Content Include="App_Data\Payment\Template\free3of9.ttf" />
     <None Include="NLog.xsd">
       <SubType>Designer</SubType>
     </None>
@@ -197,6 +201,9 @@
     <Content Include="Views\News\Index.cshtml" />
     <Content Include="Views\News\Content.cshtml" />
     <Content Include="Views\Form\Calc.cshtml" />
+    <Content Include="static\css\form.css.map" />
+    <Content Include="static\scss\form.scss" />
+    <Content Include="static\scss\_table.scss" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

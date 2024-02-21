@@ -128,7 +128,7 @@
                             }
 
                             alert('註冊成功，請重新登入');
-                            location.href = `${document.baseURI}Member/Login`;
+                            location.href = `${document.baseURI}/Member/Login`;
                         })
                         .catch(err => {
                             console.log(err);
