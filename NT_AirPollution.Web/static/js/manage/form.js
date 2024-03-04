@@ -99,7 +99,7 @@
 				return dayDiff;
 			},
 			goManage(row, act) {
-				window.open(`/${act}/Index?id=${row.ID}`);
+				window.open(`${document.baseURI}/${act}/Index?id=${row.ID}`);
 			}
 		}
 	});
