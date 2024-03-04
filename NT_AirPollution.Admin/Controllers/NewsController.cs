@@ -17,7 +17,7 @@ namespace NT_AirPollution.Admin.Controllers
     [AuthorizeUser]
     public class NewsController : ApiController
     {
-        private readonly string _uploadPath = ConfigurationManager.AppSettings["UploadPath"].ToString();
+        private readonly string _staticUploadPath = ConfigurationManager.AppSettings["StaticUploadPath"].ToString();
         private readonly string _staticPath = ConfigurationManager.AppSettings["StaticPath"].ToString();
         private readonly NewsService newsService = new NewsService();
         public List<News> GetNews()
@@ -88,14 +88,18 @@ namespace NT_AirPollution.Admin.Controllers
                 string fileName = Guid.NewGuid().ToString();
 
                 // 設定資料夾
-                string absoluteDirPath = $"{_uploadPath}/News";
-                if (!Directory.Exists(absoluteDirPath))
-                    Directory.CreateDirectory(absoluteDirPath);
+                string absoluteDirPath = $"{_staticUploadPath}/News";
+
 
                 // 設定儲存路徑
-                string savePath = $"{absoluteDirPath}/Raw/{fileName}{Path.GetExtension(file.FileName)}";
-                string compressPath = $"{absoluteDirPath}/{fileName}{Path.GetExtension(file.FileName)}";
+                string savePath = $@"{_staticUploadPath}\News\Raw\{fileName}{Path.GetExtension(file.FileName)}";
+                string compressPath = $@"{_staticUploadPath}\News\{fileName}{Path.GetExtension(file.FileName)}";
                 string webPath = $"{_staticPath}/News/{fileName}{Path.GetExtension(file.FileName)}";
+
+                string directoryPath = Path.GetDirectoryName(savePath);
+                if (!Directory.Exists(directoryPath))
+                    Directory.CreateDirectory(directoryPath);
+
                 // 儲存檔案
                 file.SaveAs(savePath);
                 // 壓縮圖片
