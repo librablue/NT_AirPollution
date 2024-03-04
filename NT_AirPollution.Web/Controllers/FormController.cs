@@ -136,7 +136,7 @@ namespace NT_AirPollution.Web.Controllers
                 using (StreamReader sr = new StreamReader(template))
                 {
                     String content = sr.ReadToEnd();
-                    string body = string.Format(content, verify.ActiveCode);
+                    string body = string.Format(content, code);
 
                     _sendBoxService.AddSendBox(new SendBox
                     {
