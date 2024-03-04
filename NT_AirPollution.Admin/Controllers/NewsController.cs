@@ -31,6 +31,7 @@ namespace NT_AirPollution.Admin.Controllers
         {
             try
             {
+                news.CreateDate = DateTime.Now;
                 newsService.AddNews(news);
                 return true;
             }
