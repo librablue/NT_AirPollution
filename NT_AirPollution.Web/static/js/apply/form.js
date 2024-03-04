@@ -323,6 +323,7 @@
 					VOLUMEL: null,
 					B_DATE2: '2024-01-01',
 					E_DATE2: '2024-01-31',
+					FormStatus: 1,
 					StopWorks: [],
 					RefundBank: {},
 					PaymentProof: {},

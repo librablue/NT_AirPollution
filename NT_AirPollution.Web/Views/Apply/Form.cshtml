@@ -243,7 +243,7 @@
             </div>
             <div class="head-row">
                 <h3>營建資料</h3>
-                <el-select placeholder="快速選取" v-if="selectRow.Status < 3" v-model="selectCompany" @@change="selectCompanyChange">
+                <el-select placeholder="快速選取" v-if="selectRow.FormStatus < 3" v-model="selectCompany" @@change="selectCompanyChange">
                     <el-option v-for="item in companies" :key="item.ID" :label="item.S_NAME" :value="item.ID"></el-option>
                 </el-select>
             </div>
@@ -353,7 +353,7 @@
             </div>
             <div class="head-row">
                 <h3>承包(造)資料</h3>
-                <el-select placeholder="快速選取" v-if="selectRow.Status < 3" v-model="selectContractor" @@change="selectContractorChange">
+                <el-select placeholder="快速選取" v-if="selectRow.FormStatus < 3" v-model="selectContractor" @@change="selectContractorChange">
                     <el-option v-for="item in contractors" :key="item.ID" :label="item.R_NAME" :value="item.ID"></el-option>
                 </el-select>
             </div>
