@@ -39,6 +39,8 @@ namespace NT_AirPollution.Web.Controllers
 
         public JsonResult GetTotalMoney(FormView form)
         {
+            form.B_DATE = form.B_DATE2.AddYears(-1911).ToString("yyyMMdd");
+            form.E_DATE = form.E_DATE2.AddYears(-1911).ToString("yyyMMdd");
             double S_AMT = _formService.CalcTotalMoney(form, 0);
             return Json(new AjaxResult { Status = true, Message = S_AMT }, JsonRequestBehavior.AllowGet);
         }
