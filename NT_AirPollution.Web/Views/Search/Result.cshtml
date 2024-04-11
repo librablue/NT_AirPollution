@@ -141,23 +141,27 @@
                                 </td>
                             </tr>
                             <tr>
-                                <th>座標X</th>
-                                <td>
-                                    <el-form-item prop="UTME">
-                                        <el-input type="number" v-model="selectRow.UTME"></el-input>
-                                    </el-form-item>
-                                </td>
-                                <th>座標Y</th>
-                                <td>
-                                    <el-form-item prop="UTMN">
-                                        <el-input type="number" v-model="selectRow.UTMN"></el-input>
-                                    </el-form-item>
-                                </td>
                                 <th>座標(緯度、經度)</th>
-                                <td>
-                                    <el-form-item prop="LATLNG">
-                                        <el-input v-model="selectRow.LATLNG" maxlength="200"></el-input>
-                                    </el-form-item>
+                                <td colspan="5" style="white-space:inherit">
+                                    <div class="latlng-row">
+                                        <el-form-item label="經緯度" prop="LATLNG">
+                                            <el-input v-model="selectRow.LATLNG" maxlength="200" placeholder="格式: 經度,緯度"></el-input>
+                                        </el-form-item>
+                                        <div class="btn-col">
+                                            <div class="btn-row">
+                                                <el-button icon="el-icon-right" circle title="轉換UTM座標" @@click="LatLon2UTMHandler()"></el-button>
+                                            </div>
+                                            <div class="btn-row">
+                                                <el-button icon="el-icon-back" circle title="轉換經緯度" @@click="UTM2LatLonHandler()"></el-button>
+                                            </div>
+                                        </div>
+                                        <el-form-item label="X座標" prop="UTME">
+                                            <el-input type="number" v-model="selectRow.UTME"></el-input>
+                                        </el-form-item>
+                                        <el-form-item label="Y座標" prop="UTMN">
+                                            <el-input type="number" v-model="selectRow.UTMN"></el-input>
+                                        </el-form-item>
+                                    </div>
                                 </td>
                             </tr>
                             <tr>

@@ -485,6 +485,23 @@ h3 {
   margin-right: 10px;
 }
 
+.latlng-row {
+  display: flex;
+  align-items: center;
+}
+.latlng-row .el-form-item {
+  margin: 0 10px;
+}
+.latlng-row .btn-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 10px;
+}
+.latlng-row .btn-col .btn-row {
+  margin: 2px 0;
+}
+
 footer {
   background-color: #ebf5ff;
   padding: 20px 0 0;
