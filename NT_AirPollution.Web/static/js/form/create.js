@@ -74,9 +74,8 @@
                     KIND_NO: [{ required: true, message: '請選擇工程類別', trigger: 'change' }],
                     ADDR: [{ required: true, message: '請輸入工地地址或地號', trigger: 'blur' }],
                     B_SERNO: [{ required: true, message: '請輸入建照字號或合約編號', trigger: 'blur' }],
-                    UTME: [{ required: true, message: '請輸入座標X', trigger: 'blur' }],
-                    UTMN: [{ required: true, message: '請輸入座標Y', trigger: 'blur' }],
-                    LATLNG: [{ required: true, message: '請輸入座標(緯度,經度)', trigger: 'blur' }],
+                    LAT: [{ required: true, message: '請輸入座標(緯度)', trigger: 'blur' }],
+                    LNG: [{ required: true, message: '請輸入座標(經度)', trigger: 'blur' }],
                     STATE: [{ required: true, message: '請輸入工程內容概述', trigger: 'blur' }],
                     EIACOMMENTS: [{ required: true, message: '請輸入環評保護對策', trigger: 'blur' }],
                     S_NAME: [{ required: true, message: '請輸入營建業主名稱', trigger: 'blur' }],
@@ -134,7 +133,8 @@
                 B_SERNO: 'B_SERNO',
                 UTME: 123,
                 UTMN: 456,
-                LATLNG: '123456',
+                LAT: 24.1477358,
+                LNG: 120.6736482,
                 STATE: 'STATE',
                 EIACOMMENTS: 'EIACOMMENTS',
                 RECCOMMENTS: 'RECCOMMENTS',
@@ -242,25 +242,6 @@
                         alert('系統發生未預期錯誤');
                     });
             },
-            LatLon2UTMHandler() {
-                const latlng = this.form.LATLNG.split(',');
-                if (latlng.length !== 2 || !latlng[0] || !latlng[1]) {
-                    alert('經緯度座標格式錯誤，格式範例如：121.0000,23.0000');
-                    return;
-                }
-                this.LatLon2UTM(latlng[1], latlng[0], 0, 0);
-            },
-            UTM2LatLonHandler() {
-                if (!this.form.UTME) {
-                    alert('請輸入X座標');
-                    return;
-                }
-                if (!this.form.UTMN) {
-                    alert('請輸入Y座標');
-                    return;
-                }
-                this.UTM2LatLon(this.form.UTME, this.form.UTMN, 0, 0);
-            },
             LatLon2UTM(Lat, Lon, AreaCode, Flag) {
                 var E1, E2, PH2, LM2, PH1, LM1, Temp1, Temp2, Temp3, Temp4;
                 var Temp5, Temp6, Temp7;
@@ -324,8 +305,10 @@
 
                 PH2 = SK[AreaCode] * PH;
 
-                this.form.UTME = LM2.toFixed(0);
-                this.form.UTMN = PH2.toFixed(0);
+                var pt = new Array(1);
+                pt[0] = LM2;
+                pt[1] = PH2;
+                return pt;
             },
             UTM2LatLon(X, Y, AreaCode, Flag) {
                 var N, E1, CN, CE, PH2, PH1, DS, RM, DPH;
@@ -389,7 +372,11 @@
                 LM2 = Temp1 - Temp2 + Temp3;
                 var Lon = 121 + LM2 * DegreePI;
 
-                this.form.LATLNG = `${Lon.toFixed(5)},${Lat.toFixed(5)}`;
+                var pt = new Array(1);
+
+                pt[0] = Lat;
+                pt[1] = Lon;
+                return pt;
             },
             addFile(infoID) {
                 const lastID = this.form.Attachments.length === 0 ? 0 : this.form.Attachments[this.form.Attachments.length - 1].ID;
@@ -444,6 +431,10 @@
                     }
 
                     if (!confirm('是否確認繼續?')) return false;
+                    const point = this.LatLon2UTM(this.form.LAT, this.form.LNG, 0, 0);
+                    this.form.UTME = point[0];
+                    this.form.UTMN = point[1];
+                    this.form.LATLNG = `${this.form.LAT},${this.form.LNG}`;
                     axios
                         .post('/Form/Create', this.form)
                         .then(res => {
