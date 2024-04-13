@@ -51,6 +51,12 @@
                 }
                 callback();
             };
+            const checkLATLNG = (rule, value, callback) => {
+                if (isNaN(value)) {
+                    callback(new Error('經緯度格式錯誤'));
+                }
+                callback();
+            };
             return {
                 sendText: '寄送驗證信',
                 sending: false,
@@ -74,8 +80,14 @@
                     KIND_NO: [{ required: true, message: '請選擇工程類別', trigger: 'change' }],
                     ADDR: [{ required: true, message: '請輸入工地地址或地號', trigger: 'blur' }],
                     B_SERNO: [{ required: true, message: '請輸入建照字號或合約編號', trigger: 'blur' }],
-                    LAT: [{ required: true, message: '請輸入座標(緯度)', trigger: 'blur' }],
-                    LNG: [{ required: true, message: '請輸入座標(經度)', trigger: 'blur' }],
+                    LAT: [
+                        { required: true, message: '請輸入座標(緯度)', trigger: 'blur' },
+                        { validator: checkLATLNG, trigger: 'blur' }
+                    ],
+                    LNG: [
+                        { required: true, message: '請輸入座標(經度)', trigger: 'blur' },
+                        { validator: checkLATLNG, trigger: 'blur' }
+                    ],
                     STATE: [{ required: true, message: '請輸入工程內容概述', trigger: 'blur' }],
                     EIACOMMENTS: [{ required: true, message: '請輸入環評保護對策', trigger: 'blur' }],
                     S_NAME: [{ required: true, message: '請輸入營建業主名稱', trigger: 'blur' }],
