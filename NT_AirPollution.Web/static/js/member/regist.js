@@ -59,6 +59,8 @@
                     Password2: '',
                     Captcha: ''
                 },
+                pwd1Mode: true,
+                pwd2Mode: true,
                 rules: Object.freeze({
                     UserType: [{ required: true, message: '請選擇會員類型' }],
                     Email: [{ validator: checkEmail }],

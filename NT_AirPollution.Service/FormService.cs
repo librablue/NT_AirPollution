@@ -637,8 +637,6 @@ namespace NT_AirPollution.Service
         {
             using (var cn = new SqlConnection(connStr))
             {
-                form.B_DATE2 = base.ChineseDateToWestDate(form.B_DATE);
-                form.E_DATE2 = base.ChineseDateToWestDate(form.E_DATE);
                 var diffDays = ((form.E_DATE2 - form.B_DATE2).TotalDays + 1) - downDays;
                 var projectCodes = cn.GetAll<ProjectCode>().ToList();
                 var projectCode = projectCodes.First(o => o.ID == form.KIND_NO);

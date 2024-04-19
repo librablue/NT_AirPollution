@@ -80,6 +80,7 @@ h3 {
 	margin-right: 10px;
 }
 
+<<<<<<< HEAD
 .latlng-row {
     display: flex;
     align-items: center;
@@ -95,6 +96,14 @@ h3 {
             margin: 2px 0;
         }
     }
+=======
+.calc-result {
+    padding: 10px 15px;
+    text-align: center;
+    color: #e6a23c;
+    background-color: #fdf6ec;
+    border: 2px dashed #e6a23c;
+>>>>>>> 308d0f7 (測試調整)
 }
 
 @import './footer';

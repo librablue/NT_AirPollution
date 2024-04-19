@@ -43,12 +43,16 @@
             </el-row>
             <el-row>
                 <el-col :xs="24" :sm="12" :md="8">
-                    <el-form-item prop="B_DATE2" label="預計施工開始日期">
+                    <el-form-item prop="B_DATE2" label="預計開始日期">
                         <el-date-picker class="w100p" v-model="form.B_DATE2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
                     </el-form-item>
                 </el-col>
                 <el-col :xs="24" :sm="12" :md="8">
+<<<<<<< HEAD
                     <el-form-item prop="E_DATE2" label="預計施工完成日期">
+=======
+                    <el-form-item prop="B_DATE2" label="結束日期">
+>>>>>>> 308d0f7 (測試調整)
                         <el-date-picker class="w100p" v-model="form.E_DATE2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
                     </el-form-item>
                 </el-col>
@@ -61,6 +65,7 @@
             <div class="bottom-btn-row">
                 <button type="button" class="btn-send" @@click="sendForm">試 算</button>
             </div>
+            <div class="calc-result" v-if="resultText" v-cloak>{{resultText}}</div>
         </el-form>
     </div>
 </div>

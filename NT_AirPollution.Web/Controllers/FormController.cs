@@ -45,74 +45,74 @@ namespace NT_AirPollution.Web.Controllers
             return Json(new AjaxResult { Status = true, Message = S_AMT }, JsonRequestBehavior.AllowGet);
         }
 
-        [HttpPost]
-        public JsonResult Create(FormView form, List<HttpPostedFileBase> files)
-        {
-            try
-            {
-                if (string.IsNullOrEmpty(form.Captcha) || !ReCaptcha.ValidateCaptcha(form.Captcha))
-                    throw new Exception("請勾選我不是機器人");
+        //[HttpPost]
+        //public JsonResult Create(FormView form, List<HttpPostedFileBase> files)
+        //{
+        //    try
+        //    {
+        //        if (string.IsNullOrEmpty(form.Captcha) || !ReCaptcha.ValidateCaptcha(form.Captcha))
+        //            throw new Exception("請勾選我不是機器人");
 
-                if (!ModelState.IsValid)
-                    throw new Exception("欄位驗證錯誤");
+        //        if (!ModelState.IsValid)
+        //            throw new Exception("欄位驗證錯誤");
 
-                if (form.B_DATE2 > form.E_DATE2)
-                    throw new Exception("施工期程起始日期不能大於結束日期");
+        //        if (form.B_DATE2 > form.E_DATE2)
+        //            throw new Exception("施工期程起始日期不能大於結束日期");
 
-                var verifyLog = _verifyService.CheckVerifyLog(form.CreateUserEmail);
-                if (verifyLog == null || verifyLog.ActiveCode != form.ActiveCode)
-                    throw new Exception("電子信箱驗證碼錯誤");
+        //        var verifyLog = _verifyService.CheckVerifyLog(form.CreateUserEmail);
+        //        if (verifyLog == null || verifyLog.ActiveCode != form.ActiveCode)
+        //            throw new Exception("電子信箱驗證碼錯誤");
 
 
-                var allDists = _optionService.GetDistrict();
-                var allProjectCode = _optionService.GetProjectCode();
-                form.SER_NO = 1;
-                form.TOWN_NA = allDists.First(o => o.Code == form.TOWN_NO).Name;
-                form.KIND = allProjectCode.First(o => o.ID == form.KIND_NO).Name;
-                form.AP_DATE = DateTime.Now.AddYears(-1911).ToString("yyyMMdd");
-                form.B_DATE = form.B_DATE2.AddYears(-1911).ToString("yyyMMdd");
-                form.E_DATE = form.E_DATE2.AddYears(-1911).ToString("yyyMMdd");
-                form.S_B_BDATE = form.S_B_BDATE2.AddYears(-1911).ToString("yyyMMdd");
-                form.R_B_BDATE = form.R_B_BDATE2.AddYears(-1911).ToString("yyyMMdd");
-                form.C_DATE = DateTime.Now;
-                form.M_DATE = DateTime.Now;
-                form.IsActive = false;
-                form.FormStatus = FormStatus.審理中;
-                form.CalcStatus = CalcStatus.未申請;
-                string c_no = _accessService.GetC_NO(form);
-                form.C_NO = c_no;
+        //        var allDists = _optionService.GetDistrict();
+        //        var allProjectCode = _optionService.GetProjectCode();
+        //        form.SER_NO = 1;
+        //        form.TOWN_NA = allDists.First(o => o.Code == form.TOWN_NO).Name;
+        //        form.KIND = allProjectCode.First(o => o.ID == form.KIND_NO).Name;
+        //        form.AP_DATE = DateTime.Now.AddYears(-1911).ToString("yyyMMdd");
+        //        form.B_DATE = form.B_DATE2.AddYears(-1911).ToString("yyyMMdd");
+        //        form.E_DATE = form.E_DATE2.AddYears(-1911).ToString("yyyMMdd");
+        //        form.S_B_BDATE = form.S_B_BDATE2.AddYears(-1911).ToString("yyyMMdd");
+        //        form.R_B_BDATE = form.R_B_BDATE2.AddYears(-1911).ToString("yyyMMdd");
+        //        form.C_DATE = DateTime.Now;
+        //        form.M_DATE = DateTime.Now;
+        //        form.IsActive = false;
+        //        form.FormStatus = FormStatus.審理中;
+        //        form.CalcStatus = CalcStatus.未申請;
+        //        string c_no = _accessService.GetC_NO(form);
+        //        form.C_NO = c_no;
 
-                // 寫入 Access
-                _accessService.AddABUDF(form);
+        //        // 寫入 Access
+        //        _accessService.AddABUDF(form);
 
-                _formService.AddForm(form);
-                verifyLog.ActiveDate = DateTime.Now;
-                _verifyService.UpdateVerifyLog(verifyLog);
+        //        _formService.AddForm(form);
+        //        verifyLog.ActiveDate = DateTime.Now;
+        //        _verifyService.UpdateVerifyLog(verifyLog);
 
-                // 寄驗證信
-                string template = ($@"{HostingEnvironment.ApplicationPhysicalPath}/App_Data/Template/CreateFormMail.txt");
-                using (StreamReader sr = new StreamReader(template))
-                {
-                    String content = sr.ReadToEnd();
-                    string body = string.Format(content, form.C_NO, form.CreateUserEmail);
+        //        // 寄驗證信
+        //        string template = ($@"{HostingEnvironment.ApplicationPhysicalPath}/App_Data/Template/CreateFormMail.txt");
+        //        using (StreamReader sr = new StreamReader(template))
+        //        {
+        //            String content = sr.ReadToEnd();
+        //            string body = string.Format(content, form.C_NO, form.CreateUserEmail);
 
-                    _sendBoxService.AddSendBox(new SendBox
-                    {
-                        Address = form.CreateUserEmail,
-                        Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統認證信(管制編號-{form.C_NO})",
-                        Body = body,
-                        FailTimes = 0,
-                        CreateDate = DateTime.Now
-                    });
-                }
+        //            _sendBoxService.AddSendBox(new SendBox
+        //            {
+        //                Address = form.CreateUserEmail,
+        //                Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統認證信(管制編號-{form.C_NO})",
+        //                Body = body,
+        //                FailTimes = 0,
+        //                CreateDate = DateTime.Now
+        //            });
+        //        }
 
-                return Json(new AjaxResult { Status = true });
-            }
-            catch (Exception ex)
-            {
-                return Json(new AjaxResult { Status = false, Message = ex.Message });
-            }
-        }
+        //        return Json(new AjaxResult { Status = true });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return Json(new AjaxResult { Status = false, Message = ex.Message });
+        //    }
+        //}
 
         [HttpPost]
         public JsonResult SendActiveCode(VerifyLog verify)
@@ -217,7 +217,7 @@ namespace NT_AirPollution.Web.Controllers
         /// 下載繳費單
         /// </summary>
         /// <returns></returns>
-        [CustomAuthorize(Roles = "Member1,NonMember")]
+        [CustomAuthorize(Roles = "Member1")]
         [HttpPost]
         public FileResult DownloadPayment(FormView form)
         {
@@ -238,7 +238,7 @@ namespace NT_AirPollution.Web.Controllers
         /// <summary>
         /// 結算申請
         /// </summary>
-        [CustomAuthorize(Roles = "Member1,NonMember")]
+        [CustomAuthorize(Roles = "Member1")]
         [HttpPost]
         public JsonResult FinalCalc(FormView form)
         {
@@ -264,7 +264,7 @@ namespace NT_AirPollution.Web.Controllers
         /// 下載補繳費單
         /// </summary>
         /// <returns></returns>
-        [CustomAuthorize(Roles = "Member1,NonMember")]
+        [CustomAuthorize(Roles = "Member1")]
         [HttpPost]
         public FileResult DownloadRePayment(FormView form)
         {
@@ -285,7 +285,7 @@ namespace NT_AirPollution.Web.Controllers
         /// <summary>
         /// 新增退款帳戶
         /// </summary>
-        [CustomAuthorize(Roles = "Member1,NonMember")]
+        [CustomAuthorize(Roles = "Member1")]
         [HttpPost]
         public JsonResult UpdateBankAccount(RefundBank bank, HttpPostedFileBase file)
         {
@@ -340,7 +340,7 @@ namespace NT_AirPollution.Web.Controllers
         /// 下載補繳費單
         /// </summary>
         /// <returns></returns>
-        [CustomAuthorize(Roles = "Member1,NonMember")]
+        [CustomAuthorize(Roles = "Member1")]
         [HttpPost]
         public FileResult DownloadProof(FormView form)
         {
@@ -360,7 +360,7 @@ namespace NT_AirPollution.Web.Controllers
         /// <summary>
         /// 上傳繳費證明
         /// </summary>
-        [CustomAuthorize(Roles = "Member1,NonMember")]
+        [CustomAuthorize(Roles = "Member1")]
         [HttpPost]
         public JsonResult UploadPaymentProof(PaymentProof proof, HttpPostedFileBase file)
         {

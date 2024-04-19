@@ -40,11 +40,11 @@
                     <a href="@Url.Content("~/News/Index")">最新消息</a>
                 </li>
                 <li class="@($"{controllerName}/{actionName}" == "Form/Calc" ? "active" : "")">
-                    <a href="@Url.Content("~/Form/Calc")">營建空污費試算</a>
+                    <a href="@Url.Content("~/Form/Calc")">試算費用</a>
                 </li>
-                <li class="@($"{controllerName}/{actionName}" == "Form/Create" ? "active" : "")">
-                    <a href="@Url.Content("~/Form/Create")">營建空污費申報</a>
-                </li>
+                @*<li class="@($"{controllerName}/{actionName}" == "Form/Create" ? "active" : "")">
+                    <a href="@Url.Content("~/Form/Create")">我要申報</a>
+                </li>*@
                 <li class="@($"{controllerName}/{actionName}" == "Search/Index" ? "active" : "")">
                     <a href="@Url.Content("~/Search/Index")">進度查詢</a>
                 </li>
