@@ -48,14 +48,14 @@
                 <el-form-item prop="Password" label="密碼">
                     <div class="pwd-wrap">
                         <el-input :type="pwd1Mode ? 'password' : 'text'" v-model="form.Password" maxlength="20"></el-input>
-                        <i id="btn-eye" class="fa btn-eye" :class="{'fa-eye': pwd1Mode, 'fa-eye-slash': !pwd1Mode}" @@mousedown="pwd1Mode = !pwd1Mode" @@mouseup="pwd1Mode = !pwd1Mode"></i>
+                        <i class="fa btn-eye" :class="{'fa-eye': pwd1Mode, 'fa-eye-slash': !pwd1Mode}" @@mousedown="pwd1Mode = !pwd1Mode" @@mouseup="pwd1Mode = !pwd1Mode"></i>
                     </div>
                     <small class="prompt-text">密碼須為 6 ~ 20 字，且須使用大、小寫英文 + 數字組合</small>
                 </el-form-item>
                 <el-form-item prop="Password2" label="確認密碼">
                     <div class="pwd-wrap">
                         <el-input :type="pwd2Mode ? 'password' : 'text'" v-model="form.Password2" maxlength="20"></el-input>
-                        <i id="btn-eye" class="fa btn-eye" :class="{'fa-eye': pwd2Mode, 'fa-eye-slash': !pwd2Mode}" @@mousedown="pwd2Mode = !pwd2Mode" @@mouseup="pwd2Mode = !pwd2Mode"></i>
+                        <i class="fa btn-eye" :class="{'fa-eye': pwd2Mode, 'fa-eye-slash': !pwd2Mode}" @@mousedown="pwd2Mode = !pwd2Mode" @@mouseup="pwd2Mode = !pwd2Mode"></i>
                     </div>
                 </el-form-item>
                 <el-form-item prop="Captcha">

@@ -58,29 +58,28 @@ h3 {
 
 .file-list {
     margin-right: 30px;
-	li {
-		display: flex;
-		align-items: center;
-		padding: 4px 0;
-	}
+    li {
+        display: flex;
+        align-items: center;
+        padding: 4px 0;
+    }
 }
 
 .link-add {
-	display: inline-block;
-	position: absolute;
-	top: 4px;
-	right: 4px;
-	font-size: 24px;
-	line-height: 24px;
-	color: #67C23A;
+    display: inline-block;
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    font-size: 24px;
+    line-height: 24px;
+    color: #67c23a;
 }
 
 .link-delete {
-	color: #f56c6c;
-	margin-right: 10px;
+    color: #f56c6c;
+    margin-right: 10px;
 }
 
-<<<<<<< HEAD
 .latlng-row {
     display: flex;
     align-items: center;
@@ -96,14 +95,14 @@ h3 {
             margin: 2px 0;
         }
     }
-=======
+}
+
 .calc-result {
     padding: 10px 15px;
     text-align: center;
     color: #e6a23c;
     background-color: #fdf6ec;
     border: 2px dashed #e6a23c;
->>>>>>> 308d0f7 (測試調整)
 }
 
 @import './footer';

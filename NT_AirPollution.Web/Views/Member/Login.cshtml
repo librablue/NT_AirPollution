@@ -5,6 +5,11 @@
 
 @section styles {
     <link rel="stylesheet" href="@Url.Content("~/static/css/member.css")" />
+    <style>
+        .el-form-item__content {
+            line-height: 1;
+        }
+    </style>
 }
 @section scripts {
     <script src="@Url.Content("~/static/js/member/login.js")"></script>
@@ -17,12 +22,15 @@
         </div>
         <div class="side-form">
             <h1>帳號登入</h1>
-            <el-form class="round" :rules="rules" ref="form" :model="form">
+            <el-form class="round" :rules="rules" ref="form" :model="form" label-position="top">
                 <el-form-item prop="Email" label="Email">
                     <el-input type="email" v-model="form.Email"></el-input>
                 </el-form-item>
                 <el-form-item prop="Password" label="密碼">
-                    <el-input type="password" v-model="form.Password" maxlength="20"></el-input>
+                    <div class="pwd-wrap">
+                        <el-input :type="pwdMode ? 'password' : 'text'" v-model="form.Password" maxlength="20"></el-input>
+                        <i class="fa btn-eye" :class="{'fa-eye': pwdMode, 'fa-eye-slash': !pwdMode}" @@mousedown="pwdMode = !pwdMode" @@mouseup="pwdMode = !pwdMode"></i>
+                    </div>
                 </el-form-item>
                 <el-form-item prop="Captcha">
                     @ReCaptcha.GetCaptcha()

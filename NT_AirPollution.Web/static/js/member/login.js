@@ -8,6 +8,7 @@
 					Password: '',
 					Captcha: ''
 				},
+                pwdMode: true,
 				rules: Object.freeze({
 					Email: [{ required: true, message: '請輸入Email', trigger: 'blur' }],
 					Password: [{ required: true, message: '請輸入密碼', trigger: 'blur' }],

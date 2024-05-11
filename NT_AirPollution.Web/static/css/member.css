@@ -620,7 +620,6 @@ h3 {
     width: 50%;
   }
 }
-<<<<<<< HEAD
 .latlng-row {
   display: flex;
   align-items: center;
@@ -636,7 +635,8 @@ h3 {
 }
 .latlng-row .btn-col .btn-row {
   margin: 2px 0;
-=======
+}
+
 .pwd-wrap {
   position: relative;
 }
@@ -648,7 +648,6 @@ h3 {
   font-size: 22px;
   color: #999;
   cursor: pointer;
->>>>>>> 308d0f7 (測試調整)
 }
 
 footer {

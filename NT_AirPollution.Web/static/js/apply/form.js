@@ -65,10 +65,10 @@
         data() {
             const checkE_DATE2 = (rule, value, callback) => {
                 if (!value) {
-                    callback(new Error('請輸入預計施工完成日期'));
+                    callback(new Error('請輸入結束日期'));
                 }
                 if (this.selectRow.B_DATE2 && this.selectRow.E_DATE2 && moment(value).isSameOrBefore(this.selectRow.B_DATE2)) {
-                    callback(new Error('結束日期不得早於起始日期'));
+                    callback(new Error('結束日期不得早於開始日期'));
                 }
                 callback();
             };
@@ -147,7 +147,7 @@
                     S_G_NO: [{ required: true, message: '請輸入營利事業統一編號', trigger: 'blur' }],
                     S_ADDR1: [{ required: true, message: '請輸入營利事業營業地址', trigger: 'blur' }],
                     S_ADDR2: [{ required: true, message: '請輸入營利事業聯絡地址', trigger: 'blur' }],
-                    S_TEL: [{ required: true, message: '請輸入營利事業連絡電話', trigger: 'blur' }],
+                    S_TEL: [{ required: true, message: '請輸入營利事業主連絡電話', trigger: 'blur' }],
                     S_B_NAM: [{ required: true, message: '請輸入營利事業負責人姓名', trigger: 'blur' }],
                     S_B_TIT: [{ required: true, message: '請輸入營利事業負責人職稱', trigger: 'blur' }],
                     S_B_ID: [{ required: true, message: '請輸入營利事業負責人身分證字號', trigger: 'blur' }],
@@ -157,25 +157,24 @@
                     S_C_ID: [{ required: true, message: '請輸入營利事業聯絡人身分證字號', trigger: 'blur' }],
                     S_C_ADDR: [{ required: true, message: '請輸入營利事業聯絡人地址', trigger: 'blur' }],
                     S_C_TEL: [{ required: true, message: '請輸入營利事業聯絡人電話', trigger: 'blur' }],
-                    R_NAME: [{ required: true, message: '請輸入承包(造)單位名稱', trigger: 'blur' }],
-                    R_G_NO: [{ required: true, message: '請輸入承包(造)營利事業統一編號', trigger: 'blur' }],
-                    R_ADDR1: [{ required: true, message: '請輸入承包(造)營業地址', trigger: 'blur' }],
-                    R_ADDR2: [{ required: true, message: '請輸入承包(造)聯絡地址', trigger: 'blur' }],
-                    R_TEL: [{ required: true, message: '請輸入承包(造)連絡電話', trigger: 'blur' }],
-                    R_B_NAM: [{ required: true, message: '請輸入承包(造)負責人姓名', trigger: 'blur' }],
-                    R_B_TIT: [{ required: true, message: '請輸入承包(造)負責人職稱', trigger: 'blur' }],
-                    R_B_ID: [{ required: true, message: '請輸入承包(造)負責人身分證字號', trigger: 'blur' }],
-                    R_B_BDATE2: [{ required: true, message: '請輸入承包(造)負責人生日', trigger: 'blur' }],
+                    R_NAME: [{ required: true, message: '請輸入承造單位名稱', trigger: 'blur' }],
+                    R_G_NO: [{ required: true, message: '請輸入承造營利事業統一編號', trigger: 'blur' }],
+                    R_ADDR1: [{ required: true, message: '請輸入承造營業地址', trigger: 'blur' }],
+                    R_ADDR2: [{ required: true, message: '請輸入承造聯絡地址', trigger: 'blur' }],
+                    R_TEL: [{ required: true, message: '請輸入承造連絡電話', trigger: 'blur' }],
+                    R_B_NAM: [{ required: true, message: '請輸入承造負責人姓名', trigger: 'blur' }],
+                    R_B_TIT: [{ required: true, message: '請輸入承造負責人職稱', trigger: 'blur' }],
+                    R_B_ID: [{ required: true, message: '請輸入承造負責人身分證字號', trigger: 'blur' }],
+                    R_B_BDATE2: [{ required: true, message: '請輸入承造負責人生日', trigger: 'blur' }],
                     R_ADDR3: [{ required: true, message: '請輸入工務所地址', trigger: 'blur' }],
                     R_M_NAM: [{ required: true, message: '請輸入工地主任姓名', trigger: 'blur' }],
                     R_C_NAM: [{ required: true, message: '請輸入工地環保負責人姓名', trigger: 'blur' }],
                     R_TEL1: [{ required: true, message: '請輸入工務所電話', trigger: 'blur' }],
                     MONEY: [{ required: true, message: '請輸入工程合約經費', trigger: 'blur' }],
                     C_MONEY: [{ required: true, message: '請輸入工程環保經費', trigger: 'blur' }],
-                    PERCENT: [{ required: true, message: '請輸入工程合約經費比例', trigger: 'blur' }],
                     AREA: [{ validator: checkArea }],
                     VOLUMEL: [{ validator: checkVolumel }],
-                    B_DATE2: [{ required: true, message: '請輸入預計施工開始日期', trigger: 'blur' }],
+                    B_DATE2: [{ required: true, message: '請輸入開始日期', trigger: 'blur' }],
                     E_DATE2: [{ validator: checkE_DATE2 }]
                 }),
                 rules2: Object.freeze({
@@ -210,6 +209,14 @@
             },
             filterAttachmentInfo() {
                 return this.attachmentInfo.filter(item => item.PUB_COMP === this.selectRow.PUB_COMP);
+            },
+            calcPercent() {
+                try {
+                    if (!this.selectRow.C_MONEY || !this.selectRow.MONEY) throw '';
+                    return +((this.selectRow.C_MONEY / this.selectRow.MONEY) * 100).toFixed(2);
+                } catch (err) {
+                    return 0;
+                }
             }
         },
         methods: {
@@ -580,6 +587,7 @@
                     this.selectRow.UTME = point[0];
                     this.selectRow.UTMN = point[1];
                     this.selectRow.LATLNG = `${this.selectRow.LAT},${this.selectRow.LNG}`;
+                    this.selectRow.PERCENT = this.calcPercent;
                     axios
                         .post(`/Apply/${this.mode}Form`, this.selectRow)
                         .then(res => {

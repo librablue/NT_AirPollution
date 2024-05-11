@@ -130,7 +130,7 @@
                             </td>
                         </tr>
                         <tr>
-                            <th>記錄註記</th>
+                            <th>備註</th>
                             <td colspan="5">
                                 <el-form-item prop="RECCOMMENTS">
                                     <el-input v-model="form.RECCOMMENTS"></el-input>
@@ -173,7 +173,7 @@
                                     <el-input v-model="form.S_ADDR2" maxlength="50"></el-input>
                                 </el-form-item>
                             </td>
-                            <th>11.連絡電話</th>
+                            <th>11.營建業主電話</th>
                             <td>
                                 <el-form-item prop="S_TEL">
                                     <el-input type="tel" v-model="form.S_TEL" maxlength="30"></el-input>
@@ -193,7 +193,7 @@
                                     <el-input v-model="form.S_B_TIT" maxlength="20"></el-input>
                                 </el-form-item>
                             </td>
-                            <th>14.身分證字號</th>
+                            <th>14.負責人身分證字號</th>
                             <td>
                                 <el-form-item prop="S_B_ID">
                                     <el-input v-model="form.S_B_ID" maxlength="20"></el-input>
@@ -201,7 +201,7 @@
                             </td>
                         </tr>
                         <tr>
-                            <th>生日</th>
+                            <th>負責人生日</th>
                             <td colspan="5">
                                 <el-form-item prop="S_B_BDATE2">
                                     <el-date-picker v-model="form.S_B_BDATE2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
@@ -221,7 +221,7 @@
                                     <el-input v-model="form.S_C_TIT" maxlength="20"></el-input>
                                 </el-form-item>
                             </td>
-                            <th>17.身分證字號</th>
+                            <th>17.聯絡人身分證字號</th>
                             <td>
                                 <el-form-item prop="S_C_ID">
                                     <el-input v-model="form.S_C_ID" maxlength="20"></el-input>
@@ -245,12 +245,12 @@
                     </tbody>
                 </table>
             </div>
-            <h3>承包(造)資料</h3>
+            <h3>承造資料</h3>
             <div class="table-responsive">
                 <table class="table form-table">
                     <tbody>
                         <tr>
-                            <th style="width:180px">20.承包(造)單位名稱</th>
+                            <th style="width:180px">20.承造單位名稱</th>
                             <td colspan="3">
                                 <el-form-item prop="R_NAME">
                                     <el-input v-model="form.R_NAME" maxlength="60"></el-input>
@@ -278,7 +278,7 @@
                                     <el-input v-model="form.R_ADDR2" maxlength="50"></el-input>
                                 </el-form-item>
                             </td>
-                            <th>24.連絡電話</th>
+                            <th>24.承造單位電話</th>
                             <td>
                                 <el-form-item prop="R_TEL">
                                     <el-input type="tel" v-model="form.R_TEL" maxlength="30"></el-input>
@@ -306,7 +306,7 @@
                             </td>
                         </tr>
                         <tr>
-                            <th>生日</th>
+                            <th>負責人生日</th>
                             <td colspan="5">
                                 <el-form-item prop="R_B_BDATE2">
                                     <el-date-picker v-model="form.R_B_BDATE2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
@@ -349,23 +349,21 @@
                 <table class="table form-table">
                     <tbody>
                         <tr>
-                            <th style="width:180px">32.工程合約經費</th>
+                            <th style="width:180px">32.工程合約經費(元)</th>
                             <td>
                                 <el-form-item prop="MONEY">
                                     <el-input type="number" v-model="form.MONEY"></el-input>
                                 </el-form-item>
                             </td>
-                            <th style="width:180px">33.工程環保經費</th>
+                            <th style="width:180px">33.工程環保經費(元)</th>
                             <td>
                                 <el-form-item prop="C_MONEY">
                                     <el-input type="number" v-model="form.C_MONEY"></el-input>
                                 </el-form-item>
                             </td>
-                            <th style="width:180px">工程合約經費比例</th>
+                            <th style="width:180px">工程合約經費比例(%)</th>
                             <td>
-                                <el-form-item prop="PERCENT">
-                                    <el-input type="number" v-model="form.PERCENT"></el-input>
-                                </el-form-item>
+                                <el-form-item>{{calcPercent}}</el-form-item>
                             </td>
                         </tr>
                         <tr>
@@ -383,13 +381,13 @@
                             </td>
                         </tr>
                         <tr>
-                            <th>34.預計施工開始日期</th>
+                            <th>34.開始日期</th>
                             <td>
                                 <el-form-item prop="B_DATE2">
                                     <el-date-picker class="w100p" v-model="form.B_DATE2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
                                 </el-form-item>
                             </td>
-                            <th>預計施工完成日期</th>
+                            <th>結束日期</th>
                             <td>
                                 <el-form-item prop="E_DATE2">
                                     <el-date-picker class="w100p" v-model="form.E_DATE2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
