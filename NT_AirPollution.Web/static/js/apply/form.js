@@ -298,6 +298,8 @@
             },
             addForm() {
                 this.mode = 'Add';
+                this.selectCompany = null;
+                this.selectContractor = null;
                 this.selectRow = {
                     SER_NO: 1,
                     P_KIND: '一次全繳',
@@ -312,65 +314,65 @@
                     PaymentProof: {}
                 };
 
-                //this.selectRow = {
-                //    SER_NO: 1,
-                //    P_KIND: '一次全繳',
-                //    BUD_DOC2: '無',
-                //    PUB_COMP: true,
-                //    TOWN_NO: 'M2',
-                //    CreateUserName: document.querySelector('#hfUserName').value,
-                //    CreateUserEmail: document.querySelector('#hfUserEmail').value,
-                //    COMP_NAM: 'COMP_NAM',
-                //    KIND_NO: '1',
-                //    ADDR: 'ADDR',
-                //    B_SERNO: 'B_SERNO',
-                //    UTME: 123,
-                //    UTMN: 456,
-                //    LAT: 24.1477358,
-                //    LNG: 120.6736482,
-                //    STATE: 'STATE',
-                //    EIACOMMENTS: 'EIACOMMENTS',
-                //    RECCOMMENTS: 'RECCOMMENTS',
-                //    S_NAME: 'S_NAME',
-                //    S_G_NO: 'S_G_NO',
-                //    S_ADDR1: 'S_ADDR1',
-                //    S_ADDR2: 'S_ADDR2',
-                //    S_TEL: 'S_TEL',
-                //    S_B_NAM: 'S_B_NAM',
-                //    S_B_TIT: 'S_B_TIT',
-                //    S_B_ID: 'S_B_ID',
-                //    S_B_BDATE2: '1985-07-14',
-                //    S_C_NAM: 'S_C_NAM',
-                //    S_C_TIT: 'S_C_TIT',
-                //    S_C_ID: 'S_C_ID',
-                //    S_C_ADDR: 'S_C_ADDR',
-                //    S_C_TEL: 'S_C_TEL',
-                //    R_NAME: 'R_NAME',
-                //    R_G_NO: 'R_G_NO',
-                //    R_ADDR1: 'R_ADDR1',
-                //    R_ADDR2: 'R_ADDR2',
-                //    R_TEL: 'R_TEL',
-                //    R_B_NAM: 'R_B_NAM',
-                //    R_B_TIT: 'R_B_TIT',
-                //    R_B_ID: 'R_B_ID',
-                //    R_B_BDATE2: '2024-01-01',
-                //    R_ADDR3: 'R_ADDR3',
-                //    R_M_NAM: 'R_M_NAM',
-                //    R_C_NAM: 'R_C_NAM',
-                //    R_TEL1: 'R_TEL1',
-                //    MONEY: 1,
-                //    C_MONEY: 2,
-                //    PERCENT: 3,
-                //    AREA: 1,
-                //    VOLUMEL: null,
-                //    B_DATE2: '2024-01-01',
-                //    E_DATE2: '2024-01-31',
-                //    FormStatus: 1,
-                //    StopWorks: [],
-                //    RefundBank: {},
-                //    PaymentProof: {},
-                //    Attachments: []
-                //};
+                this.selectRow = {
+                   SER_NO: 1,
+                   P_KIND: '一次全繳',
+                   BUD_DOC2: '無',
+                   PUB_COMP: true,
+                   TOWN_NO: 'M2',
+                   CreateUserName: document.querySelector('#hfUserName').value,
+                   CreateUserEmail: document.querySelector('#hfUserEmail').value,
+                   COMP_NAM: 'COMP_NAM',
+                   KIND_NO: '1',
+                   ADDR: 'ADDR',
+                   B_SERNO: 'B_SERNO',
+                   UTME: 123,
+                   UTMN: 456,
+                   LAT: 24.1477358,
+                   LNG: 120.6736482,
+                   STATE: 'STATE',
+                   EIACOMMENTS: 'EIACOMMENTS',
+                   RECCOMMENTS: 'RECCOMMENTS',
+                   S_NAME: 'S_NAME',
+                   S_G_NO: 'S_G_NO',
+                   S_ADDR1: 'S_ADDR1',
+                   S_ADDR2: 'S_ADDR2',
+                   S_TEL: 'S_TEL',
+                   S_B_NAM: 'S_B_NAM',
+                   S_B_TIT: 'S_B_TIT',
+                   S_B_ID: 'S_B_ID',
+                   S_B_BDATE2: '1985-07-14',
+                   S_C_NAM: 'S_C_NAM',
+                   S_C_TIT: 'S_C_TIT',
+                   S_C_ID: 'S_C_ID',
+                   S_C_ADDR: 'S_C_ADDR',
+                   S_C_TEL: 'S_C_TEL',
+                   R_NAME: 'R_NAME',
+                   R_G_NO: 'R_G_NO',
+                   R_ADDR1: 'R_ADDR1',
+                   R_ADDR2: 'R_ADDR2',
+                   R_TEL: 'R_TEL',
+                   R_B_NAM: 'R_B_NAM',
+                   R_B_TIT: 'R_B_TIT',
+                   R_B_ID: 'R_B_ID',
+                   R_B_BDATE2: '2024-01-01',
+                   R_ADDR3: 'R_ADDR3',
+                   R_M_NAM: 'R_M_NAM',
+                   R_C_NAM: 'R_C_NAM',
+                   R_TEL1: 'R_TEL1',
+                   MONEY: 1,
+                   C_MONEY: 2,
+                   PERCENT: 3,
+                   AREA: 1,
+                   VOLUMEL: null,
+                   B_DATE2: '2024-01-01',
+                   E_DATE2: '2024-01-31',
+                   FormStatus: 1,
+                   StopWorks: [],
+                   RefundBank: {},
+                   PaymentProof: {},
+                   Attachments: []
+                };
 
                 this.dialogVisible = true;
                 this.$nextTick(() => {
@@ -597,6 +599,14 @@
                             }
 
                             alert('申請資料已送出，繳款金額請依人工審核後之繳費單內容為主。');
+
+                            if (!this.selectCompany && confirm('是否儲存此次營建業主之基本資料，下次可以快速申報。')) {
+                                this.addCompany();
+                            }
+                            if (!this.selectContractor && confirm('是否儲存此次承包商之基本資料，下次可以快速申報。')) {
+                                this.addContractor();
+                            }
+
                             this.getForms();
                             this.dialogVisible = false;
                         })
@@ -604,6 +614,22 @@
                             alert('系統發生未預期錯誤');
                             console.log(err);
                         });
+                });
+            },
+            addCompany() {
+                axios.post('/Apply/AddCompany', this.selectRow).then(res => {
+                    if (!res.data.Status) {
+                        alert(res.data.Message);
+                        return;
+                    }
+                });
+            },
+            addContractor() {
+                axios.post('/Apply/AddContractor', this.selectRow).then(res => {
+                    if (!res.data.Status) {
+                        alert(res.data.Message);
+                        return;
+                    }
                 });
             },
             copyRow(row) {

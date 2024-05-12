@@ -59,9 +59,29 @@ namespace NT_AirPollution.Web.Controllers
                 company.S_B_ID = company.S_B_ID?.ToUpper();
                 company.S_C_ID = company.S_C_ID?.ToUpper();
                 company.S_B_BDATE = company.S_B_BDATE2?.AddYears(-1911).ToString("yyyMMdd");
-                company.CreateDate = DateTime.Now;
-                company.ModifyDate = DateTime.Now;
-                _clientUserService.AddCompany(company);
+
+                // 用統編找現有資料
+                var filter = new ClientUserCompany
+                {
+                    S_G_NO = company.S_G_NO,
+                    ClientUserID = BaseService.CurrentUser.ID
+                };
+                var companyInDB = _clientUserService.GetCompanyByUser(filter);
+                if (companyInDB.Count() == 0)
+                {  
+                    company.CreateDate = DateTime.Now;
+                    company.ModifyDate = DateTime.Now;
+                    _clientUserService.AddCompany(company);
+                }
+                else
+                {
+                    var firstCompanyInDB = companyInDB.First();
+                    company.ID = firstCompanyInDB.ID;
+                    company.CreateDate = firstCompanyInDB.CreateDate;
+                    company.ModifyDate = DateTime.Now;
+                    _clientUserService.UpdateCompany(company);
+                }
+                
                 return Json(new AjaxResult { Status = true });
             }
             catch (Exception ex)
@@ -130,9 +150,29 @@ namespace NT_AirPollution.Web.Controllers
                 contractor.ClientUserID = BaseService.CurrentUser.ID;
                 contractor.R_B_ID = contractor.R_B_ID?.ToUpper();
                 contractor.R_B_BDATE = contractor.R_B_BDATE2?.AddYears(-1911).ToString("yyyMMdd");
-                contractor.CreateDate = DateTime.Now;
-                contractor.ModifyDate = DateTime.Now;
-                _clientUserService.AddContractor(contractor);
+
+                // 用統編找現有資料
+                var filter = new ClientUserContractor
+                {
+                    R_G_NO = contractor.R_G_NO,
+                    ClientUserID = BaseService.CurrentUser.ID
+                };
+                var contractorInDB = _clientUserService.GetContractorByUser(filter);
+                if (contractorInDB.Count() == 0)
+                {
+                    contractor.CreateDate = DateTime.Now;
+                    contractor.ModifyDate = DateTime.Now;
+                    _clientUserService.AddContractor(contractor);
+                }
+                else
+                {
+                    var firstCompanyInDB = contractorInDB.First();
+                    contractor.ID = firstCompanyInDB.ID;
+                    contractor.CreateDate = firstCompanyInDB.CreateDate;
+                    contractor.ModifyDate = DateTime.Now;
+                    _clientUserService.UpdateContractor(contractor);
+                }
+
                 return Json(new AjaxResult { Status = true });
             }
             catch (Exception ex)
