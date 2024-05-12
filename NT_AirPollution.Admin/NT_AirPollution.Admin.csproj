@@ -169,6 +169,7 @@
     <Compile Include="ActionFilter\AuthorizeUserAttribute.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="Controllers\DownloadController.cs" />
     <Compile Include="Controllers\RoadController.cs" />
     <Compile Include="Controllers\FormController.cs" />
     <Compile Include="Controllers\NewsController.cs" />
@@ -178,6 +179,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helper\ImageHelper.cs" />
+    <Compile Include="Models\UploadResponse.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -193,7 +195,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\Download\" />
-    <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NT_AirPollution.Model\NT_AirPollution.Model.csproj">

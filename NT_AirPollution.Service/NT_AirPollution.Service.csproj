@@ -142,6 +142,7 @@
     <Compile Include="AccessService.cs" />
     <Compile Include="AdminService.cs" />
     <Compile Include="BotHelper.cs" />
+    <Compile Include="DownloadService.cs" />
     <Compile Include="SoilService.cs" />
     <Compile Include="RoadService.cs" />
     <Compile Include="AirService.cs" />

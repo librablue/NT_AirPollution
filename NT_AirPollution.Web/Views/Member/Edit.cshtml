@@ -27,7 +27,7 @@
                 <el-form :rules="rules1" ref="form1" :model="form" label-position="top" style="max-width:480px">
                     <el-form-item label="會員類型">@BaseService.CurrentUser.UserType</el-form-item>
                     <el-form-item label="Email">@BaseService.CurrentUser.Email</el-form-item>
-                    <el-form-item label="統一編號">{{form.CompanyID}}</el-form-item>
+                    <el-form-item label="統一編號" v-if="form.UserType === 2" v-cloak>{{form.CompanyID}}</el-form-item>
                     <el-form-item label="姓名">
                         <el-input v-model="form.UserName" maxlength="20"></el-input>
                     </el-form-item>

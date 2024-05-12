@@ -38,7 +38,7 @@
                 <el-form-item prop="ActiveCode" label="信箱驗證碼">
                     <el-input type="text" inputmode="numeric" v-model="form.ActiveCode"></el-input>
                 </el-form-item>
-                <el-form-item prop="CompanyID" label="統一編號">
+                <el-form-item prop="CompanyID" label="統一編號" v-if="form.UserType === 2">
                     <el-input v-model="form.CompanyID" maxlength="8"></el-input>
                     <small class="prompt-text">註冊後不可修改</small>
                 </el-form-item>

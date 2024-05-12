@@ -39,6 +39,11 @@ export default new Router({
 					path: '/function/rate',
 					name: 'function_rate',
 					component: (resolve) => require(['@/components/function/Rate'], resolve)
+				},
+                {
+					path: '/function/download',
+					name: 'function_download',
+					component: (resolve) => require(['@/components/function/Download'], resolve)
 				}
 			]
 		}

@@ -1,0 +1,18 @@
+﻿@using NT_AirPollution.Model.View;
+@model List<Downloads>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="main-wrap">
+    <h2 class="headline">下載專區</h2>
+    <ul class="download-list">
+        @foreach (var item in @Model)
+        {
+            <li>
+                <div class="title">@item.Title</div>
+                <a class="btn-download" href="@Url.Content("~/static/download/" + item.Filename)">檔案下載</a>
+            </li>
+        }
+    </ul>
+</div>

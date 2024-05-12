@@ -23,7 +23,6 @@ namespace NT_AirPollution.Model.Domain
         [Required(ErrorMessage = "密碼格式錯誤")]
         [RegularExpression(@"^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$", ErrorMessage = "密碼格式錯誤")]
         public string Password { get; set; }
-        [Required(ErrorMessage = "未輸入統一編號")]
         [RegularExpression(@"^\d{8}$", ErrorMessage = "統一編號格式錯誤")]
         public string CompanyID { get; set; }
         [Required(ErrorMessage = "未輸入姓名")]

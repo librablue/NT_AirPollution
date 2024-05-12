@@ -44,9 +44,12 @@
                 </li>
                 @*<li class="@($"{controllerName}/{actionName}" == "Form/Create" ? "active" : "")">
                     <a href="@Url.Content("~/Form/Create")">我要申報</a>
-                </li>*@
+                </li>
                 <li class="@($"{controllerName}/{actionName}" == "Search/Index" ? "active" : "")">
                     <a href="@Url.Content("~/Search/Index")">進度查詢</a>
+                </li>*@
+                <li class="@($"{controllerName}/{actionName}" == "Download/Index" ? "active" : "")">
+                    <a href="@Url.Content("~/Download/Index")">下載專區</a>
                 </li>
                 @if (User.IsInRole("Member1"))
                 {

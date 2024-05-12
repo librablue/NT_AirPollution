@@ -646,6 +646,34 @@ h3 {
   border-radius: 50px;
 }
 
+.download-list {
+  width: 90%;
+  max-width: 800px;
+  margin: 0 auto 20px;
+}
+.download-list li {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  position: relative;
+  padding: 20px 0 10px;
+  border-bottom: 1px solid #ccc;
+}
+.download-list .btn-download {
+  display: inline-block;
+  color: #015fa7;
+  border: 1px solid #015fa7;
+  padding: 2px 20px;
+  border-radius: 50px;
+  line-height: 1.5;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.download-list .btn-download:hover {
+  color: #fff;
+  background-color: #015fa7;
+}
+
 footer {
   background-color: #ebf5ff;
   padding: 20px 0 0;

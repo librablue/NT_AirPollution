@@ -56,7 +56,15 @@
 				var dayDiff = Math.ceil(diff / (1000 * 60 * 60 * 24));
 
 				return dayDiff;
-			}
+			},
+            calcPercent() {
+                try {
+                    if (!this.selectRow.C_MONEY || !this.selectRow.MONEY) throw '';
+                    return +((this.selectRow.C_MONEY / this.selectRow.MONEY) * 100).toFixed(2);
+                } catch (err) {
+                    return 0;
+                }
+            }
 		},
 		methods: {
 			getDistrict() {

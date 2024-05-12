@@ -140,6 +140,7 @@
   <ItemGroup>
     <Compile Include="ActionFilter\CustomAuthorizeAttribute.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\DownloadController.cs" />
     <Compile Include="Controllers\NewsController.cs" />
     <Compile Include="Controllers\RoadController.cs" />
     <Compile Include="Controllers\AirController.cs" />
@@ -204,6 +205,7 @@
     <Content Include="static\css\form.css.map" />
     <Content Include="static\scss\form.scss" />
     <Content Include="static\scss\_table.scss" />
+    <Content Include="Views\Download\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -214,6 +216,7 @@
   <ItemGroup>
     <Folder Include="App_Data\Payment\Download\" />
     <Folder Include="App_Data\Upload\" />
+    <Folder Include="static\download\" />
     <Folder Include="static\image\Upload\" />
   </ItemGroup>
   <ItemGroup>
