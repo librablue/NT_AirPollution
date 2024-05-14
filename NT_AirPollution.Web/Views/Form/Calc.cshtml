@@ -30,13 +30,13 @@
                     </el-form-item>
                 </el-col>
                 <el-col :xs="24" :sm="12" :md="8">
-                    <el-form-item v-if="isShowAREA()" prop="AREA" label="施工面積">
-                        <el-input type="number" v-model="form.AREA" placeholder="非疏濬工程"></el-input>
+                    <el-form-item v-if="isShowAREA()" prop="AREA" :label="projectCodeText">
+                        <el-input type="number" v-model="form.AREA"></el-input>
                     </el-form-item>
-                    <el-form-item v-if="isShowVOLUMEL()" prop="VOLUMEL" label="清運土石體積">
-                        <el-input type="number" v-model="form.VOLUMEL" placeholder="疏濬工程"></el-input>
+                    <el-form-item v-if="isShowVOLUMEL()" prop="VOLUMEL" label="外運土石體積(鬆方)(立方公尺)">
+                        <el-input type="number" v-model="form.VOLUMEL"></el-input>
                     </el-form-item>
-                    <el-form-item v-if="isShowMONEY()" prop="MONEY" label="工程合約經費">
+                    <el-form-item v-if="isShowMONEY()" prop="MONEY" label="工程合約經費(元)">
                         <el-input type="number" v-model="form.MONEY"></el-input>
                     </el-form-item>
                 </el-col>

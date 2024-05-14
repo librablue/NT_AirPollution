@@ -60,7 +60,29 @@
                     default:
                         return '';
                 }
-            }
+            },
+            projectCodeText() {
+				switch (this.form.KIND_NO) {
+					case '1':
+					case '2':
+						return '建築面積(平方公尺)';
+					case '3':
+						return '總樓地板面積(平方公尺)';
+					case '4':
+					case '6':
+						return '施工面積(平方公尺)';
+					case '5':
+						return '隧道平面面積(平方公尺)';
+					case '7':
+						return '橋面面積(平方公尺)';
+					case '8':
+					case '9':
+					case 'A':
+						return '施工面積(公頃)';
+					default:
+						return '施工面積(平方公尺)';
+				}
+			}
         },
         data() {
             const checkE_DATE2 = (rule, value, callback) => {
