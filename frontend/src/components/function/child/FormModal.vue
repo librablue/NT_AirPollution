@@ -11,13 +11,13 @@
 					</div>
 					<!-- <div v-if="form.FormStatus === 1 || form.FormStatus === 2" class="form-item-col">
 						<el-link type="primary" style="line-height: 32px;" @click="finalCalc('S_AMT')">試算申報金額</el-link>
-					</div> -->
+					</div>-->
 					<div class="form-item-col">
 						<el-form-item label="結算應繳金額">{{(form.S_AMT2 === null ? '未結算' : form.S_AMT2) | comma}}</el-form-item>
 					</div>
 					<!-- <div v-if="form.CalcStatus === 1 || form.CalcStatus === 2" class="form-item-col">
 						<el-link type="primary" style="line-height: 32px;" @click="finalCalc('S_AMT2')">試算結算金額</el-link>
-					</div> -->
+					</div>-->
 				</div>
 
 				<table class="table">
@@ -339,19 +339,19 @@
 					<table class="table form-table">
 						<tbody>
 							<tr>
-								<th style="width:180px">32.工程合約經費</th>
+								<th style="width:180px">32.工程合約經費(元)</th>
 								<td>
 									<el-form-item prop="MONEY">
 										<el-input type="number" v-model="form.MONEY"></el-input>
 									</el-form-item>
 								</td>
-								<th style="width:180px">33.工程環保經費</th>
+								<th style="width:180px">33.工程環保經費(元)</th>
 								<td>
 									<el-form-item prop="C_MONEY">
 										<el-input type="number" v-model="form.C_MONEY"></el-input>
 									</el-form-item>
 								</td>
-								<th style="width:180px">工程合約經費比例</th>
+								<th style="width:180px">工程合約經費比例(%)</th>
 								<td>
 									<el-form-item prop="PERCENT">
 										<el-input type="number" v-model="form.PERCENT"></el-input>
@@ -359,13 +359,13 @@
 								</td>
 							</tr>
 							<tr>
-								<th>施工面積</th>
+								<th>{{projectCodeText}}</th>
 								<td>
 									<el-form-item prop="AREA">
 										<el-input type="number" v-model="form.AREA" placeholder="非疏濬工程"></el-input>
 									</el-form-item>
 								</td>
-								<th>清運土石體積</th>
+								<th>外運土石體積(鬆方)(立方公尺)</th>
 								<td>
 									<el-form-item prop="VOLUMEL">
 										<el-input type="number" v-model="form.VOLUMEL" placeholder="疏濬工程"></el-input>
@@ -447,9 +447,9 @@
 									</tr>
 								</thead>
 								<tbody>
-                                    <tr v-if="form.StopWorks.length === 0">
-                                        <td colspan="4">暫無資料</td>
-                                    </tr>
+									<tr v-if="form.StopWorks.length === 0">
+										<td colspan="4">暫無資料</td>
+									</tr>
 									<tr v-for="(item, idx) in form.StopWorks" :key="idx">
 										<td style="width: 50px">
 											<el-button type="danger" size="mini" icon="el-icon-delete" circle @click="deleteStopWork(idx)"></el-button>
@@ -600,6 +600,28 @@ export default {
 		},
 		filterAttachmentInfo() {
 			return this.attachmentInfo.filter(item => item.PUB_COMP === this.form.PUB_COMP);
+		},
+		projectCodeText() {
+			switch (this.form.KIND_NO) {
+				case '1':
+				case '2':
+					return '建築面積(平方公尺)';
+				case '3':
+					return '總樓地板面積(平方公尺)';
+				case '4':
+				case '6':
+					return '施工面積(平方公尺)';
+				case '5':
+					return '隧道平面面積(平方公尺)';
+				case '7':
+					return '橋面面積(平方公尺)';
+				case '8':
+				case '9':
+				case 'A':
+					return '施工面積(公頃)';
+				default:
+					return '施工面積(平方公尺)';
+			}
 		}
 	},
 	methods: {
