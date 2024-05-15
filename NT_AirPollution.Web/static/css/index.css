@@ -674,6 +674,13 @@ h3 {
   background-color: #015fa7;
 }
 
+.empty {
+  font-size: 24px;
+  text-align: center;
+  height: 160px;
+  line-height: 160px;
+}
+
 footer {
   background-color: #ebf5ff;
   padding: 20px 0 0;
