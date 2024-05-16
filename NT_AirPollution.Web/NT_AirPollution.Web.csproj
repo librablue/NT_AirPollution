@@ -113,6 +113,7 @@
     <Content Include="static\image\bg-dots.png" />
     <Content Include="static\image\illu-access.svg" />
     <Content Include="static\image\illu-building.svg" />
+    <Content Include="static\image\illu-download.svg" />
     <Content Include="static\image\illu-news.svg" />
     <Content Include="static\image\logo.png" />
     <Content Include="static\js\air\index.js" />
