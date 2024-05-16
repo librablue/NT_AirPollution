@@ -4,7 +4,7 @@
 			<el-form class="modal-form" ref="form" size="small" :rules="rules" :model="form">
 				<div class="form-item-inline">
 					<div class="form-item-col">
-						<el-form-item prop="C_NO" label="管制編號">{{form.C_NO}}-{{form.SER_NO}}</el-form-item>
+						<el-form-item prop="C_NO" label="管制編號">{{form.C_NO ? `${form.C_NO}-${form.SER_NO}` : '(待審核)'}}</el-form-item>
 					</div>
 					<div class="form-item-col">
 						<el-form-item label="申報應繳金額">{{(form.S_AMT === null ? '未結算' : form.S_AMT) | comma}}</el-form-item>

@@ -70,10 +70,11 @@ namespace NT_AirPollution.Admin.Controllers
                 form.FormStatus = FormStatus.審理中;
                 form.CalcStatus = CalcStatus.未申請;
 
-                // 寫入 Access
-                bool isAccessOK = _accessService.AddABUDF(form);
-                if (!isAccessOK)
-                    throw new Exception("系統發生未預期錯誤");
+                //// 20240516 改審核後才產生單號
+                //// 寫入 Access
+                //bool isAccessOK = _accessService.AddABUDF(form);
+                //if (!isAccessOK)
+                //    throw new Exception("系統發生未預期錯誤");
 
                 _formService.AddForm(form);
 
@@ -92,15 +93,47 @@ namespace NT_AirPollution.Admin.Controllers
             {
                 form.B_DATE = form.B_DATE2.AddYears(-1911).ToString("yyyMMdd");
                 form.E_DATE = form.E_DATE2.AddYears(-1911).ToString("yyyMMdd");
-                // 修改 access
-                bool isAccessOK = _accessService.UpdateABUDF(form);
-                if (!isAccessOK)
-                    throw new Exception("更新 Access 發生未預期錯誤");
+                
+                // 有管制編號才更新Access
+                if(!string.IsNullOrEmpty(form.C_NO))
+                {
+                    // 修改 access
+                    bool isAccessOK = _accessService.UpdateABUDF(form);
+                    if (!isAccessOK)
+                        throw new Exception("更新 Access 發生未預期錯誤");
+                }
 
                 _formService.UpdateForm(form);
                 _formService.UpdateStopWork(form);
 
                 return true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 產生管制編號
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public string CreateC_NO(FormView form)
+        {
+            try
+            {
+                string c_no = _accessService.GetC_NO(form);
+                form.C_NO = c_no;
+
+                // 寫入 Access
+                bool isAccessOK = _accessService.AddABUDF(form);
+                if (!isAccessOK)
+                    throw new Exception("系統發生未預期錯誤");
+
+                _formService.UpdateForm(form);
+                return form.C_NO;
             }
             catch (Exception ex)
             {

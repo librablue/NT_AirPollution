@@ -688,7 +688,7 @@ namespace NT_AirPollution.Service
             using (StreamReader sr = new StreamReader(template))
             {
                 string content = sr.ReadToEnd();
-                string body = string.Format(content, form.C_NO, form.FailReason1.Replace("\n", "<br>"));
+                string body = string.Format(content, form.COMP_NAM, form.FailReason1.Replace("\n", "<br>"));
 
                 try
                 {
@@ -698,7 +698,7 @@ namespace NT_AirPollution.Service
                         cn.Insert(new SendBox
                         {
                             Address = form.CreateUserEmail,
-                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件需補件通知(管制編號 {form.C_NO}-{form.SER_NO})",
+                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件需補件通知(工程名稱 {form.COMP_NAM})",
                             Body = body,
                             FailTimes = 0,
                             CreateDate = DateTime.Now
@@ -728,7 +728,7 @@ namespace NT_AirPollution.Service
                 try
                 {
                     string content = sr.ReadToEnd();
-                    string body = string.Format(content, form.C_NO);
+                    string body = string.Format(content, form.COMP_NAM);
                     string fileName = $"繳款單{form.C_NO}-{form.SER_NO}({(form.P_KIND == "一次繳清" ? "一次繳清" : "第一期")})";
                     // 產生繳款單
                     string pdfPath = this.CreatePaymentPDF(fileName, form);
@@ -739,7 +739,7 @@ namespace NT_AirPollution.Service
                         cn.Insert(new SendBox
                         {
                             Address = form.CreateUserEmail,
-                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件繳費通知(管制編號 {form.C_NO}-{form.SER_NO})",
+                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件繳費通知(工程名稱 {form.COMP_NAM})",
                             Body = body,
                             Attachment = pdfPath,
                             FailTimes = 0,
@@ -768,7 +768,7 @@ namespace NT_AirPollution.Service
             using (StreamReader sr = new StreamReader(template))
             {
                 string content = sr.ReadToEnd();
-                string body = string.Format(content, form.C_NO);
+                string body = string.Format(content, form.COMP_NAM);
 
                 try
                 {
@@ -778,7 +778,7 @@ namespace NT_AirPollution.Service
                         cn.Insert(new SendBox
                         {
                             Address = form.CreateUserEmail,
-                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件繳費完成(管制編號 {form.C_NO}-{form.SER_NO})",
+                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件繳費完成(工程名稱 {form.COMP_NAM})",
                             Body = body,
                             FailTimes = 0,
                             CreateDate = DateTime.Now
@@ -806,7 +806,7 @@ namespace NT_AirPollution.Service
             using (StreamReader sr = new StreamReader(template))
             {
                 string content = sr.ReadToEnd();
-                string body = string.Format(content, form.C_NO, form.FailReason2.Replace("\n", "<br>"));
+                string body = string.Format(content, form.COMP_NAM, form.FailReason2.Replace("\n", "<br>"));
 
                 try
                 {
@@ -816,7 +816,7 @@ namespace NT_AirPollution.Service
                         cn.Insert(new SendBox
                         {
                             Address = form.CreateUserEmail,
-                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件結算通知(需補件)(管制編號 {form.C_NO}-{form.SER_NO})",
+                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件結算通知(需補件)(工程名稱 {form.COMP_NAM})",
                             Body = body,
                             FailTimes = 0,
                             CreateDate = DateTime.Now
@@ -846,7 +846,7 @@ namespace NT_AirPollution.Service
                 try
                 {
                     string content = sr.ReadToEnd();
-                    string body = string.Format(content, form.C_NO);
+                    string body = string.Format(content, form.COMP_NAM);
                     string fileName = $"繳款單{form.C_NO}-{form.SER_NO}(結算補繳)";
                     // 產生繳款單
                     string docPath = this.CreatePaymentPDF(fileName, form);
@@ -857,7 +857,7 @@ namespace NT_AirPollution.Service
                         cn.Insert(new SendBox
                         {
                             Address = form.CreateUserEmail,
-                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件結算通知(需補繳)(管制編號 {form.C_NO}-{form.SER_NO})",
+                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件結算通知(需補繳)(工程名稱 {form.COMP_NAM})",
                             Body = body,
                             Attachment = docPath,
                             FailTimes = 0,
@@ -888,7 +888,7 @@ namespace NT_AirPollution.Service
                 try
                 {
                     string content = sr.ReadToEnd();
-                    string body = string.Format(content, form.C_NO);
+                    string body = string.Format(content, form.COMP_NAM);
                     // 產生結清證明
                     string pdfPath = this.CreateProofPDF(form);
 
@@ -898,7 +898,7 @@ namespace NT_AirPollution.Service
                         cn.Insert(new SendBox
                         {
                             Address = form.CreateUserEmail,
-                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件結算通知(可退費)(管制編號 {form.C_NO}-{form.SER_NO})",
+                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件結算通知(可退費)(工程名稱 {form.COMP_NAM})",
                             Body = body,
                             Attachment = pdfPath,
                             FailTimes = 0,
@@ -929,7 +929,7 @@ namespace NT_AirPollution.Service
                 try
                 {
                     string content = sr.ReadToEnd();
-                    string body = string.Format(content, form.C_NO);
+                    string body = string.Format(content, form.COMP_NAM);
                     // 產生結清證明
                     string pdfPath = this.CreateProofPDF(form);
 
@@ -939,7 +939,7 @@ namespace NT_AirPollution.Service
                         cn.Insert(new SendBox
                         {
                             Address = form.CreateUserEmail,
-                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件結算通知(已結清)(管制編號 {form.C_NO}-{form.SER_NO})",
+                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件結算通知(已結清)(工程名稱 {form.COMP_NAM})",
                             Body = body,
                             Attachment = pdfPath,
                             FailTimes = 0,

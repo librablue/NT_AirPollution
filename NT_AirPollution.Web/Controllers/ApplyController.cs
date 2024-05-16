@@ -68,7 +68,7 @@ namespace NT_AirPollution.Web.Controllers
                 };
                 var companyInDB = _clientUserService.GetCompanyByUser(filter);
                 if (companyInDB.Count() == 0)
-                {  
+                {
                     company.CreateDate = DateTime.Now;
                     company.ModifyDate = DateTime.Now;
                     _clientUserService.AddCompany(company);
@@ -81,7 +81,7 @@ namespace NT_AirPollution.Web.Controllers
                     company.ModifyDate = DateTime.Now;
                     _clientUserService.UpdateCompany(company);
                 }
-                
+
                 return Json(new AjaxResult { Status = true });
             }
             catch (Exception ex)
@@ -261,13 +261,14 @@ namespace NT_AirPollution.Web.Controllers
                 form.ClientUserID = BaseService.CurrentUser.ID;
                 form.FormStatus = FormStatus.審理中;
                 form.CalcStatus = CalcStatus.未申請;
-                string c_no = _accessService.GetC_NO(form);
-                form.C_NO = c_no;
+                //// 20240516 改審核後才產生單號
+                //string c_no = _accessService.GetC_NO(form);
+                //form.C_NO = c_no;
 
-                // 寫入 Access
-                bool isAccessOK = _accessService.AddABUDF(form);
-                if (!isAccessOK)
-                    throw new Exception("系統發生未預期錯誤");
+                //// 寫入 Access
+                //bool isAccessOK = _accessService.AddABUDF(form);
+                //if (!isAccessOK)
+                //    throw new Exception("系統發生未預期錯誤");
 
                 _formService.AddForm(form);
 
@@ -328,10 +329,13 @@ namespace NT_AirPollution.Web.Controllers
                 form.FormStatus = FormStatus.審理中;
                 form.CalcStatus = CalcStatus.未申請;
 
-                // 修改 access
-                bool isAccessOK = _accessService.UpdateABUDF(form);
-                if (!isAccessOK)
-                    throw new Exception("系統發生未預期錯誤");
+                // 有管制編號才修改Access
+                if (!string.IsNullOrEmpty(form.C_NO))
+                {
+                    bool isAccessOK = _accessService.UpdateABUDF(form);
+                    if (!isAccessOK)
+                        throw new Exception("系統發生未預期錯誤");
+                }
 
                 _formService.UpdateForm(form);
 

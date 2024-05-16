@@ -73,7 +73,10 @@
 				</template>
 			</vxe-table-column>
 			<vxe-table-column field="C_NO" title="管制編號" width="120" align="center" sortable fixed="left">
-				<template #default="{ row }">{{ row.C_NO ? `${row.C_NO}-${row.SER_NO}` : '(取號中)' }}</template>
+				<template #default="{ row }">
+					<span v-if="row.C_NO">{{row.C_NO}}-{{row.SER_NO}}</span>
+					<el-link v-else type="primary" @click="createC_NO(row)">產生管制編號</el-link>
+				</template>
 			</vxe-table-column>
 			<vxe-table-column field="CreateUserEmail" title="Email" width="200" align="center" fixed="left">
 				<template #default="{ row }">{{ row.CreateUserEmail }}({{ row.ClientUserID ? '會員' : '非會員' }})</template>
@@ -111,7 +114,7 @@ export default {
 	components: { FormModal, FailReasonModal },
 	data() {
 		return {
-            mode: '',
+			mode: '',
 			loading: false,
 			filter: {
 				C_NO: '',
@@ -139,22 +142,22 @@ export default {
 			});
 		},
 		showDetail(row) {
-            this.mode = 'Update';
+			this.mode = 'Update';
 			this.selectRow = row;
 			this.formModalVisible = true;
 		},
 		copyRow(row) {
-            this.mode = 'Add';
+			this.mode = 'Add';
 			this.selectRow = JSON.parse(JSON.stringify(row));
 			this.selectRow.FormStatus = 0;
-            this.selectRow.calcStatus = 0;
+			this.selectRow.calcStatus = 0;
 			this.selectRow.Attachments.length = 0;
 			this.selectRow.StopWorks.length = 0;
 			const clearAry = ['AP_DATE', 'C_DATE', 'S_AMT', 'S_AMT2'];
 			for (const key of clearAry) {
 				this.selectRow[key] = null;
 			}
-            this.formModalVisible = true;
+			this.formModalVisible = true;
 		},
 		onUpdated() {
 			this.getForms();
@@ -162,11 +165,11 @@ export default {
 		onFailReasonConfirm(val, callback) {
 			if (callback.name === 'bound updateFormStatus') {
 				this.selectRow.FormStatus = 2;
-                this.selectRow.FailReason1 = val.FailReason;
+				this.selectRow.FailReason1 = val.FailReason;
 			}
 			if (callback.name === 'bound updateCalcStatus') {
 				this.selectRow.CalcStatus = 2;
-                this.selectRow.FailReason2 = val.FailReason;
+				this.selectRow.FailReason2 = val.FailReason;
 			}
 			callback(this.selectRow);
 		},
@@ -178,18 +181,22 @@ export default {
 		},
 		handleCommand1(arg) {
 			const { row, cmd } = arg;
+			if (cmd !== 2 && !row.C_NO) {
+				alert('未產生管制編號，無法修改進度');
+				return;
+			}
 			this.selectRow = row;
 			switch (cmd) {
 				case 2:
-					if (!confirm(`管制編號 ${row.C_NO} 進度改成需補件，是否確認繼續?`)) return false;
+					if (!confirm('進度改成需補件，是否確認繼續?')) return false;
 					this.selectCallBack = this.updateFormStatus;
 					this.failReasonModalVisible = true;
 					return;
 				case 3:
-					if (!confirm(`管制編號 ${row.C_NO} 進度改成通過待繳費，是否確認繼續?`)) return false;
+					if (!confirm('進度改成通過待繳費，是否確認繼續?')) return false;
 					break;
 				case 4:
-					if (!confirm(`管制編號 ${row.C_NO} 進度改成已繳費完成，是否確認繼續?`)) return false;
+					if (!confirm('進度改成已繳費完成，是否確認繼續?')) return false;
 					break;
 			}
 
@@ -204,18 +211,21 @@ export default {
 		},
 		handleCommand2(arg) {
 			const { row, cmd } = arg;
-			this.selectRow = row;
+            if(row.FormStatus !== 4) {
+                alert('審核進度尚未完成');
+                return;
+            }
 			switch (cmd) {
 				case 2:
-					if (!confirm(`管制編號 ${row.C_NO} 進度改成需補件，是否確認繼續?`)) return false;
+					if (!confirm('進度改成需補件，是否確認繼續?')) return false;
 					this.selectCallBack = this.updateCalcStatus;
 					this.failReasonModalVisible = true;
 					return;
 				case 3:
-					if (!confirm(`管制編號 ${row.C_NO} 審核通過，系統將進行結算判斷是否需繳退費，是否確認繼續?`)) return false;
+					if (!confirm('審核通過，系統將進行結算判斷是否需繳退費，是否確認繼續?')) return false;
 					break;
 				case 6:
-					if (!confirm(`管制編號 ${row.C_NO} 進度改成繳退費完成，是否確認繼續?`)) return false;
+					if (!confirm('進度改成繳退費完成，是否確認繼續?')) return false;
 					break;
 			}
 
@@ -243,6 +253,21 @@ export default {
 				.then(res => {
 					this.getForms();
 					this.$message.success('畫面資料已儲存');
+					loading.close();
+				})
+				.catch(err => {
+					this.$message.error(err.response.data.ExceptionMessage);
+					loading.close();
+				});
+		},
+		createC_NO(row) {
+			if (!confirm('管制編號產生後無法修改，是否確認繼續?')) return;
+			const loading = this.$loading();
+			this.axios
+				.post('api/Form/CreateC_NO', row)
+				.then(res => {
+					row.C_NO = res.data;
+					this.$message.success('管制編號已產生');
 					loading.close();
 				})
 				.catch(err => {
