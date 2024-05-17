@@ -72,32 +72,34 @@
 					</el-dropdown>
 				</template>
 			</vxe-table-column>
-			<vxe-table-column field="C_NO" title="管制編號" width="120" align="center" sortable fixed="left">
+			<vxe-table-column field="C_NO" title="管制編號" width="140" align="center" sortable fixed="left">
 				<template #default="{ row }">
 					<span v-if="row.C_NO">{{row.C_NO}}-{{row.SER_NO}}</span>
 					<el-link v-else type="primary" @click="createC_NO(row)">產生管制編號</el-link>
 				</template>
 			</vxe-table-column>
-			<vxe-table-column field="CreateUserEmail" title="Email" width="200" align="center" fixed="left">
-				<template #default="{ row }">{{ row.CreateUserEmail }}({{ row.ClientUserID ? '會員' : '非會員' }})</template>
+			<vxe-table-column field="CreateUserEmail" title="Email" width="160" align="center" fixed="left">
+				<template #default="{ row }">{{ row.CreateUserEmail }}</template>
 			</vxe-table-column>
-			<vxe-table-column field="B_SERNO" title="建照字號" width="120" align="center"></vxe-table-column>
-			<vxe-table-column field="COMP_NAM" title="工程名稱" width="180" align="center"></vxe-table-column>
-			<vxe-table-column field="ADDR" title="工地地址" width="180"></vxe-table-column>
-			<vxe-table-column field="S_NAME" title="營建業主名稱" width="180"></vxe-table-column>
-			<vxe-table-column field="R_NAME" title="承包(造)名稱" width="180"></vxe-table-column>
-			<vxe-table-column field="C_DATE" title="申報日期" width="120" align="center" sortable>
+			<vxe-table-column field="S_C_NAM" title="業主聯絡人" width="120" align="center"></vxe-table-column>
+			<vxe-table-column field="S_C_TEL" title="業主聯絡電話" width="180" align="center"></vxe-table-column>
+            <vxe-table-column field="COMP_NAM" title="工程名稱" width="180" align="center"></vxe-table-column>
+			<vxe-table-column field="TOWN_NA" title="鄉鎮名稱" width="100" align="center" sortable></vxe-table-column>
+			<vxe-table-column field="S_NAME" title="營建業主名稱" width="180" align="center"></vxe-table-column>
+			<vxe-table-column field="R_NAME" title="承造單位名稱" width="180" align="center"></vxe-table-column>
+			<vxe-table-column field="C_DATE" title="申報日期" width="140" align="center" sortable>
 				<template #default="{ row }">{{ row.C_DATE | datetime }}</template>
 			</vxe-table-column>
-			<vxe-table-column field="M_DATE" title="修改日期" width="100" align="center" sortable>
-				<template #default="{ row }">{{ row.M_DATE | date }}</template>
+			<vxe-table-column field="M_DATE" title="修改日期" width="140" align="center" sortable>
+				<template #default="{ row }">{{ row.M_DATE | datetime }}</template>
 			</vxe-table-column>
-			<vxe-table-column field="VerifyDate1" title="申報審核日" width="120" align="center" sortable>
-				<template #default="{ row }">{{ row.VerifyDate1 | date }}</template>
+			<vxe-table-column field="VerifyDate1" title="申報審核日" width="140" align="center" sortable>
+				<template #default="{ row }">{{ row.VerifyDate1 | datetime }}</template>
 			</vxe-table-column>
-			<vxe-table-column field="VerifyDate2" title="結算審核日" width="120" align="center" sortable>
-				<template #default="{ row }">{{ row.VerifyDate2 | date }}</template>
+			<vxe-table-column field="VerifyDate2" title="結算審核日" width="140" align="center" sortable>
+				<template #default="{ row }">{{ row.VerifyDate2 | datetime }}</template>
 			</vxe-table-column>
+			<vxe-table-column field="FailReason1" title="退件原因" width="240" align="center"></vxe-table-column>
 		</vxe-table>
 		<FormModal :show.sync="formModalVisible" :mode="mode" :data="selectRow" @on-updated="onUpdated" />
 		<FailReasonModal :show.sync="failReasonModalVisible" :data="selectRow" :callback="selectCallBack" @on-confirm="onFailReasonConfirm" />
