@@ -19,46 +19,51 @@
 </div>
 <div class="news-wrapper">
     <div class="container">
-        <div class="flex-row">
-            <div class="left">
-                <img class="illu-news" src="@Url.Content("~/static/image/illu-news.svg")" />
+        <h3>最新消息</h3>
+        @if (ViewBag.News.Count == 0)
+        {
+            <div class="empty">暫無任何最新消息</div>
+        }
+        else
+        {
+            <ul class="index-news-list">
+                @foreach (var item in ViewBag.News)
+                {
+                    <li>
+                        <a href="@Url.Content($"~/News/Content?id={item.ID}")" class="title">@item.Title</a>
+                        <span class="date">@item.CreateDate.ToString("yyyy-MM-dd")</span>
+                    </li>
+                }
+            </ul>
+            <div class="text-right">
+                <a href="@Url.Content("~/News/Index")" class="btn-more">更多消息</a>
             </div>
-            <div class="right">
-                <h3>最新消息</h3>
-                <ul class="index-news-list">
-                    @foreach (var item in ViewBag.News)
-                    {
-                        <li>
-                            <span class="date">@item.CreateDate.ToString("yyyy-MM-dd")</span>
-                            <a href="@Url.Content($"~/News/Content?id={item.ID}")" class="title">@item.Title</a>
-                        </li>
-                    }
-                </ul>
-                <div class="text-right">
-                    <a href="@Url.Content("~/News/Index")" class="btn-more">更多消息</a>
-                </div>
-            </div>
-        </div>
-        <div class="flex-row">
-            <div class="left">
-                <h3>下載專區</h3>
-                <ul class="index-download-list">
-                    @foreach (var item in ViewBag.Downloads)
-                    {
-                        <li>
-                            <div class="title">@item.Title</div>
-                            <a href="@Url.Content("~/static/download/" + item.Filename)" class="btn-download">檔案下載</a>
-                        </li>
-                    }
-                </ul>
-                <div class="text-right">
-                    <a href="@Url.Content("~/Download/Index")" class="btn-more">更多內容</a>
-                </div>
-            </div>
-            <div class="right">
-                <img class="illu-news" src="@Url.Content("~/static/image/illu-download.svg")" />
-            </div>
-        </div>
+        }
+
     </div>
 </div>
 
+<div class="download-wrapper">
+    <div class="container">
+        <h3>下載專區</h3>
+        @if (ViewBag.Downloads.Count == 0)
+        {
+            <div class="empty">暫無任何下載檔案</div>
+        }
+        else
+        {
+            <ul class="index-download-list">
+                @foreach (var item in ViewBag.Downloads)
+                {
+                    <li>
+                        <div class="title">@item.Title</div>
+                        <a href="@Url.Content("~/static/download/" + item.Filename)" class="btn-download">檔案下載</a>
+                    </li>
+                }
+            </ul>
+            <div class="text-right">
+                <a href="@Url.Content("~/Download/Index")" class="btn-more">更多內容</a>
+            </div>
+        }
+    </div>
+</div>
