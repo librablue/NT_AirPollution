@@ -654,6 +654,59 @@ h3 {
   cursor: pointer;
 }
 
+.selfcheck-list li {
+  margin-bottom: 10px;
+}
+
+.checkbox-group {
+  display: inline-block;
+  margin-right: 20px;
+}
+.checkbox-group input[type=checkbox] {
+  display: none;
+}
+.checkbox-group input[type=checkbox]:checked ~ label:before {
+  background-color: #2aa1c0;
+}
+.checkbox-group input[type=checkbox][disabled] ~ label {
+  opacity: 0.6;
+}
+.checkbox-group input[type=checkbox][disabled] ~ label:before {
+  background-color: #e6e6e6;
+}
+.checkbox-group input[type=checkbox][disabled] ~ label:after {
+  display: none;
+}
+.checkbox-group label {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  cursor: pointer;
+  padding: 0;
+}
+.checkbox-group label:before {
+  content: "";
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-right: 6px;
+  background-color: #fff;
+  border: 1px solid #999;
+  border-radius: 2px;
+}
+.checkbox-group label:after {
+  content: "";
+  position: absolute;
+  left: 7px;
+  top: 4px;
+  width: 5px;
+  height: 10px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
 footer {
   background-color: #ebf5ff;
   padding: 20px 0 0;

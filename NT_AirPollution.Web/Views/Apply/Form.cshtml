@@ -664,4 +664,19 @@
             </template>
         </span>
     </el-dialog>
+
+    <el-dialog title="請勾選已上傳附件" :visible.sync="selfCheckModalVisible" width="30%" v-cloak>
+        <ul class="selfcheck-list">
+            <li v-for="(item, idx) in filterAttachmentInfo" :key="idx">
+                <div class="checkbox-group">
+                    <input type="checkbox" :id="`c${idx}`" name="checkbox">
+                    <label :for="`c${idx}`">{{item.FileTitle}}</label>
+                </div>
+            </li>
+        </ul>
+        <span slot="footer" class="dialog-footer">
+            <el-button @@click="selfCheckModalVisible = false">取 消</el-button>
+            <el-button type="primary" @@click="selfCheckConfirm">確 定</el-button>
+        </span>
+    </el-dialog>
 </div>

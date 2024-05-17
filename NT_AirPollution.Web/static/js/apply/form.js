@@ -123,6 +123,8 @@
 				failReason2DialogVisible: false,
 				bankAccountDialogVisible: false,
 				paymentProofModalVisible: false,
+				selfCheckModalVisible: false,
+				isSelfChecked: false,
 				activeTab: 'first',
 				rules1: Object.freeze({
 					PUB_COMP: [{ required: true, message: '請選擇案件類型', trigger: 'change' }],
@@ -322,6 +324,7 @@
 				this.mode = 'Add';
 				this.selectCompany = null;
 				this.selectContractor = null;
+                this.isSelfChecked = false;
 				this.selectRow = {
 					SER_NO: 1,
 					P_KIND: '一次全繳',
@@ -407,6 +410,7 @@
 			},
 			showModal(row) {
 				this.mode = 'Update';
+                this.isSelfChecked = true;
 				this.selectRow = JSON.parse(JSON.stringify(row));
 				const point = this.selectRow.LATLNG.split(',');
 				this.selectRow.LAT = point[0] || null;
@@ -599,11 +603,21 @@
 						console.log(err);
 					});
 			},
+            selfCheckConfirm() {
+                this.isSelfChecked = true;
+                this.selfCheckModalVisible = false;
+            },
 			sendForm() {
 				this.$refs.form1.validate(valid => {
 					if (!valid) {
 						alert('欄位驗證錯誤，請檢查修正後重新送出');
 						return false;
+					}
+
+                    // 附件自主檢查視窗
+					if (!this.isSelfChecked) {
+						this.selfCheckModalVisible = true;
+						return;
 					}
 
 					if (!confirm('是否確認繼續?')) return false;
