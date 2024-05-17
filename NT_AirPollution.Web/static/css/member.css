@@ -520,7 +520,7 @@ h3 {
   right: 4px;
   font-size: 24px;
   line-height: 24px;
-  color: #67c23a;
+  color: #67C23A;
 }
 
 .link-delete {
@@ -620,45 +620,38 @@ h3 {
     width: 50%;
   }
 }
-.latlng-row {
+footer {
+  background-color: #ebf5ff;
+  padding: 20px 0 0;
+}
+footer .contact-row {
   display: flex;
-  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  max-width: 1200px;
+  margin: 0 auto;
 }
-.latlng-row .el-form-item {
-  margin: 0 10px;
+footer ul {
+  line-height: 1.875rem;
+  margin: 0 10px 10px;
 }
-.latlng-row .btn-col {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 0 10px;
+footer ul .office {
+  font-weight: 700;
 }
-.latlng-row .btn-col .btn-row {
-  margin: 2px 0;
+footer .bottom {
+  padding: 10px 15px;
+  border-top: 1px solid #ccc;
+  text-align: center;
 }
-
-.pwd-wrap {
-  position: relative;
-}
-.pwd-wrap .btn-eye {
-  position: absolute;
-  top: 50%;
-  right: 15px;
-  transform: translateY(-50%);
-  font-size: 22px;
-  color: #999;
-  cursor: pointer;
+footer .bottom ul {
+  margin: 0;
 }
 
-.tip-text {
-  cursor: pointer;
-}
-
-.selfcheck-list li {
-  margin-bottom: 10px;
-}
-
-.checkbox-group {
+@media (min-width: 1200px) {
+  footer .contact-row {
+    justify-content: space-around;
+  }
+}/*# sourceMappingURL=member.css.map */ {
   display: inline-block;
   margin-right: 20px;
 }
