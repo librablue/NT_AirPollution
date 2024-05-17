@@ -83,7 +83,7 @@
 			</vxe-table-column>
 			<vxe-table-column field="S_C_NAM" title="業主聯絡人" width="120" align="center"></vxe-table-column>
 			<vxe-table-column field="S_C_TEL" title="業主聯絡電話" width="180" align="center"></vxe-table-column>
-            <vxe-table-column field="COMP_NAM" title="工程名稱" width="180" align="center"></vxe-table-column>
+			<vxe-table-column field="COMP_NAM" title="工程名稱" width="180" align="center"></vxe-table-column>
 			<vxe-table-column field="TOWN_NA" title="鄉鎮名稱" width="100" align="center" sortable></vxe-table-column>
 			<vxe-table-column field="S_NAME" title="營建業主名稱" width="180" align="center"></vxe-table-column>
 			<vxe-table-column field="R_NAME" title="承造單位名稱" width="180" align="center"></vxe-table-column>
@@ -99,10 +99,25 @@
 			<vxe-table-column field="VerifyDate2" title="結算審核日" width="140" align="center" sortable>
 				<template #default="{ row }">{{ row.VerifyDate2 | datetime }}</template>
 			</vxe-table-column>
-			<vxe-table-column field="FailReason1" title="退件原因" width="240" align="center"></vxe-table-column>
+			<vxe-table-column field="FailReason1" title="審核退件原因" width="240" align="center">
+				<template #default="{ row }">
+					<a href="javascript:;" @click="showFailReason1Modal(row)">
+						<i class="el-icon-edit"></i>
+					</a>
+					{{row.FailReason1}}
+				</template>
+			</vxe-table-column>
+			<vxe-table-column field="FailReason2" title="結算退件原因" width="240" align="center">
+				<template #default="{ row }">
+					<a href="javascript:;" @click="showFailReason2Modal(row)">
+						<i class="el-icon-edit"></i>
+					</a>
+					{{row.FailReason2}}
+				</template>
+			</vxe-table-column>
 		</vxe-table>
 		<FormModal :show.sync="formModalVisible" :mode="mode" :data="selectRow" @on-updated="onUpdated" />
-		<FailReasonModal :show.sync="failReasonModalVisible" :data="selectRow" :callback="selectCallBack" @on-confirm="onFailReasonConfirm" />
+		<FailReasonModal ref="failReasonModal" :show.sync="failReasonModalVisible" :callback="selectCallBack" @on-confirm="onFailReasonConfirm" />
 	</div>
 </template>
 <script>
@@ -173,6 +188,12 @@ export default {
 				this.selectRow.CalcStatus = 2;
 				this.selectRow.FailReason2 = val.FailReason;
 			}
+			if (callback.name === 'bound updateFailReason1') {
+				this.selectRow.FailReason1 = val.FailReason;
+			}
+			if (callback.name === 'bound updateFailReason2') {
+				this.selectRow.FailReason2 = val.FailReason;
+			}
 			callback(this.selectRow);
 		},
 		beforeCommand1(row, cmd) {
@@ -213,10 +234,10 @@ export default {
 		},
 		handleCommand2(arg) {
 			const { row, cmd } = arg;
-            if(row.FormStatus !== 4) {
-                alert('審核進度尚未完成');
-                return;
-            }
+			if (row.FormStatus !== 4) {
+				alert('審核進度尚未完成');
+				return;
+			}
 			switch (cmd) {
 				case 2:
 					if (!confirm('進度改成需補件，是否確認繼續?')) return false;
@@ -275,6 +296,34 @@ export default {
 				.catch(err => {
 					this.$message.error(err.response.data.ExceptionMessage);
 					loading.close();
+				});
+		},
+		showFailReason1Modal(row) {
+			this.selectRow = row;
+			this.selectCallBack = this.updateFailReason1;
+			this.$refs.failReasonModal.form.FailReason = row.FailReason1;
+			this.failReasonModalVisible = true;
+		},
+		showFailReason2Modal(row) {
+			this.selectRow = row;
+			this.selectCallBack = this.updateFailReason2;
+			this.$refs.failReasonModal.form.FailReason = row.FailReason2;
+			this.failReasonModalVisible = true;
+		},
+		updateFailReason1() {
+			this.updateForm();
+		},
+		updateFailReason2() {
+			this.updateForm();
+		},
+		updateForm() {
+			this.axios
+				.post(`api/Form/UpdateForm`, this.selectRow)
+				.then(res => {
+					this.$message.success('畫面資料已儲存');
+				})
+				.catch(err => {
+					this.$message.error(err.response.data.ExceptionMessage);
 				});
 		}
 	}
