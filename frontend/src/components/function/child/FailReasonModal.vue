@@ -11,11 +11,8 @@
 			<el-button @click="visible = false">
 				<i class="fa fa-ban"></i> 取 消
 			</el-button>
-            <el-button type="success" @click="clearReason">
-				<i class="fa fa-eraser"></i> 清 空
-			</el-button>
 			<el-button type="primary" @click="sendForm">
-				<i class="fa fa-check"></i> 確 定
+				<i class="fa fa-ban"></i> 確 定
 			</el-button>
 		</template>
 	</vxe-modal>
@@ -48,12 +45,6 @@ export default {
 				this.$emit('on-confirm', this.form, this.callback);
 				this.visible = false;
 			});
-		},
-		clearReason() {
-			if (!confirm('是否確認清空退件原因?')) return false;
-            this.form.FailReason = null;
-			this.$emit('on-confirm', this.form, this.callback);
-			this.visible = false;
 		}
 	},
 	watch: {
