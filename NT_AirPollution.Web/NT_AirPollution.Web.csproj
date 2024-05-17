@@ -208,6 +208,7 @@
     <Content Include="static\scss\form.scss" />
     <Content Include="static\scss\_table.scss" />
     <Content Include="Views\Download\Index.cshtml" />
+    <Content Include="Views\Form\ProjectTable.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -37,6 +37,11 @@ namespace NT_AirPollution.Web.Controllers
             return View();
         }
 
+        public ActionResult ProjectTable()
+        {
+            return View();
+        }
+
         public JsonResult GetTotalMoney(FormView form)
         {
             form.B_DATE = form.B_DATE2.AddYears(-1911).ToString("yyyMMdd");

@@ -650,6 +650,10 @@ h3 {
   cursor: pointer;
 }
 
+.tip-text {
+  cursor: pointer;
+}
+
 footer {
   background-color: #ebf5ff;
   padding: 20px 0 0;

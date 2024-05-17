@@ -164,13 +164,18 @@
                             </td>
                         </tr>
                         <tr>
-                            <th>1.工程名稱</th>
+                            <th>
+                                1.工程名稱
+                                <el-tooltip class="item" effect="dark" content="新建農舍，工程名稱請填寫OOO農舍新建工程；若為增建農舍，請填寫OOO農舍增建工程" placement="top">
+                                    <span class="tip-text el-icon-info"></span>
+                                </el-tooltip>
+                            </th>
                             <td colspan="2">
                                 <el-form-item prop="COMP_NAM">
                                     <el-input v-model="selectRow.COMP_NAM" maxlength="150"></el-input>
                                 </el-form-item>
                             </td>
-                            <th>2.工程類別</th>
+                            <th>2.工程類別<a href="@Url.Content("~/Form/ProjectTable")" target="_blank" class="tip-text el-icon-info"></a></th>
                             <td colspan="2">
                                 <el-form-item prop="KIND_NO">
                                     <el-select class="w100p" v-model="selectRow.KIND_NO">
@@ -213,7 +218,12 @@
                             </td>
                         </tr>
                         <tr>
-                            <th>6.工程內容概述</th>
+                            <th>
+                                6.工程內容概述
+                                <el-tooltip class="item" effect="dark" content="請填寫工程施作大約內容(例如：施作道路工程，請填寫鋪設AC路面、混凝土排水溝等)" placement="top">
+                                    <span class="tip-text el-icon-info"></span>
+                                </el-tooltip>
+                            </th>
                             <td colspan="5">
                                 <el-form-item prop="STATE">
                                     <el-input v-model="selectRow.STATE" maxlength="200"></el-input>
