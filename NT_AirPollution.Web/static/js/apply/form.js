@@ -73,14 +73,16 @@
 				callback();
 			};
 			const checkArea = (rule, value, callback) => {
-				if (!this.selectRow.VOLUMEL && !value) {
-					callback(new Error('如果非疏濬工程，請輸入施工面積'));
+				const kinds = ['1', '2', '4', '5', '6', '7', '8', '9', 'A'];
+				if (kinds.includes(this.selectRow.KIND_NO) && !value) {
+                    callback(new Error('如果非疏濬工程，請輸入施工面積'));
 				}
 				callback();
 			};
 			const checkVolumel = (rule, value, callback) => {
-				if (!this.selectRow.AREA && !value) {
-					callback(new Error('如果為疏濬工程，請輸入清運土石體積'));
+                const kinds = ['3', 'B'];
+				if (kinds.includes(this.selectRow.KIND_NO) && !value) {
+                    callback(new Error('如果為疏濬工程，請輸入清運土石體積'));
 				}
 				callback();
 			};
@@ -324,7 +326,7 @@
 				this.mode = 'Add';
 				this.selectCompany = null;
 				this.selectContractor = null;
-                this.isSelfChecked = false;
+				this.isSelfChecked = false;
 				this.selectRow = {
 					SER_NO: 1,
 					P_KIND: '一次全繳',
@@ -410,7 +412,7 @@
 			},
 			showModal(row) {
 				this.mode = 'Update';
-                this.isSelfChecked = true;
+				this.isSelfChecked = true;
 				this.selectRow = JSON.parse(JSON.stringify(row));
 				const point = this.selectRow.LATLNG.split(',');
 				this.selectRow.LAT = point[0] || null;
@@ -603,10 +605,10 @@
 						console.log(err);
 					});
 			},
-            selfCheckConfirm() {
-                this.isSelfChecked = true;
-                this.selfCheckModalVisible = false;
-            },
+			selfCheckConfirm() {
+				this.isSelfChecked = true;
+				this.selfCheckModalVisible = false;
+			},
 			sendForm() {
 				this.$refs.form1.validate(valid => {
 					if (!valid) {
@@ -614,7 +616,7 @@
 						return false;
 					}
 
-                    // 附件自主檢查視窗
+					// 附件自主檢查視窗
 					if (!this.isSelfChecked) {
 						this.selfCheckModalVisible = true;
 						return;
