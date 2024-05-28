@@ -40,6 +40,12 @@ namespace NT_AirPollution.Admin.Controllers
             return _optionService.GetRates();
         }
 
+        public List<AdminRole> GetAdminRoles()
+        {
+            var result = _optionService.GetAdminRoles();
+            return result;
+        }
+
         public bool AddRate(InterestRate rate)
         {
             try

@@ -116,4 +116,13 @@ const form = {
 	}
 };
 
-export { dateTime, comma, form };
+const status = {
+	filters: {
+		status: (value) => {
+			if (value === null) return '';
+			return value ? '啟用' : '停用';
+		}
+	}
+};
+
+export { dateTime, comma, form, status };

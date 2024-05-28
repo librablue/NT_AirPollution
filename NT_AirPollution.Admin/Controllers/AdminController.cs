@@ -135,5 +135,57 @@ namespace NT_AirPollution.Admin.Controllers
             }
             return verifyCode;
         }
+
+        [AuthorizeUser]
+        [HttpPost]
+        public AjaxResult UpdatePassword(AdminUser user)
+        {
+            try
+            {
+                var currentUser = BaseService.CurrentAdmin;
+                _adminService.UpdatePassword(currentUser.Account, user.Password);
+                return new AjaxResult { Status = true };
+            }
+            catch (Exception ex)
+            {
+                return new AjaxResult { Status = false, Message = ex.Message };
+            }
+        }
+
+        [AuthorizeUser]
+        [HttpPost]
+        public List<AdminUser> GetUsers(AdminUserFilterView filter)
+        {
+            var result = _adminService.GetUsers(filter);
+            return result;
+        }
+
+        [AuthorizeUser]
+        public AjaxResult AddUser(AdminUser user)
+        {
+            try
+            {
+                _adminService.AddUser(user);
+                return new AjaxResult { Status = true };
+            }
+            catch (Exception ex)
+            {
+                return new AjaxResult { Status = false, Message = ex.Message };
+            }
+        }
+
+        [AuthorizeUser]
+        public AjaxResult UpdateUser(AdminUser user)
+        {
+            try
+            {
+                _adminService.UpdateUser(user);
+                return new AjaxResult { Status = true };
+            }
+            catch (Exception ex)
+            {
+                return new AjaxResult { Status = false, Message = ex.Message };
+            }
+        }
     }
 }

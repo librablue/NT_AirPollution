@@ -39,7 +39,7 @@ router.beforeEach(async (to, from, next) => {
             next();
         } else {
             alert('呃，您無本功能使用權限。');
-            next('/index');
+            next('/function/news');
         }
     } catch (err) {
         console.log(err);

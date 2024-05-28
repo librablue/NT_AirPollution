@@ -67,6 +67,19 @@ namespace NT_AirPollution.Service
         }
 
         /// <summary>
+        /// 取得所有角色清單
+        /// </summary>
+        /// <returns></returns>
+        public List<AdminRole> GetAdminRoles()
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                var result = cn.GetAll<AdminRole>().ToList();
+                return result;
+            }
+        }
+
+        /// <summary>
         /// 新增郵局利率
         /// </summary>
         /// <param name="rate"></param>

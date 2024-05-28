@@ -44,6 +44,11 @@ export default new Router({
 					path: '/function/download',
 					name: 'function_download',
 					component: (resolve) => require(['@/components/function/Download'], resolve)
+				},
+                {
+					path: '/manage/user',
+					name: 'manage_user',
+					component: (resolve) => require(['@/components/manage/User'], resolve)
 				}
 			]
 		}

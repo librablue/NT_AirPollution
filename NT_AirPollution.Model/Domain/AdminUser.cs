@@ -12,8 +12,11 @@ namespace NT_AirPollution.Model.Domain
     {
         [Key]
         public long ID { get; set; }
+        public long RoleID { get; set; }
+        public string UserName { get; set; }
         public string Account { get; set; }
         public string Password { get; set; }
+        public bool Enabled { get; set; }
         [Computed]
         public string Captcha { get; set; }
     }

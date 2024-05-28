@@ -12,6 +12,7 @@
 					<el-menu-item index="function_road" route="/function/road">道路認養回報</el-menu-item>
 					<el-menu-item index="function_rate" route="/function/rate">郵局利率管理</el-menu-item>
 					<el-menu-item index="function_download" route="/function/download">下載專區</el-menu-item>
+                    <el-menu-item index="manage_user" route="/manage/user">使用者管理</el-menu-item>
 				</el-menu>
 			</div>
 			<div>
