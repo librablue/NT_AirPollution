@@ -679,9 +679,10 @@ export default {
 			this.form.StopWorks.splice(idx, 1);
 		},
 		saveForm() {
-			this.$refs.form.validate(valid => {
+			this.$refs.form.validate((valid, obj) => {
 				if (!valid) {
-					alert('欄位驗證錯誤，請檢查修正後重新送出');
+                    const firstKey = Object.keys(obj)[0];
+					alert(obj[firstKey][0].message);
 					return false;
 				}
 
