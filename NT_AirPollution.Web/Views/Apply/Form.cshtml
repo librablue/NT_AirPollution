@@ -120,7 +120,6 @@
     </div>
 
     <el-dialog title="建立空污費申報" :visible.sync="dialogVisible" width="90%" :close-on-click-modal="false" @@close="dialogClose" v-cloak>
-
         <el-tabs v-model="activeTab">
             <el-tab-pane label="基本資料" name="1">
                 <el-form ref="tab1Form" :rules="tab1Rules" :model="selectRow" :disabled="selectRow.FormStatus >= 3">
