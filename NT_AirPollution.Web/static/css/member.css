@@ -84,8 +84,12 @@ input[type=number] {
   font-weight: 700;
 }
 
+.el-tabs__nav-wrap::after {
+  z-index: 0;
+}
+
 .el-tabs__nav {
-  z-index: 1;
+  z-index: 0;
 }
 
 .el-input-group__append .el-button {
@@ -646,36 +650,38 @@ h3 {
   cursor: pointer;
 }
 
-.tip-text {
-  cursor: pointer;
+footer {
+  background-color: #ebf5ff;
+  padding: 20px 0 0;
 }
-
-.selfcheck-list li {
-  margin-bottom: 10px;
-}
-
-.checkbox-group {
-  display: inline-block;
-  margin-right: 20px;
-}
-.checkbox-group input[type=checkbox] {
-  display: none;
-}
-.checkbox-group input[type=checkbox]:checked ~ label:before {
-  background-color: #2aa1c0;
-}
-.checkbox-group input[type=checkbox][disabled] ~ label {
-  opacity: 0.6;
-}
-.checkbox-group input[type=checkbox][disabled] ~ label:before {
-  background-color: #e6e6e6;
-}
-.checkbox-group input[type=checkbox][disabled] ~ label:after {
-  display: none;
-}
-.checkbox-group label {
-  position: relative;
+footer .contact-row {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+footer ul {
+  line-height: 1.875rem;
+  margin: 0 10px 10px;
+}
+footer ul .office {
+  font-weight: 700;
+}
+footer .bottom {
+  padding: 10px 15px;
+  border-top: 1px solid #ccc;
+  text-align: center;
+}
+footer .bottom ul {
+  margin: 0;
+}
+
+@media (min-width: 1200px) {
+  footer .contact-row {
+    justify-content: space-around;
+  }
+}/*# sourceMappingURL=member.css.map */isplay: flex;
   flex-wrap: wrap;
   align-items: center;
   cursor: pointer;
