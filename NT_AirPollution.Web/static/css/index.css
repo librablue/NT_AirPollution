@@ -84,8 +84,12 @@ input[type=number] {
   font-weight: 700;
 }
 
+.el-tabs__nav-wrap::after {
+  z-index: 0;
+}
+
 .el-tabs__nav {
-  z-index: 1;
+  z-index: 0;
 }
 
 .el-input-group__append .el-button {

@@ -23,7 +23,7 @@
 				}),
 				rules2: Object.freeze({
 					Password: [{ required: true, message: '請輸入密碼', trigger: 'blur' }],
-					Password2: [{ validator: checkPassword2 }]
+					Password2: [{ validator: checkPassword2, trigger: 'blur' }]
 				})
 			};
 		},
