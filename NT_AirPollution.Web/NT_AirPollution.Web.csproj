@@ -113,6 +113,7 @@
     <Content Include="static\image\bg-dots.png" />
     <Content Include="static\image\illu-access.svg" />
     <Content Include="static\image\illu-building.svg" />
+    <Content Include="static\image\illu-calc.svg" />
     <Content Include="static\image\illu-download.svg" />
     <Content Include="static\image\illu-empty.svg" />
     <Content Include="static\image\illu-news.svg" />
@@ -121,6 +122,7 @@
     <Content Include="static\js\apply\company.js" />
     <Content Include="static\js\apply\contractor.js" />
     <Content Include="static\js\apply\form.js" />
+    <Content Include="static\js\apply\index.js" />
     <Content Include="static\js\bank.js" />
     <Content Include="static\js\form\calc.js" />
     <Content Include="static\js\manage\form.js" />
@@ -209,6 +211,7 @@
     <Content Include="static\scss\_table.scss" />
     <Content Include="Views\Download\Index.cshtml" />
     <Content Include="Views\Form\ProjectTable.cshtml" />
+    <Content Include="Views\Apply\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

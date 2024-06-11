@@ -1,0 +1,92 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section styles {
+    <link rel="stylesheet" href="@Url.Content("~/static/css/member.css")" />
+}
+@section scripts {
+    <script src="@Url.Content("~/static/js/apply/index.js")"></script>
+}
+
+<div id="app">
+    <div class="main-wrap">
+        <h2>個人申報專區</h2>
+        <el-form inline>
+            <el-form-item label="申報日期">
+                <el-date-picker v-model="filter.StartDate" type="date" value-format="yyyy-MM-dd" :clearable="false" placeholder="請選擇日期"></el-date-picker>
+                ~
+                <el-date-picker v-model="filter.EndDate" type="date" value-format="yyyy-MM-dd" :clearable="false" placeholder="請選擇日期"></el-date-picker>
+            </el-form-item>
+            <el-form-item label="申請人">
+                <el-input v-model="filter.CreateUserName"></el-input>
+            </el-form-item>
+            <el-form-item label="管制編號">
+                <el-input v-model="filter.C_NO"></el-input>
+            </el-form-item>
+            <el-form-item label="案件類型">
+                <el-select v-model="filter.PUB_COMP">
+                    <el-option label="請選擇" :value="null"></el-option>
+                    <el-option label="私人工程" :value="false"></el-option>
+                    <el-option label="公共工程" :value="true"></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="工程名稱">
+                <el-input v-model="filter.COMP_NAM"></el-input>
+            </el-form-item>
+            <el-form-item label="狀態">
+                <el-select style="width:140px" v-model="filter.Status">
+                    <el-option label="請選擇" :value="0"></el-option>
+                    <el-option label="審理中" :value="1"></el-option>
+                    <el-option label="待補件" :value="2"></el-option>
+                    <el-option label="通過待繳費" :value="3"></el-option>
+                    <el-option label="已繳費完成" :value="4"></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" icon="el-icon-search" @@click="getForms">查 詢</el-button>
+            </el-form-item>
+        </el-form>
+
+        <div class="form-wrap">
+            <div v-if="forms.length === 0" class="empty" v-cloak>
+                <img src="@Url.Content("~/static/image/illu-empty.svg")" />
+                <div class="empty-text">查無任何申報資料</div>
+            </div>
+            <div class="form-item" v-for="(item, idx) in forms" :key="idx" v-cloak>
+                <div class="status">案件類型: {{item.PUB_COMP ? '公共工程' : '私人工程'}}</div>
+                <ul class="info-list">
+                    <li>
+                        <div class="title">管制編號：</div>
+                        <div class="content">{{item.C_NO || '(待取號)'}}</div>
+                    </li>
+                    <li>
+                        <div class="title">申報日期：</div>
+                        <div class="content">{{item.C_DATE | date}}</div>
+                    </li>
+                    <li>
+                        <div class="title">營建業主：</div>
+                        <div class="content">{{item.S_NAME}}</div>
+                    </li>
+                    <li>
+                        <div class="title">工程名稱：</div>
+                        <div class="content">{{item.COMP_NAM}}</div>
+                    </li>
+                    <li>
+                        <div class="title">申報狀態：</div>
+                        <div class="content">{{item.FormStatus | formStatus}}</div>
+                    </li>
+                    <li>
+                        <div class="title">結算進度：</div>
+                        <div class="content">{{item.CalcStatus | calcStatus}}</div>
+                    </li>
+                </ul>
+                <div class="bottom-btn-row">
+                    <a href="#" class="el-button btn-block el-button--primary">檢視</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a href="#" class="floating-btn">我要<br>申報</a>
+</div>

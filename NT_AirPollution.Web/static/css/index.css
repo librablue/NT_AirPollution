@@ -101,6 +101,11 @@ input[type=number] {
   display: none !important;
 }
 
+.flex-row {
+  display: flex;
+  align-items: center;
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -743,11 +748,16 @@ h3 {
   background-color: #015fa7;
 }
 
+.empty {
+  width: 100%;
+  border: 2px dashed #ccc;
+  padding: 20px 15px;
+}
 .empty img {
   display: block;
   margin: 0 auto;
   width: 100%;
-  max-width: 360px;
+  max-width: 320px;
 }
 .empty .empty-text {
   color: #40a0f4;
@@ -786,7 +796,5 @@ footer .bottom ul {
 @media (min-width: 1200px) {
   footer .contact-row {
     justify-content: space-around;
-  }
-}/*# sourceMappingURL=index.css.map */pace-around;
   }
 }/*# sourceMappingURL=index.css.map */

@@ -26,6 +26,11 @@ namespace NT_AirPollution.Web.Controllers
         private readonly SendBoxService _sendBoxService = new SendBoxService();
         private readonly AccessService _accessService = new AccessService();
 
+        public ActionResult Index()
+        {
+            return View();
+        }
+
         public ActionResult Company()
         {
             return View();
