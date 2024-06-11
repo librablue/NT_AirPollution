@@ -46,14 +46,19 @@
 					AREA: null,
 					VOLUMEL: null,
 					B_DATE2: null,
-					E_DATE2: null
+					E_DATE2: null,
+                    RATIOLB: 1.31,
+                    DENSITYL: 1.51,
+                    D2: null,
+                    E2: null
 				},
+                CodeBType: 1,
 				resultText: '',
 				rules: Object.freeze({
 					KIND_NO: [{ required: true, message: '請選擇工程類別', trigger: 'change' }],
 					MONEY: [{ validator: checkMoney }],
 					AREA: [{ validator: checkArea }],
-					VOLUMEL: [{ validator: checkVolumel }],
+					// VOLUMEL: [{ validator: checkVolumel }],
 					B_DATE2: [{ required: true, message: '請輸入開始日期', trigger: 'blur' }],
 					E_DATE2: [{ validator: checkE_DATE2 }]
 				})
@@ -112,7 +117,7 @@
 				return false;
 			},
 			isShowVOLUMEL() {
-				const kindAry = ['3', 'B'];
+				const kindAry = ['3'];
 				if (kindAry.includes(this.form.KIND_NO)) {
 					return true;
 				}
@@ -125,6 +130,12 @@
 				}
 				return false;
 			},
+            calcD2() {
+                this.form.VOLUMEL = this.form.D2 * this.form.RATIOLB;
+            },
+            calcE2() {
+                this.form.VOLUMEL = this.form.E2 / this.form.DENSITYL;
+            },
 			sendForm() {
 				this.$refs.form.validate(valid => {
 					if (!valid) {

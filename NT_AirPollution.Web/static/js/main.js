@@ -21,9 +21,9 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 	});
 
-	document.addEventListener('paste', function (e) {
-		if (e.target.tagName === 'INPUT' && e.target.type === 'number') {
-			e.preventDefault();
-		}
-	});
+	// document.addEventListener('paste', function (e) {
+	// 	if (e.target.tagName === 'INPUT' && e.target.type === 'number') {
+	// 		e.preventDefault();
+	// 	}
+	// });
 });

@@ -1,14 +1,29 @@
-﻿
-@{
-    ViewBag.Title = "Calc";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+﻿@{
+            Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 @section styles {
-    <link rel="stylesheet" href="@Url.Content("~/static/css/form.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/static/css/member.css")" />
     <style>
         .el-col {
-            padding: 0 12px;
+            padding: 0 10px;
+        }
+
+        .btn-icon {
+            width: 32px;
+        }
+
+        .txt-day {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .calc-result {
+            padding: 10px 15px;
+            text-align: center;
+            color: #e6a23c;
+            background-color: #fdf6ec;
+            border: 2px dashed #e6a23c;
         }
     </style>
 }
@@ -16,52 +31,83 @@
     <script src="@Url.Content("~/static/js/form/calc.js")"></script>
 }
 
-<div id="app">
-    <div class="main-wrap">
-        <h2 class="headline">營建空污費試算</h2>
-        <el-form ref="form" :rules="rules" :model="form" label-position="top">
-            <el-row>
-                <el-col :xs="24" :sm="12" :md="8">
-                    <el-form-item prop="KIND_NO" label="工程類別">
-                        <el-select class="w100p" v-model="form.KIND_NO">
-                            <el-option label="請選擇" :value="null"></el-option>
-                            <el-option v-for="item in projectCode" :key="item.ID" :label="`${item.ID}. ${item.Name}`" :value="item.ID"></el-option>
-                        </el-select>
-                    </el-form-item>
-                </el-col>
-                <el-col :xs="24" :sm="12" :md="8">
-                    <el-form-item v-if="isShowAREA()" prop="AREA" :label="projectCodeText">
-                        <el-input type="number" v-model="form.AREA"></el-input>
-                    </el-form-item>
-                    <el-form-item v-if="isShowVOLUMEL()" prop="VOLUMEL" :label="projectCodeText">
+<div id="app" class="container main">
+    <div class="entry-wrap">
+        <div class="aside">
+            <img class="w100p" src="@Url.Content("~/static/image/illu-calc.svg")" />
+        </div>
+        <div class="side-form">
+            <h1>營建空污費試算</h1>
+            <el-form class="round" ref="form" :rules="rules" :model="form" label-position="top">
+                <el-form-item prop="KIND_NO" label="工程類別">
+                    <el-select class="w100p" v-model="form.KIND_NO">
+                        <el-option label="請選擇" :value="null"></el-option>
+                        <el-option v-for="item in projectCode" :key="item.ID" :label="`${item.ID}. ${item.Name}`" :value="item.ID"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item prop="B_DATE2" label="開始日期">
+                    <el-date-picker class="w100p" v-model="form.B_DATE2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
+                </el-form-item>
+                <el-form-item prop="E_DATE2" label="結束日期">
+                    <el-date-picker class="w100p" v-model="form.E_DATE2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
+                </el-form-item>
+                <el-form-item v-if="isShowAREA()" prop="AREA" :label="projectCodeText" v-cloak>
+                    <el-input type="number" v-model="form.AREA"></el-input>
+                </el-form-item>
+                <el-form-item v-if="isShowVOLUMEL()" prop="VOLUMEL" :label="projectCodeText" v-cloak>
+                    <el-input type="number" v-model="form.VOLUMEL"></el-input>
+                </el-form-item>
+                <el-form-item v-if="isShowMONEY()" prop="MONEY" label="工程合約經費(元)" v-cloak>
+                    <el-input type="number" v-model="form.MONEY"></el-input>
+                </el-form-item>
+                <div v-if="form.KIND_NO === 'B'"  v-cloak>
+                    <div>鬆方體積換算表 (擇一)</div>
+                    <div class="flex-row" style="align-items: flex-end">
+                        <div style="flex:1; padding: 0 10px">
+                            <el-form-item label="實方體積(立方公尺)">
+                                <el-input type="number" v-model="form.D2"></el-input>
+                            </el-form-item>
+                        </div>
+                        <div style="flex: 1; padding: 0 10px">
+                            <el-form-item label="鬆實方比值">
+                                <el-input type="number" v-model="form.RATIOLB"></el-input>
+                            </el-form-item>
+                        </div>
+                        <div>
+                            <el-form-item>
+                                <el-button type="primary" round @@click="calcD2">換算</el-button>
+                            </el-form-item>
+                        </div>
+                    </div>
+                    <div class="flex-row" style="align-items: flex-end">
+                        <div style="flex:1; padding: 0 10px">
+                            <el-form-item label="鬆方重量(公噸)">
+                                <el-input type="number" v-model="form.E2"></el-input>
+                            </el-form-item>
+                        </div>
+                        <div style="flex:1; padding: 0 10px">
+                            <el-form-item label="密度">
+                                <el-input type="number" v-model="form.DENSITYL"></el-input>
+                            </el-form-item>
+                        </div>
+                        <div>
+                            <el-form-item>
+                                <el-button type="primary" round @@click="calcE2">換算</el-button>
+                            </el-form-item>
+                        </div>
+                    </div>
+                    <el-form-item label="疏濬工程填寫(立方公尺)">
                         <el-input type="number" v-model="form.VOLUMEL"></el-input>
                     </el-form-item>
-                    <el-form-item v-if="isShowMONEY()" prop="MONEY" label="工程合約經費(元)">
-                        <el-input type="number" v-model="form.MONEY"></el-input>
-                    </el-form-item>
-                </el-col>
-            </el-row>
-            <el-row>
-                <el-col :xs="24" :sm="12" :md="8">
-                    <el-form-item prop="B_DATE2" label="預計開始日期">
-                        <el-date-picker class="w100p" v-model="form.B_DATE2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
-                    </el-form-item>
-                </el-col>
-                <el-col :xs="24" :sm="12" :md="8">
-                    <el-form-item prop="B_DATE2" label="結束日期">
-                        <el-date-picker class="w100p" v-model="form.E_DATE2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
-                    </el-form-item>
-                </el-col>
-                <el-col :xs="24" :sm="12" :md="8">
-                    <el-form-item label="預計施工天數">
-                        <div>{{totalDays}}</div>
-                    </el-form-item>
-                </el-col>
-            </el-row>
-            <div class="bottom-btn-row">
-                <button type="button" class="btn-send" @@click="sendForm">試 算</button>
-            </div>
-            <div class="calc-result" v-if="resultText" v-cloak>{{resultText}}</div>
-        </el-form>
+                </div>
+                <el-form-item label="預計施工天數">
+                    <div class="txt-day" v-cloak>{{totalDays}}</div>
+                </el-form-item>
+                <div class="bottom-btn-row">
+                    <button type="button" class="btn-send btn-block" @@click="sendForm">試 算</button>
+                </div>
+                <div class="calc-result" v-if="resultText" v-cloak>{{resultText}}</div>
+            </el-form>
+        </div>
     </div>
 </div>

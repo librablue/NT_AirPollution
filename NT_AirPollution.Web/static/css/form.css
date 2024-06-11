@@ -84,12 +84,8 @@ input[type=number] {
   font-weight: 700;
 }
 
-.el-tabs__nav-wrap::after {
-  z-index: 0;
-}
-
 .el-tabs__nav {
-  z-index: 0;
+  z-index: 1;
 }
 
 .el-input-group__append .el-button {
@@ -540,5 +536,7 @@ footer .bottom ul {
 @media (min-width: 1200px) {
   footer .contact-row {
     justify-content: space-around;
+  }
+}/*# sourceMappingURL=form.css.map */space-around;
   }
 }/*# sourceMappingURL=form.css.map */

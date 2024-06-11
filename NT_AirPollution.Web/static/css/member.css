@@ -84,12 +84,8 @@ input[type=number] {
   font-weight: 700;
 }
 
-.el-tabs__nav-wrap::after {
-  z-index: 0;
-}
-
 .el-tabs__nav {
-  z-index: 0;
+  z-index: 1;
 }
 
 .el-input-group__append .el-button {
@@ -103,6 +99,11 @@ input[type=number] {
 }
 [v-cloak] {
   display: none !important;
+}
+
+.flex-row {
+  display: flex;
+  align-items: center;
 }
 
 .visually-hidden {
@@ -680,7 +681,8 @@ h3 {
 .checkbox-group label {
   position: relative;
   display: flex;
-  align-items: flex-start;
+  flex-wrap: wrap;
+  align-items: center;
   cursor: pointer;
   padding: 0;
 }
