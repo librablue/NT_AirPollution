@@ -773,17 +773,17 @@ h3 {
 }
 .floating-btn {
   position: fixed;
-  bottom: 30%;
+  bottom: 10%;
   right: 15px;
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 18px;
   font-weight: 700;
-  width: 80px;
-  height: 80px;
+  width: 64px;
+  height: 64px;
   color: #fff;
-  background-color: #25316D;
+  background-color: #25316d;
   border-radius: 50%;
 }
 .floating-btn:hover {
@@ -791,6 +791,13 @@ h3 {
   box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
 }
 
+@media (min-width: 768px) {
+  .floating-btn {
+    width: 80px;
+    height: 80px;
+    bottom: 15%;
+  }
+}
 footer {
   background-color: #ebf5ff;
   padding: 20px 0 0;
