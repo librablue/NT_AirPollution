@@ -107,5 +107,6 @@ input[type='number'] {
 
 .flex-row {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
 }

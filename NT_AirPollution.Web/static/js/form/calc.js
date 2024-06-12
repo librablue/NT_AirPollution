@@ -20,7 +20,7 @@
 			const checkArea = (rule, value, callback) => {
 				const kindAry = ['1', '2', '4', '5', '6', '7', '8', '9', 'A'];
 				if (kindAry.includes(this.form.KIND_NO) && !value) {
-					callback(new Error('如果非疏濬工程，請輸入施工面積'));
+					callback(new Error('請輸入施工面積'));
 				}
 				callback();
 			};
