@@ -101,3 +101,14 @@ input::-webkit-inner-spin-button {
 .w100p {
 	width: 100%;
 }
+
+// 修正vxe-modal裡的el-form-item
+.vxe-modal--wrapper .vxe-modal--content {
+    white-space: inherit !important;
+}
+
+.flex-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}

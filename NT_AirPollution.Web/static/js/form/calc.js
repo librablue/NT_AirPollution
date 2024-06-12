@@ -36,7 +36,7 @@
 			const checkMoney = (rule, value, callback) => {
 				const kindAry = ['Z'];
 				if (kindAry.includes(this.form.KIND_NO) && !value) {
-					callback(new Error('如果為其他營建工程，請輸入工程合約經費'));
+					callback(new Error('請輸入工程合約經費'));
 				}
 				callback();
 			};

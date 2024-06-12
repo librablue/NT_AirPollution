@@ -275,13 +275,6 @@
 				}
 				return false;
 			},
-			isShowVOLUMEL() {
-				const kindAry = ['3', 'B'];
-				if (kindAry.includes(this.selectRow.KIND_NO)) {
-					return true;
-				}
-				return false;
-			},
 			isShowMONEY() {
 				const kindAry = ['Z'];
 				if (kindAry.includes(this.selectRow.KIND_NO)) {
