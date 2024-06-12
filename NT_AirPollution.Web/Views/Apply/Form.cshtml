@@ -86,15 +86,15 @@
                     </li>
                 </ul>
                 <div class="bottom-btn-row">
-                    <a href="#" class="el-button btn-block el-button--primary">檢視</a>
+                    <el-button type="primary" class="btn-block" @@click="showModal(item)">檢視</el-button>
                 </div>
             </div>
         </div>
     </div>
 
-    <el-dialog title="空污費申報" :visible.sync="dialogVisible" width="90%" :close-on-click-modal="false" @@close="dialogClose" v-cloak>
+    <el-dialog :title="mode === 'Add' ? '空污費申報' : selectRow.COMP_NAM" :visible.sync="dialogVisible" width="90%" :close-on-click-modal="false" @@close="dialogClose" v-cloak>
         <el-tabs v-model="activeTab">
-            <el-tab-pane label="基本資料" name="1">
+            <el-tab-pane label="基本資料" name="1" disabled>
                 <el-form ref="tab1Form" :rules="tab1Rules" :model="selectRow" label-width="auto" :disabled="selectRow.FormStatus >= 3">
                     <el-form-item prop="PUB_COMP" label="案件類型">
                         <el-select v-model="selectRow.PUB_COMP">
@@ -151,7 +151,7 @@
                     </el-form-item>
                 </el-form>
             </el-tab-pane>
-            <el-tab-pane label="營建資料" name="2">
+            <el-tab-pane label="營建資料" name="2" disabled>
                 <el-form ref="tab2Form" :rules="tab2Rules" :model="selectRow" label-width="auto" :disabled="selectRow.FormStatus >= 3">
                     <div style="margin-bottom:10px" v-if="selectRow.FormStatus < 3">
                         <label class="el-form-item__label">快速選取</label>
@@ -220,7 +220,7 @@
                     </div>
                 </el-form>
             </el-tab-pane>
-            <el-tab-pane label="承造資料" name="3">
+            <el-tab-pane label="承造資料" name="3" disabled>
                 <el-form ref="tab3Form" :rules="tab3Rules" :model="selectRow" label-width="auto" :disabled="selectRow.FormStatus >= 3">
                     <div style="margin-bottom:10px" v-if="selectRow.FormStatus < 3">
                         <label class="el-form-item__label">快速選取</label>
@@ -284,7 +284,7 @@
                     </div>
                 </el-form>
             </el-tab-pane>
-            <el-tab-pane label="經費資料" name="4">
+            <el-tab-pane label="經費資料" name="4" disabled>
                 <el-form ref="tab4Form" :rules="tab4Rules" :model="selectRow" label-width="auto" :disabled="selectRow.FormStatus >= 3">
                     <el-form-item v-if="isShowAREA()" prop="AREA" :label="projectCodeText">
                         <el-input type="number" v-model="selectRow.AREA"></el-input>
@@ -354,7 +354,7 @@
                     </el-form-item>
                 </el-form>
             </el-tab-pane>
-            <el-tab-pane label="檢附資料" name="5">
+            <el-tab-pane label="檢附資料" name="5" disabled>
                 <div class="table-responsive">
                     <table class="table form-table">
                         <thead>
@@ -383,7 +383,7 @@
                     </table>
                 </div>
             </el-tab-pane>
-            <el-tab-pane label="停復工" name="6">
+            <el-tab-pane label="停復工" name="6" disabled>
                 <div class="table-responsive" style="margin-top:10px">
                     <table class="table row-table">
                         <thead>

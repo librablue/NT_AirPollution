@@ -412,4 +412,14 @@ h3 {
 	}
 }
 
+.el-tabs__item.is-disabled {
+    color: #303133;
+}
+.el-tabs__item.is-disabled.is-active {
+    color: #409EFF;
+}
+.el-tabs__nav-wrap::after {
+    z-index: 0;
+}
+
 @import './footer';

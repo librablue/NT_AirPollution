@@ -354,6 +354,7 @@
 			},
 			addForm() {
 				this.mode = 'Add';
+                this.activeTab = '1';
 				this.selectCompany = null;
 				this.selectContractor = null;
 				this.isSelfChecked = false;
@@ -452,6 +453,7 @@
 			},
 			showModal(row) {
 				this.mode = 'Update';
+                this.activeTab = '1';
 				this.isSelfChecked = true;
 				this.selectRow = JSON.parse(JSON.stringify(row));
 				const point = this.selectRow.LATLNG.split(',');
