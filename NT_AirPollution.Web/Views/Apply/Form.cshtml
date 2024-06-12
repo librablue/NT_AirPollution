@@ -13,8 +13,9 @@
 <div id="app">
     <input type="hidden" id="hfUserEmail" value="@ViewBag.CurrentUser.Email" />
     <input type="hidden" id="hfUserName" value="@ViewBag.CurrentUser.UserName" />
+    <button type="button" class="btn-floating" @@click="addForm">我要<br>申報</button>
     <div class="main-wrap">
-        <h2>申報案件管理</h2>
+        <h2>個人申報專區</h2>
         <el-form inline>
             <el-form-item label="申報日期">
                 <el-date-picker v-model="filter.StartDate" type="date" value-format="yyyy-MM-dd" :clearable="false" placeholder="請選擇日期"></el-date-picker>
@@ -41,7 +42,7 @@
                 <el-select style="width:140px" v-model="filter.Status">
                     <el-option label="請選擇" :value="0"></el-option>
                     <el-option label="審理中" :value="1"></el-option>
-                    <el-option label="需補件" :value="2"></el-option>
+                    <el-option label="待補件" :value="2"></el-option>
                     <el-option label="通過待繳費" :value="3"></el-option>
                     <el-option label="已繳費完成" :value="4"></el-option>
                 </el-select>
@@ -49,77 +50,49 @@
             <el-form-item>
                 <el-button type="primary" icon="el-icon-search" @@click="getForms">查 詢</el-button>
             </el-form-item>
-            <el-form-item>
-                <el-button type="success" icon="el-icon-plus" @@click="addForm">新 增</el-button>
-            </el-form-item>
         </el-form>
 
-        <el-table :data="forms" border stripe>
-            <el-table-column label="功能" width="100" align="center" fixed>
-                <template slot-scope="scope">
-                    <el-dropdown trigger="click" @@command="handleCommand">
-                        <a href="javascript:;" class="el-dropdown-link">
-                            選單<i class="el-icon-arrow-down el-icon--right"></i>
-                        </a>
-                        <el-dropdown-menu slot="dropdown">
-                            <el-dropdown-item :command="beforeCommand(scope.row, 'VIEW')">查看內容</el-dropdown-item>
-                            <el-dropdown-item :command="beforeCommand(scope.row, 'COPY')">複製</el-dropdown-item>
-                        </el-dropdown-menu>
-                    </el-dropdown>
-                </template>
-            </el-table-column>
-            <el-table-column prop="Status" label="申請進度" align="center" width="120" fixed>
-                <template slot-scope="scope">
-                    <span v-if="scope.row.FormStatus === 1 || scope.row.FormStatus === 2 || scope.row.FormStatus === 4">{{ scope.row.FormStatus | formStatus }}</span>
-                    <el-dropdown v-else trigger="click" @@command="handleCommand">
-                        <a href="javascript:;" class="el-dropdown-link">
-                            {{ scope.row.FormStatus | formStatus }}<i class="el-icon-arrow-down el-icon--right"></i>
-                        </a>
-                        <el-dropdown-menu slot="dropdown">
-                            <el-dropdown-item :command="beforeCommand(scope.row, 'DOWNLOAD_PAYMENT')">下載繳費單</el-dropdown-item>
-                        </el-dropdown-menu>
-                    </el-dropdown>
-                </template>
-            </el-table-column>
-            <el-table-column prop="Status" label="結算進度" align="center" width="120" fixed>
-                <template slot-scope="scope">
-                    <span v-if="scope.row.FormStatus < 4 || scope.row.CalcStatus === 1">{{ scope.row.CalcStatus | calcStatus }}</span>
-                    <el-dropdown v-else trigger="click" @@command="handleCommand">
-                        <a href="javascript:;" class="el-dropdown-link">
-                            {{ scope.row.CalcStatus | calcStatus }}<i class="el-icon-arrow-down el-icon--right"></i>
-                        </a>
-                        <el-dropdown-menu slot="dropdown">
-                            <el-dropdown-item :disabled="!(scope.row.CalcStatus === 0 || scope.row.CalcStatus === 2)" :command="beforeCommand(scope.row, 'CALC')">{{scope.row.CalcStatus === 0 ? '申請結算' : '已補件重新申請'}}</el-dropdown-item>
-                            <el-dropdown-item :disabled="!(scope.row.CalcStatus === 3)" :command="beforeCommand(scope.row, 'DOWNLOAD_REPAYMENT')">下載繳費單</el-dropdown-item>
-                            <el-dropdown-item :disabled="!(scope.row.CalcStatus === 3)" :command="beforeCommand(scope.row, 'UPLOAD_PAYMENT_PROOF')">上傳繳費證明</el-dropdown-item>
-                            <el-dropdown-item :disabled="!(scope.row.CalcStatus === 5)" :command="beforeCommand(scope.row, 'BANK_ACCOUNT')">退費帳戶</el-dropdown-item>
-                            <el-dropdown-item :disabled="!(scope.row.CalcStatus > 3)" :command="beforeCommand(scope.row, 'DOWNLOAD_PROOF')">下載結清證明</el-dropdown-item>
-                        </el-dropdown-menu>
-                    </el-dropdown>
-                </template>
-            </el-table-column>
-            <el-table-column prop="C_NO" label="管制編號" align="center" width="140">
-                <template slot-scope="scope">
-                    {{ scope.row.C_NO || '(待取號)' }}
-                </template>
-            </el-table-column>
-            <el-table-column prop="SER_NO" label="序號" align="center" width="50"></el-table-column>
-            <el-table-column prop="C_DATE" label="申報日期" align="center" width="120">
-                <template slot-scope="scope">
-                    {{ scope.row.C_DATE | date }}
-                </template>
-            </el-table-column>
-            <el-table-column prop="CreateUserName" label="申請人" align="center" width="120"></el-table-column>
-            <el-table-column prop="COMP_NAM" label="工程名稱"></el-table-column>
-            <el-table-column prop="PUB_COMP" label="案件類型" align="center" width="100">
-                <template slot-scope="scope">
-                    {{ scope.row.PUB_COMP ? '公共工程' : '私人工程' }}
-                </template>
-            </el-table-column>
-        </el-table>
+        <div class="form-wrap">
+            <div v-if="forms.length === 0" class="empty" v-cloak>
+                <img src="@Url.Content("~/static/image/illu-empty.png")" />
+                <div class="empty-text">查無任何申報資料</div>
+            </div>
+            <div class="form-item" v-for="(item, idx) in forms" :key="idx" v-cloak>
+                <div class="status">案件類型: {{item.PUB_COMP ? '公共工程' : '私人工程'}}</div>
+                <ul class="info-list">
+                    <li>
+                        <div class="title">管制編號：</div>
+                        <div class="content">{{item.C_NO || '(待取號)'}}</div>
+                    </li>
+                    <li>
+                        <div class="title">申報日期：</div>
+                        <div class="content">{{item.C_DATE | date}}</div>
+                    </li>
+                    <li>
+                        <div class="title">營建業主：</div>
+                        <div class="content">{{item.S_NAME}}</div>
+                    </li>
+                    <li>
+                        <div class="title">工程名稱：</div>
+                        <div class="content">{{item.COMP_NAM}}</div>
+                    </li>
+                    <li>
+                        <div class="title">申報狀態：</div>
+                        <div class="content">{{item.FormStatus | formStatus}}</div>
+                    </li>
+                    <li>
+                        <div class="title">結算進度：</div>
+                        <div class="content">{{item.CalcStatus | calcStatus}}</div>
+                    </li>
+                </ul>
+                <div class="bottom-btn-row">
+                    <a href="#" class="el-button btn-block el-button--primary">檢視</a>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <el-dialog title="建立空污費申報" :visible.sync="dialogVisible" width="90%" :close-on-click-modal="false" @@close="dialogClose" v-cloak>
+    <el-dialog title="空污費申報" :visible.sync="dialogVisible" width="90%" :close-on-click-modal="false" @@close="dialogClose" v-cloak>
         <el-tabs v-model="activeTab">
             <el-tab-pane label="基本資料" name="1">
                 <el-form ref="tab1Form" :rules="tab1Rules" :model="selectRow" :disabled="selectRow.FormStatus >= 3">

@@ -122,7 +122,6 @@
     <Content Include="static\js\apply\company.js" />
     <Content Include="static\js\apply\contractor.js" />
     <Content Include="static\js\apply\form.js" />
-    <Content Include="static\js\apply\index.js" />
     <Content Include="static\js\bank.js" />
     <Content Include="static\js\form\calc.js" />
     <Content Include="static\js\manage\form.js" />

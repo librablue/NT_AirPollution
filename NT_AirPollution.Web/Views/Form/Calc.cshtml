@@ -54,7 +54,7 @@
                 <el-form-item v-if="isShowAREA()" prop="AREA" :label="projectCodeText" v-cloak>
                     <el-input type="number" v-model="form.AREA"></el-input>
                 </el-form-item>
-                <el-form-item v-if="isShowVOLUMEL()" prop="VOLUMEL" :label="projectCodeText" v-cloak>
+                <el-form-item v-if="form.KIND_NO === '3'" prop="VOLUMEL" :label="projectCodeText" v-cloak>
                     <el-input type="number" v-model="form.VOLUMEL"></el-input>
                 </el-form-item>
                 <el-form-item v-if="isShowMONEY()" prop="MONEY" label="工程合約經費(元)" v-cloak>
@@ -96,7 +96,7 @@
                             </el-form-item>
                         </div>
                     </div>
-                    <el-form-item label="疏濬工程填寫(立方公尺)">
+                    <el-form-item prop="VOLUMEL" label="外運土石體積(立方公尺)">
                         <el-input type="number" v-model="form.VOLUMEL"></el-input>
                     </el-form-item>
                 </div>

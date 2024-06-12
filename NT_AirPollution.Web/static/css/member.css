@@ -713,14 +713,16 @@ h3 {
   flex-wrap: wrap;
 }
 .form-wrap .empty {
+  width: 100%;
   border: 2px dashed #ccc;
-  padding: 20px 15px;
+  padding: 40px 15px;
+  margin: 0 auto;
 }
 .form-wrap .empty img {
   display: block;
-  margin: 0 auto;
   width: 100%;
   max-width: 360px;
+  margin: 0 auto;
 }
 .form-wrap .empty .empty-text {
   color: #40a0f4;
@@ -771,10 +773,10 @@ h3 {
     width: calc(33.3333333333% - 24px);
   }
 }
-.floating-btn {
+.btn-floating {
   position: fixed;
-  bottom: 10%;
-  right: 15px;
+  bottom: 45px;
+  right: 24px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -785,14 +787,15 @@ h3 {
   color: #fff;
   background-color: #25316d;
   border-radius: 50%;
+  cursor: pointer;
 }
-.floating-btn:hover {
+.btn-floating:hover {
   color: #fff;
   box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
 }
 
 @media (min-width: 768px) {
-  .floating-btn {
+  .btn-floating {
     width: 80px;
     height: 80px;
     bottom: 15%;

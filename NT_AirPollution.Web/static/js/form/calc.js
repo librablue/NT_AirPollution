@@ -25,9 +25,11 @@
 				callback();
 			};
 			const checkVolumel = (rule, value, callback) => {
-				const kindAry = ['3', 'B'];
-				if (kindAry.includes(this.form.KIND_NO) && !value) {
-					callback(new Error('如果為疏濬工程，請輸入清運土石體積'));
+                if (this.form.KIND_NO === '3' && !value) {
+					callback(new Error('請輸入總樓地板面積'));
+				}
+				if (this.form.KIND_NO === 'B' && !value) {
+					callback(new Error('請輸入外運土石體積'));
 				}
 				callback();
 			};
@@ -58,7 +60,7 @@
 					KIND_NO: [{ required: true, message: '請選擇工程類別', trigger: 'change' }],
 					MONEY: [{ validator: checkMoney }],
 					AREA: [{ validator: checkArea }],
-					// VOLUMEL: [{ validator: checkVolumel }],
+					VOLUMEL: [{ validator: checkVolumel }],
 					B_DATE2: [{ required: true, message: '請輸入開始日期', trigger: 'blur' }],
 					E_DATE2: [{ validator: checkE_DATE2 }]
 				})
@@ -111,13 +113,6 @@
 			},
 			isShowAREA() {
 				const kindAry = ['1', '2', '4', '5', '6', '7', '8', '9', 'A'];
-				if (kindAry.includes(this.form.KIND_NO)) {
-					return true;
-				}
-				return false;
-			},
-			isShowVOLUMEL() {
-				const kindAry = ['3'];
 				if (kindAry.includes(this.form.KIND_NO)) {
 					return true;
 				}
