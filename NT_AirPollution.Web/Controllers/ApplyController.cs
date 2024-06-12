@@ -259,7 +259,7 @@ namespace NT_AirPollution.Web.Controllers
                 form.C_DATE = DateTime.Now;
                 form.M_DATE = DateTime.Now;
                 form.ClientUserID = BaseService.CurrentUser.ID;
-                form.FormStatus = FormStatus.審理中;
+                form.FormStatus = FormStatus.未申請;
                 form.CalcStatus = CalcStatus.未申請;
                 //// 20240516 改審核後才產生單號
                 //string c_no = _accessService.GetC_NO(form);
@@ -308,7 +308,6 @@ namespace NT_AirPollution.Web.Controllers
                 form.AP_DATE1 = formInDB.AP_DATE1;
                 form.ClientUserID = formInDB.ClientUserID;
                 form.CreateUserEmail = formInDB.CreateUserEmail;
-                form.IsActive = formInDB.IsActive;
                 form.P_AMT = formInDB.P_AMT;
                 form.S_AMT = formInDB.S_AMT;
                 form.S_AMT2 = formInDB.S_AMT2;
@@ -317,6 +316,8 @@ namespace NT_AirPollution.Web.Controllers
                 form.VerifyDate2 = formInDB.VerifyDate2;
                 form.FailReason1 = formInDB.FailReason1;
                 form.FailReason2 = formInDB.FailReason2;
+                form.FormStatus = formInDB.FormStatus;
+                form.CalcStatus = formInDB.CalcStatus;
                 // 可修改的欄位
                 form.TOWN_NA = allDists.First(o => o.Code == form.TOWN_NO).Name;
                 form.KIND = allProjectCode.First(o => o.ID == form.KIND_NO).Name;
@@ -326,8 +327,6 @@ namespace NT_AirPollution.Web.Controllers
                 form.S_B_BDATE = form.S_B_BDATE2.AddYears(-1911).ToString("yyyMMdd");
                 form.R_B_BDATE = form.R_B_BDATE2.AddYears(-1911).ToString("yyyMMdd");
                 form.M_DATE = DateTime.Now;
-                form.FormStatus = FormStatus.審理中;
-                form.CalcStatus = CalcStatus.未申請;
 
                 // 有管制編號才修改Access
                 if (!string.IsNullOrEmpty(form.C_NO))
@@ -338,6 +337,64 @@ namespace NT_AirPollution.Web.Controllers
                 }
 
                 _formService.UpdateForm(form);
+
+                return Json(new AjaxResult { Status = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new AjaxResult { Status = false, Message = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// 審核申請
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult SendFormStatus1(FormView form)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    string firstError = ModelState.Values.SelectMany(o => o.Errors).First().ErrorMessage;
+                    throw new Exception(firstError);
+                }
+
+                var formInDB = _formService.GetFormByID(form.ID);
+                if (formInDB.ClientUserID != BaseService.CurrentUser.ID)
+                    throw new Exception("無法修改他人申請單");
+
+                formInDB.M_DATE = DateTime.Now;
+                formInDB.FormStatus = FormStatus.審理中;
+                _formService.UpdateForm(formInDB);
+
+                return Json(new AjaxResult { Status = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new AjaxResult { Status = false, Message = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// 結算申請
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult SendCalcStatus1(FormView form)
+        {
+            try
+            {
+                var formInDB = _formService.GetFormByID(form.ID);
+                if (formInDB == null || (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email))
+                    throw new Exception("申請單不存在");
+
+                formInDB.AP_DATE1 = DateTime.Now.AddYears(-1911).ToString("yyyMMdd");
+                formInDB.CalcStatus = CalcStatus.審理中;
+                _formService.UpdateForm(formInDB);
 
                 return Json(new AjaxResult { Status = true });
             }

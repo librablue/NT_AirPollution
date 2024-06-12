@@ -152,7 +152,7 @@ namespace NT_AirPollution.Admin.Controllers
             {
                 switch (form.FormStatus)
                 {
-                    case FormStatus.需補件:
+                    case FormStatus.待補件:
                         _formService.SendFormStatus2(form);
                         break;
                     case FormStatus.通過待繳費:
@@ -212,7 +212,7 @@ namespace NT_AirPollution.Admin.Controllers
 
                 switch (form.CalcStatus)
                 {
-                    case CalcStatus.需補件:
+                    case CalcStatus.待補件:
                         _formService.SendCalcStatus2(form);
                         break;
                     case CalcStatus.通過待繳費:

@@ -738,13 +738,29 @@ h3 {
 }
 .form-wrap .form-item .info-list li {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-start;
   margin-bottom: 10px;
+  line-height: 28px;
 }
 .form-wrap .form-item .info-list .title {
   color: #2a629a;
   font-weight: 700;
   margin-right: 10px;
+}
+.form-wrap .form-item .info-list .content {
+  margin-right: 20px;
+}
+.form-wrap .form-item .info-list .link-row {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+}
+.form-wrap .form-item .info-list .link-row .el-link {
+  margin-bottom: 6px;
+}
+.form-wrap .form-item .info-list .link-row .el-link ~ .el-link {
+  margin-left: 10px;
 }
 
 @media (min-width: 768px) {
@@ -800,7 +816,7 @@ h3 {
 }
 
 .el-tabs__item.is-disabled.is-active {
-  color: #409EFF;
+  color: #409eff;
 }
 
 .el-tabs__nav-wrap::after {

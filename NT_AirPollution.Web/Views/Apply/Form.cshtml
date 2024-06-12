@@ -79,14 +79,26 @@
                     <li>
                         <div class="title">申報狀態：</div>
                         <div class="content">{{item.FormStatus | formStatus}}</div>
+                        <div class="link-row">
+                            <el-link v-if="item.FormStatus === 0" type="primary" @@click="sendFormStatus1(item)">提送審查</el-link>
+                            <el-link v-if="item.FormStatus === 3" type="primary" @@click="downloadPayment(item)">下載繳費單</el-link>
+                        </div>
                     </li>
                     <li>
                         <div class="title">結算進度：</div>
                         <div class="content">{{item.CalcStatus | calcStatus}}</div>
+                        <div class="link-row">
+                            <el-link v-if="item.FormStatus === 4 && (item.CalcStatus === 0 || item.CalcStatus === 2)" type="primary" @@click="SendCalcStatus1(item)">提送審查</el-link>
+                            <el-link v-if="item.CalcStatus === 3" type="primary" @@click="downloadRePayment(item)">下載繳費單</el-link>
+                            <el-link v-if="item.CalcStatus === 3" type="primary" @@click="showPaymentProofModal(item)">上傳繳費證明</el-link>
+                            <el-link v-if="item.CalcStatus === 5" type="primary" @@click="showBankAccountModal(item)">退費帳戶</el-link>
+                            <el-link v-if="item.CalcStatus > 3" type="primary" @@click="downloadProof(item)">下載結清證明</el-link>
+                        </div>
                     </li>
                 </ul>
                 <div class="bottom-btn-row">
-                    <el-button type="primary" class="btn-block" @@click="showModal(item)">檢視</el-button>
+                    <el-button @@click="showModal(item)">檢視內容</el-button>
+                    <el-button type="success" @@click="copyForm(item)">複製</el-button>
                 </div>
             </div>
         </div>
@@ -412,7 +424,7 @@
             <template v-if="mode === 'Add' || selectRow.FormStatus <= 2">
                 <el-button icon="el-icon-close" @@click="dialogVisible = false">取 消</el-button>
                 <el-button type="primary" icon="el-icon-arrow-left" :disabled="activeTab === '1'" @@click="goPrevTab">上一步</el-button>
-                <el-button type="primary" @@click="goNextTab">{{activeTab === '6' ? '確認送出' : '下一步'}} <i class="el-icon-arrow-right el-icon--right"></i></el-button>
+                <el-button type="primary" @@click="goNextTab">{{activeTab === '6' ? '儲存' : '下一步'}} <i class="el-icon-arrow-right el-icon--right"></i></el-button>
             </template>
             <template v-else>
                 <el-button @@click="dialogVisible = false">關 閉</el-button>

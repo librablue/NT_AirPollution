@@ -678,7 +678,7 @@ namespace NT_AirPollution.Service
         }
 
         /// <summary>
-        /// 需補件
+        /// 待補件
         /// </summary>
         /// <param name="form"></param>
         /// <returns></returns>
@@ -698,7 +698,7 @@ namespace NT_AirPollution.Service
                         cn.Insert(new SendBox
                         {
                             Address = form.CreateUserEmail,
-                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件需補件通知(工程名稱 {form.COMP_NAM})",
+                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件待補件通知(工程名稱 {form.COMP_NAM})",
                             Body = body,
                             FailTimes = 0,
                             CreateDate = DateTime.Now
@@ -796,7 +796,7 @@ namespace NT_AirPollution.Service
         }
 
         /// <summary>
-        /// 結算需補件
+        /// 結算待補件
         /// </summary>
         /// <param name="form"></param>
         /// <returns></returns>
@@ -816,7 +816,7 @@ namespace NT_AirPollution.Service
                         cn.Insert(new SendBox
                         {
                             Address = form.CreateUserEmail,
-                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件結算通知(需補件)(工程名稱 {form.COMP_NAM})",
+                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件結算通知(待補件)(工程名稱 {form.COMP_NAM})",
                             Body = body,
                             FailTimes = 0,
                             CreateDate = DateTime.Now

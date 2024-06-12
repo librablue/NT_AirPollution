@@ -547,10 +547,6 @@ namespace NT_AirPollution.Model.Domain
         /// </summary>
         public string CreateUserName { get; set; }
         /// <summary>
-        /// 是否啟用
-        /// </summary>
-        public bool? IsActive { get; set; }
-        /// <summary>
         /// 申請單狀態
         /// </summary>
         public FormStatus FormStatus { get; set; }
