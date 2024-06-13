@@ -35,7 +35,7 @@ const form = {
 				case 1:
 					return '審理中';
 				case 2:
-					return '需補件';
+					return '待補件';
 				case 3:
 					return '通過待繳費';
 				case 4:
@@ -49,7 +49,7 @@ const form = {
 				case 1:
 					return '審理中';
 				case 2:
-					return '需補件';
+					return '待補件';
 				case 3:
 					return '通過待繳費';
 				case 4:

@@ -358,9 +358,10 @@ h3 {
                 display: flex;
                 align-items: flex-start;
                 width: 100%;
-                .el-link {
-                    margin-bottom: 6px;
-                    & ~ .el-link {
+                padding-left: 90px;
+                .el-button {
+                    margin: 6px 0;
+                    & ~ .el-button {
                         margin-left: 10px;
                     }
                 }

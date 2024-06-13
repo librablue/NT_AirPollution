@@ -12,7 +12,7 @@
 				<el-select style="width: 140px" v-model="filter.FormStatus">
 					<el-option label="全部" :value="-1"></el-option>
 					<el-option label="審理中" :value="1"></el-option>
-					<el-option label="需補件" :value="2"></el-option>
+					<el-option label="待補件" :value="2"></el-option>
 					<el-option label="通過待繳費" :value="3"></el-option>
 					<el-option label="已繳費完成" :value="4"></el-option>
 				</el-select>
@@ -22,7 +22,7 @@
 					<el-option label="全部" :value="-1"></el-option>
 					<el-option label="未申請" :value="0"></el-option>
 					<el-option label="審理中" :value="1"></el-option>
-					<el-option label="需補件" :value="2"></el-option>
+					<el-option label="待補件" :value="2"></el-option>
 					<el-option label="通過待繳費" :value="3"></el-option>
 					<el-option label="通過待退費(<4000)" :value="4"></el-option>
 					<el-option label="通過待退費(>=4000)" :value="5"></el-option>

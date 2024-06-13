@@ -79,20 +79,20 @@
                     <li>
                         <div class="title">申報狀態：</div>
                         <div class="content">{{item.FormStatus | formStatus}}</div>
+                        <el-button size="mini" type="info" round v-if="item.FormStatus === 0 || item.FormStatus === 2" @@click="sendFormStatus1(item)">提送審查</el-button>
                         <div class="link-row">
-                            <el-link v-if="item.FormStatus === 0" type="primary" @@click="sendFormStatus1(item)">提送審查</el-link>
-                            <el-link v-if="item.FormStatus === 3" type="primary" @@click="downloadPayment(item)">下載繳費單</el-link>
+                            <el-button size="mini" type="info" round v-if="item.FormStatus === 3" @@click="downloadPayment(item)">下載繳費單</el-button>
                         </div>
                     </li>
                     <li>
                         <div class="title">結算進度：</div>
                         <div class="content">{{item.CalcStatus | calcStatus}}</div>
+                        <el-button size="mini" type="info" round v-if="item.FormStatus === 4 && (item.CalcStatus === 0 || item.CalcStatus === 2)" @@click="SendCalcStatus1(item)">提送審查</el-button>
                         <div class="link-row">
-                            <el-link v-if="item.FormStatus === 4 && (item.CalcStatus === 0 || item.CalcStatus === 2)" type="primary" @@click="SendCalcStatus1(item)">提送審查</el-link>
-                            <el-link v-if="item.CalcStatus === 3" type="primary" @@click="downloadRePayment(item)">下載繳費單</el-link>
-                            <el-link v-if="item.CalcStatus === 3" type="primary" @@click="showPaymentProofModal(item)">上傳繳費證明</el-link>
-                            <el-link v-if="item.CalcStatus === 5" type="primary" @@click="showBankAccountModal(item)">退費帳戶</el-link>
-                            <el-link v-if="item.CalcStatus > 3" type="primary" @@click="downloadProof(item)">下載結清證明</el-link>
+                            <el-button size="mini" type="info" round v-if="item.CalcStatus === 3" @@click="downloadRePayment(item)">下載繳費單</el-button>
+                            <el-button size="mini" type="info" round v-if="item.CalcStatus === 3" @@click="showPaymentProofModal(item)">上傳繳費證明</el-button>
+                            <el-button size="mini" type="info" round v-if="item.CalcStatus === 5" @@click="showBankAccountModal(item)">退費帳戶</el-button>
+                            <el-button size="mini" type="info" round v-if="item.CalcStatus > 3" @@click="downloadProof(item)">下載結清證明</el-button>
                         </div>
                     </li>
                 </ul>

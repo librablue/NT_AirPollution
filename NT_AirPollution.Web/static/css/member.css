@@ -755,11 +755,12 @@ h3 {
   display: flex;
   align-items: flex-start;
   width: 100%;
+  padding-left: 90px;
 }
-.form-wrap .form-item .info-list .link-row .el-link {
-  margin-bottom: 6px;
+.form-wrap .form-item .info-list .link-row .el-button {
+  margin: 6px 0;
 }
-.form-wrap .form-item .info-list .link-row .el-link ~ .el-link {
+.form-wrap .form-item .info-list .link-row .el-button ~ .el-button {
   margin-left: 10px;
 }
 

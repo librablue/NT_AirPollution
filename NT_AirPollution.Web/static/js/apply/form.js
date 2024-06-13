@@ -729,10 +729,10 @@
 
                         alert('申請資料已送出，繳款金額請依人工審核後之繳費單內容為主。');
 
-                        if (!this.selectCompany && confirm('是否儲存此次營建業主之基本資料，下次可以快速申報。')) {
+                        if (confirm('是否儲存此次營建業主之基本資料，下次可以快速申報。')) {
                             this.addCompany();
                         }
-                        if (!this.selectContractor && confirm('是否儲存此次承包商之基本資料，下次可以快速申報。')) {
+                        if (confirm('是否儲存此次承包商之基本資料，下次可以快速申報。')) {
                             this.addContractor();
                         }
 
