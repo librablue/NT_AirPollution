@@ -198,19 +198,21 @@
 				</el-tab-pane>
 				<el-tab-pane label="經費資料" name="4">
 					<el-form ref="tab4Form" :rules="tab4Rules" :model="form" label-width="auto">
+						<div class="flex-row">
+							<el-form-item prop="MONEY" label="工程合約經費(元)">
+								<el-input type="number" v-model="form.MONEY"></el-input>
+							</el-form-item>
+							<el-form-item prop="C_MONEY" label="工程環保經費(元)">
+								<el-input type="number" v-model="form.C_MONEY"></el-input>
+							</el-form-item>
+							<el-form-item label="工程合約經費比例(%)">{{calcPercent}}</el-form-item>
+						</div>
 						<el-form-item v-if="isShowAREA()" prop="AREA" :label="projectCodeText">
 							<el-input type="number" v-model="form.AREA"></el-input>
 						</el-form-item>
 						<el-form-item v-if="form.KIND_NO === '3'" prop="VOLUMEL" :label="projectCodeText">
 							<el-input type="number" v-model="form.VOLUMEL"></el-input>
 						</el-form-item>
-						<el-form-item v-if="isShowMONEY()" prop="MONEY" label="工程合約經費(元)">
-							<el-input type="number" v-model="form.MONEY"></el-input>
-						</el-form-item>
-						<el-form-item prop="C_MONEY" label="工程環保經費(元)">
-							<el-input type="number" v-model="form.C_MONEY"></el-input>
-						</el-form-item>
-						<el-form-item label="工程合約經費比例(%)">{{calcPercent}}</el-form-item>
 						<div class="flex-row" v-if="form.KIND_NO === 'B'">
 							<el-form-item label="鬆實方比值">
 								<el-input type="number" v-model="form.RATIOLB"></el-input>

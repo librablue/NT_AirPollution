@@ -277,13 +277,13 @@
                 }
                 return false;
             },
-            isShowMONEY() {
-                const kindAry = ['Z'];
-                if (kindAry.includes(this.selectRow.KIND_NO)) {
-                    return true;
-                }
-                return false;
-            },
+            // isShowMONEY() {
+            //     const kindAry = ['Z'];
+            //     if (kindAry.includes(this.selectRow.KIND_NO)) {
+            //         return true;
+            //     }
+            //     return false;
+            // },
             getAttachmentInfo() {
                 axios.get('/Option/GetAttachmentInfo').then(res => {
                     this.attachmentInfo = Object.freeze(res.data);
@@ -636,7 +636,7 @@
                 const formData = new FormData();
                 formData.append('file', e.target.files[0]);
                 axios
-                    .post('/Form/UploadAttachment', formData)
+                    .post('/Apply/UploadAttachment', formData)
                     .then(res => {
                         if (!res.data.Status) {
                             alert(res.data.Message);
@@ -801,45 +801,10 @@
                     if (file) file.value = '';
                 }
             },
-            beforeCommand(row, cmd) {
-                return {
-                    row,
-                    cmd
-                };
-            },
-            handleCommand(arg) {
-                const { row, cmd } = arg;
-                switch (cmd) {
-                    case 'VIEW':
-                        this.showModal(row);
-                        break;
-                    case 'COPY':
-                        this.copyRow(row);
-                        break;
-                    case 'DOWNLOAD_PAYMENT':
-                        this.downloadPayment(row);
-                        break;
-                    case 'CALC':
-                        this.finalCalc(row);
-                        break;
-                    case 'DOWNLOAD_REPAYMENT':
-                        this.downloadRePayment(row);
-                        break;
-                    case 'UPLOAD_PAYMENT_PROOF':
-                        this.showPaymentProofModal(row);
-                        break;
-                    case 'BANK_ACCOUNT':
-                        this.showBankAccountModal(row);
-                        break;
-                    case 'DOWNLOAD_PROOF':
-                        this.downloadProof(row);
-                        break;
-                }
-            },
             downloadPayment(row) {
                 const loading = this.$loading();
                 axios
-                    .post('/Form/DownloadPayment', row, {
+                    .post('/Apply/DownloadPayment', row, {
                         responseType: 'blob'
                     })
                     .then(res => {
@@ -880,7 +845,7 @@
             downloadRePayment(row) {
                 const loading = this.$loading();
                 axios
-                    .post('/Form/DownloadRePayment', row, {
+                    .post('/Apply/DownloadRePayment', row, {
                         responseType: 'blob'
                     })
                     .then(res => {
@@ -935,7 +900,7 @@
                     }
 
                     axios
-                        .post('/Form/UploadPaymentProof', formData)
+                        .post('/Apply/UploadPaymentProof', formData)
                         .then(res => {
                             loading.close();
                             if (!res.data.Status) {
@@ -988,7 +953,7 @@
                     }
 
                     axios
-                        .post('/Form/UpdateBankAccount', formData)
+                        .post('/Apply/UpdateBankAccount', formData)
                         .then(res => {
                             loading.close();
                             if (!res.data.Status) {
@@ -1010,7 +975,7 @@
             downloadProof(row) {
                 const loading = this.$loading();
                 axios
-                    .post('/Form/DownloadProof', row, {
+                    .post('/Apply/DownloadProof', row, {
                         responseType: 'blob'
                     })
                     .then(res => {

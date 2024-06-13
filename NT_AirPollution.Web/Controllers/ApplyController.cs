@@ -346,6 +346,45 @@ namespace NT_AirPollution.Web.Controllers
             }
         }
 
+
+        /// <summary>
+        /// 上傳附件
+        /// </summary>
+        [HttpPost]
+        public JsonResult UploadAttachment(HttpPostedFileBase file)
+        {
+            try
+            {
+                if (file == null) throw new Exception("請選擇檔案");
+                // 設定資料夾
+                string absoluteDirPath = $"{_uploadPath}";
+                if (!Directory.Exists(absoluteDirPath))
+                    Directory.CreateDirectory(absoluteDirPath);
+
+                string absoluteFilePath = "";
+                List<string> allowExt = new List<string> { ".doc", ".docx", ".pdf", ".jpg", ".jpeg", ".png" };
+                string ext = Path.GetExtension(file.FileName).ToLower();
+                if (!allowExt.Any(o => o == ext))
+                    throw new Exception("附件只允許上傳 doc/docx/pdf/jpg/png 等文件");
+
+                if (file.ContentLength >= 1024 * 1024 * 4)
+                    throw new Exception("附件大小限制 4MB");
+
+                // 生成檔名
+                string fileName = $@"{Guid.NewGuid().ToString()}{Path.GetExtension(file.FileName)}";
+                // 設定儲存路徑
+                absoluteFilePath = absoluteDirPath + $@"\{fileName}";
+                // 儲存檔案
+                file.SaveAs(absoluteFilePath);
+
+                return Json(new AjaxResult { Status = true, Message = fileName });
+            }
+            catch (Exception ex)
+            {
+                return Json(new AjaxResult { Status = false, Message = ex.Message });
+            }
+        }
+
         /// <summary>
         /// 審核申請
         /// </summary>
@@ -395,6 +434,173 @@ namespace NT_AirPollution.Web.Controllers
                 formInDB.AP_DATE1 = DateTime.Now.AddYears(-1911).ToString("yyyMMdd");
                 formInDB.CalcStatus = CalcStatus.審理中;
                 _formService.UpdateForm(formInDB);
+
+                return Json(new AjaxResult { Status = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new AjaxResult { Status = false, Message = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// 下載繳費單
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public FileResult DownloadPayment(FormView form)
+        {
+            var formInDB = _formService.GetFormByID(form.ID);
+            if (formInDB == null || (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email))
+                throw new Exception("申請單不存在");
+
+            string fileName = $"繳款單{form.C_NO}-{form.SER_NO}({(form.P_KIND == "一次繳清" ? "一次繳清" : "第一期")})";
+            string pdfPath = _formService.CreatePaymentPDF(fileName, form);
+
+            // 傳到前端的檔名
+            // Uri.EscapeDataString 防中文亂碼
+            Response.Headers.Add("file-name", Uri.EscapeDataString(Path.GetFileName(pdfPath)));
+
+            return File(pdfPath, System.Net.Mime.MediaTypeNames.Application.Octet, Path.GetFileName(pdfPath));
+        }
+
+        /// <summary>
+        /// 下載補繳費單
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public FileResult DownloadRePayment(FormView form)
+        {
+            var formInDB = _formService.GetFormByID(form.ID);
+            if (formInDB == null || (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email))
+                throw new Exception("申請單不存在");
+
+            string fileName = $"繳款單{form.C_NO}-{form.SER_NO}(結算補繳)";
+            string pdfPath = _formService.CreatePaymentPDF(fileName, form);
+
+            // 傳到前端的檔名
+            // Uri.EscapeDataString 防中文亂碼
+            Response.Headers.Add("file-name", Uri.EscapeDataString(Path.GetFileName(pdfPath)));
+
+            return File(pdfPath, System.Net.Mime.MediaTypeNames.Application.Octet, Path.GetFileName(pdfPath));
+        }
+
+        /// <summary>
+        /// 新增退款帳戶
+        /// </summary>
+        [HttpPost]
+        public JsonResult UpdateBankAccount(RefundBank bank, HttpPostedFileBase file)
+        {
+            try
+            {
+                var formInDB = _formService.GetFormByID(bank.FormID);
+                if (formInDB == null || (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email))
+                    throw new Exception("申請單不存在");
+
+                if (formInDB.CalcStatus == CalcStatus.繳退費完成)
+                    throw new Exception("申請單已繳退費完成，無法修改帳戶");
+
+
+                if (file != null)
+                {
+                    // 設定資料夾
+                    string absoluteDirPath = $"{_uploadPath}";
+                    if (!Directory.Exists(absoluteDirPath))
+                        Directory.CreateDirectory(absoluteDirPath);
+
+                    string absoluteFilePath = "";
+                    List<string> allowExt = new List<string> { ".jpg", ".jpeg", ".png" };
+                    string ext = Path.GetExtension(file.FileName).ToLower();
+                    if (!allowExt.Any(o => o == ext))
+                        throw new Exception("附件只允許上傳 jpg/png 等文件");
+
+                    if (file.ContentLength >= 1024 * 1024 * 4)
+                        throw new Exception("附件大小限制 4MB");
+
+                    // 生成檔名
+                    string fileName = $@"{Guid.NewGuid().ToString()}{Path.GetExtension(file.FileName)}";
+                    // 設定儲存路徑
+                    absoluteFilePath = absoluteDirPath + $@"\{fileName}";
+                    // 儲存檔案
+                    file.SaveAs(absoluteFilePath);
+                    bank.Photo = fileName;
+                }
+
+                bank.FormID = formInDB.ID;
+                bank.CreateDate = DateTime.Now;
+                _formService.UpdateRefundBank(bank);
+
+                return Json(new AjaxResult { Status = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new AjaxResult { Status = false, Message = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// 下載補繳費單
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public FileResult DownloadProof(FormView form)
+        {
+            var formInDB = _formService.GetFormByID(form.ID);
+            if (formInDB == null || (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email))
+                throw new Exception("申請單不存在");
+
+            string pdfPath = _formService.CreateProofPDF(form);
+
+            // 傳到前端的檔名
+            // Uri.EscapeDataString 防中文亂碼
+            Response.Headers.Add("file-name", Uri.EscapeDataString(Path.GetFileName(pdfPath)));
+
+            return File(pdfPath, System.Net.Mime.MediaTypeNames.Application.Octet, Path.GetFileName(pdfPath));
+        }
+
+        /// <summary>
+        /// 上傳繳費證明
+        /// </summary>
+        [HttpPost]
+        public JsonResult UploadPaymentProof(PaymentProof proof, HttpPostedFileBase file)
+        {
+            try
+            {
+                var formInDB = _formService.GetFormByID(proof.FormID);
+                if (formInDB == null || (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email))
+                    throw new Exception("申請單不存在");
+
+                if (formInDB.CalcStatus == CalcStatus.繳退費完成)
+                    throw new Exception("申請單已繳退費完成，無法修改帳戶");
+
+
+                if (file != null)
+                {
+                    // 設定資料夾
+                    string absoluteDirPath = $"{_uploadPath}";
+                    if (!Directory.Exists(absoluteDirPath))
+                        Directory.CreateDirectory(absoluteDirPath);
+
+                    string absoluteFilePath = "";
+                    List<string> allowExt = new List<string> { ".jpg", ".jpeg", ".png" };
+                    string ext = Path.GetExtension(file.FileName).ToLower();
+                    if (!allowExt.Any(o => o == ext))
+                        throw new Exception("附件只允許上傳 jpg/png 等文件");
+
+                    if (file.ContentLength >= 1024 * 1024 * 4)
+                        throw new Exception("附件大小限制 4MB");
+
+                    // 生成檔名
+                    string fileName = $@"{Guid.NewGuid().ToString()}{Path.GetExtension(file.FileName)}";
+                    // 設定儲存路徑
+                    absoluteFilePath = absoluteDirPath + $@"\{fileName}";
+                    // 儲存檔案
+                    file.SaveAs(absoluteFilePath);
+                    proof.ProofFile = fileName;
+                }
+
+                proof.CreateDate = DateTime.Now;
+                _formService.UpdatePaymentProof(proof);
 
                 return Json(new AjaxResult { Status = true });
             }

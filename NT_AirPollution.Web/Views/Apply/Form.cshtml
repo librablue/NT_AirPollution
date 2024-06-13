@@ -298,19 +298,21 @@
             </el-tab-pane>
             <el-tab-pane label="經費資料" name="4" disabled>
                 <el-form ref="tab4Form" :rules="tab4Rules" :model="selectRow" label-width="auto" :disabled="selectRow.FormStatus >= 3">
+                    <div class="flex-row">
+                        <el-form-item prop="MONEY" label="工程合約經費(元)">
+                            <el-input type="number" v-model="selectRow.MONEY"></el-input>
+                        </el-form-item>
+                        <el-form-item prop="C_MONEY" label="工程環保經費(元)">
+                            <el-input type="number" v-model="selectRow.C_MONEY"></el-input>
+                        </el-form-item>
+                        <el-form-item label="工程合約經費比例(%)">{{calcPercent}}</el-form-item>
+                    </div>
                     <el-form-item v-if="isShowAREA()" prop="AREA" :label="projectCodeText">
                         <el-input type="number" v-model="selectRow.AREA"></el-input>
                     </el-form-item>
                     <el-form-item v-if="selectRow.KIND_NO === '3'" prop="VOLUMEL" :label="projectCodeText">
                         <el-input type="number" v-model="selectRow.VOLUMEL"></el-input>
                     </el-form-item>
-                    <el-form-item v-if="isShowMONEY()" prop="MONEY" label="工程合約經費(元)">
-                        <el-input type="number" v-model="selectRow.MONEY"></el-input>
-                    </el-form-item>
-                    <el-form-item prop="C_MONEY" label="工程環保經費(元)">
-                        <el-input type="number" v-model="selectRow.C_MONEY"></el-input>
-                    </el-form-item>
-                    <el-form-item label="工程合約經費比例(%)">{{calcPercent}}</el-form-item>
                     <div v-if="selectRow.KIND_NO === 'B'" v-cloak>
                         <div style="margin-bottom:10px">鬆方體積換算表 (擇一)</div>
                         <div class="contact-group">
