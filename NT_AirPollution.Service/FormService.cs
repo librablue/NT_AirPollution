@@ -2,7 +2,6 @@
 using ClosedXML.Excel;
 using Dapper;
 using Dapper.Contrib.Extensions;
-using DocumentFormat.OpenXml.Wordprocessing;
 using NT_AirPollution.Model.Access;
 using NT_AirPollution.Model.Domain;
 using NT_AirPollution.Model.Enum;

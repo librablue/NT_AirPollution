@@ -82,6 +82,7 @@
                         <el-button size="mini" type="info" round v-if="item.FormStatus === 0 || item.FormStatus === 2" @@click="sendFormStatus1(item)">提送審查</el-button>
                         <div class="link-row">
                             <el-button size="mini" type="info" round v-if="item.FormStatus === 3" @@click="downloadPayment(item)">下載繳費單</el-button>
+                            <el-button size="mini" type="info" round v-if="item.FormStatus === 4">下載免徵證明</el-button>
                         </div>
                     </li>
                     <li>

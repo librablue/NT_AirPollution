@@ -165,6 +165,15 @@ namespace NT_AirPollution.Admin.Controllers
                         if (form.P_KIND == "分兩次繳清")
                             form.P_AMT = form.S_AMT / 2;
 
+
+                        if(form.S_AMT == 0)
+                            form.FormStatus = FormStatus.免繳費;
+
+                        // 一次全繳且金額<=200
+                        if (form.P_KIND == "一次全繳" && form.S_AMT > 0 && form.S_AMT <= 200)
+                            form.FormStatus = FormStatus.暫免繳;
+
+
                         _formService.SendFormStatus3(form);
                         break;
                     case FormStatus.已繳費完成:
