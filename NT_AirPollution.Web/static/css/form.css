@@ -489,10 +489,20 @@ h3 {
 
 .calc-result {
   padding: 10px 15px;
-  text-align: center;
   color: #e6a23c;
   background-color: #fdf6ec;
   border: 2px dashed #e6a23c;
+  list-style-type: none;
+}
+.calc-result li {
+  margin-bottom: 10px;
+  border-bottom: 1px solid #ccc;
+}
+.calc-result li .title {
+  font-size: 14px;
+}
+.calc-result li .content {
+  font-size: 18px;
 }
 
 footer {

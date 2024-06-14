@@ -24,6 +24,10 @@
     new Vue({
         el: '#app',
         filters: {
+            comma: value => {
+                if (!value && value !== 0) return '';
+                return ('' + value).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            },
             date: value => {
                 if (!value || value === '0001-01-01T00:00:00') return '';
                 return moment(value).format('YYYY-MM-DD');

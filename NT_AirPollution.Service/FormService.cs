@@ -632,7 +632,7 @@ namespace NT_AirPollution.Service
         /// <param name="form"></param>
         /// <param name="downDays">停工天數</param>
         /// <returns></returns>
-        public double CalcTotalMoney(FormView form, double downDays)
+        public CalcMoneyResult CalcTotalMoney(FormView form, double downDays)
         {
             using (var cn = new SqlConnection(connStr))
             {
@@ -641,6 +641,8 @@ namespace NT_AirPollution.Service
                 var projectCode = projectCodes.First(o => o.ID == form.KIND_NO);
                 // 基數
                 double basicNum = 0;
+                // 級數
+                int level = 0;
                 // 費率
                 double rate = 0;
                 switch (form.KIND_NO)
@@ -666,13 +668,29 @@ namespace NT_AirPollution.Service
                 }
 
                 if (basicNum >= projectCode.Level1)
+                {
+                    level = 1;
                     rate = projectCode.Rate1;
+                }
                 else if (basicNum * projectCode.Rate3 >= projectCode.Level2)
+                {
+                    level = 2;
                     rate = projectCode.Rate2;
+                }
                 else
+                {
+                    level = 3;
                     rate = projectCode.Rate3;
+                }
 
-                return Convert.ToInt32(Math.Round(basicNum * rate, 0, MidpointRounding.AwayFromZero));
+                var result = new CalcMoneyResult
+                {
+                    Level = level,
+                    Rate = rate,
+                    TotalMoney = Convert.ToInt32(Math.Round(basicNum * rate, 0, MidpointRounding.AwayFromZero))
+                };
+
+                return result;
             }
         }
 

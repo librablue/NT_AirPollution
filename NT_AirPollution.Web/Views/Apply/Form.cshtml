@@ -13,7 +13,6 @@
 <div id="app">
     <input type="hidden" id="hfUserEmail" value="@ViewBag.CurrentUser.Email" />
     <input type="hidden" id="hfUserName" value="@ViewBag.CurrentUser.UserName" />
-    <button type="button" class="btn-floating" @@click="addForm">我要<br>申報</button>
     <div class="main-wrap">
         <h2>個人申報專區</h2>
         <el-form inline>
@@ -49,6 +48,9 @@
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" icon="el-icon-search" @@click="getForms">查 詢</el-button>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="success" icon="el-icon-edit" @@click="addForm">我要申報</el-button>
             </el-form-item>
         </el-form>
 
@@ -107,7 +109,7 @@
 
     <el-dialog :title="mode === 'Add' ? '空污費申報' : selectRow.COMP_NAM" :visible.sync="dialogVisible" width="90%" :close-on-click-modal="false" @@close="dialogClose" v-cloak>
         <el-tabs v-model="activeTab">
-            <el-tab-pane label="基本資料" name="1" disabled>
+            <el-tab-pane label="基本資料" name="1" :disabled="selectRow.FormStatus <= 2">
                 <el-form ref="tab1Form" :rules="tab1Rules" :model="selectRow" label-width="auto" :disabled="selectRow.FormStatus >= 3">
                     <el-form-item prop="PUB_COMP" label="案件類型">
                         <el-select v-model="selectRow.PUB_COMP">
@@ -164,7 +166,7 @@
                     </el-form-item>
                 </el-form>
             </el-tab-pane>
-            <el-tab-pane label="營建資料" name="2" disabled>
+            <el-tab-pane label="營建資料" name="2" :disabled="selectRow.FormStatus <= 2">
                 <el-form ref="tab2Form" :rules="tab2Rules" :model="selectRow" label-width="auto" :disabled="selectRow.FormStatus >= 3">
                     <div style="margin-bottom:10px" v-if="selectRow.FormStatus < 3">
                         <label class="el-form-item__label">快速選取</label>
@@ -233,7 +235,7 @@
                     </div>
                 </el-form>
             </el-tab-pane>
-            <el-tab-pane label="承造資料" name="3" disabled>
+            <el-tab-pane label="承造資料" name="3" :disabled="selectRow.FormStatus <= 2">
                 <el-form ref="tab3Form" :rules="tab3Rules" :model="selectRow" label-width="auto" :disabled="selectRow.FormStatus >= 3">
                     <div style="margin-bottom:10px" v-if="selectRow.FormStatus < 3">
                         <label class="el-form-item__label">快速選取</label>
@@ -297,7 +299,7 @@
                     </div>
                 </el-form>
             </el-tab-pane>
-            <el-tab-pane label="經費資料" name="4" disabled>
+            <el-tab-pane label="經費資料" name="4" :disabled="selectRow.FormStatus <= 2">
                 <el-form ref="tab4Form" :rules="tab4Rules" :model="selectRow" label-width="auto" :disabled="selectRow.FormStatus >= 3">
                     <div class="flex-row">
                         <el-form-item prop="MONEY" label="工程合約經費(元)">
@@ -369,7 +371,7 @@
                     </el-form-item>
                 </el-form>
             </el-tab-pane>
-            <el-tab-pane label="檢附資料" name="5" disabled>
+            <el-tab-pane label="檢附資料" name="5" :disabled="selectRow.FormStatus <= 2">
                 <div class="table-responsive">
                     <table class="table form-table">
                         <thead>
@@ -387,7 +389,7 @@
                                     <a href="javascript:;" v-if="mode === 'Add' || selectRow.FormStatus <= 2" class="link-add" title="新增檔案" @@click="addFile(item.ID)"><i class="el-icon-circle-plus-outline"></i></a>
                                     <ul class="file-list">
                                         <li v-for="sub in filterAttachments(item.ID)" :key="sub.ID">
-                                            <a href="javascript:;" class="link-delete" @@click="deleteFile(sub)"><i class="el-icon-delete"></i></a>
+                                            <a href="javascript:;" v-if="mode === 'Add' || selectRow.FormStatus <= 2" class="link-delete" @@click="deleteFile(sub)"><i class="el-icon-delete"></i></a>
                                             <a :href="`/Option/Download?f=${sub.FileName}`" class="link-download">{{sub.FileName}}</a>
                                             <input v-if="!sub.FileName" type="file" accept=".doc,.docx,.pdf,.jpg,.jpeg,.png" @@change="uploadAttachment($event, sub)" />
                                         </li>
@@ -398,7 +400,7 @@
                     </table>
                 </div>
             </el-tab-pane>
-            <el-tab-pane label="停復工" name="6" disabled>
+            <el-tab-pane label="停復工" name="6" :disabled="selectRow.FormStatus <= 2">
                 <div class="table-responsive" style="margin-top:10px">
                     <table class="table row-table">
                         <thead>
@@ -428,9 +430,6 @@
                 <el-button icon="el-icon-close" @@click="dialogVisible = false">取 消</el-button>
                 <el-button type="primary" icon="el-icon-arrow-left" :disabled="activeTab === '1'" @@click="goPrevTab">上一步</el-button>
                 <el-button type="primary" @@click="goNextTab">{{activeTab === '6' ? '儲存' : '下一步'}} <i class="el-icon-arrow-right el-icon--right"></i></el-button>
-            </template>
-            <template v-else>
-                <el-button @@click="dialogVisible = false">關 閉</el-button>
             </template>
         </span>
     </el-dialog>

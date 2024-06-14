@@ -55,7 +55,7 @@
                     E2: null
 				},
                 CodeBType: 1,
-				resultText: '',
+				calcResult: null,
 				rules: Object.freeze({
 					KIND_NO: [{ required: true, message: '請選擇工程類別', trigger: 'change' }],
 					MONEY: [{ validator: checkMoney }],
@@ -111,6 +111,9 @@
 					this.projectCode = Object.freeze(res.data);
 				});
 			},
+            getProjectCodeItem(id) {
+                return this.projectCode.find(item => item.ID === id);
+            },
 			isShowAREA() {
 				const kindAry = ['1', '2', '4', '5', '6', '7', '8', '9', 'A'];
 				if (kindAry.includes(this.form.KIND_NO)) {
@@ -138,6 +141,7 @@
 						return false;
 					}
 
+                    this.calcResult = null;
 					axios
 						.post('/Form/GetTotalMoney', this.form)
 						.then(res => {
@@ -146,9 +150,12 @@
 								return;
 							}
 
+                            this.calcResult = res.data.Message;
+
 							const comma = /\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g;
 							const totalMoney = res.data.Message.toString().replace(comma, ',');
-							this.resultText = `核算申報繳納營建空污費為新台幣 ${totalMoney} 元整`;
+							// this.calcResult = `核算申報繳納營建空污費為新台幣 ${totalMoney} 元整`;
+                            
 						})
 						.catch(err => {
 							alert('系統發生未預期錯誤');

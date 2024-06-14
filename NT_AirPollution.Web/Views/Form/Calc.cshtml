@@ -1,5 +1,5 @@
 ﻿@{
-            Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 @section styles {
@@ -16,14 +16,6 @@
         .txt-day {
             font-size: 20px;
             font-weight: 700;
-        }
-
-        .calc-result {
-            padding: 10px 15px;
-            text-align: center;
-            color: #e6a23c;
-            background-color: #fdf6ec;
-            border: 2px dashed #e6a23c;
         }
     </style>
 }
@@ -60,7 +52,7 @@
                 <el-form-item v-if="isShowMONEY()" prop="MONEY" label="工程合約經費(元)" v-cloak>
                     <el-input type="number" v-model="form.MONEY"></el-input>
                 </el-form-item>
-                <div v-if="form.KIND_NO === 'B'"  v-cloak>
+                <div v-if="form.KIND_NO === 'B'" v-cloak>
                     <div style="margin-bottom:10px">鬆方體積換算表 (擇一)</div>
                     <div class="flex-row" style="align-items: flex-end">
                         <div style="flex:1; padding: 0 10px">
@@ -106,7 +98,20 @@
                 <div class="bottom-btn-row">
                     <button type="button" class="btn-send btn-block" @@click="sendForm">試 算</button>
                 </div>
-                <div class="calc-result" v-if="resultText" v-cloak>{{resultText}}</div>
+                <ul class="calc-result" v-if="calcResult" v-cloak>
+                    <li>
+                        <div class="title">案件工程</div>
+                        <div class="content">第{{calcResult.Level}}級 {{getProjectCodeItem(form.KIND_NO).ID}}.{{getProjectCodeItem(form.KIND_NO).Name}}</div>
+                    </li>
+                    <li>
+                        <div class="title">營建空污費費率</div>
+                        <div class="content">{{calcResult.Rate}}</div>
+                    </li>
+                    <li>
+                        <div class="title">需繳納營建空污費</div>
+                        <div class="content">${{calcResult.TotalMoney | comma}}元整(新台幣)</div>
+                    </li>
+                </ul>
             </el-form>
         </div>
     </div>

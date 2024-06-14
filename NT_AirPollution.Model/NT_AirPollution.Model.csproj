@@ -83,6 +83,7 @@
     <Compile Include="Enum\FormStatus.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="View\AdminUserFilterView.cs" />
+    <Compile Include="View\CalcMoneyResult.cs" />
     <Compile Include="View\Downloads.cs" />
     <Compile Include="View\RoadFilter.cs" />
     <Compile Include="View\AirReport.cs" />

@@ -15,6 +15,8 @@
 					<el-option label="待補件" :value="2"></el-option>
 					<el-option label="通過待繳費" :value="3"></el-option>
 					<el-option label="已繳費完成" :value="4"></el-option>
+                    <el-option label="免繳費" :value="5"></el-option>
+                    <el-option label="暫免繳" :value="6"></el-option>
 				</el-select>
 			</el-form-item>
 			<el-form-item label="結算進度">

@@ -41,8 +41,8 @@ namespace NT_AirPollution.Admin.Controllers
             form.E_DATE = form.E_DATE2.AddYears(-1911).ToString("yyyMMdd");
             // 停工天數
             double downDays = form.StopWorks.Sum(o => (o.UP_DATE2 - o.DOWN_DATE2).TotalDays + 1);
-            double S_AMT2 = _formService.CalcTotalMoney(form, downDays);
-            return S_AMT2;
+            var result = _formService.CalcTotalMoney(form, downDays);
+            return result.TotalMoney;
         }
 
         [HttpPost]
@@ -159,7 +159,8 @@ namespace NT_AirPollution.Admin.Controllers
                         form.VerifyDate1 = DateTime.Now;
                         // 停工天數
                         double downDays = form.StopWorks.Sum(o => (o.UP_DATE2 - o.DOWN_DATE2).TotalDays + 1);
-                        form.S_AMT = _formService.CalcTotalMoney(form, downDays);
+                        var result = _formService.CalcTotalMoney(form, downDays);
+                        form.S_AMT = result.TotalMoney;
                         form.P_NUM = form.P_KIND == "一次全繳" ? 1 : 2;
                         form.P_AMT = form.S_AMT;
                         if (form.P_KIND == "分兩次繳清")
@@ -212,7 +213,8 @@ namespace NT_AirPollution.Admin.Controllers
                     form.E_DATE = form.E_DATE2.AddYears(-1911).ToString("yyyMMdd");
                     // 停工天數
                     double downDays = form.StopWorks.Sum(o => (o.UP_DATE2 - o.DOWN_DATE2).TotalDays + 1);
-                    form.S_AMT2 = _formService.CalcTotalMoney(form, downDays);
+                    var result = _formService.CalcTotalMoney(form, downDays);
+                    form.S_AMT2 = result.TotalMoney;
 
                     if (form.S_AMT2 > form.S_AMT)
                         form.CalcStatus = CalcStatus.通過待繳費;
