@@ -51,7 +51,7 @@
 						</a>
 						<el-dropdown-menu slot="dropdown">
 							<el-dropdown-item :command="beforeCommand1(row, 2)">需補件</el-dropdown-item>
-							<el-dropdown-item :command="beforeCommand1(row, 3)">通過待繳費</el-dropdown-item>
+							<el-dropdown-item :command="beforeCommand1(row, 3)">審核通過</el-dropdown-item>
 							<el-dropdown-item :command="beforeCommand1(row, 4)">已繳費完成</el-dropdown-item>
 						</el-dropdown-menu>
 					</el-dropdown>
@@ -203,7 +203,7 @@ export default {
 					this.failReasonModalVisible = true;
 					return;
 				case 3:
-					if (!confirm('進度改成通過待繳費，是否確認繼續?')) return false;
+					if (!confirm('進度改成審核通過，系統將進行結算判斷是否需繳費，是否確認繼續?')) return false;
 					break;
 				case 4:
 					if (!confirm('進度改成已繳費完成，是否確認繼續?')) return false;

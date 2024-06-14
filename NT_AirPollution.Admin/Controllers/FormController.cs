@@ -93,9 +93,9 @@ namespace NT_AirPollution.Admin.Controllers
             {
                 form.B_DATE = form.B_DATE2.AddYears(-1911).ToString("yyyMMdd");
                 form.E_DATE = form.E_DATE2.AddYears(-1911).ToString("yyyMMdd");
-                
+
                 // 有管制編號才更新Access
-                if(!string.IsNullOrEmpty(form.C_NO))
+                if (!string.IsNullOrEmpty(form.C_NO))
                 {
                     // 修改 access
                     bool isAccessOK = _accessService.UpdateABUDF(form);
@@ -166,15 +166,21 @@ namespace NT_AirPollution.Admin.Controllers
                             form.P_AMT = form.S_AMT / 2;
 
 
-                        if(form.S_AMT == 0)
+                        if (form.S_AMT == 0)
+                        {
                             form.FormStatus = FormStatus.免繳費;
-
-                        // 一次全繳且金額<=200
-                        if (form.P_KIND == "一次全繳" && form.S_AMT > 0 && form.S_AMT <= 200)
+                            _formService.SendFormStatus5(form);
+                        }
+                        else if (form.P_KIND == "一次全繳" && form.S_AMT > 0 && form.S_AMT <= 200) // 一次全繳且金額<=200
+                        {
                             form.FormStatus = FormStatus.暫免繳;
+                            _formService.SendFormStatus6(form);
+                        }
+                        else
+                        {
+                            _formService.SendFormStatus3(form);
+                        }
 
-
-                        _formService.SendFormStatus3(form);
                         break;
                     case FormStatus.已繳費完成:
                         _formService.SendFormStatus4(form);
@@ -200,7 +206,7 @@ namespace NT_AirPollution.Admin.Controllers
             try
             {
                 // 3.4.5指令共用，用退費金額<4000判斷4，>=4000判斷5
-                if(form.CalcStatus == CalcStatus.通過待繳費)
+                if (form.CalcStatus == CalcStatus.通過待繳費)
                 {
                     form.B_DATE = form.B_DATE2.AddYears(-1911).ToString("yyyMMdd");
                     form.E_DATE = form.E_DATE2.AddYears(-1911).ToString("yyyMMdd");

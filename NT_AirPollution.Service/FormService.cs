@@ -795,6 +795,82 @@ namespace NT_AirPollution.Service
         }
 
         /// <summary>
+        /// 免繳費
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        public bool SendFormStatus5(FormView form)
+        {
+            string template = ($@"{HostingEnvironment.ApplicationPhysicalPath}\App_Data\Template\FormStatus5.txt");
+            using (StreamReader sr = new StreamReader(template))
+            {
+                string content = sr.ReadToEnd();
+                string body = string.Format(content, form.COMP_NAM);
+
+                try
+                {
+                    using (var cn = new SqlConnection(connStr))
+                    {
+                        // 寄件夾
+                        cn.Insert(new SendBox
+                        {
+                            Address = form.CreateUserEmail,
+                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件免繳費(工程名稱 {form.COMP_NAM})",
+                            Body = body,
+                            FailTimes = 0,
+                            CreateDate = DateTime.Now
+                        });
+                    }
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"SendFormStatus5: {ex.Message}");
+                    throw ex;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 暫免繳費
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        public bool SendFormStatus6(FormView form)
+        {
+            string template = ($@"{HostingEnvironment.ApplicationPhysicalPath}\App_Data\Template\FormStatus6.txt");
+            using (StreamReader sr = new StreamReader(template))
+            {
+                string content = sr.ReadToEnd();
+                string body = string.Format(content, form.COMP_NAM);
+
+                try
+                {
+                    using (var cn = new SqlConnection(connStr))
+                    {
+                        // 寄件夾
+                        cn.Insert(new SendBox
+                        {
+                            Address = form.CreateUserEmail,
+                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件暫免繳費(工程名稱 {form.COMP_NAM})",
+                            Body = body,
+                            FailTimes = 0,
+                            CreateDate = DateTime.Now
+                        });
+                    }
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"SendFormStatus6: {ex.Message}");
+                    throw ex;
+                }
+            }
+        }
+
+        /// <summary>
         /// 結算待補件
         /// </summary>
         /// <param name="form"></param>
