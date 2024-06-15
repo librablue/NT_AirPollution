@@ -101,12 +101,6 @@ input[type=number] {
   display: none !important;
 }
 
-.flex-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-}
-
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -749,16 +743,11 @@ h3 {
   background-color: #015fa7;
 }
 
-.empty {
-  width: 100%;
-  border: 2px dashed #ccc;
-  padding: 20px 15px;
-}
 .empty img {
   display: block;
   margin: 0 auto;
   width: 100%;
-  max-width: 320px;
+  max-width: 360px;
 }
 .empty .empty-text {
   color: #40a0f4;
@@ -791,6 +780,14 @@ footer .bottom {
   text-align: center;
 }
 footer .bottom ul {
+  margin: 0;
+}
+
+@media (min-width: 1200px) {
+  footer .contact-row {
+    justify-content: space-around;
+  }
+}/*# sourceMappingURL=index.css.map */ {
   margin: 0;
 }
 

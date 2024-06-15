@@ -132,7 +132,12 @@
                     <el-form-item prop="CreateUserEmail" label="申請人電子信箱">
                         <el-input type="email" v-model="selectRow.CreateUserEmail" maxlength="50"></el-input>
                     </el-form-item>
-                    <el-form-item prop="COMP_NAM" label="工程名稱">
+                    <el-form-item prop="COMP_NAM">
+                        <span slot="label">
+                            工程名稱 <el-tooltip class="item" effect="dark" content="新建農舍，工程名稱請填寫OOO農舍新建工程；若為增建農舍，請填寫OOO農舍增建工程" placement="top">
+                                <span class="tip-text el-icon-info"></span>
+                            </el-tooltip>
+                        </span>
                         <el-input v-model="selectRow.COMP_NAM" maxlength="150"></el-input>
                     </el-form-item>
                     <el-form-item prop="KIND_NO" label="工程類別">
@@ -155,7 +160,12 @@
                             <el-input type="number" v-model="selectRow.LNG" maxlength="20"></el-input>
                         </el-form-item>
                     </div>
-                    <el-form-item prop="STATE" label="工程內容概述">
+                    <el-form-item prop="STATE">
+                        <span slot="label">
+                            工程內容概述 <el-tooltip class="item" effect="dark" content="請填寫工程施作大約內容(例如：施作道路工程，請填寫鋪設AC路面、混凝土排水溝等)" placement="top">
+                                <span class="tip-text el-icon-info"></span>
+                            </el-tooltip>
+                        </span>
                         <el-input v-model="selectRow.STATE" maxlength="200"></el-input>
                     </el-form-item>
                     <el-form-item prop="EIACOMMENTS" label="環評保護對策">
@@ -344,6 +354,7 @@
                                 </el-form-item>
                             </div>
                         </div>
+                        <div class="hint-message"><i class="el-icon-info"></i> 鬆方體積除以實方體積之比值以一‧三一計，鬆方之密度以一‧五一公噸/立方公尺計。營建業主如有現地取樣之實方與鬆方試驗相關數據，得報請地方主管機關同意後，依該數據採計。</div>
                         <el-form-item prop="VOLUMEL" label="外運土石體積(立方公尺)">
                             <el-input type="number" v-model="selectRow.VOLUMEL"></el-input>
                         </el-form-item>

@@ -101,12 +101,6 @@ input[type=number] {
   display: none !important;
 }
 
-.flex-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-}
-
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -487,22 +481,29 @@ h3 {
   margin-right: 10px;
 }
 
+.latlng-row {
+  display: flex;
+  align-items: center;
+}
+.latlng-row .el-form-item {
+  margin: 0 10px;
+}
+.latlng-row .btn-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 10px;
+}
+.latlng-row .btn-col .btn-row {
+  margin: 2px 0;
+}
+
 .calc-result {
   padding: 10px 15px;
+  text-align: center;
   color: #e6a23c;
   background-color: #fdf6ec;
   border: 2px dashed #e6a23c;
-  list-style-type: none;
-}
-.calc-result li {
-  margin-bottom: 10px;
-  border-bottom: 1px solid #ccc;
-}
-.calc-result li .title {
-  font-size: 14px;
-}
-.calc-result li .content {
-  font-size: 18px;
 }
 
 footer {

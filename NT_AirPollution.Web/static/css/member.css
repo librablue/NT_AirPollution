@@ -816,6 +816,12 @@ h3 {
   font-size: 18px;
 }
 
+.hint-message {
+  font-size: 14px;
+  color: #2a629a;
+  margin-bottom: 20px;
+}
+
 footer {
   background-color: #ebf5ff;
   padding: 20px 0 0;
