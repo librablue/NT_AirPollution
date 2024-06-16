@@ -107,6 +107,10 @@ input::-webkit-inner-spin-button {
     white-space: inherit !important;
 }
 
+.el-form-item__label {
+    font-weight: 700;
+}
+
 .flex-row {
     display: flex;
     flex-wrap: wrap;

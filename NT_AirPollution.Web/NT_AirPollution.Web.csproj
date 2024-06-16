@@ -103,7 +103,6 @@
     <Content Include="App_Data\Template\VerifyCode.txt" />
     <Content Include="App_Data\Template\CreateFormMail.txt" />
     <Content Include="Global.asax" />
-    <Content Include="static\css\form.css" />
     <Content Include="static\css\index.css" />
     <Content Include="static\css\member.css" />
     <Content Include="static\css\pagination.css" />
@@ -201,8 +200,6 @@
     <Content Include="Views\News\Index.cshtml" />
     <Content Include="Views\News\Content.cshtml" />
     <Content Include="Views\Home\Calc.cshtml" />
-    <Content Include="static\css\form.css.map" />
-    <Content Include="static\scss\form.scss" />
     <Content Include="static\scss\_table.scss" />
     <Content Include="Views\Download\Index.cshtml" />
     <Content Include="Views\Home\ProjectTable.cshtml" />
