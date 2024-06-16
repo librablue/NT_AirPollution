@@ -46,8 +46,6 @@
                         return '繳費完成';
                     case 5:
                         return '免繳費';
-                    case 6:
-                        return '暫免繳';
                     default:
                         return '';
                 }
@@ -832,6 +830,29 @@
                         console.log(err);
                     });
             },
+            downloadFreeProof(row) {
+                const loading = this.$loading();
+                axios
+                    .post('/Apply/DownloadFreeProof', row, {
+                        responseType: 'blob'
+                    })
+                    .then(res => {
+                        loading.close();
+                        const url = window.URL.createObjectURL(new Blob([res.data]));
+                        const link = document.createElement('a');
+                        link.href = url;
+                        const fileName = decodeURI(res.headers['file-name']);
+                        link.setAttribute('download', fileName);
+                        document.body.appendChild(link);
+                        link.click();
+                        link.remove();
+                    })
+                    .catch(err => {
+                        loading.close();
+                        alert('系統發生未預期錯誤');
+                        console.log(err);
+                    });
+            },
             SendCalcStatus1(row) {
                 if (!confirm('是否確認提出結算申請?')) return;
                 axios
@@ -980,10 +1001,10 @@
                         });
                 });
             },
-            downloadProof(row) {
+            downloadClearProof(row) {
                 const loading = this.$loading();
                 axios
-                    .post('/Apply/DownloadProof', row, {
+                    .post('/Apply/DownloadClearProof', row, {
                         responseType: 'blob'
                     })
                     .then(res => {

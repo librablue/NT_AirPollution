@@ -16,7 +16,6 @@ namespace NT_AirPollution.Model.Enum
         待補件 = 2,
         通過待繳費 = 3,
         已繳費完成 = 4,
-        免繳費 = 5,
-        暫免繳 = 6
+        免繳費 = 5
     }
 }

@@ -819,7 +819,9 @@ namespace NT_AirPollution.Service
         /// <returns></returns>
         public bool SendFormStatus5(FormView form)
         {
-            string template = ($@"{HostingEnvironment.ApplicationPhysicalPath}\App_Data\Template\FormStatus5.txt");
+            int status = 5;
+            if (form.S_AMT > 0 && form.S_AMT <= 100) status = 6;
+            string template = ($@"{HostingEnvironment.ApplicationPhysicalPath}\App_Data\Template\FormStatus{status}.txt");
             using (StreamReader sr = new StreamReader(template))
             {
                 string content = sr.ReadToEnd();
@@ -845,44 +847,6 @@ namespace NT_AirPollution.Service
                 catch (Exception ex)
                 {
                     Logger.Error($"SendFormStatus5: {ex.Message}");
-                    throw ex;
-                }
-            }
-        }
-
-        /// <summary>
-        /// 暫免繳費
-        /// </summary>
-        /// <param name="form"></param>
-        /// <returns></returns>
-        public bool SendFormStatus6(FormView form)
-        {
-            string template = ($@"{HostingEnvironment.ApplicationPhysicalPath}\App_Data\Template\FormStatus6.txt");
-            using (StreamReader sr = new StreamReader(template))
-            {
-                string content = sr.ReadToEnd();
-                string body = string.Format(content, form.COMP_NAM);
-
-                try
-                {
-                    using (var cn = new SqlConnection(connStr))
-                    {
-                        // 寄件夾
-                        cn.Insert(new SendBox
-                        {
-                            Address = form.CreateUserEmail,
-                            Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件暫免繳費(工程名稱 {form.COMP_NAM})",
-                            Body = body,
-                            FailTimes = 0,
-                            CreateDate = DateTime.Now
-                        });
-                    }
-
-                    return true;
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error($"SendFormStatus6: {ex.Message}");
                     throw ex;
                 }
             }
@@ -1220,16 +1184,14 @@ namespace NT_AirPollution.Service
         /// </summary>
         /// <param name="form"></param>
         /// <returns>檔案完整路徑</returns>
-        public string CreateProofPDF(FormView form)
+        public string CreateClearProofPDF(FormView form)
         {
             try
             {
                 // 範本檔
                 string templateFile = $@"{_paymentPath}\Template\結清證明.xlsx";
-                // 如果已經產生過檔案，直接下載
-                string existFile = $@"{_paymentPath}\Download\{form.C_NO}-{form.SER_NO}結清證明.pdf";
-                //if (File.Exists(existFile))
-                //    return existFile;
+                // 結果檔
+                string resultFile = $@"{_paymentPath}\Download\{form.C_NO}-{form.SER_NO}結清證明.pdf";
 
                 var wb = new XLWorkbook(templateFile);
                 var ws = wb.Worksheet(1);
@@ -1240,7 +1202,7 @@ namespace NT_AirPollution.Service
                 ws.Cell("C6").SetValue(form.S_NAME);
                 ws.Cell("E28").SetValue(DateTime.Now.AddYears(-1911).ToString("yyy"));
                 ws.Cell("I28").SetValue(DateTime.Now.ToString("MM"));
-                ws.Cell("N28").SetValue(DateTime.Now.ToString("dd"));
+                ws.Cell("M28").SetValue(DateTime.Now.ToString("dd"));
 
                 int idx = 0;
                 // 應繳金額
@@ -1294,13 +1256,70 @@ namespace NT_AirPollution.Service
                 {
                     worksheet.PageSetup.FitToPagesWide = 1;
                 }
-                workbook.Save(existFile);
+                workbook.Save(resultFile);
 
-                return existFile;
+                return resultFile;
             }
             catch (Exception ex)
             {
                 Logger.Error($"CreateProofPDF: {ex.Message}");
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 產生免徵證明
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns>檔案完整路徑</returns>
+        public string CreateFreeProofPDF(FormView form)
+        {
+            try
+            {
+                // 範本檔
+                string templateFile = $@"{_paymentPath}\Template\免徵證明.xlsx";
+                // 結果檔
+                string resultFile = $@"{_paymentPath}\Download\{form.C_NO}-{form.SER_NO}免徵證明.pdf";
+
+                var wb = new XLWorkbook(templateFile);
+                var ws = wb.Worksheet(1);
+                ws.Cell("C2").SetValue(form.COMP_NAM);
+                ws.Cell("C3").SetValue($"{form.C_NO}-{form.SER_NO}");
+                ws.Cell("C4").SetValue(form.ADDR);
+                ws.Cell("C5").SetValue(form.B_SERNO);
+                ws.Cell("C6").SetValue(form.S_NAME);
+                ws.Cell("E23").SetValue(DateTime.Now.AddYears(-1911).ToString("yyy"));
+                ws.Cell("I23").SetValue(DateTime.Now.ToString("MM"));
+                ws.Cell("M23").SetValue(DateTime.Now.ToString("dd"));
+
+                if(form.S_AMT == 0)
+                {
+                    ws.Cell("C7").SetValue("■");
+                }
+                else if (form.S_AMT <= 100)
+                {
+                    ws.Cell("C9").SetValue("■");
+                    ws.Cell("D10").SetValue("■");
+                }
+
+                string tempFile = $@"{_paymentPath}\Download\免徵證明{form.C_NO}-{form.SER_NO}.xlsx";
+                wb.SaveAs(tempFile);
+
+                // 轉PDF
+                Aspose.Cells.License license = new Aspose.Cells.License();
+                license.SetLicense(HostingEnvironment.MapPath(@"~/license/Aspose.total.lic"));
+                var workbook = new Aspose.Cells.Workbook(tempFile);
+                foreach (Aspose.Cells.Worksheet worksheet in workbook.Worksheets)
+                {
+                    worksheet.PageSetup.FitToPagesWide = 1;
+                }
+                workbook.Save(resultFile);
+
+                return resultFile;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"CreateFreeProofPDF: {ex.Message}");
                 throw ex;
             }
         }

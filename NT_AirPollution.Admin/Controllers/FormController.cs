@@ -167,15 +167,10 @@ namespace NT_AirPollution.Admin.Controllers
                             form.P_AMT = form.S_AMT / 2;
 
 
-                        if (form.S_AMT == 0)
+                        if (form.S_AMT <= 100)
                         {
                             form.FormStatus = FormStatus.免繳費;
                             _formService.SendFormStatus5(form);
-                        }
-                        else if (form.P_KIND == "一次全繳" && form.S_AMT > 0 && form.S_AMT <= 200) // 一次全繳且金額<=200
-                        {
-                            form.FormStatus = FormStatus.暫免繳;
-                            _formService.SendFormStatus6(form);
                         }
                         else
                         {
