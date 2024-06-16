@@ -947,7 +947,7 @@ namespace NT_AirPollution.Service
                     string content = sr.ReadToEnd();
                     string body = string.Format(content, form.COMP_NAM);
                     // 產生結清證明
-                    string pdfPath = this.CreateProofPDF(form);
+                    string pdfPath = this.CreateClearProofPDF(form);
 
                     using (var cn = new SqlConnection(connStr))
                     {
@@ -988,7 +988,7 @@ namespace NT_AirPollution.Service
                     string content = sr.ReadToEnd();
                     string body = string.Format(content, form.COMP_NAM);
                     // 產生結清證明
-                    string pdfPath = this.CreateProofPDF(form);
+                    string pdfPath = this.CreateClearProofPDF(form);
 
                     using (var cn = new SqlConnection(connStr))
                     {

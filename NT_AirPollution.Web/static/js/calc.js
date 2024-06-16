@@ -2,6 +2,10 @@
 	new Vue({
 		el: '#app',
 		filters: {
+            comma: value => {
+                if (!value && value !== 0) return '';
+                return ('' + value).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            },
 			date: value => {
 				if (!value || value === '0001-01-01T00:00:00') return '';
 				return moment(value).format('YYYY-MM-DD');
@@ -149,13 +153,7 @@
 								alert(res.data.Message);
 								return;
 							}
-
                             this.calcResult = res.data.Message;
-
-							const comma = /\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g;
-							const totalMoney = res.data.Message.toString().replace(comma, ',');
-							// this.calcResult = `核算申報繳納營建空污費為新台幣 ${totalMoney} 元整`;
-                            
 						})
 						.catch(err => {
 							alert('系統發生未預期錯誤');

@@ -124,11 +124,9 @@
     <Content Include="static\js\apply\contractor.js" />
     <Content Include="static\js\apply\form.js" />
     <Content Include="static\js\bank.js" />
-    <Content Include="static\js\form\calc.js" />
+    <Content Include="static\js\calc.js" />
     <Content Include="static\js\manage\form.js" />
     <Content Include="static\js\road\index.js" />
-    <Content Include="static\js\search\result.js" />
-    <Content Include="static\js\form\create.js" />
     <Content Include="static\js\main.js" />
     <Content Include="static\js\member\forget.js" />
     <Content Include="static\js\member\edit.js" />
@@ -137,7 +135,6 @@
     <Content Include="static\js\plugin\element-ui\index.css" />
     <Content Include="static\js\plugin\element-ui\index.js" />
     <Content Include="static\js\plugin\element-ui\zh-TW.min.js" />
-    <Content Include="static\js\search\index.js" />
     <Content Include="static\js\soil\index.js" />
     <Content Include="Web.config" />
   </ItemGroup>
@@ -155,7 +152,6 @@
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\MemberController.cs" />
     <Compile Include="Controllers\OptionController.cs" />
-    <Compile Include="Controllers\SearchController.cs" />
     <Compile Include="Controllers\SoilController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -198,21 +194,18 @@
     <Content Include="static\js\plugin\element-ui\fonts\element-icons.woff" />
     <Content Include="Views\Apply\Contractor.cshtml" />
     <Content Include="Views\Apply\Form.cshtml" />
-    <Content Include="Views\Form\Create.cshtml" />
-    <Content Include="Views\Search\Index.cshtml" />
-    <Content Include="Views\Search\Result.cshtml" />
     <Content Include="Views\Manage\Form.cshtml" />
     <Content Include="Views\Air\Index.cshtml" />
     <Content Include="Views\Road\Index.cshtml" />
     <Content Include="Views\Soil\Index.cshtml" />
     <Content Include="Views\News\Index.cshtml" />
     <Content Include="Views\News\Content.cshtml" />
-    <Content Include="Views\Form\Calc.cshtml" />
+    <Content Include="Views\Home\Calc.cshtml" />
     <Content Include="static\css\form.css.map" />
     <Content Include="static\scss\form.scss" />
     <Content Include="static\scss\_table.scss" />
     <Content Include="Views\Download\Index.cshtml" />
-    <Content Include="Views\Form\ProjectTable.cshtml" />
+    <Content Include="Views\Home\ProjectTable.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

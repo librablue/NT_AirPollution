@@ -20,7 +20,7 @@
     </style>
 }
 @section scripts {
-    <script src="@Url.Content("~/static/js/form/calc.js")"></script>
+    <script src="@Url.Content("~/static/js/calc.js")"></script>
 }
 
 <div id="app" class="container main">
@@ -109,7 +109,7 @@
                     </li>
                     <li>
                         <div class="title">需繳納營建空污費</div>
-                        <div class="content">${{calcResult.TotalMoney | comma}}元整(新台幣)</div>
+                        <div class="content">$ {{calcResult.TotalMoney | comma}} 元整(新台幣)</div>
                     </li>
                 </ul>
             </el-form>
