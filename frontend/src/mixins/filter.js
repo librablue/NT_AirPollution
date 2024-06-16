@@ -44,8 +44,6 @@ const form = {
                     return '繳費完成';
                 case 5:
                     return '免繳費';
-                case 6:
-                    return '暫免繳';
                 default:
                     return '';
             }
