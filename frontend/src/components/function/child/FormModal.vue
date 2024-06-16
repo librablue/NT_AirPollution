@@ -1,24 +1,12 @@
 <template>
-	<vxe-modal title="申請單明細" v-model="visible" width="80%" height="90%" :lock-scroll="false" esc-closable resize show-footer>
+	<vxe-modal title="申請案件明細" v-model="visible" width="80%" height="90%" :lock-scroll="false" esc-closable resize show-footer>
 		<template #default>
-			<el-form class="modal-form">
-				<div class="form-item-inline">
-					<div class="form-item-col">
-						<el-form-item prop="C_NO" label="管制編號">{{form.C_NO ? `${form.C_NO}-${form.SER_NO}` : '(待審核)'}}</el-form-item>
-					</div>
-					<div class="form-item-col">
-						<el-form-item label="申報應繳金額">{{(form.S_AMT === null ? '未結算' : form.S_AMT) | comma}}</el-form-item>
-					</div>
-					<!-- <div v-if="form.FormStatus === 1 || form.FormStatus === 2" class="form-item-col">
-						<el-link type="primary" style="line-height: 32px;" @click="finalCalc('S_AMT')">試算申報金額</el-link>
-					</div>-->
-					<div class="form-item-col">
-						<el-form-item label="結算應繳金額">{{(form.S_AMT2 === null ? '未結算' : form.S_AMT2) | comma}}</el-form-item>
-					</div>
-					<!-- <div v-if="form.CalcStatus === 1 || form.CalcStatus === 2" class="form-item-col">
-						<el-link type="primary" style="line-height: 32px;" @click="finalCalc('S_AMT2')">試算結算金額</el-link>
-					</div>-->
-				</div>
+			<el-form inline>
+                <el-form-item label="管制編號">
+                    {{form.C_NO ? `${form.C_NO}-${form.SER_NO}` : '(待審核)'}}
+                </el-form-item>
+                <el-form-item label="申報應繳金額">{{(form.S_AMT === null ? '未結算' : form.S_AMT) | comma}}</el-form-item>
+                <el-form-item label="結算應繳金額">{{(form.S_AMT2 === null ? '未結算' : form.S_AMT2) | comma}}</el-form-item>
 			</el-form>
 			<el-tabs v-model="activeTab">
 				<el-tab-pane label="基本資料" name="1">
@@ -672,30 +660,6 @@ export default {
 };
 </script>
 <style lang="scss">
-.modal-form {
-	.el-form-item__label {
-		font-weight: 700;
-	}
-	.el-form-item__error {
-		line-height: 4px;
-	}
-	.form-item-inline {
-		display: flex;
-		align-items: center;
-		margin-bottom: 10px;
-		.form-item-col {
-			margin: 0 8px;
-		}
-		.el-form-item__label,
-		.el-form-item__content {
-			display: inline-block;
-		}
-		.el-form-item {
-			margin-bottom: 0;
-		}
-	}
-}
-
 .contact-group {
 	border: 2px dashed #ccc;
 	padding: 10px 10px 10px 0;

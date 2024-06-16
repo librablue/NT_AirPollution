@@ -146,14 +146,13 @@ namespace NT_AirPollution.Admin.Controllers
         /// </summary>
         /// <param name="form"></param>
         /// <returns></returns>
-        public bool UpdateFormStatus(FormView form)
+        public bool UpdateStatus(FormView form)
         {
             try
             {
                 switch (form.FormStatus)
                 {
                     case FormStatus.待補件:
-                        _formService.SendFormStatus2(form);
                         break;
                     case FormStatus.通過待繳費:
                         form.VerifyDate1 = DateTime.Now;
@@ -168,39 +167,13 @@ namespace NT_AirPollution.Admin.Controllers
 
 
                         if (form.S_AMT <= 100)
-                        {
                             form.FormStatus = FormStatus.免繳費;
-                            _formService.SendFormStatus5(form);
-                        }
-                        else
-                        {
-                            _formService.SendFormStatus3(form);
-                        }
 
                         break;
                     case FormStatus.已繳費完成:
-                        _formService.SendFormStatus4(form);
                         break;
                 }
 
-                _formService.UpdateForm(form);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        /// <summary>
-        /// 更新結算進度
-        /// </summary>
-        /// <param name="form"></param>
-        /// <returns></returns>
-        public bool UpdateCalcStatus(FormView form)
-        {
-            try
-            {
                 // 3.4.5指令共用，用退費金額<4000判斷4，>=4000判斷5
                 if (form.CalcStatus == CalcStatus.通過待繳費)
                 {
@@ -221,19 +194,15 @@ namespace NT_AirPollution.Admin.Controllers
                         form.CalcStatus = CalcStatus.通過待退費大於4000;
                 }
 
-
                 switch (form.CalcStatus)
                 {
                     case CalcStatus.待補件:
-                        _formService.SendCalcStatus2(form);
                         break;
                     case CalcStatus.通過待繳費:
                         form.VerifyDate2 = DateTime.Now;
-                        _formService.SendCalcStatus3(form);
                         break;
                     case CalcStatus.通過待退費小於4000:
                     case CalcStatus.通過待退費大於4000:
-                        _formService.SendCalcStatus45(form);
                         break;
                     case CalcStatus.繳退費完成:
                         var isAccessOK = _accessService.AddABUDF_B(form);
@@ -241,18 +210,121 @@ namespace NT_AirPollution.Admin.Controllers
                             throw new Exception("更新 Access 發生未預期錯誤");
 
                         form.FIN_DATE = DateTime.Now.AddYears(-1911).ToString("yyyMMdd");
-                        _formService.SendCalcStatus6(form);
-                        break;
-                    default:
                         break;
                 }
 
                 _formService.UpdateForm(form);
+                this.SendStatusMail(form);
                 return true;
             }
             catch (Exception ex)
             {
                 throw ex;
+            }
+        }
+
+        ///// <summary>
+        ///// 更新結算進度
+        ///// </summary>
+        ///// <param name="form"></param>
+        ///// <returns></returns>
+        //public bool UpdateCalcStatus(FormView form)
+        //{
+        //    try
+        //    {
+        //        // 3.4.5指令共用，用退費金額<4000判斷4，>=4000判斷5
+        //        if (form.CalcStatus == CalcStatus.通過待繳費)
+        //        {
+        //            form.B_DATE = form.B_DATE2.AddYears(-1911).ToString("yyyMMdd");
+        //            form.E_DATE = form.E_DATE2.AddYears(-1911).ToString("yyyMMdd");
+        //            // 停工天數
+        //            double downDays = form.StopWorks.Sum(o => (o.UP_DATE2 - o.DOWN_DATE2).TotalDays + 1);
+        //            var result = _formService.CalcTotalMoney(form, downDays);
+        //            form.S_AMT2 = result.TotalMoney;
+
+        //            if (form.S_AMT2 > form.S_AMT)
+        //                form.CalcStatus = CalcStatus.通過待繳費;
+        //            else if (form.P_AMT == form.S_AMT2)
+        //                form.CalcStatus = CalcStatus.繳退費完成;
+        //            else if (form.P_AMT - form.S_AMT2 < 4000)
+        //                form.CalcStatus = CalcStatus.通過待退費小於4000;
+        //            else if (form.P_AMT - form.S_AMT2 >= 4000)
+        //                form.CalcStatus = CalcStatus.通過待退費大於4000;
+        //        }
+
+
+        //        switch (form.CalcStatus)
+        //        {
+        //            case CalcStatus.待補件:
+        //                break;
+        //            case CalcStatus.通過待繳費:
+        //                form.VerifyDate2 = DateTime.Now;
+        //                break;
+        //            case CalcStatus.通過待退費小於4000:
+        //            case CalcStatus.通過待退費大於4000:
+        //                break;
+        //            case CalcStatus.繳退費完成:
+        //                var isAccessOK = _accessService.AddABUDF_B(form);
+        //                if (!isAccessOK)
+        //                    throw new Exception("更新 Access 發生未預期錯誤");
+
+        //                form.FIN_DATE = DateTime.Now.AddYears(-1911).ToString("yyyMMdd");
+        //                break;
+        //        }
+
+        //        _formService.UpdateForm(form);
+        //        this.SendStatusMail(form);
+        //        return true;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw ex;
+        //    }
+        //}
+
+        /// <summary>
+        /// 寄送郵件通知
+        /// </summary>
+        /// <param name="form"></param>
+        private void SendStatusMail(FormView form)
+        {
+            if (form.IsMailFormStatus)
+            {
+                switch (form.FormStatus)
+                {
+                    case FormStatus.待補件:
+                        _formService.SendFormStatus2(form);
+                        break;
+                    case FormStatus.通過待繳費:
+                        _formService.SendFormStatus3(form);
+                        break;
+                    case FormStatus.已繳費完成:
+                        _formService.SendFormStatus4(form);
+                        break;
+                    case FormStatus.免繳費:
+                        _formService.SendFormStatus5(form);
+                        break;
+                }
+            }
+
+            if (form.IsMailCalcStatus)
+            {
+                switch (form.CalcStatus)
+                {
+                    case CalcStatus.待補件:
+                        _formService.SendCalcStatus2(form);
+                        break;
+                    case CalcStatus.通過待繳費:
+                        _formService.SendCalcStatus3(form);
+                        break;
+                    case CalcStatus.通過待退費小於4000:
+                    case CalcStatus.通過待退費大於4000:
+                        _formService.SendCalcStatus45(form);
+                        break;
+                    case CalcStatus.繳退費完成:
+                        _formService.SendCalcStatus6(form);
+                        break;
+                }
             }
         }
 
