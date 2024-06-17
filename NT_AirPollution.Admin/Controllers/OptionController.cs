@@ -72,31 +72,5 @@ namespace NT_AirPollution.Admin.Controllers
                 throw ex;
             }
         }
-
-        [HttpGet]
-        public HttpResponseMessage Download(string f)
-        {
-            try
-            {
-                string filePath = $@"{_uploadPath}\{f}";
-                if (!System.IO.File.Exists(filePath))
-                    return null;
-
-                var stream = new FileStream(filePath, FileMode.Open);
-                HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
-                response.Content = new StreamContent(stream);
-                response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
-                response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
-                {
-                    FileName = f
-                };
-
-                return response;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
     }
 }

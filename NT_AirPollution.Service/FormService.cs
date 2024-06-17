@@ -695,6 +695,54 @@ namespace NT_AirPollution.Service
         }
 
         /// <summary>
+        /// 寄送郵件通知
+        /// </summary>
+        /// <param name="form"></param>
+        public void SendStatusMail(FormView form)
+        {
+            // 是否寄送通知郵件
+            if (form.IsMailFormStatus)
+            {
+                switch (form.FormStatus)
+                {
+                    case FormStatus.待補件:
+                        this.SendFormStatus2(form);
+                        break;
+                    case FormStatus.通過待繳費:
+                        this.SendFormStatus3(form);
+                        break;
+                    case FormStatus.已繳費完成:
+                        this.SendFormStatus4(form);
+                        break;
+                    case FormStatus.免繳費:
+                        this.SendFormStatus5(form);
+                        break;
+                }
+            }
+
+            // 是否寄送通知郵件
+            if (form.IsMailCalcStatus)
+            {
+                switch (form.CalcStatus)
+                {
+                    case CalcStatus.待補件:
+                        this.SendCalcStatus2(form);
+                        break;
+                    case CalcStatus.通過待繳費:
+                        this.SendCalcStatus3(form);
+                        break;
+                    case CalcStatus.通過待退費小於4000:
+                    case CalcStatus.通過待退費大於4000:
+                        this.SendCalcStatus45(form);
+                        break;
+                    case CalcStatus.繳退費完成:
+                        this.SendCalcStatus6(form);
+                        break;
+                }
+            }
+        }
+
+        /// <summary>
         /// 待補件
         /// </summary>
         /// <param name="form"></param>

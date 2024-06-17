@@ -3,7 +3,7 @@
 		<template #default>
 			<ul class="image-list">
                 <li v-for="(item, idx) in data" :key="idx">
-                    <img class="w100p" :src="`/api/Form/Download?f=${item}`">
+                    <img class="w100p" :src="`/api/Option/Download?f=${item}`">
                 </li>
             </ul>
 		</template>
