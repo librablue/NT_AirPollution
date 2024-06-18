@@ -2,9 +2,7 @@
 	<vxe-modal title="申請案件明細" v-model="visible" width="80%" height="90%" :lock-scroll="false" esc-closable resize show-footer>
 		<template #default>
 			<el-form inline>
-                <el-form-item label="管制編號">
-                    {{form.C_NO ? `${form.C_NO}-${form.SER_NO}` : '(待審核)'}}
-                </el-form-item>
+                <el-form-item label="管制編號">{{C_NO}}</el-form-item>
                 <el-form-item label="申報應繳金額">{{(form.S_AMT === null ? '未結算' : form.S_AMT) | comma}}</el-form-item>
                 <el-form-item label="結算應繳金額">{{(form.S_AMT2 === null ? '未結算' : form.S_AMT2) | comma}}</el-form-item>
 			</el-form>

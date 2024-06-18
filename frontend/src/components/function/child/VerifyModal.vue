@@ -17,7 +17,7 @@
 						<el-input type="textarea" :autosize="{ minRows: 3, maxRows: 6 }" v-model="form.FailReason1" />
 					</el-form-item>
 					<el-form-item>
-						<el-checkbox v-model="form.IsMailFormStatus" label="郵件通知"></el-checkbox>
+						<el-checkbox v-model="form.IsMailFormStatus" label="郵件通知" border></el-checkbox>
 					</el-form-item>
 				</div>
 				<div v-if="$route.path === '/function/form2'">
@@ -34,7 +34,7 @@
 						<el-input type="textarea" :autosize="{ minRows: 3, maxRows: 6 }" v-model="form.FailReason2" />
 					</el-form-item>
 					<el-form-item>
-						<el-checkbox v-model="form.IsMailCalcStatus" label="郵件通知"></el-checkbox>
+						<el-checkbox v-model="form.IsMailCalcStatus" label="郵件通知" border></el-checkbox>
 					</el-form-item>
 				</div>
 			</el-form>

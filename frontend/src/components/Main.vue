@@ -7,13 +7,16 @@
 				</h1>
 				<el-menu :default-active="activeIndex" mode="horizontal" router>
 					<el-menu-item index="function_news" route="/function/news">最新消息</el-menu-item>
-					<el-menu-item index="function_form1" route="/function/form1">申報案件管理</el-menu-item>
-					<el-menu-item index="function_form2" route="/function/form2">結算案件管理</el-menu-item>
+					<el-submenu index="function_form">
+						<template slot="title">案件管理</template>
+						<el-menu-item index="function_form1" route="/function/form1">申報案件管理</el-menu-item>
+						<el-menu-item index="function_form2" route="/function/form2">結算案件管理</el-menu-item>
+					</el-submenu>
 					<el-menu-item index="function_air" route="/function/air">空品不良回報</el-menu-item>
 					<el-menu-item index="function_road" route="/function/road">道路認養回報</el-menu-item>
 					<el-menu-item index="function_rate" route="/function/rate">郵局利率管理</el-menu-item>
 					<el-menu-item index="function_download" route="/function/download">下載專區</el-menu-item>
-                    <el-menu-item index="manage_user" route="/manage/user">使用者管理</el-menu-item>
+					<el-menu-item index="manage_user" route="/manage/user">使用者管理</el-menu-item>
 				</el-menu>
 			</div>
 			<div>
@@ -104,13 +107,6 @@ $lineWidth: 28px;
 		.el-col {
 			padding: 0 10px;
 		}
-	}
-}
-
-.el-menu.el-menu--horizontal {
-	border-bottom: none;
-	.el-menu-item {
-		font-size: 16px;
 	}
 }
 </style>
