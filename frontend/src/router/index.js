@@ -14,7 +14,7 @@ export default new Router({
 			path: '/',
 			component: (resolve) => require(['@/components/Main'], resolve),
 			children: [
-				{ path: '', redirect: '/function/form' },
+				{ path: '', redirect: '/function/news' },
 				{
 					path: '/function/form1',
 					name: 'function_form1',
