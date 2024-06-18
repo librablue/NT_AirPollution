@@ -45,8 +45,13 @@ namespace NT_AirPollution.Admin.Controllers
             return result.TotalMoney;
         }
 
+        /// <summary>
+        /// 複製表單追加序號
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
         [HttpPost]
-        public bool AddForm(FormView form)
+        public bool CopyForm(FormView form)
         {
             try
             {
@@ -59,7 +64,6 @@ namespace NT_AirPollution.Admin.Controllers
                 if (form.B_DATE2 > form.E_DATE2)
                     throw new Exception("施工期程起始日期不能大於結束日期");
 
-                form.SER_NO += 1;
                 form.AP_DATE = DateTime.Now.AddYears(-1911).ToString("yyyMMdd");
                 form.B_DATE = form.B_DATE2.AddYears(-1911).ToString("yyyMMdd");
                 form.E_DATE = form.E_DATE2.AddYears(-1911).ToString("yyyMMdd");
@@ -70,11 +74,12 @@ namespace NT_AirPollution.Admin.Controllers
                 form.FormStatus = FormStatus.審理中;
                 form.CalcStatus = CalcStatus.未申請;
 
-                //// 20240516 改審核後才產生單號
-                //// 寫入 Access
-                //bool isAccessOK = _accessService.AddABUDF(form);
-                //if (!isAccessOK)
-                //    throw new Exception("系統發生未預期錯誤");
+                int currentSER_NO = _accessService.GetMaxSER_NOByC_NO(form);
+                form.SER_NO = currentSER_NO + 1;
+                // 寫入 Access
+                bool isAccessOK = _accessService.AddABUDF(form);
+                if (!isAccessOK)
+                    throw new Exception("系統發生未預期錯誤");
 
                 _formService.AddForm(form);
 
@@ -160,6 +165,13 @@ namespace NT_AirPollution.Admin.Controllers
                         double downDays = form.StopWorks.Sum(o => (o.UP_DATE2 - o.DOWN_DATE2).TotalDays + 1);
                         var result = _formService.CalcTotalMoney(form, downDays);
                         form.S_AMT = result.TotalMoney;
+
+                        // 10000以上才能分期
+                        if(form.S_AMT < 10000)
+                        {
+                            form.P_KIND = "一次全繳";
+                        }
+
                         form.P_NUM = form.P_KIND == "一次全繳" ? 1 : 2;
                         form.P_AMT = form.S_AMT;
                         if (form.P_KIND == "分兩次繳清")

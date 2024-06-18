@@ -97,6 +97,25 @@ namespace NT_AirPollution.Service
         }
 
         /// <summary>
+        /// 取得管制編號最大序號
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        public int GetMaxSER_NOByC_NO(FormView form)
+        {
+            using (var cn = new OleDbConnection(accessConnStr))
+            {
+                var result = cn.QueryFirstOrDefault(@"
+                    SELECT SER_NO FROM ABUDF
+                    WHERE C_NO=@C_NO
+                    ORDER BY SER_NO DESC",
+                    new { C_NO = form.C_NO });
+
+                return result.SER_NO;
+            }
+        }
+
+        /// <summary>
         /// 寫入ABUDF
         /// </summary>
         /// <param name="form"></param>

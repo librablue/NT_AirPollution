@@ -1,6 +1,6 @@
 <template>
 	<div class="main">
-		<h1>申請案件管理</h1>
+		<h1>結算案件管理</h1>
 		<el-form size="small" inline>
 			<el-form-item label="管制編號">
 				<el-input style="width: 140px" v-model="filter.C_NO"></el-input>
@@ -8,26 +8,9 @@
 			<el-form-item label="Email">
 				<el-input v-model="filter.ClientUserEmail"></el-input>
 			</el-form-item>
-			<el-form-item label="審核進度">
-				<el-select style="width: 140px" v-model="filter.FormStatus">
-					<el-option label="全部" :value="-1"></el-option>
-					<el-option label="審理中" :value="1"></el-option>
-					<el-option label="待補件" :value="2"></el-option>
-					<el-option label="通過待繳費" :value="3"></el-option>
-					<el-option label="已繳費完成" :value="4"></el-option>
-					<el-option label="免繳費" :value="5"></el-option>
-				</el-select>
-			</el-form-item>
 			<el-form-item label="結算進度">
 				<el-select style="width: 180px" v-model="filter.CalcStatus">
-					<el-option label="全部" :value="-1"></el-option>
-					<el-option label="未申請" :value="0"></el-option>
-					<el-option label="審理中" :value="1"></el-option>
-					<el-option label="待補件" :value="2"></el-option>
-					<el-option label="通過待繳費" :value="3"></el-option>
-					<el-option label="通過待退費(<4000)" :value="4"></el-option>
-					<el-option label="通過待退費(>=4000)" :value="5"></el-option>
-					<el-option label="繳退費完成" :value="6"></el-option>
+					<el-option v-for="item in calcStatusList" :key="item.value" :label="item.label" :value="item.value"></el-option>
 				</el-select>
 			</el-form-item>
 			<el-form-item>
@@ -45,11 +28,11 @@
 				</template>
 			</vxe-table-column>
 			<vxe-table-column field="FormStatus" title="審核進度" width="120" align="center" sortable fixed="left">
-                <template v-slot="{ row }">{{row.FormStatus | formStatus}}</template>
-            </vxe-table-column>
+				<template v-slot="{ row }">{{row.FormStatus | formStatus}}</template>
+			</vxe-table-column>
 			<vxe-table-column field="CalcStatus" title="結算進度" width="120" align="center" sortable fixed="left">
-                <template v-slot="{ row }">{{row.CalcStatus | calcStatus}}</template>
-            </vxe-table-column>
+				<template v-slot="{ row }">{{row.CalcStatus | calcStatus}}</template>
+			</vxe-table-column>
 			<vxe-table-column field="C_NO" title="管制編號" width="140" align="center" sortable fixed="left">
 				<template #default="{ row }">
 					<span v-if="row.C_NO">{{row.C_NO}}-{{row.SER_NO}}</span>
@@ -85,6 +68,7 @@
 	</div>
 </template>
 <script>
+import { mapGetters } from 'vuex';
 import { dateTime, form } from '@/mixins/filter';
 import FormModal from '@/components/function/child/FormModal';
 import VerifyModal from '@/components/function/child/VerifyModal';
@@ -100,7 +84,7 @@ export default {
 			filter: {
 				C_NO: '',
 				ClientUserEmail: '',
-				FormStatus: 1,
+				FormStatus: -1,
 				CalcStatus: -1
 			},
 			forms: [],
@@ -110,9 +94,49 @@ export default {
 		};
 	},
 	mounted() {
-		this.getForms();
+        if (this.currentUser.RoleID === 1) {
+            this.filter.CalcStatus = 1;
+        }
+        else if (this.currentUser.RoleID === 2) {
+            this.filter.CalcStatus = 3;
+        }
+        else if (this.currentUser.RoleID === 99) {
+            this.filter.CalcStatus = -1;
+        }
+
+        this.getForms();
 	},
-	computed: {},
+	computed: {
+		...mapGetters(['currentUser']),
+		calcStatusList() {
+			if (this.currentUser.RoleID === 1) {
+				return [
+					{ value: 1, label: '審理中' },
+					{ value: 2, label: '待補件' }
+				];
+			} else if (this.currentUser.RoleID === 2) {
+				return [
+					{ value: 3, label: '通過待繳費' },
+					{ value: 4, label: '通過待退費(<4000)' },
+					{ value: 5, label: '通過待退費(>=4000)' },
+					{ value: 6, label: '繳退費完成' }
+				];
+			} else if (this.currentUser.RoleID === 99) {
+				return [
+					{ value: -1, label: '全部' },
+					{ value: 0, label: '未申請' },
+					{ value: 1, label: '審理中' },
+					{ value: 2, label: '待補件' },
+					{ value: 3, label: '通過待繳費' },
+					{ value: 4, label: '通過待退費(<4000)' },
+					{ value: 5, label: '通過待退費(>=4000)' },
+					{ value: 6, label: '繳退費完成' }
+				];
+			}
+
+			return [];
+		}
+	},
 	methods: {
 		getForms() {
 			this.loading = true;
@@ -127,13 +151,13 @@ export default {
 			this.formModalVisible = true;
 		},
 		copyRow(row) {
-			this.mode = 'Add';
+			this.mode = 'Copy';
 			this.selectRow = JSON.parse(JSON.stringify(row));
 			this.selectRow.FormStatus = 0;
 			this.selectRow.calcStatus = 0;
 			this.selectRow.Attachments.length = 0;
 			this.selectRow.StopWorks.length = 0;
-			const clearAry = ['AP_DATE', 'C_DATE', 'S_AMT', 'S_AMT2'];
+			const clearAry = ['SER_NO', 'AP_DATE', 'C_DATE', 'S_AMT', 'S_AMT2'];
 			for (const key of clearAry) {
 				this.selectRow[key] = null;
 			}

@@ -7,7 +7,8 @@
 				</h1>
 				<el-menu :default-active="activeIndex" mode="horizontal" router>
 					<el-menu-item index="function_news" route="/function/news">最新消息</el-menu-item>
-					<el-menu-item index="function_form" route="/function/form">申請案件管理</el-menu-item>
+					<el-menu-item index="function_form1" route="/function/form1">申報案件管理</el-menu-item>
+					<el-menu-item index="function_form2" route="/function/form2">結算案件管理</el-menu-item>
 					<el-menu-item index="function_air" route="/function/air">空品不良回報</el-menu-item>
 					<el-menu-item index="function_road" route="/function/road">道路認養回報</el-menu-item>
 					<el-menu-item index="function_rate" route="/function/rate">郵局利率管理</el-menu-item>

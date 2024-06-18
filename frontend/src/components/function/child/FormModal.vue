@@ -11,7 +11,7 @@
 			<el-tabs v-model="activeTab">
 				<el-tab-pane label="基本資料" name="1">
 					<el-form ref="tab1Form" :rules="tab1Rules" :model="form" label-width="auto">
-						<el-form-item label="管制編號">{{form.C_NO ? `${form.C_NO}-${form.SER_NO}` : '待取號'}}</el-form-item>
+						<el-form-item label="管制編號">{{C_NO}}</el-form-item>
 						<el-form-item prop="TOWN_NO" label="鄉鎮分類">
 							<el-select v-model="form.TOWN_NO">
 								<el-option label="請選擇" :value="undefined"></el-option>
@@ -313,7 +313,7 @@
 			</el-button>
 			<el-button type="primary" icon="el-icon-arrow-left" :disabled="activeTab === '1'" @click="goPrevTab">上一步</el-button>
 			<el-button type="primary" @click="goNextTab">
-				{{activeTab === '6' ? '儲存' : '下一步'}}
+				{{activeTab === '6' ? (mode === 'Update' ? '儲存' : '複製') : '下一步'}}
 				<i class="el-icon-arrow-right el-icon--right"></i>
 			</el-button>
 		</template>
@@ -442,6 +442,10 @@ export default {
 	},
 	computed: {
 		...mapGetters(['currentUser']),
+        C_NO() {
+            if(!this.form.C_NO || !this.form.SER_NO) return '待取號';
+            return `${this.form.C_NO}-${this.form.SER_NO}`;
+        },
 		totalDays() {
 			if (!this.form.B_DATE2 || !this.form.E_DATE2) return '';
 			var date1 = new Date(this.form.B_DATE2);
@@ -544,34 +548,6 @@ export default {
 		deleteStopWork(idx) {
 			if (!confirm('是否確認刪除?')) return;
 			this.form.StopWorks.splice(idx, 1);
-		},
-		saveForm() {
-			this.$refs.form.validate((valid, obj) => {
-				if (!valid) {
-					const firstKey = Object.keys(obj)[0];
-					alert(obj[firstKey][0].message);
-					return false;
-				}
-
-				const isStopWorksError = this.form.StopWorks.some(item => !item.DOWN_DATE2 || !item.UP_DATE2);
-				if (isStopWorksError) {
-					alert('停復工日期未輸入完整，請檢查修正後重新送出');
-					return false;
-				}
-
-				if (!confirm('是否確認繼續?')) return false;
-				this.form.PERCENT = this.calcPercent;
-				this.axios
-					.post(`api/Form/${this.mode}Form`, this.form)
-					.then(res => {
-						this.$emit('on-updated');
-						this.$message.success('畫面資料已儲存');
-						this.visible = false;
-					})
-					.catch(err => {
-						this.$message.error(err.response.data.ExceptionMessage);
-					});
-			});
 		},
 		finalCalc(key) {
 			this.$refs.form.validate(valid => {
