@@ -178,8 +178,14 @@ namespace NT_AirPollution.Admin.Controllers
                             form.P_AMT = form.S_AMT / 2;
 
 
+                        // 100元以下免繳
                         if (form.S_AMT <= 100)
+                        {
+                            form.P_KIND = "一次全繳";
+                            form.P_NUM = 1;
+                            form.P_AMT = form.S_AMT;
                             form.FormStatus = FormStatus.免繳費;
+                        }
 
                         break;
                     case FormStatus.已繳費完成:
@@ -217,13 +223,13 @@ namespace NT_AirPollution.Admin.Controllers
                     case CalcStatus.通過待退費大於4000:
                         break;
                     case CalcStatus.繳退費完成:
-                        var isAccessOK = _accessService.AddABUDF_B(form);
-                        if (!isAccessOK)
-                            throw new Exception("更新 Access 發生未預期錯誤");
-
                         form.FIN_DATE = DateTime.Now.AddYears(-1911).ToString("yyyMMdd");
                         break;
                 }
+
+                var isAccessOK = _accessService.AddABUDF_B(form);
+                if (!isAccessOK)
+                    throw new Exception("更新 Access 發生未預期錯誤");
 
                 _formService.UpdateForm(form);
                 _formService.SendStatusMail(form);

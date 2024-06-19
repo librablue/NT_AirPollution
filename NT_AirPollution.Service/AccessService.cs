@@ -503,6 +503,15 @@ namespace NT_AirPollution.Service
         {
             double workDays = (form.E_DATE2 - form.B_DATE2).TotalDays + 1;
             double downDays = form.StopWorks.Sum(o => o.DOWN_DAY);
+            string B_STAT;
+            if (form.P_KIND == "一次全繳")
+                B_STAT = "A一次繳清無結算";
+            else
+                B_STAT = "B分期繳交待結算";
+
+            if (form.S_AMT <= 100)
+                B_STAT = "Z已申報結算";
+
             using (var cn = new OleDbConnection(accessConnStr))
             {
                 try
@@ -518,7 +527,7 @@ namespace NT_AirPollution.Service
                             C_NO = form.C_NO,
                             SER_NO = form.SER_NO,
                             AP_DATE1 = form.AP_DATE1,
-                            B_STAT = "A一次繳清無結算",
+                            B_STAT = B_STAT,
                             KIND_NO = form.KIND_NO,
                             KIND = form.KIND,
                             YEAR = form.YEAR,
