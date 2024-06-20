@@ -234,10 +234,10 @@
             filterAttachmentInfo() {
                 return this.attachmentInfo.filter(item => item.PUB_COMP === this.selectRow.PUB_COMP);
             },
-            calcPercent() {
+            calcC_MONEY() {
                 try {
-                    if (!this.selectRow.C_MONEY || !this.selectRow.MONEY) throw '';
-                    return +((this.selectRow.C_MONEY / this.selectRow.MONEY) * 100).toFixed(2);
+                    if (!this.selectRow.MONEY) throw '';
+                    return +(this.selectRow.MONEY * this.selectRow.PERCENT / 100).toFixed(0);
                 } catch (err) {
                     return 0;
                 }
@@ -669,6 +669,16 @@
                 }
             },
             goNextTab() {
+                // 自動設定公共工程4%、私人工程3%
+                if (this.activeTab === '2') {
+                    if (this.selectRow.PUB_COMP) {
+                        this.selectRow.PERCENT = 4;
+                    }
+                    else {
+                        this.selectRow.PERCENT = 3;
+                    }
+                }
+
                 switch (this.activeTab) {
                     case '1':
                     case '2':
@@ -702,7 +712,7 @@
                         this.selectRow.UTME = point[0];
                         this.selectRow.UTMN = point[1];
                         this.selectRow.LATLNG = `${this.selectRow.LAT},${this.selectRow.LNG}`;
-                        this.selectRow.PERCENT = this.calcPercent;
+                        this.selectRow.C_MONEY = this.calcC_MONEY;
                         axios
                             .post(`/Apply/${this.mode}Form`, this.selectRow)
                             .then(res => {

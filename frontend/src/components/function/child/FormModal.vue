@@ -2,9 +2,9 @@
 	<vxe-modal title="申請案件明細" v-model="visible" width="80%" height="90%" :lock-scroll="false" esc-closable resize show-footer>
 		<template #default>
 			<el-form inline>
-                <el-form-item label="管制編號">{{C_NO}}</el-form-item>
-                <el-form-item label="申報應繳金額">{{(form.S_AMT === null ? '未結算' : form.S_AMT) | comma}}</el-form-item>
-                <el-form-item label="結算應繳金額">{{(form.S_AMT2 === null ? '未結算' : form.S_AMT2) | comma}}</el-form-item>
+				<el-form-item label="管制編號">{{C_NO}}</el-form-item>
+				<el-form-item label="申報應繳金額">{{(form.S_AMT === null ? '未結算' : form.S_AMT) | comma}}</el-form-item>
+				<el-form-item label="結算應繳金額">{{(form.S_AMT2 === null ? '未結算' : form.S_AMT2) | comma}}</el-form-item>
 			</el-form>
 			<el-tabs v-model="activeTab">
 				<el-tab-pane label="基本資料" name="1">
@@ -45,13 +45,15 @@
 							<el-form-item prop="LNG" label="座標(經度)">
 								<el-input type="number" v-model="form.LNG" maxlength="20"></el-input>
 							</el-form-item>
-							<el-form-item prop="UTME" label="座標X">
-								<el-input type="number" v-model="form.UTME"></el-input>
+						</div>
+                        <div class="flex-row">
+                            <el-form-item prop="UTME" label="座標X">
+								<el-input type="number" v-model="form.UTME" disabled></el-input>
 							</el-form-item>
 							<el-form-item prop="UTMN" label="座標Y">
-								<el-input type="number" v-model="form.UTMN"></el-input>
+								<el-input type="number" v-model="form.UTMN" disabled></el-input>
 							</el-form-item>
-						</div>
+                        </div>
 						<el-form-item prop="STATE" label="工程內容概述">
 							<el-input v-model="form.STATE" maxlength="200"></el-input>
 						</el-form-item>
@@ -188,10 +190,8 @@
 							<el-form-item prop="MONEY" label="工程合約經費(元)">
 								<el-input type="number" v-model="form.MONEY"></el-input>
 							</el-form-item>
-							<el-form-item prop="C_MONEY" label="工程環保經費(元)">
-								<el-input type="number" v-model="form.C_MONEY"></el-input>
-							</el-form-item>
-							<el-form-item label="工程合約經費比例(%)">{{calcPercent}}</el-form-item>
+							<el-form-item prop="C_MONEY" label="工程環保經費(元)">{{calcC_MONEY | comma}}</el-form-item>
+							<el-form-item prop="PERCENT" label="工程合約經費比例(%)">{{form.PERCENT}}</el-form-item>
 						</div>
 						<el-form-item v-if="isShowAREA()" prop="AREA" :label="projectCodeText">
 							<el-input type="number" v-model="form.AREA"></el-input>
@@ -440,10 +440,10 @@ export default {
 	},
 	computed: {
 		...mapGetters(['currentUser']),
-        C_NO() {
-            if(!this.form.C_NO || !this.form.SER_NO) return '待取號';
-            return `${this.form.C_NO}-${this.form.SER_NO}`;
-        },
+		C_NO() {
+			if (!this.form.C_NO || !this.form.SER_NO) return '待取號';
+			return `${this.form.C_NO}-${this.form.SER_NO}`;
+		},
 		totalDays() {
 			if (!this.form.B_DATE2 || !this.form.E_DATE2) return '';
 			var date1 = new Date(this.form.B_DATE2);
@@ -459,10 +459,10 @@ export default {
 		filterAttachmentInfo() {
 			return this.attachmentInfo.filter(item => item.PUB_COMP === this.form.PUB_COMP);
 		},
-		calcPercent() {
+		calcC_MONEY() {
 			try {
-				if (!this.form.C_MONEY || !this.form.MONEY) throw '';
-				return +((this.form.C_MONEY / this.form.MONEY) * 100).toFixed(2);
+				if (!this.form.MONEY) throw '';
+				return +((this.form.MONEY * this.form.PERCENT) / 100).toFixed(0);
 			} catch (err) {
 				return 0;
 			}
@@ -573,6 +573,15 @@ export default {
 			}
 		},
 		goNextTab() {
+			// 自動設定公共工程4%、私人工程3%
+			if (this.activeTab === '2') {
+				if (this.form.PUB_COMP) {
+					this.form.PERCENT = 4;
+				} else {
+					this.form.PERCENT = 3;
+				}
+			}
+
 			switch (this.activeTab) {
 				case '1':
 				case '2':
@@ -596,7 +605,7 @@ export default {
 				}
 				case '6': {
 					if (!confirm('是否確認繼續?')) return false;
-					this.form.PERCENT = this.calcPercent;
+					this.form.C_MONEY = this.calcC_MONEY;
 					this.axios
 						.post(`api/Form/${this.mode}Form`, this.form)
 						.then(res => {
@@ -620,8 +629,7 @@ export default {
 					this.form = JSON.parse(JSON.stringify(this.data));
 					this.activeTab = '1';
 					const point = this.form.LATLNG.split(',');
-					this.form.LAT = point[0] || null;
-					this.form.LNG = point[1] || null;
+					this.form = { ...this.form, ...{ LAT: point[0] || null, LNG: point[1] || null } };
 				}
 			}
 		},

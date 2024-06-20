@@ -1079,11 +1079,8 @@ namespace NT_AirPollution.Service
                 DateTime verifyDate = string.IsNullOrEmpty(form.AP_DATE1) ? form.VerifyDate1.Value : form.VerifyDate2.Value;
                 double totalPrice = string.IsNullOrEmpty(form.AP_DATE1) ? form.S_AMT.Value : form.S_AMT2.Value;
                 double currentPrice = string.IsNullOrEmpty(form.AP_DATE1) ? form.P_AMT.Value : (form.S_AMT2.Value - form.P_AMT.Value);
-
-                // 繳款期限：1、2類3天，其他30天
-                DateTime payEndDate = verifyDate.AddDays(30);
-                if (form.KIND_NO == "1" || form.KIND_NO == "2")
-                    payEndDate = verifyDate.AddDays(3);
+                // 繳費期限
+                DateTime payEndDate = string.IsNullOrEmpty(form.AP_DATE1) ? form.PayEndDate1.Value : form.PayEndDate2.Value;
 
                 // 利息
                 double interest = 0;

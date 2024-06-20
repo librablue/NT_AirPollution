@@ -11,6 +11,9 @@
 					<el-form-item v-if="form.FormStatus === 2" prop="FailReason1" label="退件原因">
 						<el-input type="textarea" :autosize="{ minRows: 3, maxRows: 6 }" v-model="form.FailReason1" />
 					</el-form-item>
+                    <el-form-item label="繳費期限">
+                        <el-date-picker v-model="form.PayEndDate1" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
+					</el-form-item>
 					<el-form-item>
 						<el-checkbox v-model="form.IsMailFormStatus" label="郵件通知" border></el-checkbox>
 					</el-form-item>
@@ -23,6 +26,9 @@
 					</el-form-item>
 					<el-form-item v-if="form.CalcStatus === 2" prop="FailReason2" label="退件原因">
 						<el-input type="textarea" :autosize="{ minRows: 3, maxRows: 6 }" v-model="form.FailReason2" />
+					</el-form-item>
+                    <el-form-item label="繳費期限">
+                        <el-date-picker v-model="form.PayEndDate2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
 					</el-form-item>
 					<el-form-item>
 						<el-checkbox v-model="form.IsMailCalcStatus" label="郵件通知" border></el-checkbox>

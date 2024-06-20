@@ -160,7 +160,26 @@ namespace NT_AirPollution.Admin.Controllers
                     case FormStatus.待補件:
                         break;
                     case FormStatus.通過待繳費:
+                        // 審核日期
                         form.VerifyDate1 = DateTime.Now;
+                        // 申報日期
+                        DateTime applyDate = _formService.ChineseDateToWestDate(form.AP_DATE);
+                        // 如果沒輸入繳費期限，系統幫忙算
+                        if (!form.PayEndDate1.HasValue)
+                        {
+                            /*
+                             * 公共工程繳費期限 = 申請日期加30天or開工日(最大值)
+                             * 私人工程繳費期限 = 申請日期加3天or開工日(最大值)
+                             */
+                            if (form.PUB_COMP)
+                                form.PayEndDate1 = applyDate.AddDays(30);
+                            else
+                                form.PayEndDate1 = applyDate.AddDays(3);
+
+                            if (form.B_DATE2 > applyDate)
+                                form.PayEndDate1 = form.B_DATE2;
+                        }
+
                         // 停工天數
                         double downDays = form.StopWorks.Sum(o => (o.UP_DATE2 - o.DOWN_DATE2).TotalDays + 1);
                         var result = _formService.CalcTotalMoney(form, downDays);
@@ -185,6 +204,7 @@ namespace NT_AirPollution.Admin.Controllers
                             form.P_NUM = 1;
                             form.P_AMT = form.S_AMT;
                             form.FormStatus = FormStatus.免繳費;
+                            form.PayEndDate1 = null;
                         }
 
                         break;
@@ -195,6 +215,24 @@ namespace NT_AirPollution.Admin.Controllers
                 // 3.4.5指令共用，用退費金額<4000判斷4，>=4000判斷5
                 if (form.CalcStatus == CalcStatus.通過待繳費)
                 {
+                    // 結算日期
+                    DateTime applyDate = _formService.ChineseDateToWestDate(form.AP_DATE1);
+                    // 如果沒輸入繳費期限，系統幫忙算
+                    if (!form.PayEndDate2.HasValue)
+                    {
+                        /*
+                         * 公共工程繳費期限 = 申請日期加30天or開工日(最大值)
+                         * 私人工程繳費期限 = 申請日期加3天or開工日(最大值)
+                         */
+                        if (form.PUB_COMP)
+                            form.PayEndDate2 = applyDate.AddDays(30);
+                        else
+                            form.PayEndDate2 = applyDate.AddDays(3);
+
+                        if (form.B_DATE2 > applyDate)
+                            form.PayEndDate2 = form.B_DATE2;
+                    }
+
                     form.B_DATE = form.B_DATE2.AddYears(-1911).ToString("yyyMMdd");
                     form.E_DATE = form.E_DATE2.AddYears(-1911).ToString("yyyMMdd");
                     // 停工天數
