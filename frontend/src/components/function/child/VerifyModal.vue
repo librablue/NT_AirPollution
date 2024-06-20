@@ -5,12 +5,7 @@
 				<div v-if="$route.path === '/function/form1'">
 					<el-form-item prop="FormStatus" label="審核進度">
 						<el-select v-model="form.FormStatus" placeholder="請選擇">
-							<el-option label="未申請" :value="0"></el-option>
-							<el-option label="審理中" :value="1"></el-option>
-							<el-option label="需補件" :value="2"></el-option>
-							<el-option label="審核通過" :value="3"></el-option>
-							<el-option label="已繳費完成" :value="4"></el-option>
-							<el-option label="免繳費" :value="5"></el-option>
+							<el-option v-for="item in formStatusList" :key="item.value" :label="item.label" :value="item.value"></el-option>
 						</el-select>
 					</el-form-item>
 					<el-form-item v-if="form.FormStatus === 2" prop="FailReason1" label="退件原因">
@@ -23,11 +18,7 @@
 				<div v-if="$route.path === '/function/form2'">
 					<el-form-item prop="CalcStatus" label="結算進度">
 						<el-select v-model="form.CalcStatus" placeholder="請選擇">
-							<el-option label="未申請" :value="0"></el-option>
-							<el-option label="審理中" :value="1"></el-option>
-							<el-option label="需補件" :value="2"></el-option>
-							<el-option label="審核通過" :value="3"></el-option>
-							<el-option label="繳退費完成" :value="6"></el-option>
+							<el-option v-for="item in calcStatusList" :key="item.value" :label="item.label" :value="item.value"></el-option>
 						</el-select>
 					</el-form-item>
 					<el-form-item v-if="form.CalcStatus === 2" prop="FailReason2" label="退件原因">
@@ -51,6 +42,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 export default {
 	name: 'VerifyModal',
 	props: ['show', 'data'],
@@ -59,6 +51,71 @@ export default {
 			visible: false,
 			form: {}
 		};
+	},
+	computed: {
+		...mapGetters(['currentUser']),
+		formStatusList() {
+			if (this.currentUser.RoleID === 1) {
+				return [
+					{ value: 1, label: '審理中' },
+					{ value: 2, label: '待補件' },
+					{ value: 3, label: '通過待繳費' }
+				];
+			} else if (this.currentUser.RoleID === 2) {
+				return [
+					{ value: 1, label: '審理中' },
+					{ value: 2, label: '待補件' },
+					{ value: 3, label: '通過待繳費' },
+					{ value: 4, label: '已繳費完成' },
+					{ value: 5, label: '免繳費' }
+				];
+			} else if (this.currentUser.RoleID === 99) {
+				return [
+					{ value: -1, label: '全部' },
+					{ value: 0, label: '未申請' },
+					{ value: 1, label: '審理中' },
+					{ value: 2, label: '待補件' },
+					{ value: 3, label: '通過待繳費' },
+					{ value: 4, label: '已繳費完成' },
+					{ value: 5, label: '免繳費' }
+				];
+			}
+
+			return [];
+		},
+		calcStatusList() {
+			if (this.currentUser.RoleID === 1) {
+				return [
+					{ value: 0, label: '未申請' },
+					{ value: 1, label: '審理中' },
+					{ value: 2, label: '待補件' },
+					{ value: 3, label: '通過待繳費' }
+				];
+			} else if (this.currentUser.RoleID === 2) {
+				return [
+					{ value: 0, label: '未申請' },
+					{ value: 1, label: '審理中' },
+					{ value: 2, label: '待補件' },
+					{ value: 3, label: '通過待繳費' },
+					{ value: 4, label: '通過待退費(<4000)' },
+					{ value: 5, label: '通過待退費(>=4000)' },
+					{ value: 6, label: '繳退費完成' }
+				];
+			} else if (this.currentUser.RoleID === 99) {
+				return [
+					{ value: -1, label: '全部' },
+					{ value: 0, label: '未申請' },
+					{ value: 1, label: '審理中' },
+					{ value: 2, label: '待補件' },
+					{ value: 3, label: '通過待繳費' },
+					{ value: 4, label: '通過待退費(<4000)' },
+					{ value: 5, label: '通過待退費(>=4000)' },
+					{ value: 6, label: '繳退費完成' }
+				];
+			}
+
+			return [];
+		}
 	},
 	methods: {
 		updateStatus() {
