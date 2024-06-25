@@ -13,6 +13,7 @@ namespace NT_AirPollution.Web.Controllers
         private readonly NewsService _newsService =  new NewsService();
         private readonly DownloadService _downloadService = new DownloadService();
         private readonly FormService _formService = new FormService();
+        private readonly ClientUserService _clientUserService = new ClientUserService();
 
         public ActionResult Index()
         {
@@ -28,6 +29,13 @@ namespace NT_AirPollution.Web.Controllers
 
         public ActionResult ProjectTable()
         {
+            return View();
+        }
+
+        public ActionResult Statistic()
+        {
+            ViewBag.UserCount = _clientUserService.GetUserCount();
+            ViewBag.FormCount = _formService.GetFormsCount();
             return View();
         }
 

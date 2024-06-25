@@ -124,5 +124,41 @@ namespace NT_AirPollution.Service
                 }
             }
         }
+
+        /// <summary>
+        /// 取得瀏覽人數
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public long GetVisitor()
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                var counter = cn.QuerySingle<long>(@"
+                        SELECT Counter FROM Visitor");
+
+                return counter;
+            }
+        }
+
+        /// <summary>
+        /// 新增瀏覽人次
+        /// </summary>
+        /// <returns></returns>
+        public bool AddVisitor()
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                try
+                {
+                    cn.Execute(@"UPDATE Visitor SET Counter=Counter+1");
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+            }
+        }
     }
 }

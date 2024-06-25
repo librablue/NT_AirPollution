@@ -125,6 +125,7 @@
     <Content Include="static\js\bank.js" />
     <Content Include="static\js\calc.js" />
     <Content Include="static\js\manage\form.js" />
+    <Content Include="static\js\plugin\counterup2.js" />
     <Content Include="static\js\road\index.js" />
     <Content Include="static\js\main.js" />
     <Content Include="static\js\member\forget.js" />
@@ -203,6 +204,7 @@
     <Content Include="static\scss\_table.scss" />
     <Content Include="Views\Download\Index.cshtml" />
     <Content Include="Views\Home\ProjectTable.cshtml" />
+    <Content Include="Views\Home\Statistic.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

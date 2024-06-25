@@ -45,6 +45,9 @@
                 <li class="@($"{controllerName}/{actionName}" == "Download/Index" ? "active" : "")">
                     <a href="@Url.Content("~/Download/Index")">下載專區</a>
                 </li>
+                <li class="@($"{controllerName}/{actionName}" == "Home/Statistic" ? "active" : "")">
+                    <a href="@Url.Content("~/Home/Statistic")">成果統計</a>
+                </li>
                 @if (User.IsInRole("Member1"))
                 {
                     <li class="dropdown">

@@ -1,0 +1,66 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section styles {
+    <link rel="stylesheet" href="@Url.Content("~/static/css/member.css")" />
+    <style>
+        h3 {
+            font-size: 1.5rem;
+            color: #68a2c0;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        p {
+            line-height: 2;
+        }
+    </style>
+}
+@section scripts {
+    <script src="@Url.Content("~/static/js/plugin/counterup2.js")"></script>
+    <script>
+        const counterUp = window.counterUp.default;
+        const elements = document.querySelectorAll('.num');
+        elements.forEach(el => {
+            counterUp(el, {
+                duration: 5000,
+                delay: 16,
+            })
+        });
+    </script>
+}
+
+<div id="app" class="container main">
+    <h3>南投縣政府營建工程空污費網路申報及繳費系統</h3>
+    <p class="text-center">從113年7月成立開始至 @DateTime.Now.Year 年 @DateTime.Now.Month 月 @DateTime.Now.Day 日止</p>
+    <div class="count-row">
+        <div class="count-item">
+            <div class="counter">
+                <span class="num">@ViewBag.UserCount.ToString("N0")</span>
+                <span class="unit">戶</span>
+            </div>
+            <div class="count-text">會員人數</div>
+        </div>
+        <div class="count-item">
+            <div class="counter">
+                <span class="num">@ViewBag.FormCount.ToString("N0")</span>
+                <span class="unit">件</span>
+            </div>
+            <div class="count-text">案件申報數<br />不用跑環保局</div>
+        </div>
+        <div class="count-item">
+            <div class="counter">
+                <span class="num">0</span>
+                <span class="unit">位</span>
+            </div>
+            <div class="count-text">線上繳費筆數<br />在家就能繳</div>
+        </div>
+        <div class="count-item">
+            <div class="counter">
+                <span class="num">0</span>
+                <span class="unit">公噸</span>
+            </div>
+            <div class="count-text">碳排放量減少了</div>
+        </div>
+    </div>
+</div>

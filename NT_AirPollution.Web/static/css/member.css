@@ -822,6 +822,52 @@ h3 {
   margin-bottom: 20px;
 }
 
+.count-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  margin: 60px auto 0;
+}
+.count-row .count-item {
+  width: calc(100% - 24px);
+  margin: 0 12px 30px;
+  text-align: center;
+}
+.count-row .count-item .counter {
+  margin-bottom: 20px;
+}
+.count-row .count-item .num {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #606060;
+}
+.count-row .count-item .unit {
+  position: relative;
+  font-size: 1rem;
+  color: #a6be66;
+  margin-left: 10px;
+}
+.count-row .count-item .unit:before {
+  content: "+";
+  position: absolute;
+  top: -14px;
+  left: -10px;
+}
+.count-row .count-item .count-text {
+  color: #5d9bb4;
+}
+
+@media (min-width: 576px) {
+  .count-row .count-item {
+    width: calc(50% - 24px);
+  }
+}
+@media (min-width: 992px) {
+  .count-row .count-item {
+    width: calc(25% - 24px);
+  }
+}
 footer {
   background-color: #ebf5ff;
   padding: 20px 0 0;

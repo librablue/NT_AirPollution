@@ -412,6 +412,22 @@ namespace NT_AirPollution.Service
         }
 
         /// <summary>
+        /// 取得申請表單數
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public long GetFormsCount()
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                var counter = cn.QuerySingle<long>(@"
+                        SELECT COUNT(*) FROM Form");
+
+                return counter;
+            }
+        }
+
+        /// <summary>
         /// 新增申請單
         /// </summary>
         /// <param name="form"></param>

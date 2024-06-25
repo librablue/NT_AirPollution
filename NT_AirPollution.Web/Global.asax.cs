@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using NT_AirPollution.Model.View;
+using NT_AirPollution.Service;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,6 +40,18 @@ namespace NT_AirPollution.Web
                 {
                     return;
                 }
+            }
+        }
+
+        protected void Session_start()
+        {
+            try
+            {
+                OptionService optionService = new OptionService();
+                optionService.AddVisitor();
+            }
+            catch (Exception ex)
+            {
             }
         }
     }

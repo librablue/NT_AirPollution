@@ -64,6 +64,22 @@ namespace NT_AirPollution.Service
         }
 
         /// <summary>
+        /// 取得會員人數
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public long GetUserCount()
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                var counter = cn.QuerySingle<long>(@"
+                        SELECT COUNT(*) FROM ClientUser");
+
+                return counter;
+            }
+        }
+
+        /// <summary>
         /// 新增使用者
         /// </summary>
         /// <param name="user"></param>
