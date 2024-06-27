@@ -250,7 +250,7 @@
 									<td>
 										<ul class="file-list">
 											<li v-for="sub in filterAttachments(item.ID)" :key="sub.ID">
-												<a :href="`/api/Option/Download?f=${sub.FileName}`" class="link-download">{{sub.FileName}}</a>
+												<a :href="`api/Form/Download?f=${sub.FileName}`" class="link-download">{{sub.FileName}}</a>
 											</li>
 										</ul>
 									</td>

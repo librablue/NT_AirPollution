@@ -147,7 +147,7 @@
 
                     this.calcResult = null;
 					axios
-						.post('/Form/GetTotalMoney', this.form)
+						.post('/Home/GetTotalMoney', this.form)
 						.then(res => {
 							if (!res.data.Status) {
 								alert(res.data.Message);
