@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NT_AirPollution.Admin", "NT
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NT_AirPollution.MailTask", "NT_AirPollution.MailTask\NT_AirPollution.MailTask.csproj", "{50ABFC80-22A6-492E-BF46-2FEFADDD0F2D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NT_AirPollution.WriteOffTask", "NT_AirPollution.WriteOffTask\NT_AirPollution.WriteOffTask.csproj", "{83686F54-3AED-4F75-AC83-FC66D2ED4D63}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{50ABFC80-22A6-492E-BF46-2FEFADDD0F2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{50ABFC80-22A6-492E-BF46-2FEFADDD0F2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{50ABFC80-22A6-492E-BF46-2FEFADDD0F2D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83686F54-3AED-4F75-AC83-FC66D2ED4D63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83686F54-3AED-4F75-AC83-FC66D2ED4D63}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83686F54-3AED-4F75-AC83-FC66D2ED4D63}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83686F54-3AED-4F75-AC83-FC66D2ED4D63}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
