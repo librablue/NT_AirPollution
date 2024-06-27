@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -293,6 +294,52 @@ namespace NT_AirPollution.Admin.Controllers
             };
 
             return response;
+        }
+
+        /// <summary>
+        /// 下載全部打包壓縮
+        /// </summary>
+        /// <param name="id">申請單ID</param>
+        /// <returns></returns>
+        [HttpGet]
+        public HttpResponseMessage DownloadZip(long id)
+        {
+            var form = _formService.GetFormByID(id);
+            var filesToInclude = new List<string>();
+            foreach (var item in form.Attachments)
+            {
+                filesToInclude.Add($@"{_uploadPath}\{item.FileName}");
+            }
+
+            var memoryStream = new MemoryStream();
+            using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
+            {
+                foreach (var filePath in filesToInclude)
+                {
+                    var fileName = Path.GetFileName(filePath);
+                    var entry = archive.CreateEntry(fileName);
+
+                    using (var entryStream = entry.Open())
+                    using (var fileStream = new FileStream(filePath, FileMode.Open))
+                    {
+                        fileStream.CopyTo(entryStream);
+                    }
+                }
+            }
+
+
+            memoryStream.Position = 0;
+            var result = new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+            {
+                Content = new StreamContent(memoryStream)
+            };
+            result.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
+            {
+                FileName = $"{form.COMP_NAM}.zip"
+            };
+            result.Content.Headers.ContentType = new MediaTypeHeaderValue("application/zip");
+
+            return result;
         }
     }
 }

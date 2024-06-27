@@ -233,14 +233,14 @@
 						</el-form-item>
 					</el-form>
 				</el-tab-pane>
-				<el-tab-pane label="檢附資料" name="5">
+				<el-tab-pane label="檢附資料" name="5">                   
 					<div class="table-responsive">
 						<table class="table">
 							<thead>
 								<tr>
 									<th>檢附資料名稱</th>
 									<th>說明</th>
-									<th>檢附資料上傳</th>
+									<th>檢附資料上傳(<a :href="`api/Form/DownloadZip?id=${form.ID}`">下載全部</a>)</th>
 								</tr>
 							</thead>
 							<tbody>
