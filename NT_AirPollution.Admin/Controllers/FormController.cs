@@ -169,15 +169,15 @@ namespace NT_AirPollution.Admin.Controllers
                         if (!form.PayEndDate1.HasValue)
                         {
                             /*
-                             * 公共工程繳費期限 = 申請日期加30天or開工日(最大值)
-                             * 私人工程繳費期限 = 申請日期加3天or開工日(最大值)
+                             * 公共工程繳費期限 = 申請日期加30天or開工日(不能超過開工日)
+                             * 私人工程繳費期限 = 申請日期加3天or開工日(不能超過開工日)
                              */
                             if (form.PUB_COMP)
                                 form.PayEndDate1 = applyDate.AddDays(30);
                             else
                                 form.PayEndDate1 = applyDate.AddDays(3);
 
-                            if (form.B_DATE2 > applyDate)
+                            if (applyDate > form.B_DATE2)
                                 form.PayEndDate1 = form.B_DATE2;
                         }
 
@@ -222,15 +222,15 @@ namespace NT_AirPollution.Admin.Controllers
                     if (!form.PayEndDate2.HasValue)
                     {
                         /*
-                         * 公共工程繳費期限 = 申請日期加30天or開工日(最大值)
-                         * 私人工程繳費期限 = 申請日期加3天or開工日(最大值)
+                         * 公共工程繳費期限 = 申請日期加30天or開工日(不能超過開工日)
+                         * 私人工程繳費期限 = 申請日期加3天or開工日(不能超過開工日)
                          */
                         if (form.PUB_COMP)
                             form.PayEndDate2 = applyDate.AddDays(30);
                         else
                             form.PayEndDate2 = applyDate.AddDays(3);
 
-                        if (form.B_DATE2 > applyDate)
+                        if (applyDate > form.B_DATE2)
                             form.PayEndDate2 = form.B_DATE2;
                     }
 
@@ -280,6 +280,11 @@ namespace NT_AirPollution.Admin.Controllers
             }
         }
 
+        /// <summary>
+        /// 下載檔案
+        /// </summary>
+        /// <param name="f"></param>
+        /// <returns></returns>
         [HttpGet]
         public HttpResponseMessage Download(string f)
         {
@@ -297,7 +302,7 @@ namespace NT_AirPollution.Admin.Controllers
         }
 
         /// <summary>
-        /// 下載全部打包壓縮
+        /// 下載全部檔案打包壓縮
         /// </summary>
         /// <param name="id">申請單ID</param>
         /// <returns></returns>

@@ -621,9 +621,12 @@ namespace NT_AirPollution.Service
             {
                 try
                 {
+                    cn.Execute(@"DELETE FROM ABUDF_1 WHERE [FLNO]=?",
+                        new { FLNO = abudf_1.FLNO });
+
                     cn.Execute(@"
-                        INSERT INTO ABUDF_1 ([C_NO],[SER_NO],[P_TIME],[P_DATE],[E_DATE],[FLNO],[F_AMT],[B_AMT],[KEYIN],[C_DATE],[M_DATE])
-                        VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+                        INSERT INTO ABUDF_1 ([C_NO],[SER_NO],[P_TIME],[P_DATE],[E_DATE],[FLNO],[B_AMT],[KEYIN],[C_DATE],[M_DATE])
+                        VALUES (?,?,?,?,?,?,?,?,?,?)",
                         new
                         {
                             C_NO = abudf_1.C_NO,
@@ -632,7 +635,6 @@ namespace NT_AirPollution.Service
                             P_DATE = abudf_1.P_DATE,
                             E_DATE = abudf_1.E_DATE,
                             FLNO = abudf_1.FLNO,
-                            F_AMT = abudf_1.F_AMT,
                             B_AMT = abudf_1.B_AMT,
                             KEYIN = "EPB02",
                             C_DATE = abudf_1.C_DATE.ToString("yyyy-MM-dd HH:mm:ss"),
@@ -644,6 +646,46 @@ namespace NT_AirPollution.Service
                 catch (Exception ex)
                 {
                     Logger.Error($"AddABUDF_1: {ex.Message}");
+                    throw new Exception("系統發生未預期錯誤");
+                }
+            }
+        }
+
+        /// <summary>
+        /// 更新ABUDF_1
+        /// </summary>
+        /// <param name="abudf_1"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public bool UpdateABUDF_1(ABUDF_1 abudf_1)
+        {
+            using (var cn = new OleDbConnection(accessConnStr))
+            {
+                try
+                {
+                    cn.Execute(@"
+                        UPDATE ABUDF_1
+                            SET [F_DATE]=?,
+                                [F_AMT]=?,
+                                [PM_DATE]=?,
+                                [A_DATE]=?,
+                                [M_DATE]=?
+                        WHERE [FLNO]=?",
+                        new
+                        {
+                            F_DATE = abudf_1.F_DATE,
+                            F_AMT = abudf_1.F_AMT,
+                            PM_DATE = abudf_1.PM_DATE,
+                            A_DATE = abudf_1.A_DATE,
+                            M_DATE = abudf_1.M_DATE.ToString("yyyy-MM-dd HH:mm:ss"),
+                            FLNO = abudf_1.FLNO
+                        });
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"UpdateABUDF_1: {ex.Message}");
                     throw new Exception("系統發生未預期錯誤");
                 }
             }

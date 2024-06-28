@@ -1,4 +1,6 @@
-﻿using NT_AirPollution.Model.Domain;
+﻿using NT_AirPollution.Model.Access;
+using NT_AirPollution.Model.Domain;
+using NT_AirPollution.Service;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -13,8 +15,8 @@ namespace NT_AirPollution.WriteOffTask
     {
         private static string _bankFile = ConfigurationManager.AppSettings["BankFile"].ToString();
         private static string _bankFileHistory = ConfigurationManager.AppSettings["BankFileHistory"].ToString();
-        private static JobService _jobService = new JobService();
-
+        private static FormService _formService = new FormService();
+        private static AccessService _accessService = new AccessService();
         static void Main(string[] args)
         {
             LoadBankFile();
@@ -43,7 +45,21 @@ namespace NT_AirPollution.WriteOffTask
                         BankLog = line[i]
                     };
 
-                    _jobService.UpdatePayment(payment);
+                    var abudf_1 = new ABUDF_1
+                    {
+                        F_DATE = DateTime.Now.AddYears(-1911).ToString("yyyMMdd"),
+                        F_AMT = payAmount,
+                        PM_DATE = payDate.AddYears(-1911).ToString("yyyMMdd"),
+                        A_DATE = DateTime.Now.AddYears(-1911).ToString("yyyMMdd"),
+                        M_DATE = DateTime.Now,
+                        FLNO = account
+                    };
+
+                    var isAccessOK = _accessService.UpdateABUDF_1(abudf_1);
+                    if (!isAccessOK)
+                        return;
+
+                    _formService.UpdatePayment(payment);
                 }
 
                 string fileName = Path.GetFileName(file);

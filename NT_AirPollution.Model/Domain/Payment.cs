@@ -17,7 +17,7 @@ namespace NT_AirPollution.Model.Domain
         public DateTime PayEndDate { get; set; }
         public DateTime? ModifyDate { get; set; }
         public string PaymentID { get; set; }
-        public int? PayAmount { get; set; }
+        public double? PayAmount { get; set; }
         public DateTime? PayDate { get; set; }
         public DateTime CreateDate { get; set; }
         public string BankLog { get; set; }
