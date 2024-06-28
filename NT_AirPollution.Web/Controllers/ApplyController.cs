@@ -266,9 +266,7 @@ namespace NT_AirPollution.Web.Controllers
                 //form.C_NO = c_no;
 
                 //// 寫入 Access
-                //bool isAccessOK = _accessService.AddABUDF(form);
-                //if (!isAccessOK)
-                //    throw new Exception("系統發生未預期錯誤");
+                //_accessService.AddABUDF(form);
 
                 _formService.AddForm(form);
 
@@ -331,9 +329,7 @@ namespace NT_AirPollution.Web.Controllers
                 // 有管制編號才修改Access
                 if (!string.IsNullOrEmpty(form.C_NO))
                 {
-                    bool isAccessOK = _accessService.UpdateABUDF(form);
-                    if (!isAccessOK)
-                        throw new Exception("系統發生未預期錯誤");
+                    _accessService.UpdateABUDF(form);
                 }
 
                 _formService.UpdateForm(form);

@@ -257,7 +257,7 @@ namespace NT_AirPollution.Service
                 catch (Exception ex)
                 {
                     Logger.Error($"AddABUDF: {ex.Message}");
-                    throw new Exception("系統發生未預期錯誤");
+                    throw new Exception("更新Access發生未預期錯誤");
                 }
             }
         }
@@ -488,7 +488,7 @@ namespace NT_AirPollution.Service
                 catch (Exception ex)
                 {
                     Logger.Error($"UpdateABUDF: {ex.Message}");
-                    throw new Exception("系統發生未預期錯誤");
+                    throw new Exception("更新Access發生未預期錯誤");
                 }
             }
         }
@@ -552,7 +552,7 @@ namespace NT_AirPollution.Service
                 catch (Exception ex)
                 {
                     Logger.Error($"AddABUDF_B: {ex.Message}");
-                    throw new Exception("系統發生未預期錯誤");
+                    throw new Exception("更新Access發生未預期錯誤");
                 }
             }
         }
@@ -646,7 +646,7 @@ namespace NT_AirPollution.Service
                 catch (Exception ex)
                 {
                     Logger.Error($"AddABUDF_1: {ex.Message}");
-                    throw new Exception("系統發生未預期錯誤");
+                    throw new Exception("更新Access發生未預期錯誤");
                 }
             }
         }
@@ -686,7 +686,7 @@ namespace NT_AirPollution.Service
                 catch (Exception ex)
                 {
                     Logger.Error($"UpdateABUDF_1: {ex.Message}");
-                    throw new Exception("系統發生未預期錯誤");
+                    throw new Exception("更新Access發生未預期錯誤");
                 }
             }
         }

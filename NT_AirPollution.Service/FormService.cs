@@ -508,6 +508,23 @@ namespace NT_AirPollution.Service
         }
 
         /// <summary>
+        /// 取得Payment By帳號
+        /// </summary>
+        /// <param name="paymentID"></param>
+        /// <returns></returns>
+        public Payment GetPaymentByPaymentID(string paymentID)
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                var result = cn.QueryFirstOrDefault<Payment>(@"
+                    SELECT * FROM dbo.Payment WHERE PaymentID=@PaymentID",
+                    new { PaymentID = paymentID });
+
+                return result;
+            }
+        }
+
+        /// <summary>
         /// 新增繳費資料
         /// </summary>
         /// <param name="payment"></param>
@@ -556,8 +573,7 @@ namespace NT_AirPollution.Service
                     {
                         // 查出該筆繳款資料
                         var paymentInDB = cn.QueryFirstOrDefault<Payment>(@"
-                            SELECT * FROM dbo.Payment
-                            WHERE PaymentID=@PaymentID",
+                            SELECT * FROM dbo.Payment WHERE PaymentID=@PaymentID",
                             new { PaymentID = payment.PaymentID }, trans);
 
                         if (paymentInDB == null)
@@ -578,13 +594,6 @@ namespace NT_AirPollution.Service
                                 BankLog = payment.BankLog,
                                 FormID = paymentInDB.FormID
                             }, trans);
-
-                        // 更新申請單狀態(todo)
-                        cn.Execute(@"
-                            UPDATE dbo.Form
-                                SET FormStatus=4
-                            WHERE ID=@FormID",
-                            new { FormID = payment.FormID }, trans);
 
                         trans.Commit();
                         return true;
@@ -902,10 +911,6 @@ namespace NT_AirPollution.Service
                 {
                     string content = sr.ReadToEnd();
                     string body = string.Format(content, form.COMP_NAM);
-                    string fileName = $"繳款單{form.C_NO}-{form.SER_NO}({(form.P_KIND == "一次繳清" ? "一次繳清" : "第一期")})";
-                    // 產生繳款單
-                    string pdfPath = this.CreatePaymentPDF(fileName, form);
-
                     using (var cn = new SqlConnection(connStr))
                     {
                         // 寄件夾
@@ -914,7 +919,6 @@ namespace NT_AirPollution.Service
                             Address = form.CreateUserEmail,
                             Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件繳費通知(工程名稱 {form.COMP_NAM})",
                             Body = body,
-                            Attachment = pdfPath,
                             FailTimes = 0,
                             CreateDate = DateTime.Now
                         });
@@ -1060,10 +1064,6 @@ namespace NT_AirPollution.Service
                 {
                     string content = sr.ReadToEnd();
                     string body = string.Format(content, form.COMP_NAM);
-                    string fileName = $"繳款單{form.C_NO}-{form.SER_NO}(結算補繳)";
-                    // 產生繳款單
-                    string docPath = this.CreatePaymentPDF(fileName, form);
-
                     using (var cn = new SqlConnection(connStr))
                     {
                         // 寄件夾
@@ -1072,7 +1072,6 @@ namespace NT_AirPollution.Service
                             Address = form.CreateUserEmail,
                             Subject = $"南投縣環保局營建工程空氣污染防制費網路申報系統-案件結算通知(需補繳)(工程名稱 {form.COMP_NAM})",
                             Body = body,
-                            Attachment = docPath,
                             FailTimes = 0,
                             CreateDate = DateTime.Now
                         });
@@ -1267,9 +1266,7 @@ namespace NT_AirPollution.Service
                     abudf_1.C_DATE = DateTime.Now;
                     abudf_1.M_DATE = DateTime.Now;
                     // 寫入 ABUDF_1
-                    var isAccessOK = _accessService.AddABUDF_1(abudf_1);
-                    if (!isAccessOK)
-                        throw new Exception("更新 Access 發生未預期錯誤");
+                    _accessService.AddABUDF_1(abudf_1);
                 }
 
                 // 寫入Payment

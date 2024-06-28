@@ -78,9 +78,7 @@ namespace NT_AirPollution.Admin.Controllers
                 int currentSER_NO = _accessService.GetMaxSER_NOByC_NO(form);
                 form.SER_NO = currentSER_NO + 1;
                 // 寫入 Access
-                bool isAccessOK = _accessService.AddABUDF(form);
-                if (!isAccessOK)
-                    throw new Exception("系統發生未預期錯誤");
+                _accessService.AddABUDF(form);
 
                 _formService.AddForm(form);
 
@@ -104,9 +102,7 @@ namespace NT_AirPollution.Admin.Controllers
                 if (!string.IsNullOrEmpty(form.C_NO))
                 {
                     // 修改 access
-                    bool isAccessOK = _accessService.UpdateABUDF(form);
-                    if (!isAccessOK)
-                        throw new Exception("更新 Access 發生未預期錯誤");
+                    _accessService.UpdateABUDF(form);
                 }
 
                 _formService.UpdateForm(form);
@@ -134,9 +130,7 @@ namespace NT_AirPollution.Admin.Controllers
                 form.C_NO = c_no;
 
                 // 寫入 Access
-                bool isAccessOK = _accessService.AddABUDF(form);
-                if (!isAccessOK)
-                    throw new Exception("系統發生未預期錯誤");
+                _accessService.AddABUDF(form);
 
                 _formService.UpdateForm(form);
                 return form.C_NO;
@@ -266,9 +260,8 @@ namespace NT_AirPollution.Admin.Controllers
                         break;
                 }
 
-                var isAccessOK = _accessService.AddABUDF_B(form);
-                if (!isAccessOK)
-                    throw new Exception("更新 Access 發生未預期錯誤");
+                // 更新 Access
+                _accessService.AddABUDF_B(form);
 
                 _formService.UpdateForm(form);
                 _formService.SendStatusMail(form);
