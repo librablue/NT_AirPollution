@@ -420,7 +420,7 @@ namespace NT_AirPollution.Model.Domain
         public double? UTMN { get; set; }
 
         /// <summary>
-        /// 座標( 緯度, 經度) 多筆分號(;)分隔
+        /// 座標(緯度, 經度) 多筆分號(;)分隔
         /// </summary>
         public string LATLNG { get; set; }
 

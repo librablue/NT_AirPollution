@@ -46,14 +46,14 @@
 								<el-input type="number" v-model="form.LNG" maxlength="20"></el-input>
 							</el-form-item>
 						</div>
-                        <div class="flex-row">
-                            <el-form-item prop="UTME" label="座標X">
+						<div class="flex-row">
+							<el-form-item prop="UTME" label="座標X">
 								<el-input type="number" v-model="form.UTME" disabled></el-input>
 							</el-form-item>
 							<el-form-item prop="UTMN" label="座標Y">
 								<el-input type="number" v-model="form.UTMN" disabled></el-input>
 							</el-form-item>
-                        </div>
+						</div>
 						<el-form-item prop="STATE" label="工程內容概述">
 							<el-input v-model="form.STATE" maxlength="200"></el-input>
 						</el-form-item>
@@ -193,9 +193,14 @@
 							<el-form-item prop="C_MONEY" label="工程環保經費(元)">{{calcC_MONEY | comma}}</el-form-item>
 							<el-form-item prop="PERCENT" label="工程合約經費比例(%)">{{form.PERCENT}}</el-form-item>
 						</div>
-						<el-form-item v-if="isShowAREA()" prop="AREA" :label="projectCodeText">
-							<el-input type="number" v-model="form.AREA"></el-input>
-						</el-form-item>
+						<div class="flex-row">
+							<el-form-item v-if="isShowAREA()" prop="AREA" :label="projectCodeText">
+								<el-input type="number" v-model="form.AREA"></el-input>
+							</el-form-item>
+							<el-form-item v-if="form.KIND_NO === '1' || form.KIND_NO === '2'" prop="AREA_F" label="基地面積(平方公尺)">
+								<el-input type="number" v-model="form.AREA_F"></el-input>
+							</el-form-item>
+						</div>
 						<el-form-item v-if="form.KIND_NO === '3'" prop="VOLUMEL" :label="projectCodeText">
 							<el-input type="number" v-model="form.VOLUMEL"></el-input>
 						</el-form-item>
@@ -233,14 +238,17 @@
 						</el-form-item>
 					</el-form>
 				</el-tab-pane>
-				<el-tab-pane label="檢附資料" name="5">                   
+				<el-tab-pane label="檢附資料" name="5">
 					<div class="table-responsive">
 						<table class="table">
 							<thead>
 								<tr>
 									<th>檢附資料名稱</th>
 									<th>說明</th>
-									<th>檢附資料上傳(<a :href="`api/Form/DownloadZip?id=${form.ID}`">下載全部</a>)</th>
+									<th>
+										檢附資料上傳(
+										<a :href="`api/Form/DownloadZip?id=${form.ID}`">下載全部</a>)
+									</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -341,6 +349,13 @@ export default {
 			}
 			callback();
 		};
+		const checkAreaF = (rule, value, callback) => {
+			const kinds = ['1', '2'];
+			if (kinds.includes(this.selectRow.KIND_NO) && !value) {
+				callback(new Error('請輸入基地面積'));
+			}
+			callback();
+		};
 		const checkVolumel = (rule, value, callback) => {
 			if (this.form.KIND_NO === '3' && !value) {
 				callback(new Error('請輸入總樓地板面積'));
@@ -381,8 +396,7 @@ export default {
 					{ required: true, message: '請輸入座標(經度)', trigger: 'blur' },
 					{ validator: checkLATLNG, trigger: 'blur' }
 				],
-				STATE: [{ required: true, message: '請輸入工程內容概述', trigger: 'blur' }],
-				EIACOMMENTS: [{ required: true, message: '請輸入環評保護對策', trigger: 'blur' }]
+				STATE: [{ required: true, message: '請輸入工程內容概述', trigger: 'blur' }]
 			}),
 			tab2Rules: Object.freeze({
 				S_NAME: [{ required: true, message: '請輸入營建業主名稱', trigger: 'blur' }],
@@ -418,10 +432,11 @@ export default {
 			tab4Rules: Object.freeze({
 				MONEY: [{ required: true, message: '請輸入工程合約經費', trigger: 'blur' }],
 				C_MONEY: [{ required: true, message: '請輸入工程環保經費', trigger: 'blur' }],
-				AREA: [{ validator: checkArea }],
-				VOLUMEL: [{ validator: checkVolumel }],
+				AREA: [{ validator: checkArea, trigger: 'blur' }],
+				AREA_F: [{ validator: checkAreaF, trigger: 'blur' }],
+				VOLUMEL: [{ validator: checkVolumel, trigger: 'blur' }],
 				B_DATE2: [{ required: true, message: '請輸入開始日期', trigger: 'blur' }],
-				E_DATE2: [{ validator: checkE_DATE2 }]
+				E_DATE2: [{ validator: checkE_DATE2, trigger: 'blur' }]
 			}),
 			rules2: Object.freeze({
 				Code: [{ required: true, message: '請選擇銀行代碼', trigger: 'change' }],
@@ -606,6 +621,10 @@ export default {
 				case '6': {
 					if (!confirm('是否確認繼續?')) return false;
 					this.form.C_MONEY = this.calcC_MONEY;
+					// RC或SRC需填寫建築面積&基地面積，AREA跟AREA_B都是建築面積
+					if (this.form.KIND_NO === '1' || this.form.KIND_NO === '2') {
+						this.form.AREA_B = this.form.AREA;
+					}
 					this.axios
 						.post(`api/Form/${this.mode}Form`, this.form)
 						.then(res => {

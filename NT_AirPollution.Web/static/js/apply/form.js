@@ -87,6 +87,13 @@
                 }
                 callback();
             };
+            const checkAreaF = (rule, value, callback) => {
+                const kinds = ['1', '2'];
+                if (kinds.includes(this.selectRow.KIND_NO) && !value) {
+                    callback(new Error('請輸入基地面積'));
+                }
+                callback();
+            };
             const checkVolumel = (rule, value, callback) => {
                 if (this.selectRow.KIND_NO === '3' && !value) {
                     callback(new Error('請輸入總樓地板面積'));
@@ -159,8 +166,7 @@
                         { required: true, message: '請輸入座標(經度)', trigger: 'blur' },
                         { validator: checkLATLNG, trigger: 'blur' }
                     ],
-                    STATE: [{ required: true, message: '請輸入工程內容概述', trigger: 'blur' }],
-                    EIACOMMENTS: [{ required: true, message: '請輸入環評保護對策', trigger: 'blur' }]
+                    STATE: [{ required: true, message: '請輸入工程內容概述', trigger: 'blur' }]
                 }),
                 tab2Rules: Object.freeze({
                     S_NAME: [{ required: true, message: '請輸入營建業主名稱', trigger: 'blur' }],
@@ -196,10 +202,11 @@
                 tab4Rules: Object.freeze({
                     MONEY: [{ required: true, message: '請輸入工程合約經費', trigger: 'blur' }],
                     C_MONEY: [{ required: true, message: '請輸入工程環保經費', trigger: 'blur' }],
-                    AREA: [{ validator: checkArea }],
-                    VOLUMEL: [{ validator: checkVolumel }],
+                    AREA: [{ validator: checkArea, trigger: 'blur' }],
+                    AREA_F: [{ validator: checkAreaF, trigger: 'blur' }],
+                    VOLUMEL: [{ validator: checkVolumel, trigger: 'blur' }],
                     B_DATE2: [{ required: true, message: '請輸入開始日期', trigger: 'blur' }],
-                    E_DATE2: [{ validator: checkE_DATE2 }]
+                    E_DATE2: [{ validator: checkE_DATE2, trigger: 'blur' }]
                 }),
                 rules2: Object.freeze({
                     Code: [{ required: true, message: '請選擇銀行代碼', trigger: 'change' }],
@@ -713,6 +720,10 @@
                         this.selectRow.UTMN = point[1];
                         this.selectRow.LATLNG = `${this.selectRow.LAT},${this.selectRow.LNG}`;
                         this.selectRow.C_MONEY = this.calcC_MONEY;
+                        // RC或SRC需填寫建築面積&基地面積，AREA跟AREA_B都是建築面積
+                        if(this.selectRow.KIND_NO === '1' || this.selectRow.KIND_NO === '2') {
+                            this.selectRow.AREA_B = this.selectRow.AREA;
+                        }
                         axios
                             .post(`/Apply/${this.mode}Form`, this.selectRow)
                             .then(res => {

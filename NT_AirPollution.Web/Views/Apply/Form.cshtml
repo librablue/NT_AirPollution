@@ -316,12 +316,17 @@
                         <el-form-item prop="MONEY" label="工程合約經費(元)">
                             <el-input type="number" v-model="selectRow.MONEY"></el-input>
                         </el-form-item>
-                        <el-form-item prop="C_MONEY" label="工程環保經費(元)">{{calcC_MONEY | comma}}</el-form-item>
+                        <el-form-item prop="C_MONEY" label="工程環保經費(元)"><div style="min-width:120px">{{calcC_MONEY | comma}}</div></el-form-item>
                         <el-form-item prop="PERCENT" label="工程合約經費比例(%)">{{selectRow.PERCENT}}</el-form-item>
                     </div>
-                    <el-form-item v-if="isShowAREA()" prop="AREA" :label="projectCodeText">
-                        <el-input type="number" v-model="selectRow.AREA"></el-input>
-                    </el-form-item>
+                    <div class="flex-row">
+                        <el-form-item v-if="isShowAREA()" prop="AREA" :label="projectCodeText">
+                            <el-input type="number" v-model="selectRow.AREA"></el-input>
+                        </el-form-item>
+                        <el-form-item v-if="selectRow.KIND_NO === '1' || selectRow.KIND_NO === '2'" prop="AREA_F" label="基地面積(平方公尺)">
+                            <el-input type="number" v-model="selectRow.AREA_F"></el-input>
+                        </el-form-item>
+                    </div>
                     <el-form-item v-if="selectRow.KIND_NO === '3'" prop="VOLUMEL" :label="projectCodeText">
                         <el-input type="number" v-model="selectRow.VOLUMEL"></el-input>
                     </el-form-item>

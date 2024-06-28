@@ -1187,27 +1187,46 @@ namespace NT_AirPollution.Service
                 DateTime verifyDate, payEndDate;
                 // 總金額、本次繳費金額
                 double totalPrice, currentPrice;
+                // 申報日期
+                DateTime applyDate = this.ChineseDateToWestDate(form.AP_DATE);
+
+                /*
+                 * 公共工程繳費期限 = 申請日期加30天or開工日(不能超過開工日)
+                 * 私人工程繳費期限 = 申請日期加3天or開工日(不能超過開工日)
+                 */
+
+                // 初次申報
+                if(string.IsNullOrEmpty(form.AP_DATE1))
+                {
+                    payEndDate = applyDate.AddDays(form.PUB_COMP ? 30 : 3);
+                    if (applyDate > form.B_DATE2)
+                        payEndDate = form.B_DATE2;
+                }
+                // 結算用審核通過日加3或30天
+                else
+                    payEndDate = form.VerifyDate2.Value.AddDays(form.PUB_COMP ? 30 : 3);
+                
+
+                // 如果繳費期限小於今天表示逾期申報取今天，限當日繳清
+                if (payEndDate < DateTime.Now)
+                    payEndDate = Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd 23:59:59"));
+
 
                 // 判斷結算日期
                 if (string.IsNullOrEmpty(form.AP_DATE1))
                 {
                     verifyDate = form.VerifyDate1.Value;
-                    payEndDate = form.PayEndDate1.Value;
                     totalPrice = form.S_AMT.Value;
                     currentPrice = form.P_AMT.Value;
                 }
                 else
                 {
                     verifyDate = form.VerifyDate2.Value;
-                    payEndDate = form.PayEndDate2.Value;
                     totalPrice = form.S_AMT2.Value;
                     currentPrice = form.S_AMT2.Value - form.P_AMT.Value;
                 }
 
-                // 如果繳費期限小於今天表示逾期申報取今天，限當日繳清
-                if (payEndDate < DateTime.Now)
-                    payEndDate = Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd 23:59:59"));
-
+                
                 // 填發日期(開工日或申報日)
                 DateTime pdate = this.ChineseDateToWestDate(form.AP_DATE);
                 // 如果申報日 > 開工日，取開工日
