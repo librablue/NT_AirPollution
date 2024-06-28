@@ -17,7 +17,7 @@ namespace NT_AirPollution.Model.View
         [Computed]
         public RefundBank RefundBank { get; set; } = new RefundBank();
         [Computed]
-        public List<Payment> Payments { get; set; } = new Payment();
+        public List<Payment> Payments { get; set; } = new List<Payment>();
         [Computed]
         public List<StopWork> StopWorks { get; set; } = new List<StopWork>();
         [Computed]
