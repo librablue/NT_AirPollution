@@ -38,6 +38,9 @@
       <HintPath>..\packages\Aspose.PDF.20.1.0\lib\net4.0\Aspose.PDF.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Aspose.Words, Version=20.1.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
+      <HintPath>..\packages\Aspose.Words.20.1.0\lib\net40\Aspose.Words.dll</HintPath>
+    </Reference>
     <Reference Include="ClosedXML, Version=0.102.2.0, Culture=neutral, PublicKeyToken=fd1eb21b62ae805b, processorArchitecture=MSIL">
       <HintPath>..\packages\ClosedXML.0.102.2\lib\netstandard2.0\ClosedXML.dll</HintPath>
     </Reference>

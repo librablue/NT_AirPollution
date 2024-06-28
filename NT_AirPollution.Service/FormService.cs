@@ -1,7 +1,9 @@
 ﻿using Aspose.Cells;
+using Aspose.Words;
 using ClosedXML.Excel;
 using Dapper;
 using Dapper.Contrib.Extensions;
+using DocumentFormat.OpenXml.Wordprocessing;
 using NT_AirPollution.Model.Access;
 using NT_AirPollution.Model.Domain;
 using NT_AirPollution.Model.Enum;
@@ -10,12 +12,8 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Reflection.Emit;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web.Hosting;
 
 namespace NT_AirPollution.Service
@@ -62,10 +60,9 @@ namespace NT_AirPollution.Service
                         new { FormID = item.ID });
                     if (item.RefundBank == null) item.RefundBank = new RefundBank();
 
-                    item.PaymentProof = cn.QueryFirstOrDefault<PaymentProof>(@"
-                        SELECT * FROM PaymentProof WHERE FormID=@FormID",
-                        new { FormID = item.ID });
-                    if (item.PaymentProof == null) item.PaymentProof = new PaymentProof();
+                    item.Payments = cn.Query<Payment>(@"
+                        SELECT * FROM Payment WHERE FormID=@FormID",
+                        new { FormID = item.ID }).ToList();
 
                     if (!string.IsNullOrEmpty(item.B_DATE))
                         item.B_DATE2 = base.ChineseDateToWestDate(item.B_DATE);
@@ -115,10 +112,9 @@ namespace NT_AirPollution.Service
                         new { FormID = result.ID });
                     if (result.RefundBank == null) result.RefundBank = new RefundBank();
 
-                    result.PaymentProof = cn.QueryFirstOrDefault<PaymentProof>(@"
-                        SELECT * FROM PaymentProof WHERE FormID=@FormID",
-                        new { FormID = result.ID });
-                    if (result.PaymentProof == null) result.PaymentProof = new PaymentProof();
+                    result.Payments = cn.Query<Payment>(@"
+                        SELECT * FROM Payment WHERE FormID=@FormID",
+                        new { FormID = result.ID }).ToList();
 
                     if (!string.IsNullOrEmpty(result.B_DATE))
                         result.B_DATE2 = base.ChineseDateToWestDate(result.B_DATE);
@@ -185,10 +181,9 @@ namespace NT_AirPollution.Service
                         new { FormID = item.ID });
                     if (item.RefundBank == null) item.RefundBank = new RefundBank();
 
-                    item.PaymentProof = cn.QueryFirstOrDefault<PaymentProof>(@"
-                        SELECT * FROM PaymentProof WHERE FormID=@FormID",
-                        new { FormID = item.ID });
-                    if (item.PaymentProof == null) item.PaymentProof = new PaymentProof();
+                    item.Payments = cn.Query<Payment>(@"
+                        SELECT * FROM Payment WHERE FormID=@FormID",
+                        new { FormID = item.ID }).ToList();
 
                     if (!string.IsNullOrEmpty(item.B_DATE))
                         item.B_DATE2 = base.ChineseDateToWestDate(item.B_DATE);
@@ -247,10 +242,9 @@ namespace NT_AirPollution.Service
                         new { FormID = item.ID });
                     if (item.RefundBank == null) item.RefundBank = new RefundBank();
 
-                    item.PaymentProof = cn.QueryFirstOrDefault<PaymentProof>(@"
-                        SELECT * FROM PaymentProof WHERE FormID=@FormID",
-                        new { FormID = item.ID });
-                    if (item.PaymentProof == null) item.PaymentProof = new PaymentProof();
+                    item.Payments = cn.Query<Payment>(@"
+                        SELECT * FROM Payment WHERE FormID=@FormID",
+                        new { FormID = item.ID }).ToList();
 
                     if (!string.IsNullOrEmpty(item.B_DATE))
                         item.B_DATE2 = base.ChineseDateToWestDate(item.B_DATE);
@@ -328,10 +322,9 @@ namespace NT_AirPollution.Service
                         new { FormID = item.ID });
                     if (item.RefundBank == null) item.RefundBank = new RefundBank();
 
-                    item.PaymentProof = cn.QueryFirstOrDefault<PaymentProof>(@"
-                        SELECT * FROM PaymentProof WHERE FormID=@FormID",
-                        new { FormID = item.ID });
-                    if (item.PaymentProof == null) item.PaymentProof = new PaymentProof();
+                    item.Payments = cn.Query<Payment>(@"
+                        SELECT * FROM Payment WHERE FormID=@FormID",
+                        new { FormID = item.ID }).ToList();
 
                     if (!string.IsNullOrEmpty(item.B_DATE))
                         item.B_DATE2 = base.ChineseDateToWestDate(item.B_DATE);
@@ -382,10 +375,9 @@ namespace NT_AirPollution.Service
                         new { FormID = item.ID });
                     if (item.RefundBank == null) item.RefundBank = new RefundBank();
 
-                    item.PaymentProof = cn.QueryFirstOrDefault<PaymentProof>(@"
-                        SELECT * FROM PaymentProof WHERE FormID=@FormID",
-                        new { FormID = item.ID });
-                    if (item.PaymentProof == null) item.PaymentProof = new PaymentProof();
+                    item.Payments = cn.Query<Payment>(@"
+                        SELECT * FROM Payment WHERE FormID=@FormID",
+                        new { FormID = item.ID }).ToList();
 
                     if (!string.IsNullOrEmpty(item.B_DATE))
                         item.B_DATE2 = base.ChineseDateToWestDate(item.B_DATE);
@@ -1196,7 +1188,7 @@ namespace NT_AirPollution.Service
                  */
 
                 // 初次申報
-                if(string.IsNullOrEmpty(form.AP_DATE1))
+                if (string.IsNullOrEmpty(form.AP_DATE1))
                 {
                     payEndDate = applyDate.AddDays(form.PUB_COMP ? 30 : 3);
                     if (applyDate > form.B_DATE2)
@@ -1205,7 +1197,7 @@ namespace NT_AirPollution.Service
                 // 結算用審核通過日加3或30天
                 else
                     payEndDate = form.VerifyDate2.Value.AddDays(form.PUB_COMP ? 30 : 3);
-                
+
 
                 // 如果繳費期限小於今天表示逾期申報取今天，限當日繳清
                 if (payEndDate < DateTime.Now)
@@ -1226,7 +1218,7 @@ namespace NT_AirPollution.Service
                     currentPrice = form.S_AMT2.Value - form.P_AMT.Value;
                 }
 
-                
+
                 // 填發日期(開工日或申報日)
                 DateTime pdate = this.ChineseDateToWestDate(form.AP_DATE);
                 // 如果申報日 > 開工日，取開工日
@@ -1239,6 +1231,12 @@ namespace NT_AirPollution.Service
                 double interest = 0;
                 // 遲繳天數
                 var delayDays = (DateTime.Now - payEndDate).Days;
+                // 利率
+                double rate = 0;
+                var interestRate = _optionService.GetRates().FirstOrDefault();
+                if (interestRate != null)
+                    rate = interestRate.Rate;
+
                 if (delayDays <= 30)
                 {
                     // 滯納金－每逾一日按滯納之金額加徵百分之○．五滯納金
@@ -1251,11 +1249,6 @@ namespace NT_AirPollution.Service
                     // 30天內只算滯納金
                     // 滯納金－每逾一日按滯納之金額加徵百分之○．五滯納金
                     penalty = Math.Round(currentPrice * 0.005 * 30, 0, MidpointRounding.AwayFromZero);
-
-                    double rate = 0;
-                    var interestRate = _optionService.GetRates().FirstOrDefault();
-                    if (interestRate != null)
-                        rate = interestRate.Rate;
 
                     // 30天後算利息
                     // 利息－依繳納當日郵政儲金匯業局一年期定期存款固定利率按日加計
@@ -1288,15 +1281,41 @@ namespace NT_AirPollution.Service
                     _accessService.AddABUDF_1(abudf_1);
                 }
 
-                // 寫入Payment
+                #region 寫入ABUDF_I
+                ABUDF_I abudf_I = new ABUDF_I();
+                abudf_I.C_NO = form.C_NO;
+                abudf_I.SER_NO = form.SER_NO;
+                abudf_I.P_TIME = string.IsNullOrEmpty(form.AP_DATE1) ? "1" : "2";
+                if (delayDays > 0)
+                {
+                    abudf_I.S_DATE = payEndDate.AddDays(1).AddYears(-1911).ToString("yyyMMdd");
+                    abudf_I.E_DATE = DateTime.Now.AddYears(-1911).ToString("yyyMMdd");
+                }
+                abudf_I.PERCENT = rate;
+                abudf_I.F_AMT = sumPrice;
+                abudf_I.I_AMT = interest;
+                abudf_I.PEN_AMT = penalty;
+                abudf_I.PEN_RATE = 0.5;
+                abudf_I.KEYIN = "EPB02";
+                abudf_I.C_DATE = DateTime.Now;
+                abudf_I.M_DATE = DateTime.Now;
+                _accessService.AddABUDF_I(abudf_I);
+                #endregion
+
+                #region 寫入Payment
                 this.AddPayment(new Payment
                 {
                     FormID = form.ID,
                     Term = abudf_1.P_TIME,
                     PayEndDate = payEndDate,
                     PaymentID = abudf_1.FLNO,
+                    PayableAmount = sumPrice,
+                    Penalty = penalty,
+                    Interest = interest,
+                    Percent = rate,
                     CreateDate = DateTime.Now
                 });
+                #endregion
 
 
                 string barcodeMarketA = BotHelper.GetMarketNo(abudf_1.E_DATE);
@@ -1531,6 +1550,52 @@ namespace NT_AirPollution.Service
                     worksheet.PageSetup.FitToPagesWide = 1;
                 }
                 workbook.Save(resultFile);
+
+                return resultFile;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"CreateFreeProofPDF: {ex.Message}");
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 產生繳費證明
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns>檔案完整路徑</returns>
+        public string CreatePaymentProofPDF(FormView form)
+        {
+            try
+            {
+                // 範本檔
+                string templateFile = $@"{_paymentPath}\Template\繳費證明.docx";
+                // 結果檔
+                string resultFile = $@"{_paymentPath}\Download\{form.C_NO}-{form.SER_NO}繳費證明.pdf";
+
+                Aspose.Words.Document doc = new Aspose.Words.Document();
+                DocumentBuilder builder = new DocumentBuilder(doc);
+                doc.Range.Replace("@S_NAME", form.S_NAME);
+                doc.Range.Replace("@COMP_NAM", form.COMP_NAM);
+                doc.Range.Replace("@C_NO", $"{form.C_NO}-{form.SER_NO}");
+                doc.Range.Replace("@B_SERNO", form.B_SERNO);
+                doc.Range.Replace("@S_AMT", form.S_AMT.Value.ToString("N0"));
+                var payment = form.Payments.FirstOrDefault(o => o.Term == "1");
+                if(payment.Penalty >= 0)
+                {
+                    doc.Range.Replace("@Penalty", $"(含滯納金{payment.Penalty}元)");
+                }
+                
+                doc.Range.Replace("@A_DATE", payment.PayDate.Value.ToString("yyyy-MM-dd"));
+                doc.Range.Replace("@Year", DateTime.Now.AddYears(-1911).ToString("yyy"));
+                doc.Range.Replace("@Month", DateTime.Now.AddYears(-1911).ToString("MM"));
+                doc.Range.Replace("@Date", DateTime.Now.AddYears(-1911).ToString("dd"));
+
+                // 轉PDF
+                Aspose.Words.License license = new Aspose.Words.License();
+                license.SetLicense(HostingEnvironment.MapPath(@"~/license/Aspose.total.lic"));
+                doc.Save(resultFile);
 
                 return resultFile;
             }

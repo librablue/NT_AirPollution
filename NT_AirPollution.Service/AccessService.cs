@@ -690,5 +690,56 @@ namespace NT_AirPollution.Service
                 }
             }
         }
+
+        /// <summary>
+        /// 寫入ABUDF_I
+        /// </summary>
+        /// <param name="abudf_I"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public bool AddABUDF_I(ABUDF_I abudf_I)
+        {
+            using (var cn = new OleDbConnection(accessConnStr))
+            {
+                try
+                {
+                    cn.Execute(@"
+                        DELETE FROM ABUDF_I WHERE [C_NO]=? AND [SER_NO]=? AND [P_TIME]=?",
+                        new
+                        {
+                            C_NO = abudf_I.C_NO,
+                            SER_NO = abudf_I.SER_NO,
+                            P_TIME = abudf_I.P_TIME
+                        });
+
+                    cn.Execute(@"
+                        INSERT INTO ABUDF_I ([C_NO],[SER_NO],[P_TIME],[S_DATE],[E_DATE],[PERCENT],[F_AMT],[I_AMT],[PEN_AMT],[PEN_RATE],[KEYIN],[C_DATE],[M_DATE])
+                        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                        new
+                        {
+                            C_NO = abudf_I.C_NO,
+                            SER_NO = abudf_I.SER_NO,
+                            P_TIME = abudf_I.P_TIME,
+                            S_DATE = abudf_I.S_DATE,
+                            E_DATE = abudf_I.E_DATE,
+                            PERCENT = abudf_I.PERCENT,
+                            F_AMT = abudf_I.F_AMT,
+                            I_AMT = abudf_I.I_AMT,
+                            PEN_AMT = abudf_I.PEN_AMT,
+                            PEN_RATE = abudf_I.F_AMT,
+                            KEYIN = "EPB02",
+                            C_DATE = abudf_I.C_DATE.ToString("yyyy-MM-dd HH:mm:ss"),
+                            M_DATE = abudf_I.M_DATE.ToString("yyyy-MM-dd HH:mm:ss")
+                        });
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"AddABUDF_I: {ex.Message}");
+                    throw new Exception("更新Access發生未預期錯誤");
+                }
+            }
+        }
     }
 }

@@ -874,6 +874,29 @@
                         console.log(err);
                     });
             },
+            downloadPaymentProof(row) {
+                const loading = this.$loading();
+                axios
+                    .post('/Apply/DownloadPaymentProof', row, {
+                        responseType: 'blob'
+                    })
+                    .then(res => {
+                        loading.close();
+                        const url = window.URL.createObjectURL(new Blob([res.data]));
+                        const link = document.createElement('a');
+                        link.href = url;
+                        const fileName = decodeURI(res.headers['file-name']);
+                        link.setAttribute('download', fileName);
+                        document.body.appendChild(link);
+                        link.click();
+                        link.remove();
+                    })
+                    .catch(err => {
+                        loading.close();
+                        alert('系統發生未預期錯誤');
+                        console.log(err);
+                    });
+            },
             SendCalcStatus1(row) {
                 if (!confirm('是否確認提出結算申請?')) return;
                 axios
@@ -927,48 +950,48 @@
                 if (!confirm('是否確認刪除?')) return false;
                 this.selectRow.PaymentProof.ProofFile = null;
             },
-            savePaymentProof() {
-                const formData = new FormData();
-                // 附件
-                const file = document.querySelector(`#filePF`);
-                if (file && file.files.length > 0) {
-                    formData.append('file', file.files[0]);
-                    this.selectRow.PaymentProof.File = file.files[0].name;
-                }
+            //savePaymentProof() {
+            //    const formData = new FormData();
+            //    // 附件
+            //    const file = document.querySelector(`#filePF`);
+            //    if (file && file.files.length > 0) {
+            //        formData.append('file', file.files[0]);
+            //        this.selectRow.PaymentProof.File = file.files[0].name;
+            //    }
 
-                this.$refs.form3.validate((valid, object) => {
-                    if (!valid) {
-                        alert('欄位驗證錯誤，請檢查修正後重新送出');
-                        return false;
-                    }
+            //    this.$refs.form3.validate((valid, object) => {
+            //        if (!valid) {
+            //            alert('欄位驗證錯誤，請檢查修正後重新送出');
+            //            return false;
+            //        }
 
-                    if (!confirm('是否確認繼續?')) return false;
+            //        if (!confirm('是否確認繼續?')) return false;
 
-                    const loading = this.$loading();
-                    for (const key in this.selectRow.PaymentProof) {
-                        if (typeof this.selectRow.PaymentProof[key] !== 'object') formData.append(key, this.selectRow.PaymentProof[key]);
-                    }
+            //        const loading = this.$loading();
+            //        for (const key in this.selectRow.PaymentProof) {
+            //            if (typeof this.selectRow.PaymentProof[key] !== 'object') formData.append(key, this.selectRow.PaymentProof[key]);
+            //        }
 
-                    axios
-                        .post('/Apply/UploadPaymentProof', formData)
-                        .then(res => {
-                            loading.close();
-                            if (!res.data.Status) {
-                                alert(res.data.Message);
-                                return;
-                            }
+            //        axios
+            //            .post('/Apply/UploadPaymentProof', formData)
+            //            .then(res => {
+            //                loading.close();
+            //                if (!res.data.Status) {
+            //                    alert(res.data.Message);
+            //                    return;
+            //                }
 
-                            alert('上傳成功');
-                            this.getForms();
-                            this.paymentProofModalVisible = false;
-                        })
-                        .catch(err => {
-                            loading.close();
-                            alert('系統發生未預期錯誤');
-                            console.log(err);
-                        });
-                });
-            },
+            //                alert('上傳成功');
+            //                this.getForms();
+            //                this.paymentProofModalVisible = false;
+            //            })
+            //            .catch(err => {
+            //                loading.close();
+            //                alert('系統發生未預期錯誤');
+            //                console.log(err);
+            //            });
+            //    });
+            //},
             showBankAccountModal(row) {
                 this.selectRow = JSON.parse(JSON.stringify(row));
                 this.selectRow.RefundBank = Object.assign({}, row.RefundBank, {

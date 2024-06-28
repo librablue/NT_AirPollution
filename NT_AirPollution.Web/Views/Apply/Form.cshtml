@@ -84,7 +84,7 @@
                         <el-button size="mini" type="info" round v-if="item.FormStatus === 0 || item.FormStatus === 2" @@click="sendFormStatus1(item)">提送審查</el-button>
                         <div class="link-row">
                             <el-button size="mini" type="info" round v-if="item.FormStatus === 3" @@click="downloadPayment(item)">下載繳費單</el-button>
-                            <el-button size="mini" type="info" round v-if="item.FormStatus === 4">下載繳費證明</el-button>
+                            <el-button size="mini" type="info" round v-if="item.FormStatus === 4" @@click="downloadPaymentProof(item)">下載繳費證明</el-button>
                             <el-button size="mini" type="info" round v-if="item.FormStatus === 5" @@click="downloadFreeProof(item)">下載免徵證明</el-button>
                         </div>
                     </li>
@@ -493,7 +493,7 @@
         </span>
     </el-dialog>
 
-    <el-dialog title="上傳繳費證明" :visible.sync="paymentProofModalVisible" width="30%" v-cloak>
+    @*<el-dialog title="上傳繳費證明" :visible.sync="paymentProofModalVisible" width="30%" v-cloak>
         <el-form ref="form3" :rules="rules3" :model="selectRow.PaymentProof" label-position="top">
             <el-form-item prop="File">
                 <div v-if="selectRow.PaymentProof.ProofFile" class="photo-wrap">
@@ -512,7 +512,7 @@
                 <el-button type="primary" @@click="savePaymentProof">上 傳</el-button>
             </template>
         </span>
-    </el-dialog>
+    </el-dialog>*@
 
     <el-dialog title="請勾選已上傳附件" :visible.sync="selfCheckModalVisible" width="30%" v-cloak>
         <ul class="selfcheck-list">
