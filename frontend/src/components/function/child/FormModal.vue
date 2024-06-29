@@ -190,7 +190,9 @@
 							<el-form-item prop="MONEY" label="工程合約經費(元)">
 								<el-input type="number" v-model="form.MONEY"></el-input>
 							</el-form-item>
-							<el-form-item prop="C_MONEY" label="工程環保經費(元)">{{calcC_MONEY | comma}}</el-form-item>
+							<el-form-item prop="C_MONEY" label="工程環保經費(元)">
+                                <div style="min-width:120px">{{calcC_MONEY | comma}}</div>
+                            </el-form-item>
 							<el-form-item prop="PERCENT" label="工程合約經費比例(%)">{{form.PERCENT}}</el-form-item>
 						</div>
 						<div class="flex-row">
@@ -306,11 +308,11 @@
 						<img style="width:640px" :src="`api/Option/Download?f=${form.RefundBank.Photo}`" />
 					</el-form-item>
 				</el-tab-pane>
-				<el-tab-pane v-if="form.PaymentProof.ID" label="繳費證明" name="8">
+				<!-- <el-tab-pane v-if="form.PaymentProof.ID" label="繳費證明" name="8">
 					<el-form-item label="繳費證明">
 						<img style="width:640px" :src="`api/Option/Download?f=${form.PaymentProof.ProofFile}`" />
 					</el-form-item>
-				</el-tab-pane>
+				</el-tab-pane> -->
 			</el-tabs>
 		</template>
 		<template #footer>
@@ -351,7 +353,7 @@ export default {
 		};
 		const checkAreaF = (rule, value, callback) => {
 			const kinds = ['1', '2'];
-			if (kinds.includes(this.selectRow.KIND_NO) && !value) {
+			if (kinds.includes(this.form.KIND_NO) && !value) {
 				callback(new Error('請輸入基地面積'));
 			}
 			callback();

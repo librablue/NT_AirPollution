@@ -1335,6 +1335,7 @@ namespace NT_AirPollution.Service
                 ws.Cell("O4").SetValue(form.S_NAME);
                 ws.Cell("D5").SetValue(form.S_NAME);
                 ws.Cell("O5").SetValue(form.COMP_NAM);
+                ws.Cell("F2").SetValue(ws.Cell("F2").GetText().Replace("#PAY_NO#", barcodeMarketB));
                 ws.Cell("F6").SetValue(form.B_SERNO);
                 ws.Cell("D7").SetValue(form.P_KIND);
                 ws.Cell("F7").SetValue(ws.Cell("F7").GetText().Replace("#P_NUM#", form.P_KIND == "一次全繳" ? "1" : "2").Replace("#P_TIME#", abudf_1.P_TIME));
@@ -1349,6 +1350,7 @@ namespace NT_AirPollution.Service
                 ws.Cell("M12").SetValue(form.B_SERNO);
                 ws.Cell("D13").SetValue(this.GetChineseMoney(sumPrice.ToString()));
                 ws.Cell("B17").SetValue(ws.Cell("B17").GetText().Replace("#VerifyDate#", pdate.AddYears(-1911).ToString("yyy年MM月dd日")));
+                ws.Cell("M17").SetValue(ws.Cell("M17").GetText().Replace("#PAY_NO#", barcodeMarketB));
                 ws.Cell("D18").SetValue($"{form.C_NO}-{form.SER_NO}");
                 ws.Cell("I18").SetValue(form.COMP_NAM);
                 ws.Cell("D19").SetValue(form.S_NAME);
@@ -1374,6 +1376,7 @@ namespace NT_AirPollution.Service
                 ws.Cell("O34").SetValue(interest.ToString("N0"));
                 ws.Cell("D35").SetValue(sumPrice.ToString("N0"));
                 ws.Cell("G35").SetValue(ws.Cell("G35").GetText().Replace("#F_AMTC#", this.GetChineseMoney(sumPrice.ToString())));
+                ws.Cell("I36").SetValue(barcodeMarketB);
                 ws.Cell("C37").SetValue($"*{abudf_1.FLNO}*");
                 ws.Cell("K37").SetValue($"*{barcodeMarketA}*");
                 ws.Cell("K38").SetValue(barcodeMarketA);
@@ -1574,27 +1577,25 @@ namespace NT_AirPollution.Service
                 // 結果檔
                 string resultFile = $@"{_paymentPath}\Download\{form.C_NO}-{form.SER_NO}繳費證明.pdf";
 
-                Aspose.Words.Document doc = new Aspose.Words.Document();
-                DocumentBuilder builder = new DocumentBuilder(doc);
+                Aspose.Words.License license = new Aspose.Words.License();
+                license.SetLicense(HostingEnvironment.MapPath(@"~/license/Aspose.total.lic"));
+
+                Aspose.Words.Document doc = new Aspose.Words.Document(templateFile);
                 doc.Range.Replace("@S_NAME", form.S_NAME);
                 doc.Range.Replace("@COMP_NAM", form.COMP_NAM);
                 doc.Range.Replace("@C_NO", $"{form.C_NO}-{form.SER_NO}");
                 doc.Range.Replace("@B_SERNO", form.B_SERNO);
                 doc.Range.Replace("@S_AMT", form.S_AMT.Value.ToString("N0"));
                 var payment = form.Payments.FirstOrDefault(o => o.Term == "1");
-                if(payment.Penalty >= 0)
-                {
+                if(payment.Penalty > 0)
                     doc.Range.Replace("@Penalty", $"(含滯納金{payment.Penalty}元)");
-                }
+                else
+                    doc.Range.Replace("@Penalty", "");
                 
                 doc.Range.Replace("@A_DATE", payment.PayDate.Value.ToString("yyyy-MM-dd"));
                 doc.Range.Replace("@Year", DateTime.Now.AddYears(-1911).ToString("yyy"));
                 doc.Range.Replace("@Month", DateTime.Now.AddYears(-1911).ToString("MM"));
                 doc.Range.Replace("@Date", DateTime.Now.AddYears(-1911).ToString("dd"));
-
-                // 轉PDF
-                Aspose.Words.License license = new Aspose.Words.License();
-                license.SetLicense(HostingEnvironment.MapPath(@"~/license/Aspose.total.lic"));
                 doc.Save(resultFile);
 
                 return resultFile;
