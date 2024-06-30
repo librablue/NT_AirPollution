@@ -1384,8 +1384,8 @@ namespace NT_AirPollution.Service
                 ws.Cell("K40").SetValue(barcodeMarketB);
                 ws.Cell("K41").SetValue($"*{barcodeMarketC}*");
                 ws.Cell("K42").SetValue(barcodeMarketC);
-                ws.Cell("K45").SetValue($"*{barcodePostB}*");
-                ws.Cell("K46").SetValue(barcodePostB);
+                ws.Cell("K45").SetValue($"*1{barcodeMarketA.Substring(0, 6)}{barcodePostB}*");
+                ws.Cell("K46").SetValue($"1{barcodeMarketA.Substring(0, 6)}{barcodePostB}");
                 ws.Cell("K47").SetValue($"*{barcodePostC}*");
                 ws.Cell("K48").SetValue(barcodePostC);
                 wb.SaveAs(tempFile);
