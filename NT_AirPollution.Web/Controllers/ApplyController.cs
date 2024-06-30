@@ -565,7 +565,7 @@ namespace NT_AirPollution.Web.Controllers
             if (formInDB == null || (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email))
                 throw new Exception("申請單不存在");
 
-            string pdfPath = _formService.CreateClearProofPDF(form);
+            string pdfPath = _formService.CreateFreeProofPDF(form);
 
             // 傳到前端的檔名
             // Uri.EscapeDataString 防中文亂碼

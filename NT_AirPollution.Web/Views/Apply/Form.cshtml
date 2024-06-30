@@ -94,7 +94,7 @@
                         <el-button size="mini" type="info" round v-if="item.FormStatus === 4 && (item.CalcStatus === 0 || item.CalcStatus === 2)" @@click="SendCalcStatus1(item)">提送審查</el-button>
                         <div class="link-row">
                             <el-button size="mini" type="info" round v-if="item.CalcStatus === 3" @@click="downloadRePayment(item)">下載繳費單</el-button>
-                            <el-button size="mini" type="info" round v-if="item.CalcStatus === 3" @@click="showPaymentProofModal(item)">上傳繳費證明</el-button>
+                            @*<el-button size="mini" type="info" round v-if="item.CalcStatus === 3" @@click="showPaymentProofModal(item)">上傳繳費證明</el-button>*@
                             <el-button size="mini" type="info" round v-if="item.CalcStatus === 5" @@click="showBankAccountModal(item)">退費帳戶</el-button>
                             <el-button size="mini" type="info" round v-if="item.CalcStatus > 3" @@click="downloadClearProof(item)">下載結清證明</el-button>
                         </div>

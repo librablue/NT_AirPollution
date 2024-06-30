@@ -1501,7 +1501,7 @@ namespace NT_AirPollution.Service
             }
             catch (Exception ex)
             {
-                Logger.Error($"CreateProofPDF: {ex.Message}");
+                Logger.Error($"CreateClearProofPDF: {ex.Message}");
                 throw ex;
             }
         }
