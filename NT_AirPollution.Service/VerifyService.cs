@@ -29,7 +29,7 @@ namespace NT_AirPollution.Service
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error($"AddVerifyLog: {ex.Message}");
+                    Logger.Error($"AddVerifyLog: {ex.StackTrace}|{ex.Message}");
                     throw new Exception("系統發生未預期錯誤");
                 }
             }
@@ -70,7 +70,7 @@ namespace NT_AirPollution.Service
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error($"UpdateVerifyLog: {ex.Message}");
+                    Logger.Error($"UpdateVerifyLog: {ex.StackTrace}|{ex.Message}");
                     throw new Exception("系統發生未預期錯誤");
                 }
             }

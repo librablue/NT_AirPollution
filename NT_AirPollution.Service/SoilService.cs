@@ -83,7 +83,7 @@ namespace NT_AirPollution.Service
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error($"Soil.AddPromise: {ex.Message}");
+                    Logger.Error($"Soil.AddPromise: {ex.StackTrace}|{ex.Message}");
                     throw new Exception("系統發生未預期錯誤");
                 }
             }

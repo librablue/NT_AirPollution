@@ -96,7 +96,7 @@ namespace NT_AirPollution.Service
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error($"AddRate: {ex.Message}");
+                    Logger.Error($"AddRate: {ex.StackTrace}|{ex.Message}");
                     throw new Exception("系統發生未預期錯誤");
                 }
             }
@@ -119,7 +119,7 @@ namespace NT_AirPollution.Service
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error($"DeleteRate: {ex.Message}");
+                    Logger.Error($"DeleteRate: {ex.StackTrace}|{ex.Message}");
                     throw new Exception("系統發生未預期錯誤");
                 }
             }

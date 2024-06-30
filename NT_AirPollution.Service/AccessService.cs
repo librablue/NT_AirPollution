@@ -256,7 +256,7 @@ namespace NT_AirPollution.Service
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error($"AddABUDF: {ex.Message}");
+                    Logger.Error($"AddABUDF: {ex.StackTrace}|{ex.Message}");
                     throw new Exception("更新Access發生未預期錯誤");
                 }
             }
@@ -487,7 +487,7 @@ namespace NT_AirPollution.Service
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error($"UpdateABUDF: {ex.Message}");
+                    Logger.Error($"UpdateABUDF: {ex.StackTrace}|{ex.Message}");
                     throw new Exception("更新Access發生未預期錯誤");
                 }
             }
@@ -551,7 +551,7 @@ namespace NT_AirPollution.Service
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error($"AddABUDF_B: {ex.Message}");
+                    Logger.Error($"AddABUDF_B: {ex.StackTrace}|{ex.Message}");
                     throw new Exception("更新Access發生未預期錯誤");
                 }
             }
@@ -645,7 +645,7 @@ namespace NT_AirPollution.Service
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error($"AddABUDF_1: {ex.Message}");
+                    Logger.Error($"AddABUDF_1: {ex.StackTrace}|{ex.Message}");
                     throw new Exception("更新Access發生未預期錯誤");
                 }
             }
@@ -685,7 +685,7 @@ namespace NT_AirPollution.Service
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error($"UpdateABUDF_1: {ex.Message}");
+                    Logger.Error($"UpdateABUDF_1: {ex.StackTrace}|{ex.Message}");
                     throw new Exception("更新Access發生未預期錯誤");
                 }
             }
@@ -736,7 +736,7 @@ namespace NT_AirPollution.Service
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error($"AddABUDF_I: {ex.Message}");
+                    Logger.Error($"AddABUDF_I: {ex.StackTrace}|{ex.Message}");
                     throw new Exception("更新Access發生未預期錯誤");
                 }
             }

@@ -1,9 +1,7 @@
 ﻿using Aspose.Cells;
-using Aspose.Words;
 using ClosedXML.Excel;
 using Dapper;
 using Dapper.Contrib.Extensions;
-using DocumentFormat.OpenXml.Wordprocessing;
 using NT_AirPollution.Model.Access;
 using NT_AirPollution.Model.Domain;
 using NT_AirPollution.Model.Enum;
@@ -451,7 +449,7 @@ namespace NT_AirPollution.Service
                     catch (Exception ex)
                     {
                         trans.Rollback();
-                        Logger.Error($"AddForm: {ex.Message}");
+                        Logger.Error($"AddForm: {ex.StackTrace}|{ex.Message}");
                         throw new Exception("系統發生未預期錯誤");
                     }
                 }
@@ -492,7 +490,7 @@ namespace NT_AirPollution.Service
                     catch (Exception ex)
                     {
                         trans.Rollback();
-                        Logger.Error($"UpdateForm: {ex.Message}");
+                        Logger.Error($"UpdateForm: {ex.StackTrace}|{ex.Message}");
                         throw new Exception("系統發生未預期錯誤");
                     }
                 }
@@ -542,7 +540,7 @@ namespace NT_AirPollution.Service
                     catch (Exception ex)
                     {
                         trans.Rollback();
-                        Logger.Error($"AddPayment: {ex.Message}");
+                        Logger.Error($"AddPayment: {ex.StackTrace}|{ex.Message}");
                         throw new Exception("系統發生未預期錯誤");
                     }
                 }
@@ -593,7 +591,7 @@ namespace NT_AirPollution.Service
                     catch (Exception ex)
                     {
                         trans.Rollback();
-                        Logger.Error($"UpdatePayment: {ex.Message}");
+                        Logger.Error($"UpdatePayment: {ex.StackTrace}|{ex.Message}");
                         return false;
                     }
                 }
@@ -643,7 +641,7 @@ namespace NT_AirPollution.Service
                     catch (Exception ex)
                     {
                         trans.Rollback();
-                        Logger.Error($"UpdateStopWork: {ex.Message}");
+                        Logger.Error($"UpdateStopWork: {ex.StackTrace}|{ex.Message}");
                         throw new Exception("系統發生未預期錯誤");
                     }
                 }
@@ -675,7 +673,7 @@ namespace NT_AirPollution.Service
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error($"UpdateRefundBank: {ex.Message}");
+                    Logger.Error($"UpdateRefundBank: {ex.StackTrace}|{ex.Message}");
                     throw new Exception("系統發生未預期錯誤");
                 }
             }
@@ -706,7 +704,7 @@ namespace NT_AirPollution.Service
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error($"UpdatePaymentProof: {ex.Message}");
+                    Logger.Error($"UpdatePaymentProof: {ex.StackTrace}|{ex.Message}");
                     throw new Exception("系統發生未預期錯誤");
                 }
             }
@@ -883,7 +881,7 @@ namespace NT_AirPollution.Service
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error($"SendFormStatus2: {ex.Message}");
+                    Logger.Error($"SendFormStatus2: {ex.StackTrace}|{ex.Message}");
                     throw ex;
                 }
             }
@@ -920,7 +918,7 @@ namespace NT_AirPollution.Service
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error($"SendFormStatus3: {ex.Message}");
+                    Logger.Error($"SendFormStatus3: {ex.StackTrace}|{ex.Message}");
                     throw ex;
                 }
             }
@@ -958,7 +956,7 @@ namespace NT_AirPollution.Service
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error($"SendFormStatus4: {ex.Message}");
+                    Logger.Error($"SendFormStatus4: {ex.StackTrace}|{ex.Message}");
                     throw ex;
                 }
             }
@@ -998,7 +996,7 @@ namespace NT_AirPollution.Service
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error($"SendFormStatus5: {ex.Message}");
+                    Logger.Error($"SendFormStatus5: {ex.StackTrace}|{ex.Message}");
                     throw ex;
                 }
             }
@@ -1036,7 +1034,7 @@ namespace NT_AirPollution.Service
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error($"SendFormStatus2: {ex.Message}");
+                    Logger.Error($"SendFormStatus2: {ex.StackTrace}|{ex.Message}");
                     throw ex;
                 }
             }
@@ -1073,7 +1071,7 @@ namespace NT_AirPollution.Service
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error($"SendCalcStatus3: {ex.Message}");
+                    Logger.Error($"SendCalcStatus3: {ex.StackTrace}|{ex.Message}");
                     throw ex;
                 }
             }
@@ -1114,7 +1112,7 @@ namespace NT_AirPollution.Service
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error($"SendCalcStatus45: {ex.Message}");
+                    Logger.Error($"SendCalcStatus45: {ex.StackTrace}|{ex.Message}");
                     throw ex;
                 }
             }
@@ -1155,7 +1153,7 @@ namespace NT_AirPollution.Service
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error($"SendCalcStatus6: {ex.Message}");
+                    Logger.Error($"SendCalcStatus6: {ex.StackTrace}|{ex.Message}");
                     throw ex;
                 }
             }
@@ -1413,7 +1411,7 @@ namespace NT_AirPollution.Service
             }
             catch (Exception ex)
             {
-                Logger.Error($"CreatePaymentPDF: {ex.Message}");
+                Logger.Error($"CreatePaymentPDF: {ex.StackTrace}|{ex.Message}");
                 throw ex;
             }
         }
@@ -1501,7 +1499,7 @@ namespace NT_AirPollution.Service
             }
             catch (Exception ex)
             {
-                Logger.Error($"CreateClearProofPDF: {ex.Message}");
+                Logger.Error($"CreateClearProofPDF: {ex.StackTrace}|{ex.Message}");
                 throw ex;
             }
         }
@@ -1558,7 +1556,7 @@ namespace NT_AirPollution.Service
             }
             catch (Exception ex)
             {
-                Logger.Error($"CreateFreeProofPDF: {ex.Message}");
+                Logger.Error($"CreateFreeProofPDF: {ex.StackTrace}|{ex.Message}");
                 throw ex;
             }
         }
@@ -1602,7 +1600,7 @@ namespace NT_AirPollution.Service
             }
             catch (Exception ex)
             {
-                Logger.Error($"CreateFreeProofPDF: {ex.Message}");
+                Logger.Error($"CreateFreeProofPDF: {ex.StackTrace}|{ex.Message}");
                 throw ex;
             }
         }

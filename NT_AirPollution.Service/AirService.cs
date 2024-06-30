@@ -117,7 +117,7 @@ namespace NT_AirPollution.Service
                     catch (Exception ex)
                     {
                         trans.Rollback();
-                        Logger.Error($"AddAir: {ex.Message}");
+                        Logger.Error($"AddAir: {ex.StackTrace}|{ex.Message}");
                         throw new Exception("系統發生未預期錯誤");
                     }
                 }
@@ -158,7 +158,7 @@ namespace NT_AirPollution.Service
                     catch (Exception ex)
                     {
                         trans.Rollback();
-                        Logger.Error($"UpdateAir: {ex.Message}");
+                        Logger.Error($"UpdateAir: {ex.StackTrace}|{ex.Message}");
                         throw new Exception("系統發生未預期錯誤");
                     }
                 }
@@ -192,7 +192,7 @@ namespace NT_AirPollution.Service
                     catch (Exception ex)
                     {
                         trans.Rollback();
-                        Logger.Error($"DeleteAir: {ex.Message}");
+                        Logger.Error($"DeleteAir: {ex.StackTrace}|{ex.Message}");
                         throw new Exception("系統發生未預期錯誤");
                     }
                 }
