@@ -287,6 +287,82 @@
             }
         },
         methods: {
+            initDatePicker() {
+                $.datepicker.regional['zh-TW'] = {
+                    closeText: '關閉',
+                    prevText: '&#x3C;上月',
+                    nextText: '下月&#x3E;',
+                    currentText: '今天',
+                    monthNames: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+                    monthNamesShort: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+                    dayNames: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
+                    dayNamesShort: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+                    dayNamesMin: ['日', '一', '二', '三', '四', '五', '六'],
+                    weekHeader: '周',
+                    dateFormat: 'yy/mm/dd',
+                    firstDay: 1,
+                    isRTL: false,
+                    showMonthAfterYear: true,
+                    yearSuffix: '年'
+                };
+                $.datepicker.setDefaults($.datepicker.regional['zh-TW']);
+
+                $.datepicker._phoenixGenerateMonthYearHeader = $.datepicker._generateMonthYearHeader;
+                $.datepicker._generateMonthYearHeader = function (inst, drawMonth, drawYear, minDate, maxDate, secondary, monthNames, monthNamesShort) {
+                    var result = $($.datepicker._phoenixGenerateMonthYearHeader(inst, drawMonth, drawYear, minDate, maxDate, secondary, monthNames, monthNamesShort));
+
+                    result
+                        .find('select.ui-datepicker-year')
+                        .children()
+                        .each(function () {
+                            $(this).text($(this).text() - 1911 + '年');
+                        });
+                    result.find('span.ui-datepicker-year').each(function () {
+                        $(this).text($(this).text() - 1911);
+                    });
+
+                    if (inst.yearshtml) {
+                        var origyearshtml = inst.yearshtml;
+                        console.log(inst.yearshtml);
+                    }
+
+                    return result.html();
+                };
+
+                $('.datepicker').datepicker({
+                    dateFormat: 'yy/mm/dd',
+                    changeYear: true,
+                    changeMonth: true,
+                    beforeShow: function (input, inst) {
+                        const inputVal = input.value;
+                        if (inputVal) {
+                            const year = +inputVal.split('-')[0] + 1911;
+                            const month = +inputVal.split('-')[1];
+                            const day = +inputVal.split('-')[2];
+                            return {
+                                defaultDate: `${year}-${month}-${day}`
+                            };
+                        }
+
+                        return {};
+                    },
+                    onSelect: function (dateText, inst) {
+                        var dateFormate = inst.settings.dateFormat == null ? 'yy/mm/dd' : inst.settings.dateFormat; //取出格式文字
+                        var reM = /m+/g;
+                        var reD = /d+/g;
+                        var objDate = {
+                            y: inst.selectedYear - 1911 < 0 ? inst.selectedYear : inst.selectedYear - 1911,
+                            m: String(inst.selectedMonth + 1).length != 1 ? inst.selectedMonth + 1 : '0' + String(inst.selectedMonth + 1),
+                            d: String(inst.selectedDay).length != 1 ? inst.selectedDay : '0' + String(inst.selectedDay)
+                        };
+                        $.each(objDate, function (k, v) {
+                            var re = new RegExp(k + '+');
+                            dateFormate = dateFormate.replace(re, v);
+                        });
+                        inst.input.val(dateFormate);
+                    }
+                });
+            },
             getDistrict() {
                 axios.get('/Option/GetDistrict').then(res => {
                     this.district = Object.freeze(res.data);
@@ -478,6 +554,8 @@
                         const file = document.querySelector(`#file${i}`);
                         if (file) file.value = '';
                     }
+
+                    this.initDatePicker();
                 });
             },
             showModal(row) {

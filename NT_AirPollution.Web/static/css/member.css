@@ -429,6 +429,20 @@ h3 {
   margin-bottom: 10px;
 }
 
+.ui-datepicker .ui-datepicker-header {
+  padding: 4px 30px;
+}
+
+.ui-datepicker-year {
+  width: 80px !important;
+  margin: 0 4px;
+}
+
+.ui-datepicker-month {
+  width: 80px !important;
+  margin: 0 4px;
+}
+
 .entry-wrap {
   display: flex;
   align-items: flex-start;
@@ -883,8 +897,16 @@ footer ul {
   line-height: 1.875rem;
   margin: 0 10px 10px;
 }
+footer ul li {
+  display: flex;
+  align-items: flex-start;
+}
 footer ul .office {
   font-weight: 700;
+}
+footer ul .phone-list {
+  padding: 0;
+  margin: 0;
 }
 footer .bottom {
   padding: 10px 15px;
@@ -896,10 +918,6 @@ footer .bottom ul {
 }
 
 @media (min-width: 1200px) {
-  footer .contact-row {
-    justify-content: space-around;
-  }
-}/*# sourceMappingURL=member.css.map */: 1200px) {
   footer .contact-row {
     justify-content: space-around;
   }

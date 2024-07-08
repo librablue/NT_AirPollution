@@ -3,9 +3,12 @@
 }
 
 @section styles {
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="@Url.Content("~/static/css/member.css")" />
 }
 @section scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <script src="@Url.Content("~/static/js/bank.js")"></script>
     <script src="@Url.Content("~/static/js/apply/form.js")"></script>
 }
@@ -220,6 +223,7 @@
                             </el-form-item>
                             <el-form-item prop="S_B_BDATE2" label="負責人生日">
                                 <el-date-picker v-model="selectRow.S_B_BDATE2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
+                                <input type="text" class="datepicker" />
                             </el-form-item>
                         </div>
                     </div>
@@ -333,18 +337,18 @@
                     <div v-if="selectRow.KIND_NO === 'B'" v-cloak>
                         <div style="margin-bottom:10px">鬆方體積換算表</div>
                         @*<div class="contact-group">
-                            <div class="flex-row" style="justify-content: flex-start; align-items: flex-end">
-                                <el-form-item label="實方體積(立方公尺)">
-                                    <el-input type="number" v-model="selectRow.D2"></el-input>
-                                </el-form-item>
-                                <el-form-item label="鬆實方比值">
-                                    <el-input type="number" v-model="selectRow.RATIOLB"></el-input>
-                                </el-form-item>
-                                <el-form-item>
-                                    <el-button type="primary" round @@click="calcD2">換算</el-button>
-                                </el-form-item>
-                            </div>
-                        </div>*@
+                                <div class="flex-row" style="justify-content: flex-start; align-items: flex-end">
+                                    <el-form-item label="實方體積(立方公尺)">
+                                        <el-input type="number" v-model="selectRow.D2"></el-input>
+                                    </el-form-item>
+                                    <el-form-item label="鬆實方比值">
+                                        <el-input type="number" v-model="selectRow.RATIOLB"></el-input>
+                                    </el-form-item>
+                                    <el-form-item>
+                                        <el-button type="primary" round @@click="calcD2">換算</el-button>
+                                    </el-form-item>
+                                </div>
+                            </div>*@
                         <div class="contact-group">
                             <div class="flex-row" style="justify-content: flex-start; align-items: flex-end">
                                 <el-form-item label="鬆方重量(公噸)">
@@ -494,25 +498,25 @@
     </el-dialog>
 
     @*<el-dialog title="上傳繳費證明" :visible.sync="paymentProofModalVisible" width="30%" v-cloak>
-        <el-form ref="form3" :rules="rules3" :model="selectRow.PaymentProof" label-position="top">
-            <el-form-item prop="File">
-                <div v-if="selectRow.PaymentProof.ProofFile" class="photo-wrap">
-                    <el-button class="btn-remove" type="danger" size="mini" icon="el-icon-delete" circle @@click="deletePaymentProof"></el-button>
-                    <img class="w100p" :src="`/Option/Download?f=${selectRow.PaymentProof.ProofFile}`" />
-                </div>
-                <input v-else type="file" id="filePF" accept=".jpg,.jpeg,.png" />
-            </el-form-item>
-        </el-form>
-        <span slot="footer" class="dialog-footer">
-            <template v-if="selectRow.PaymentProof.ProofFile">
-                <el-button type="primary" @@click="paymentProofModalVisible = false">確 定</el-button>
-            </template>
-            <template v-else>
-                <el-button @@click="paymentProofModalVisible = false">取 消</el-button>
-                <el-button type="primary" @@click="savePaymentProof">上 傳</el-button>
-            </template>
-        </span>
-    </el-dialog>*@
+            <el-form ref="form3" :rules="rules3" :model="selectRow.PaymentProof" label-position="top">
+                <el-form-item prop="File">
+                    <div v-if="selectRow.PaymentProof.ProofFile" class="photo-wrap">
+                        <el-button class="btn-remove" type="danger" size="mini" icon="el-icon-delete" circle @@click="deletePaymentProof"></el-button>
+                        <img class="w100p" :src="`/Option/Download?f=${selectRow.PaymentProof.ProofFile}`" />
+                    </div>
+                    <input v-else type="file" id="filePF" accept=".jpg,.jpeg,.png" />
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <template v-if="selectRow.PaymentProof.ProofFile">
+                    <el-button type="primary" @@click="paymentProofModalVisible = false">確 定</el-button>
+                </template>
+                <template v-else>
+                    <el-button @@click="paymentProofModalVisible = false">取 消</el-button>
+                    <el-button type="primary" @@click="savePaymentProof">上 傳</el-button>
+                </template>
+            </span>
+        </el-dialog>*@
 
     <el-dialog title="請勾選已上傳附件" :visible.sync="selfCheckModalVisible" width="30%" v-cloak>
         <ul class="selfcheck-list">
