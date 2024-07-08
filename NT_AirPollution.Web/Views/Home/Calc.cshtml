@@ -50,11 +50,11 @@
                     <el-input type="number" v-model="form.VOLUMEL"></el-input>
                 </el-form-item>
                 <el-form-item v-if="isShowMONEY()" prop="MONEY" label="工程合約經費(元)" v-cloak>
-                    <el-input type="number" v-model="form.MONEY"></el-input>
+                    <el-input type="number" v-model="form.MONEY" placeholder="未稅金額(元)"></el-input>
                 </el-form-item>
                 <div v-if="form.KIND_NO === 'B'" v-cloak>
-                    <div style="margin-bottom:10px">鬆方體積換算表 (擇一)</div>
-                    <div class="flex-row" style="align-items: flex-end">
+                    <div style="margin-bottom:10px">鬆方體積換算表</div>
+                    @*<div class="flex-row" style="align-items: flex-end">
                         <div style="flex:1; padding: 0 10px">
                             <el-form-item label="實方體積(立方公尺)">
                                 <el-input type="number" v-model="form.D2"></el-input>
@@ -70,7 +70,7 @@
                                 <el-button type="primary" round @@click="calcD2">換算</el-button>
                             </el-form-item>
                         </div>
-                    </div>
+                    </div>*@
                     <div class="flex-row" style="align-items: flex-end">
                         <div style="flex:1; padding: 0 10px">
                             <el-form-item label="鬆方重量(公噸)">

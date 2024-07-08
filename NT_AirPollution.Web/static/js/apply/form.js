@@ -109,6 +109,18 @@
                 }
                 callback();
             };
+            const checkS_B_BDATE2 = (rule, value, callback) => {
+                if (!this.PUB_COMP && !value) {
+                    callback(new Error('請輸入營利事業負責人生日'));
+                }
+                callback();
+            };
+            const checkS_C_ID = (rule, value, callback) => {
+                if (!this.PUB_COMP && !value) {
+                    callback(new Error('請輸入營利事業聯絡人身分證字號'));
+                }
+                callback();
+            };
             return {
                 mode: '',
                 filter: {
@@ -177,10 +189,10 @@
                     S_B_NAM: [{ required: true, message: '請輸入營利事業負責人姓名', trigger: 'blur' }],
                     S_B_TIT: [{ required: true, message: '請輸入營利事業負責人職稱', trigger: 'blur' }],
                     S_B_ID: [{ required: true, message: '請輸入營利事業負責人身分證字號', trigger: 'blur' }],
-                    S_B_BDATE2: [{ required: true, message: '請輸入營利事業負責人生日', trigger: 'blur' }],
+                    S_B_BDATE2: [{ validator: checkS_B_BDATE2, trigger: 'blur' }],
                     S_C_NAM: [{ required: true, message: '請輸入營利事業聯絡人姓名', trigger: 'blur' }],
                     S_C_TIT: [{ required: true, message: '請輸入營利事業聯絡人職稱', trigger: 'blur' }],
-                    S_C_ID: [{ required: true, message: '請輸入營利事業聯絡人身分證字號', trigger: 'blur' }],
+                    S_C_ID: [{ validator: checkS_C_ID, trigger: 'blur' }],
                     S_C_ADDR: [{ required: true, message: '請輸入營利事業聯絡人地址', trigger: 'blur' }],
                     S_C_TEL: [{ required: true, message: '請輸入營利事業聯絡人電話', trigger: 'blur' }]
                 }),
@@ -640,9 +652,9 @@
                 }
 
                 const ext = e.target.files[0].name.split('.').pop();
-                const allowExt = ['doc', 'docx', 'pdf', 'jpg', 'jpeg', 'png'];
+                const allowExt = ['pdf'];
                 if (!allowExt.includes(ext)) {
-                    alert('附件只允許上傳 doc/docx/pdf/jpg/png 等文件');
+                    alert('附件只允許上傳 pdf 文件');
                     return false;
                 }
 

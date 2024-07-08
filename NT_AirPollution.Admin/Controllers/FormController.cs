@@ -1,5 +1,4 @@
 ﻿using NT_AirPollution.Admin.ActionFilter;
-using NT_AirPollution.Model.Domain;
 using NT_AirPollution.Model.Enum;
 using NT_AirPollution.Model.View;
 using NT_AirPollution.Service;

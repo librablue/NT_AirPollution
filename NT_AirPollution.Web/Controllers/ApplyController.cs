@@ -358,13 +358,13 @@ namespace NT_AirPollution.Web.Controllers
                     Directory.CreateDirectory(absoluteDirPath);
 
                 string absoluteFilePath = "";
-                List<string> allowExt = new List<string> { ".doc", ".docx", ".pdf", ".jpg", ".jpeg", ".png" };
+                List<string> allowExt = new List<string> { ".pdf" };
                 string ext = Path.GetExtension(file.FileName).ToLower();
                 if (!allowExt.Any(o => o == ext))
-                    throw new Exception("附件只允許上傳 doc/docx/pdf/jpg/png 等文件");
+                    throw new Exception("附件只允許上傳 pdf 文件");
 
-                if (file.ContentLength >= 1024 * 1024 * 4)
-                    throw new Exception("附件大小限制 4MB");
+                if (file.ContentLength > 1024 * 1024 * 100)
+                    throw new Exception("附件大小限制 100MB");
 
                 // 生成檔名
                 string fileName = $@"{Guid.NewGuid().ToString()}{Path.GetExtension(file.FileName)}";
