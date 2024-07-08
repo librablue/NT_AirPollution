@@ -191,8 +191,8 @@
 								<el-input type="number" v-model="form.MONEY"></el-input>
 							</el-form-item>
 							<el-form-item prop="C_MONEY" label="工程環保經費(元)">
-                                <div style="min-width:120px">{{calcC_MONEY | comma}}</div>
-                            </el-form-item>
+								<div style="min-width:120px">{{calcC_MONEY | comma}}</div>
+							</el-form-item>
 							<el-form-item prop="PERCENT" label="工程合約經費比例(%)">{{form.PERCENT}}</el-form-item>
 						</div>
 						<div class="flex-row">
@@ -312,7 +312,7 @@
 					<el-form-item label="繳費證明">
 						<img style="width:640px" :src="`api/Option/Download?f=${form.PaymentProof.ProofFile}`" />
 					</el-form-item>
-				</el-tab-pane> -->
+				</el-tab-pane>-->
 			</el-tabs>
 		</template>
 		<template #footer>
@@ -345,9 +345,9 @@ export default {
 			callback();
 		};
 		const checkArea = (rule, value, callback) => {
-			const kindAry = ['1', '2', '4', '5', '6', '7', '8', '9', 'A'];
+			const kindAry = ['1', '2', '4', '5', '6', '7', '8', '9', 'A', 'Z'];
 			if (kindAry.includes(this.form.KIND_NO) && !value) {
-				callback(new Error('請輸入施工面積'));
+				callback(new Error('請輸入工程面積'));
 			}
 			callback();
 		};
@@ -493,7 +493,7 @@ export default {
 					return '總樓地板面積(平方公尺)';
 				case '4':
 				case '6':
-					return '施工面積(平方公尺)';
+					return '工程面積(平方公尺)';
 				case '5':
 					return '隧道平面面積(平方公尺)';
 				case '7':
@@ -501,9 +501,11 @@ export default {
 				case '8':
 				case '9':
 				case 'A':
-					return '施工面積(公頃)';
+					return '工程面積(公頃)';
+				case 'Z':
+					return '工程面積(平方公尺)';
 				default:
-					return '施工面積(平方公尺)';
+					return '工程面積(平方公尺)';
 			}
 		}
 	},
@@ -519,7 +521,7 @@ export default {
 			});
 		},
 		isShowAREA() {
-			const kindAry = ['1', '2', '4', '5', '6', '7', '8', '9', 'A'];
+			const kindAry = ['1', '2', '4', '5', '6', '7', '8', '9', 'A', 'Z'];
 			if (kindAry.includes(this.form.KIND_NO)) {
 				return true;
 			}

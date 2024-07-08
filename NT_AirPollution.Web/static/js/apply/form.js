@@ -83,7 +83,7 @@
             const checkArea = (rule, value, callback) => {
                 const kinds = ['1', '2', '4', '5', '6', '7', '8', '9', 'A'];
                 if (kinds.includes(this.selectRow.KIND_NO) && !value) {
-                    callback(new Error('請輸入施工面積'));
+                    callback(new Error('請輸入工程面積'));
                 }
                 callback();
             };
@@ -256,7 +256,7 @@
             calcC_MONEY() {
                 try {
                     if (!this.selectRow.MONEY) throw '';
-                    return +(this.selectRow.MONEY * this.selectRow.PERCENT / 100).toFixed(0);
+                    return +((this.selectRow.MONEY * this.selectRow.PERCENT) / 100).toFixed(0);
                 } catch (err) {
                     return 0;
                 }
@@ -270,7 +270,7 @@
                         return '總樓地板面積(平方公尺)';
                     case '4':
                     case '6':
-                        return '施工面積(平方公尺)';
+                        return '工程面積(平方公尺)';
                     case '5':
                         return '隧道平面面積(平方公尺)';
                     case '7':
@@ -278,9 +278,11 @@
                     case '8':
                     case '9':
                     case 'A':
-                        return '施工面積(公頃)';
+                        return '工程面積(公頃)';
+                    case 'Z':
+                        return '工程面積(平方公尺)';
                     default:
-                        return '施工面積(平方公尺)';
+                        return '工程面積(平方公尺)';
                 }
             }
         },
@@ -296,7 +298,7 @@
                 });
             },
             isShowAREA() {
-                const kindAry = ['1', '2', '4', '5', '6', '7', '8', '9', 'A'];
+                const kindAry = ['1', '2', '4', '5', '6', '7', '8', '9', 'A', 'Z'];
                 if (kindAry.includes(this.selectRow.KIND_NO)) {
                     return true;
                 }
@@ -692,8 +694,7 @@
                 if (this.activeTab === '2') {
                     if (this.selectRow.PUB_COMP) {
                         this.selectRow.PERCENT = 4;
-                    }
-                    else {
+                    } else {
                         this.selectRow.PERCENT = 3;
                     }
                 }
@@ -733,7 +734,7 @@
                         this.selectRow.LATLNG = `${this.selectRow.LAT},${this.selectRow.LNG}`;
                         this.selectRow.C_MONEY = this.calcC_MONEY;
                         // RC或SRC需填寫建築面積&基地面積，AREA跟AREA_B都是建築面積
-                        if(this.selectRow.KIND_NO === '1' || this.selectRow.KIND_NO === '2') {
+                        if (this.selectRow.KIND_NO === '1' || this.selectRow.KIND_NO === '2') {
                             this.selectRow.AREA_B = this.selectRow.AREA;
                         }
                         axios

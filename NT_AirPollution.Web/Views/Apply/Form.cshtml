@@ -331,8 +331,8 @@
                         <el-input type="number" v-model="selectRow.VOLUMEL"></el-input>
                     </el-form-item>
                     <div v-if="selectRow.KIND_NO === 'B'" v-cloak>
-                        <div style="margin-bottom:10px">鬆方體積換算表 (擇一)</div>
-                        <div class="contact-group">
+                        <div style="margin-bottom:10px">鬆方體積換算表</div>
+                        @*<div class="contact-group">
                             <div class="flex-row" style="justify-content: flex-start; align-items: flex-end">
                                 <el-form-item label="實方體積(立方公尺)">
                                     <el-input type="number" v-model="selectRow.D2"></el-input>
@@ -344,7 +344,7 @@
                                     <el-button type="primary" round @@click="calcD2">換算</el-button>
                                 </el-form-item>
                             </div>
-                        </div>
+                        </div>*@
                         <div class="contact-group">
                             <div class="flex-row" style="justify-content: flex-start; align-items: flex-end">
                                 <el-form-item label="鬆方重量(公噸)">
