@@ -253,6 +253,21 @@ namespace NT_AirPollution.Web.Controllers
                 form.ClientUserID = BaseService.CurrentUser.ID;
                 form.FormStatus = FormStatus.未申請;
                 form.CalcStatus = CalcStatus.未申請;
+                
+                if (form.KIND_NO == "1" || form.KIND_NO == "2")
+                {
+                    // 1、2類工程面積=建築面積
+                    form.AREA = form.AREA_B;
+                    // 建蔽率=(建築面積AREA_B)/(基地面積AREA_F)*100%
+                    form.PERC_B = Math.Round((double)(form.AREA_B / form.AREA_F * 100), 2, MidpointRounding.AwayFromZero);
+                }
+                else
+                {
+                    form.AREA_F = null;
+                    form.AREA_B = null;
+                    form.PERC_B = null;
+                }
+
                 //// 20240516 改審核後才產生單號
                 //string c_no = _accessService.GetC_NO(form);
                 //form.C_NO = c_no;
@@ -313,6 +328,21 @@ namespace NT_AirPollution.Web.Controllers
                 form.KIND = allProjectCode.First(o => o.ID == form.KIND_NO).Name;
                 form.AP_DATE = formInDB.AP_DATE;
                 form.M_DATE = DateTime.Now;
+
+                if (form.KIND_NO == "1" || form.KIND_NO == "2")
+                {
+                    // 1、2類工程面積=建築面積
+                    form.AREA = form.AREA_B;
+                    // 建蔽率=(建築面積AREA_B)/(基地面積AREA_F)*100%
+                    form.PERC_B = Math.Round((double)(form.AREA_B / form.AREA_F * 100), 2, MidpointRounding.AwayFromZero);
+                }
+                else
+                {
+                    form.AREA_F = null;
+                    form.AREA_B = null;
+                    form.PERC_B = null;
+                }
+
 
                 // 有管制編號才修改Access
                 if (!string.IsNullOrEmpty(form.C_NO))

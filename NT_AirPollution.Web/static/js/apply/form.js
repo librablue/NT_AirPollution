@@ -122,29 +122,6 @@
                 }
                 callback();
             };
-            const checkArea = (rule, value, callback) => {
-                const kinds = ['1', '2', '4', '5', '6', '7', '8', '9', 'A'];
-                if (kinds.includes(this.selectRow.KIND_NO) && !value) {
-                    callback(new Error('請輸入工程面積'));
-                }
-                callback();
-            };
-            const checkAreaF = (rule, value, callback) => {
-                const kinds = ['1', '2'];
-                if (kinds.includes(this.selectRow.KIND_NO) && !value) {
-                    callback(new Error('請輸入基地面積'));
-                }
-                callback();
-            };
-            const checkVolumel = (rule, value, callback) => {
-                if (this.selectRow.KIND_NO === '3' && !value) {
-                    callback(new Error('請輸入總樓地板面積'));
-                }
-                if (this.selectRow.KIND_NO === 'B' && !value) {
-                    callback(new Error('請輸入外運土石體積'));
-                }
-                callback();
-            };
             const checkLATLNG = (rule, value, callback) => {
                 if (isNaN(value)) {
                     callback(new Error('經緯度格式錯誤'));
@@ -184,7 +161,7 @@
                 forms: [],
                 selectRow: {
                     P_KIND: '一次全繳',
-                    BUD_DOC2: '無',
+                    REC_YN: '無',
                     Attachments: [],
                     StopWorks: [],
                     RefundBank: {},
@@ -256,9 +233,10 @@
                 tab4Rules: Object.freeze({
                     MONEY: [{ required: true, message: '請輸入工程合約經費', trigger: 'blur' }],
                     C_MONEY: [{ required: true, message: '請輸入工程環保經費', trigger: 'blur' }],
-                    AREA: [{ validator: checkArea, trigger: 'blur' }],
-                    AREA_F: [{ validator: checkAreaF, trigger: 'blur' }],
-                    VOLUMEL: [{ validator: checkVolumel, trigger: 'blur' }],
+                    AREA: [{  required: true, message: '請輸入工程面積', trigger: 'blur' }],
+                    AREA_F: [{  required: true, message: '請輸入基地面積', trigger: 'blur' }],
+                    AREA_B: [{  required: true, message: '請輸入建築面積', trigger: 'blur' }],
+                    VOLUMEL: [{ required: true, message: '請輸入外運土石體積', trigger: 'blur' }],
                     B_DATE: [{ required: true, message: '請輸入開始日期', trigger: 'blur' }],
                     E_DATE: [{ validator: checkE_DATE, trigger: 'blur' }]
                 }),
@@ -305,29 +283,9 @@
                     return 0;
                 }
             },
-            projectCodeText() {
-                switch (this.selectRow.KIND_NO) {
-                    case '1':
-                    case '2':
-                        return '建築面積(平方公尺)';
-                    case '3':
-                        return '總樓地板面積(平方公尺)';
-                    case '4':
-                    case '6':
-                        return '工程面積(平方公尺)';
-                    case '5':
-                        return '隧道平面面積(平方公尺)';
-                    case '7':
-                        return '橋面面積(平方公尺)';
-                    case '8':
-                    case '9':
-                    case 'A':
-                        return '工程面積(公頃)';
-                    case 'Z':
-                        return '工程面積(平方公尺)';
-                    default:
-                        return '工程面積(平方公尺)';
-                }
+            calcPERC_B() {
+                if(!this.selectRow.AREA_B || !this.selectRow.AREA_F) return 0;
+                return (+this.selectRow.AREA_B / +this.selectRow.AREA_F * 100).toFixed(2);
             }
         },
         methods: {
@@ -372,20 +330,6 @@
                     this.projectCode = Object.freeze(res.data);
                 });
             },
-            isShowAREA() {
-                const kindAry = ['1', '2', '4', '5', '6', '7', '8', '9', 'A', 'Z'];
-                if (kindAry.includes(this.selectRow.KIND_NO)) {
-                    return true;
-                }
-                return false;
-            },
-            // isShowMONEY() {
-            //     const kindAry = ['Z'];
-            //     if (kindAry.includes(this.selectRow.KIND_NO)) {
-            //         return true;
-            //     }
-            //     return false;
-            // },
             getAttachmentInfo() {
                 axios.get('/Option/GetAttachmentInfo').then(res => {
                     this.attachmentInfo = Object.freeze(res.data);
@@ -464,7 +408,7 @@
                     SER_NO: 1,
                     P_KIND: '一次全繳',
                     KIND_NO: null,
-                    BUD_DOC2: '無',
+                    REC_YN: '無',
                     CreateUserName: document.querySelector('#hfUserName').value,
                     CreateUserEmail: document.querySelector('#hfUserEmail').value,
                     FormStatus: 1,
@@ -482,7 +426,7 @@
                 this.selectRow = {
                     SER_NO: 1,
                     P_KIND: '一次全繳',
-                    BUD_DOC2: '無',
+                    REC_YN: '無',
                     PUB_COMP: true,
                     TOWN_NO: 'M2',
                     CreateUserName: document.querySelector('#hfUserName').value,
@@ -746,6 +690,7 @@
                         }
 
                         row.FileName = res.data.Message;
+                        row.DisplayName = e.target.files[0].name;
                         this.$message.success('檔案上傳完成');
                     })
                     .catch(err => {
@@ -808,9 +753,9 @@
                         this.selectRow.UTMN = point[1];
                         this.selectRow.LATLNG = `${this.selectRow.LAT},${this.selectRow.LNG}`;
                         this.selectRow.C_MONEY = this.calcC_MONEY;
-                        // RC或SRC需填寫建築面積&基地面積，AREA跟AREA_B都是建築面積
+                        // 1、2類工程面積=建築面積
                         if (this.selectRow.KIND_NO === '1' || this.selectRow.KIND_NO === '2') {
-                            this.selectRow.AREA_B = this.selectRow.AREA;
+                            this.selectRow.AREA = this.selectRow.AREA_B;
                         }
                         axios
                             .post(`/Apply/${this.mode}Form`, this.selectRow)

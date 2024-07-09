@@ -68,7 +68,7 @@
 				projectCode: Object.freeze([]),
 				selectRow: {
 					P_KIND: '一次全繳',
-					BUD_DOC2: '無',
+					REC_YN: '無',
 					Attachment: {}
 				},
 				dialogVisible: false,

@@ -22,6 +22,7 @@ namespace NT_AirPollution.Model.Domain
         public long FormID { get; set; }
         public long InfoID { get; set; }
         public string FileName { get; set; }
+        public string DisplayName { get; set; }
         public DateTime? CreateDate { get; set; }
     }
 }

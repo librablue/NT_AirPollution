@@ -199,24 +199,38 @@
 							</el-form-item>
 							<el-form-item prop="PERCENT" label="工程合約經費比例(%)">{{form.PERCENT}}</el-form-item>
 						</div>
-						<div class="flex-row">
-							<el-form-item v-if="isShowAREA()" prop="AREA" :label="projectCodeText">
-								<el-input type="number" v-model="form.AREA"></el-input>
-							</el-form-item>
-							<el-form-item v-if="form.KIND_NO === '1' || form.KIND_NO === '2'" prop="AREA_F" label="基地面積(平方公尺)">
+						<div v-if="form.KIND_NO === '1' || form.KIND_NO === '2'" class="flex-row">
+							<el-form-item prop="AREA_F" label="基地面積">
 								<el-input type="number" v-model="form.AREA_F"></el-input>
 							</el-form-item>
+							<el-form-item prop="AREA_B" label="建築面積">
+								<el-input type="number" v-model="form.AREA_B"></el-input>
+							</el-form-item>
+							<el-form-item prop="PERC_B" label="建蔽率">{{calcPERC_B}}%</el-form-item>
 						</div>
-						<el-form-item v-if="form.KIND_NO === '3'" prop="VOLUMEL" :label="projectCodeText">
-							<el-input type="number" v-model="form.VOLUMEL"></el-input>
-						</el-form-item>
-						<div class="flex-row" v-if="form.KIND_NO === 'B'">
-							<el-form-item label="鬆實方比值">
-								<el-input type="number" v-model="form.RATIOLB"></el-input>
+						<div v-else>
+							<el-form-item prop="AREA" label="工程面積">
+								<el-input type="number" v-model="form.AREA"></el-input>
 							</el-form-item>
-							<el-form-item label="密度">
-								<el-input type="number" v-model="form.DENSITYL"></el-input>
-							</el-form-item>
+						</div>
+						<div v-if="form.KIND_NO === 'B'">
+							<div style="margin-bottom:10px">鬆方體積換算表</div>
+							<div class="contact-group">
+								<div class="flex-row" style="justify-content: flex-start; align-items: flex-end">
+									<el-form-item label="鬆方重量(公噸)">
+										<el-input type="number" v-model="form.E2"></el-input>
+									</el-form-item>
+									<el-form-item label="密度">
+										<el-input type="number" v-model="form.DENSITYL"></el-input>
+									</el-form-item>
+									<el-form-item>
+										<el-button type="primary" round @click="calcE2">換算</el-button>
+									</el-form-item>
+								</div>
+							</div>
+							<div class="hint-message">
+								<i class="el-icon-info"></i> 鬆方體積除以實方體積之比值以一‧三一計，鬆方之密度以一‧五一公噸/立方公尺計。營建業主如有現地取樣之實方與鬆方試驗相關數據，得報請地方主管機關同意後，依該數據採計。
+							</div>
 							<el-form-item prop="VOLUMEL" label="外運土石體積(立方公尺)">
 								<el-input type="number" v-model="form.VOLUMEL"></el-input>
 							</el-form-item>
@@ -241,7 +255,7 @@
 							</el-select>
 						</el-form-item>
 						<el-form-item label="空汙防制措施計畫書">
-							<el-select v-model="form.BUD_DOC2">
+							<el-select v-model="form.REC_YN">
 								<el-option label="有" value="有"></el-option>
 								<el-option label="無" value="無"></el-option>
 							</el-select>
@@ -268,7 +282,7 @@
 									<td>
 										<ul class="file-list">
 											<li v-for="sub in filterAttachments(item.ID)" :key="sub.ID">
-												<a :href="`api/Form/Download?f=${sub.FileName}`" class="link-download">{{sub.FileName}}</a>
+												<a :href="`api/Form/Download?f=${sub.FileName}`" class="link-download">{{sub.DisplayName}}</a>
 											</li>
 										</ul>
 									</td>
@@ -547,29 +561,9 @@ export default {
 				return 0;
 			}
 		},
-		projectCodeText() {
-			switch (this.form.KIND_NO) {
-				case '1':
-				case '2':
-					return '建築面積(平方公尺)';
-				case '3':
-					return '總樓地板面積(平方公尺)';
-				case '4':
-				case '6':
-					return '工程面積(平方公尺)';
-				case '5':
-					return '隧道平面面積(平方公尺)';
-				case '7':
-					return '橋面面積(平方公尺)';
-				case '8':
-				case '9':
-				case 'A':
-					return '工程面積(公頃)';
-				case 'Z':
-					return '工程面積(平方公尺)';
-				default:
-					return '工程面積(平方公尺)';
-			}
+		calcPERC_B() {
+			if (!this.form.AREA_B || !this.form.AREA_F) return 0;
+			return ((+this.form.AREA_B / +this.form.AREA_F) * 100).toFixed(2);
 		}
 	},
 	methods: {
@@ -705,6 +699,12 @@ export default {
 					break;
 				}
 			}
+		},
+		calcD2() {
+			this.form.VOLUMEL = this.form.D2 * this.form.RATIOLB;
+		},
+		calcE2() {
+			this.form.VOLUMEL = this.form.E2 / this.form.DENSITYL;
 		}
 	},
 	watch: {
@@ -715,7 +715,15 @@ export default {
 					this.form = JSON.parse(JSON.stringify(this.data));
 					this.activeTab = '1';
 					const point = this.form.LATLNG.split(',');
-					this.form = { ...this.form, ...{ LAT: point[0] || null, LNG: point[1] || null } };
+					this.form = {
+						...this.form,
+						...{
+							LAT: point[0] || null,
+							LNG: point[1] || null,
+							D2: null,
+							E2: null
+						}
+					};
 				}
 			}
 		},
@@ -771,5 +779,10 @@ export default {
 }
 .file-list {
 	list-style-type: none;
+}
+.hint-message {
+    font-size: 14px;
+    color: #2a629a;
+    margin-bottom: 20px;
 }
 </style>
