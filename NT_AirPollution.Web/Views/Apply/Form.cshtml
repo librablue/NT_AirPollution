@@ -419,7 +419,7 @@
                                     <ul class="file-list">
                                         <li v-for="sub in filterAttachments(item.ID)" :key="sub.ID">
                                             <a href="javascript:;" v-if="mode === 'Add' || selectRow.FormStatus <= 2" class="link-delete" @@click="deleteFile(sub)"><i class="el-icon-delete"></i></a>
-                                            <a :href="`@Url.Content("~/Option/Download")?f=${sub.FileName}`" class="link-download">{{sub.DisplayName}}</a>
+                                            <a :href="`@Url.Content("~/Option/Download")?f=${sub.FileName}&n=${sub.DisplayName}`" class="link-download">{{sub.DisplayName}}</a>
                                             <input v-if="!sub.FileName" type="file" accept=".pdf" @@change="uploadAttachment($event, sub)" />
                                         </li>
                                     </ul>

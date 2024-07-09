@@ -32,14 +32,14 @@ namespace NT_AirPollution.Web.Controllers
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
-        public FileResult Download(string f)
+        public FileResult Download(string f, string n)
         {
             string fileName = $@"{_uploadPath}\{f}";
             if (!System.IO.File.Exists(fileName))
                 return null;
 
             byte[] fileBytes = System.IO.File.ReadAllBytes(fileName);
-            return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, f);
+            return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, n ?? f);
         }
     }
 }

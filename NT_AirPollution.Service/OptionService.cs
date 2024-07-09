@@ -47,7 +47,7 @@ namespace NT_AirPollution.Service
         {
             using (var cn = new SqlConnection(connStr))
             {
-                var result = cn.GetAll<AttachmentInfo>().ToList();
+                var result = cn.GetAll<AttachmentInfo>().OrderBy(o => o.ID).ToList();
                 return result;
             }
         }
