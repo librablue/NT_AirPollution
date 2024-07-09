@@ -278,10 +278,11 @@ namespace NT_AirPollution.Admin.Controllers
         /// <summary>
         /// 下載檔案
         /// </summary>
-        /// <param name="f"></param>
+        /// <param name="f">原始檔名</param>
+        /// <param name="f">下載檔名</param>
         /// <returns></returns>
         [HttpGet]
-        public HttpResponseMessage Download(string f)
+        public HttpResponseMessage Download(string f, string n)
         {
             var FilePath = $@"{_uploadPath}\{f}";
             var stream = new FileStream(FilePath, FileMode.Open);
@@ -290,7 +291,7 @@ namespace NT_AirPollution.Admin.Controllers
             response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
             response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
             {
-                FileName = f
+                FileName = n ?? f
             };
 
             return response;

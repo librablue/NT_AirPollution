@@ -32,6 +32,12 @@ namespace NT_AirPollution.Web.Controllers
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
+        /// <summary>
+        /// 下載檔案
+        /// </summary>
+        /// <param name="f">原始檔名</param>
+        /// <param name="f">下載檔名</param>
+        /// <returns></returns>
         public FileResult Download(string f, string n)
         {
             string fileName = $@"{_uploadPath}\{f}";
