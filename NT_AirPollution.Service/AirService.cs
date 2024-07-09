@@ -50,8 +50,6 @@ namespace NT_AirPollution.Service
 
                 foreach (var item in airs)
                 {
-                    item.B_DATE2 = base.ChineseDateToWestDate(item.B_DATE);
-                    item.E_DATE2 = base.ChineseDateToWestDate(item.E_DATE);
                     item.AirFiles = cn.Query<AirFile>(@"
                         SELECT * FROM AirFile WHERE AirID=@AirID",
                         new { AirID = item.AirID }).ToList();

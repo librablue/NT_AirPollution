@@ -37,8 +37,6 @@ namespace NT_AirPollution.Admin.Controllers
         [HttpPost]
         public double GetFinalCalc(FormView form)
         {
-            form.B_DATE = form.B_DATE2.AddYears(-1911).ToString("yyyMMdd");
-            form.E_DATE = form.E_DATE2.AddYears(-1911).ToString("yyyMMdd");
             // 停工天數
             double downDays = form.StopWorks.Sum(o => (o.UP_DATE2 - o.DOWN_DATE2).TotalDays + 1);
             var result = _formService.CalcTotalMoney(form, downDays);
@@ -61,14 +59,10 @@ namespace NT_AirPollution.Admin.Controllers
                     throw new Exception(firstError);
                 }
 
-                if (form.B_DATE2 > form.E_DATE2)
+                if (_formService.ChineseDateToWestDate(form.B_DATE) > _formService.ChineseDateToWestDate(form.E_DATE))
                     throw new Exception("施工期程起始日期不能大於結束日期");
 
                 form.AP_DATE = DateTime.Now.AddYears(-1911).ToString("yyyMMdd");
-                form.B_DATE = form.B_DATE2.AddYears(-1911).ToString("yyyMMdd");
-                form.E_DATE = form.E_DATE2.AddYears(-1911).ToString("yyyMMdd");
-                form.S_B_BDATE = form.S_B_BDATE2.AddYears(-1911).ToString("yyyMMdd");
-                form.R_B_BDATE = form.R_B_BDATE2.AddYears(-1911).ToString("yyyMMdd");
                 form.C_DATE = DateTime.Now;
                 form.M_DATE = DateTime.Now;
                 form.FormStatus = FormStatus.審理中;
@@ -94,9 +88,6 @@ namespace NT_AirPollution.Admin.Controllers
         {
             try
             {
-                form.B_DATE = form.B_DATE2.AddYears(-1911).ToString("yyyMMdd");
-                form.E_DATE = form.E_DATE2.AddYears(-1911).ToString("yyyMMdd");
-
                 // 有管制編號才更新Access
                 if (!string.IsNullOrEmpty(form.C_NO))
                 {
@@ -227,8 +218,6 @@ namespace NT_AirPollution.Admin.Controllers
                     //        form.PayEndDate2 = form.B_DATE2;
                     //}
 
-                    form.B_DATE = form.B_DATE2.AddYears(-1911).ToString("yyyMMdd");
-                    form.E_DATE = form.E_DATE2.AddYears(-1911).ToString("yyyMMdd");
                     // 停工天數
                     double downDays = form.StopWorks.Sum(o => (o.UP_DATE2 - o.DOWN_DATE2).TotalDays + 1);
                     var result = _formService.CalcTotalMoney(form, downDays);

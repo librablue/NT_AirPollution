@@ -3,12 +3,12 @@
 }
 
 @section styles {
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/themes/base/jquery-ui.min.css">
     <link rel="stylesheet" href="@Url.Content("~/static/css/member.css")" />
 }
 @section scripts {
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <script src="@Url.Content("~/static/js/bank.js")"></script>
     <script src="@Url.Content("~/static/js/apply/form.js")"></script>
 }
@@ -221,9 +221,10 @@
                             <el-form-item prop="S_B_ID" label="負責人身分證字號">
                                 <el-input v-model="selectRow.S_B_ID" maxlength="20"></el-input>
                             </el-form-item>
-                            <el-form-item prop="S_B_BDATE2" label="負責人生日">
-                                <el-date-picker v-model="selectRow.S_B_BDATE2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
-                                <input type="text" class="datepicker" />
+                            <el-form-item prop="S_B_BDATE" label="負責人生日">
+                                <div class="el-input">
+                                    <input type="text" class="el-input__inner datepicker" data-key="S_B_BDATE" v-model="selectRow.S_B_BDATE" readonly />
+                                </div>
                             </el-form-item>
                         </div>
                     </div>
@@ -291,8 +292,10 @@
                             <el-form-item prop="R_B_ID" label="身分證字號">
                                 <el-input v-model="selectRow.R_B_ID" maxlength="30"></el-input>
                             </el-form-item>
-                            <el-form-item prop="R_B_BDATE2" label="負責人生日">
-                                <el-date-picker v-model="selectRow.R_B_BDATE2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
+                            <el-form-item prop="R_B_BDATE" label="負責人生日">
+                                <div class="el-input">
+                                    <input type="text" class="el-input__inner datepicker" data-key="R_B_BDATE" v-model="selectRow.R_B_BDATE" readonly />
+                                </div>
                             </el-form-item>
                         </div>
                     </div>
@@ -368,11 +371,15 @@
                         </el-form-item>
                     </div>
                     <div class="flex-row">
-                        <el-form-item prop="B_DATE2" label="開始日期">
-                            <el-date-picker class="w100p" v-model="selectRow.B_DATE2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
+                        <el-form-item prop="B_DATE" label="開始日期">
+                            <div class="el-input">
+                                <input type="text" class="el-input__inner datepicker" data-key="B_DATE" v-model="selectRow.B_DATE" readonly />
+                            </div>
                         </el-form-item>
-                        <el-form-item prop="E_DATE2" label="結束日期">
-                            <el-date-picker class="w100p" v-model="selectRow.E_DATE2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
+                        <el-form-item prop="E_DATE" label="結束日期">
+                            <div class="el-input">
+                                <input type="text" class="el-input__inner datepicker" data-key="E_DATE" v-model="selectRow.E_DATE" readonly />
+                            </div>
                         </el-form-item>
                         <el-form-item label="預計施工天數">{{totalDays}}</el-form-item>
                     </div>

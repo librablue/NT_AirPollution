@@ -3,9 +3,12 @@
 }
 
 @section styles {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/themes/base/jquery-ui.min.css">
     <link rel="stylesheet" href="@Url.Content("~/static/css/member.css")" />
 }
 @section scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <script src="@Url.Content("~/static/js/manage/form.js")"></script>
 }
 
@@ -54,7 +57,7 @@
             </el-table-column>
             <el-table-column label="案件狀態" align="center" width="100">
                 <template slot-scope="scope">
-                    {{ scope.row.WorkStatus | workStatus }}
+                    {{scope.row.WorkStatus | workStatus}}
                 </template>
             </el-table-column>
             <el-table-column prop="C_NO" label="管制編號" align="center" width="140"></el-table-column>
@@ -62,7 +65,7 @@
             <el-table-column prop="COMP_NAM" label="工程名稱"></el-table-column>
             <el-table-column prop="C_DATE" label="申報工期" align="center" width="200">
                 <template slot-scope="scope">
-                    {{ scope.row.B_DATE2 | date }} ~ {{ scope.row.E_DATE2 | date }}
+                    {{scope.row.B_DATE}} ~ {{scope.row.E_DATE}}
                 </template>
             </el-table-column>
         </el-table>
@@ -463,14 +466,18 @@
                         <tr>
                             <th>34.開始日期</th>
                             <td>
-                                <el-form-item prop="B_DATE2">
-                                    <el-date-picker class="w100p" v-model="selectRow.B_DATE2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
+                                <el-form-item prop="B_DATE">
+                                    <div class="el-input">
+                                        <input type="text" class="el-input__inner datepicker" data-key="B_DATE" v-model="selectRow.B_DATE" readonly />
+                                    </div>
                                 </el-form-item>
                             </td>
                             <th>結束日期</th>
                             <td>
-                                <el-form-item prop="E_DATE2">
-                                    <el-date-picker class="w100p" v-model="selectRow.E_DATE2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
+                                <el-form-item prop="E_DATE">
+                                    <div class="el-input">
+                                        <input type="text" class="el-input__inner datepicker" data-key="E_DATE" v-model="selectRow.E_DATE" readonly />
+                                    </div>
                                 </el-form-item>
                             </td>
                             <th>預計施工天數</th>

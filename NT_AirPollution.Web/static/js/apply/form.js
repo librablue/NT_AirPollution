@@ -21,6 +21,41 @@
     var EpsilonZ84 = 35.781 / 3600.0 / DegreePI;
     var S84 = 3.161e-6;
 
+    $.datepicker.regional['zh-TW'] = {
+        closeText: '關閉',
+        prevText: '&#x3C;上月',
+        nextText: '下月&#x3E;',
+        currentText: '今天',
+        monthNames: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+        monthNamesShort: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+        dayNames: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
+        dayNamesShort: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+        dayNamesMin: ['日', '一', '二', '三', '四', '五', '六'],
+        weekHeader: '周',
+        dateFormat: 'yy/mm/dd',
+        firstDay: 1,
+        isRTL: false,
+        showMonthAfterYear: true,
+        yearSuffix: '年'
+    };
+    $.datepicker.setDefaults($.datepicker.regional['zh-TW']);
+
+    $.datepicker._phoenixGenerateMonthYearHeader = $.datepicker._generateMonthYearHeader;
+    $.datepicker._generateMonthYearHeader = function (inst, drawMonth, drawYear, minDate, maxDate, secondary, monthNames, monthNamesShort) {
+        var result = $($.datepicker._phoenixGenerateMonthYearHeader(inst, drawMonth, drawYear, minDate, maxDate, secondary, monthNames, monthNamesShort));
+        result
+            .find('select.ui-datepicker-year')
+            .children()
+            .each(function () {
+                $(this).text($(this).text() - 1911 + '年');
+            });
+        result.find('span.ui-datepicker-year').each(function () {
+            $(this).text($(this).text() - 1911);
+        });
+
+        return result.html();
+    };
+
     new Vue({
         el: '#app',
         filters: {
@@ -71,12 +106,19 @@
             }
         },
         data() {
-            const checkE_DATE2 = (rule, value, callback) => {
+            const checkE_DATE = (rule, value, callback) => {
                 if (!value) {
                     callback(new Error('請輸入結束日期'));
                 }
-                if (this.selectRow.B_DATE2 && this.selectRow.E_DATE2 && moment(value).isSameOrBefore(this.selectRow.B_DATE2)) {
-                    callback(new Error('結束日期不得早於開始日期'));
+
+                if(!this.selectRow.B_DATE) {
+                    callback();
+                }
+
+                const startDate = `${+this.selectRow.B_DATE.substr(0, 3) + 1911}-${this.selectRow.B_DATE.substr(3, 2)}-${this.selectRow.B_DATE.substr(5, 2)}`;
+                const endDate = `${+this.selectRow.E_DATE.substr(0, 3) + 1911}-${this.selectRow.E_DATE.substr(3, 2)}-${this.selectRow.E_DATE.substr(5, 2)}`;
+                if (moment(startDate).isAfter(endDate)) {
+                    callback(new Error('施工期程起始日期不能大於結束日期'));
                 }
                 callback();
             };
@@ -109,7 +151,7 @@
                 }
                 callback();
             };
-            const checkS_B_BDATE2 = (rule, value, callback) => {
+            const checkS_B_BDATE = (rule, value, callback) => {
                 if (!this.PUB_COMP && !value) {
                     callback(new Error('請輸入營利事業負責人生日'));
                 }
@@ -189,7 +231,7 @@
                     S_B_NAM: [{ required: true, message: '請輸入營利事業負責人姓名', trigger: 'blur' }],
                     S_B_TIT: [{ required: true, message: '請輸入營利事業負責人職稱', trigger: 'blur' }],
                     S_B_ID: [{ required: true, message: '請輸入營利事業負責人身分證字號', trigger: 'blur' }],
-                    S_B_BDATE2: [{ validator: checkS_B_BDATE2, trigger: 'blur' }],
+                    S_B_BDATE: [{ validator: checkS_B_BDATE, trigger: 'blur' }],
                     S_C_NAM: [{ required: true, message: '請輸入營利事業聯絡人姓名', trigger: 'blur' }],
                     S_C_TIT: [{ required: true, message: '請輸入營利事業聯絡人職稱', trigger: 'blur' }],
                     S_C_ID: [{ validator: checkS_C_ID, trigger: 'blur' }],
@@ -205,7 +247,7 @@
                     R_B_NAM: [{ required: true, message: '請輸入承造負責人姓名', trigger: 'blur' }],
                     R_B_TIT: [{ required: true, message: '請輸入承造負責人職稱', trigger: 'blur' }],
                     R_B_ID: [{ required: true, message: '請輸入承造負責人身分證字號', trigger: 'blur' }],
-                    R_B_BDATE2: [{ required: true, message: '請輸入承造負責人生日', trigger: 'blur' }],
+                    R_B_BDATE: [{ required: true, message: '請輸入承造負責人生日', trigger: 'blur' }],
                     R_ADDR3: [{ required: true, message: '請輸入工務所地址', trigger: 'blur' }],
                     R_M_NAM: [{ required: true, message: '請輸入工地主任姓名', trigger: 'blur' }],
                     R_C_NAM: [{ required: true, message: '請輸入工地環保負責人姓名', trigger: 'blur' }],
@@ -217,8 +259,8 @@
                     AREA: [{ validator: checkArea, trigger: 'blur' }],
                     AREA_F: [{ validator: checkAreaF, trigger: 'blur' }],
                     VOLUMEL: [{ validator: checkVolumel, trigger: 'blur' }],
-                    B_DATE2: [{ required: true, message: '請輸入開始日期', trigger: 'blur' }],
-                    E_DATE2: [{ validator: checkE_DATE2, trigger: 'blur' }]
+                    B_DATE: [{ required: true, message: '請輸入開始日期', trigger: 'blur' }],
+                    E_DATE: [{ validator: checkE_DATE, trigger: 'blur' }]
                 }),
                 rules2: Object.freeze({
                     Code: [{ required: true, message: '請選擇銀行代碼', trigger: 'change' }],
@@ -239,9 +281,11 @@
         },
         computed: {
             totalDays() {
-                if (!this.selectRow.B_DATE2 || !this.selectRow.E_DATE2) return '';
-                var date1 = new Date(this.selectRow.B_DATE2);
-                var date2 = new Date(this.selectRow.E_DATE2);
+                if (!this.selectRow.B_DATE || !this.selectRow.E_DATE) return '';
+                const startDate = `${+this.selectRow.B_DATE.substr(0, 3) + 1911}-${this.selectRow.B_DATE.substr(3, 2)}-${this.selectRow.B_DATE.substr(5, 2)}`;
+                const endDate = `${+this.selectRow.E_DATE.substr(0, 3) + 1911}-${this.selectRow.E_DATE.substr(3, 2)}-${this.selectRow.E_DATE.substr(5, 2)}`;
+                var date1 = new Date(startDate);
+                var date2 = new Date(endDate);
 
                 // 計算毫秒差異
                 var diff = Math.abs(date2 - date1 + 1000 * 60 * 60 * 24);
@@ -288,80 +332,35 @@
         },
         methods: {
             initDatePicker() {
-                $.datepicker.regional['zh-TW'] = {
-                    closeText: '關閉',
-                    prevText: '&#x3C;上月',
-                    nextText: '下月&#x3E;',
-                    currentText: '今天',
-                    monthNames: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
-                    monthNamesShort: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
-                    dayNames: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
-                    dayNamesShort: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
-                    dayNamesMin: ['日', '一', '二', '三', '四', '五', '六'],
-                    weekHeader: '周',
-                    dateFormat: 'yy/mm/dd',
-                    firstDay: 1,
-                    isRTL: false,
-                    showMonthAfterYear: true,
-                    yearSuffix: '年'
-                };
-                $.datepicker.setDefaults($.datepicker.regional['zh-TW']);
-
-                $.datepicker._phoenixGenerateMonthYearHeader = $.datepicker._generateMonthYearHeader;
-                $.datepicker._generateMonthYearHeader = function (inst, drawMonth, drawYear, minDate, maxDate, secondary, monthNames, monthNamesShort) {
-                    var result = $($.datepicker._phoenixGenerateMonthYearHeader(inst, drawMonth, drawYear, minDate, maxDate, secondary, monthNames, monthNamesShort));
-
-                    result
-                        .find('select.ui-datepicker-year')
-                        .children()
-                        .each(function () {
-                            $(this).text($(this).text() - 1911 + '年');
-                        });
-                    result.find('span.ui-datepicker-year').each(function () {
-                        $(this).text($(this).text() - 1911);
-                    });
-
-                    if (inst.yearshtml) {
-                        var origyearshtml = inst.yearshtml;
-                        console.log(inst.yearshtml);
-                    }
-
-                    return result.html();
-                };
-
                 $('.datepicker').datepicker({
-                    dateFormat: 'yy/mm/dd',
-                    changeYear: true,
-                    changeMonth: true,
-                    beforeShow: function (input, inst) {
-                        const inputVal = input.value;
-                        if (inputVal) {
-                            const year = +inputVal.split('-')[0] + 1911;
-                            const month = +inputVal.split('-')[1];
-                            const day = +inputVal.split('-')[2];
-                            return {
-                                defaultDate: `${year}-${month}-${day}`
-                            };
-                        }
+					dateFormat: 'yy/mm/dd',
+					changeYear: true,
+					changeMonth: true,
+					beforeShow: function (input, inst) {
+						const inputVal = input.value;
+						if (inputVal) {
+							const year = +inputVal.substr(0, 3) + 1911;
+							const month = inputVal.substr(3, 2);
+							const day = inputVal.substr(5, 2);
+							return {
+								defaultDate: `${year}/${month}/${day}`
+							};
+						}
 
-                        return {};
-                    },
-                    onSelect: function (dateText, inst) {
-                        var dateFormate = inst.settings.dateFormat == null ? 'yy/mm/dd' : inst.settings.dateFormat; //取出格式文字
-                        var reM = /m+/g;
-                        var reD = /d+/g;
-                        var objDate = {
-                            y: inst.selectedYear - 1911 < 0 ? inst.selectedYear : inst.selectedYear - 1911,
-                            m: String(inst.selectedMonth + 1).length != 1 ? inst.selectedMonth + 1 : '0' + String(inst.selectedMonth + 1),
-                            d: String(inst.selectedDay).length != 1 ? inst.selectedDay : '0' + String(inst.selectedDay)
-                        };
-                        $.each(objDate, function (k, v) {
-                            var re = new RegExp(k + '+');
-                            dateFormate = dateFormate.replace(re, v);
-                        });
-                        inst.input.val(dateFormate);
-                    }
-                });
+						return {};
+					},
+					onSelect: (dateText, inst) => {
+						var objDate = {
+							y: `${inst.selectedYear - 1911 < 0 ? inst.selectedYear : inst.selectedYear - 1911}`.padStart(3, '0'),
+							m: `${inst.selectedMonth + 1}`.padStart(2, '0'),
+							d: `${inst.selectedDay}`.padStart(2, '0')
+						};
+
+						var dateFormate = `${objDate.y}${objDate.m}${objDate.d}`;
+						inst.input.val(dateFormate);
+						this.selectRow[inst.input[0].dataset.key] = dateFormate;
+					}
+				});
             },
             getDistrict() {
                 axios.get('/Option/GetDistrict').then(res => {
@@ -412,7 +411,6 @@
                     this.selectRow.S_B_TIT = result.S_B_TIT;
                     this.selectRow.S_B_ID = result.S_B_ID;
                     this.selectRow.S_B_BDATE = result.S_B_BDATE;
-                    this.selectRow.S_B_BDATE2 = result.S_B_BDATE2;
                     this.selectRow.S_C_NAM = result.S_C_NAM;
                     this.selectRow.S_C_TIT = result.S_C_TIT;
                     this.selectRow.S_C_ID = result.S_C_ID;
@@ -437,7 +435,6 @@
                     this.selectRow.R_B_TIT = result.R_B_TIT;
                     this.selectRow.R_B_ID = result.R_B_ID;
                     this.selectRow.R_B_BDATE = result.R_B_BDATE;
-                    this.selectRow.R_B_BDATE2 = result.R_B_BDATE2;
                     this.selectRow.R_ADDR3 = result.R_ADDR3;
                     this.selectRow.R_TEL1 = result.R_TEL1;
                     this.selectRow.R_M_NAM = result.R_M_NAM;
@@ -509,7 +506,7 @@
                     S_B_NAM: 'S_B_NAM',
                     S_B_TIT: 'S_B_TIT',
                     S_B_ID: 'S_B_ID',
-                    S_B_BDATE2: '1985-07-14',
+                    S_B_BDATE: '0740714',
                     S_C_NAM: 'S_C_NAM',
                     S_C_TIT: 'S_C_TIT',
                     S_C_ID: 'S_C_ID',
@@ -523,7 +520,7 @@
                     R_B_NAM: 'R_B_NAM',
                     R_B_TIT: 'R_B_TIT',
                     R_B_ID: 'R_B_ID',
-                    R_B_BDATE2: '2024-01-01',
+                    R_B_BDATE: '0740714',
                     R_ADDR3: 'R_ADDR3',
                     R_M_NAM: 'R_M_NAM',
                     R_C_NAM: 'R_C_NAM',
@@ -533,8 +530,8 @@
                     PERCENT: 3,
                     AREA: 1,
                     VOLUMEL: null,
-                    B_DATE2: '2024-01-01',
-                    E_DATE2: '2024-01-31',
+                    B_DATE: '1130101',
+                    E_DATE: '1130131',
                     FormStatus: 1,
                     C_DATE: moment().format('YYYY-MM-DD'),
                     StopWorks: [],
@@ -898,6 +895,8 @@
                     files.forEach(item => {
                         item.value = '';
                     });
+
+                    this.initDatePicker();
                 });
             },
             getStopDays(row) {

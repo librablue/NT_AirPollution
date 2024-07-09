@@ -24,9 +24,11 @@ footer {
         }
     }
     .bottom {
+        display: flex;
+        justify-content: center;
+        align-items: center;
         padding: 10px 15px;
         border-top: 1px solid #ccc;
-        text-align: center;
         ul {
             margin: 0;
         }

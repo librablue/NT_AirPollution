@@ -62,15 +62,6 @@ namespace NT_AirPollution.Service
                         SELECT * FROM Payment WHERE FormID=@FormID",
                         new { FormID = item.ID }).ToList();
 
-                    if (!string.IsNullOrEmpty(item.B_DATE))
-                        item.B_DATE2 = base.ChineseDateToWestDate(item.B_DATE);
-                    if (!string.IsNullOrEmpty(item.E_DATE))
-                        item.E_DATE2 = base.ChineseDateToWestDate(item.E_DATE);
-                    if (!string.IsNullOrEmpty(item.S_B_BDATE))
-                        item.S_B_BDATE2 = base.ChineseDateToWestDate(item.S_B_BDATE);
-                    if (!string.IsNullOrEmpty(item.R_B_BDATE))
-                        item.R_B_BDATE2 = base.ChineseDateToWestDate(item.R_B_BDATE);
-
                     item.StopWorks = cn.Query<StopWork>(@"
                         SELECT * FROM StopWork WHERE FormID=@FormID",
                         new { FormID = item.ID }).ToList();
@@ -113,15 +104,6 @@ namespace NT_AirPollution.Service
                     result.Payments = cn.Query<Payment>(@"
                         SELECT * FROM Payment WHERE FormID=@FormID",
                         new { FormID = result.ID }).ToList();
-
-                    if (!string.IsNullOrEmpty(result.B_DATE))
-                        result.B_DATE2 = base.ChineseDateToWestDate(result.B_DATE);
-                    if (!string.IsNullOrEmpty(result.E_DATE))
-                        result.E_DATE2 = base.ChineseDateToWestDate(result.E_DATE);
-                    if (!string.IsNullOrEmpty(result.S_B_BDATE))
-                        result.S_B_BDATE2 = base.ChineseDateToWestDate(result.S_B_BDATE);
-                    if (!string.IsNullOrEmpty(result.R_B_BDATE))
-                        result.R_B_BDATE2 = base.ChineseDateToWestDate(result.R_B_BDATE);
 
                     result.StopWorks = cn.Query<StopWork>(@"
                         SELECT * FROM StopWork WHERE FormID=@FormID",
@@ -183,15 +165,6 @@ namespace NT_AirPollution.Service
                         SELECT * FROM Payment WHERE FormID=@FormID",
                         new { FormID = item.ID }).ToList();
 
-                    if (!string.IsNullOrEmpty(item.B_DATE))
-                        item.B_DATE2 = base.ChineseDateToWestDate(item.B_DATE);
-                    if (!string.IsNullOrEmpty(item.E_DATE))
-                        item.E_DATE2 = base.ChineseDateToWestDate(item.E_DATE);
-                    if (!string.IsNullOrEmpty(item.S_B_BDATE))
-                        item.S_B_BDATE2 = base.ChineseDateToWestDate(item.S_B_BDATE);
-                    if (!string.IsNullOrEmpty(item.R_B_BDATE))
-                        item.R_B_BDATE2 = base.ChineseDateToWestDate(item.R_B_BDATE);
-
                     item.StopWorks = cn.Query<StopWork>(@"
                         SELECT * FROM StopWork WHERE FormID=@FormID",
                         new { FormID = item.ID }).ToList();
@@ -244,15 +217,6 @@ namespace NT_AirPollution.Service
                         SELECT * FROM Payment WHERE FormID=@FormID",
                         new { FormID = item.ID }).ToList();
 
-                    if (!string.IsNullOrEmpty(item.B_DATE))
-                        item.B_DATE2 = base.ChineseDateToWestDate(item.B_DATE);
-                    if (!string.IsNullOrEmpty(item.E_DATE))
-                        item.E_DATE2 = base.ChineseDateToWestDate(item.E_DATE);
-                    if (!string.IsNullOrEmpty(item.S_B_BDATE))
-                        item.S_B_BDATE2 = base.ChineseDateToWestDate(item.S_B_BDATE);
-                    if (!string.IsNullOrEmpty(item.R_B_BDATE))
-                        item.R_B_BDATE2 = base.ChineseDateToWestDate(item.R_B_BDATE);
-
                     item.StopWorks = cn.Query<StopWork>(@"
                         SELECT * FROM StopWork WHERE FormID=@FormID",
                         new { FormID = item.ID }).ToList();
@@ -268,7 +232,7 @@ namespace NT_AirPollution.Service
 
                     if (isPause)
                         item.WorkStatus = WorkStatus.停工中;
-                    else if (now > item.E_DATE2)
+                    else if (now > base.ChineseDateToWestDate(item.E_DATE))
                         item.WorkStatus = WorkStatus.已完工;
                     else
                         item.WorkStatus = WorkStatus.施工中;
@@ -324,15 +288,6 @@ namespace NT_AirPollution.Service
                         SELECT * FROM Payment WHERE FormID=@FormID",
                         new { FormID = item.ID }).ToList();
 
-                    if (!string.IsNullOrEmpty(item.B_DATE))
-                        item.B_DATE2 = base.ChineseDateToWestDate(item.B_DATE);
-                    if (!string.IsNullOrEmpty(item.E_DATE))
-                        item.E_DATE2 = base.ChineseDateToWestDate(item.E_DATE);
-                    if (!string.IsNullOrEmpty(item.S_B_BDATE))
-                        item.S_B_BDATE2 = base.ChineseDateToWestDate(item.S_B_BDATE);
-                    if (!string.IsNullOrEmpty(item.R_B_BDATE))
-                        item.R_B_BDATE2 = base.ChineseDateToWestDate(item.R_B_BDATE);
-
                     item.StopWorks = cn.Query<StopWork>(@"
                         SELECT * FROM StopWork WHERE FormID=@FormID",
                         new { FormID = item.ID }).ToList();
@@ -376,15 +331,6 @@ namespace NT_AirPollution.Service
                     item.Payments = cn.Query<Payment>(@"
                         SELECT * FROM Payment WHERE FormID=@FormID",
                         new { FormID = item.ID }).ToList();
-
-                    if (!string.IsNullOrEmpty(item.B_DATE))
-                        item.B_DATE2 = base.ChineseDateToWestDate(item.B_DATE);
-                    if (!string.IsNullOrEmpty(item.E_DATE))
-                        item.E_DATE2 = base.ChineseDateToWestDate(item.E_DATE);
-                    if (!string.IsNullOrEmpty(item.S_B_BDATE))
-                        item.S_B_BDATE2 = base.ChineseDateToWestDate(item.S_B_BDATE);
-                    if (!string.IsNullOrEmpty(item.R_B_BDATE))
-                        item.R_B_BDATE2 = base.ChineseDateToWestDate(item.R_B_BDATE);
 
                     item.StopWorks = cn.Query<StopWork>(@"
                         SELECT * FROM StopWork WHERE FormID=@FormID",
@@ -743,7 +689,7 @@ namespace NT_AirPollution.Service
         {
             using (var cn = new SqlConnection(connStr))
             {
-                var diffDays = ((form.E_DATE2 - form.B_DATE2).TotalDays + 1) - downDays;
+                var diffDays = ((base.ChineseDateToWestDate(form.E_DATE) - base.ChineseDateToWestDate(form.B_DATE)).TotalDays + 1) - downDays;
                 var projectCodes = cn.GetAll<ProjectCode>().ToList();
                 var projectCode = projectCodes.First(o => o.ID == form.KIND_NO);
                 // 基數
@@ -1189,8 +1135,8 @@ namespace NT_AirPollution.Service
                 if (string.IsNullOrEmpty(form.AP_DATE1))
                 {
                     payEndDate = applyDate.AddDays(form.PUB_COMP ? 30 : 3);
-                    if (applyDate > form.B_DATE2)
-                        payEndDate = form.B_DATE2;
+                    if (applyDate > base.ChineseDateToWestDate(form.B_DATE))
+                        payEndDate = base.ChineseDateToWestDate(form.B_DATE);
                 }
                 // 結算用審核通過日加3或30天
                 else
@@ -1220,8 +1166,8 @@ namespace NT_AirPollution.Service
                 // 填發日期(開工日或申報日)
                 DateTime pdate = this.ChineseDateToWestDate(form.AP_DATE);
                 // 如果申報日 > 開工日，取開工日
-                if (pdate > form.B_DATE2)
-                    pdate = form.B_DATE2;
+                if (pdate > base.ChineseDateToWestDate(form.B_DATE))
+                    pdate = base.ChineseDateToWestDate(form.B_DATE);
 
                 // 滯納金
                 double penalty = 0;

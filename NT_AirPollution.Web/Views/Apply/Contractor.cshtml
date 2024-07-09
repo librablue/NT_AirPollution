@@ -3,9 +3,12 @@
 }
 
 @section styles {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/themes/base/jquery-ui.min.css">
     <link rel="stylesheet" href="@Url.Content("~/static/css/member.css")" />
 }
 @section scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <script src="@Url.Content("~/static/js/apply/contractor.js")"></script>
 }
 
@@ -32,7 +35,7 @@
                 <el-button type="primary" icon="el-icon-search" @@click="getContractor">查 詢</el-button>
             </el-form-item>
             <el-form-item>
-                <el-button type="success" icon="el-icon-plus" @@click="addContractor">新 增</el-button>
+                <el-button type="success" icon="el-icon-plus" @@click="showEditModal()">新 增</el-button>
             </el-form-item>
         </el-form>
 
@@ -80,7 +83,9 @@
                 <el-input v-model="selectRow.R_B_ID" maxlength="20"></el-input>
             </el-form-item>
             <el-form-item label="負責人生日">
-                <el-date-picker class="w100p" v-model="selectRow.R_B_BDATE2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
+                <div class="el-input">
+                    <input type="text" class="el-input__inner datepicker" data-key="R_B_BDATE" v-model="selectRow.R_B_BDATE" readonly />
+                </div>
             </el-form-item>
             <el-form-item label="工地主任">
                 <el-input v-model="selectRow.R_M_NAM" maxlength="10"></el-input>

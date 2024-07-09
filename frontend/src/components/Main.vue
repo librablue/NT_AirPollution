@@ -77,13 +77,13 @@ $lineWidth: 28px;
 	align-items: center;
 	padding: 10px 15px;
 	border-bottom: 1px solid #eee;
-	font-size: 1.6rem;
+	font-size: 16px;
 	.menu-left {
 		display: flex;
 		align-items: center;
 	}
 	h1 {
-		font-size: 2rem;
+		font-size: 20px;
 		text-align: center;
 		margin-right: 20px;
 		a {
@@ -100,7 +100,7 @@ $lineWidth: 28px;
 	width: 100%;
 	padding: 20px 15px;
 	h1 {
-		font-size: 2.5rem;
+		font-size: 24px;
 		margin-bottom: 2rem;
 	}
 	.main {

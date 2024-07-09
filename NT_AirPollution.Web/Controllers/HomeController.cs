@@ -48,8 +48,6 @@ namespace NT_AirPollution.Web.Controllers
         {
             try
             {
-                form.B_DATE = form.B_DATE2.AddYears(-1911).ToString("yyyMMdd");
-                form.E_DATE = form.E_DATE2.AddYears(-1911).ToString("yyyMMdd");
                 var result = _formService.CalcTotalMoney(form, 0);
                 return Json(new AjaxResult { Status = true, Message = result }, JsonRequestBehavior.AllowGet);
             }

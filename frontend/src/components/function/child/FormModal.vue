@@ -99,8 +99,10 @@
 								<el-form-item prop="S_B_ID" label="負責人身分證字號">
 									<el-input v-model="form.S_B_ID" maxlength="20"></el-input>
 								</el-form-item>
-								<el-form-item prop="S_B_BDATE2" label="負責人生日">
-									<el-date-picker v-model="form.S_B_BDATE2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
+								<el-form-item prop="S_B_BDATE" label="負責人生日">
+									<div class="el-input">
+										<input type="text" class="el-input__inner datepicker" data-key="S_B_BDATE" v-model="form.S_B_BDATE" readonly />
+									</div>
 								</el-form-item>
 							</div>
 						</div>
@@ -161,8 +163,10 @@
 								<el-form-item prop="R_B_ID" label="身分證字號">
 									<el-input v-model="form.R_B_ID" maxlength="30"></el-input>
 								</el-form-item>
-								<el-form-item prop="R_B_BDATE2" label="負責人生日">
-									<el-date-picker v-model="form.R_B_BDATE2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
+								<el-form-item prop="R_B_BDATE" label="負責人生日">
+									<div class="el-input">
+										<input type="text" class="el-input__inner datepicker" data-key="R_B_BDATE" v-model="form.R_B_BDATE" readonly />
+									</div>
 								</el-form-item>
 							</div>
 						</div>
@@ -218,11 +222,15 @@
 							</el-form-item>
 						</div>
 						<div class="flex-row">
-							<el-form-item prop="B_DATE2" label="開始日期">
-								<el-date-picker class="w100p" v-model="form.B_DATE2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
+							<el-form-item prop="B_DATE" label="開始日期">
+								<div class="el-input">
+									<input type="text" class="el-input__inner datepicker" data-key="B_DATE" v-model="form.B_DATE" readonly />
+								</div>
 							</el-form-item>
-							<el-form-item prop="E_DATE2" label="結束日期">
-								<el-date-picker class="w100p" v-model="form.E_DATE2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
+							<el-form-item prop="E_DATE" label="結束日期">
+								<div class="el-input">
+									<input type="text" class="el-input__inner datepicker" data-key="E_DATE" v-model="form.E_DATE" readonly />
+								</div>
 							</el-form-item>
 							<el-form-item label="預計施工天數">{{totalDays}}</el-form-item>
 						</div>
@@ -330,17 +338,58 @@
 <script>
 import { mapGetters } from 'vuex';
 import { dateTime, comma, form } from '@/mixins/filter';
+$.datepicker.regional['zh-TW'] = {
+	closeText: '關閉',
+	prevText: '&#x3C;上月',
+	nextText: '下月&#x3E;',
+	currentText: '今天',
+	monthNames: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+	monthNamesShort: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+	dayNames: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
+	dayNamesShort: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+	dayNamesMin: ['日', '一', '二', '三', '四', '五', '六'],
+	weekHeader: '周',
+	dateFormat: 'yy/mm/dd',
+	firstDay: 1,
+	isRTL: false,
+	showMonthAfterYear: true,
+	yearSuffix: '年'
+};
+$.datepicker.setDefaults($.datepicker.regional['zh-TW']);
+
+$.datepicker._phoenixGenerateMonthYearHeader = $.datepicker._generateMonthYearHeader;
+$.datepicker._generateMonthYearHeader = function (inst, drawMonth, drawYear, minDate, maxDate, secondary, monthNames, monthNamesShort) {
+	var result = $($.datepicker._phoenixGenerateMonthYearHeader(inst, drawMonth, drawYear, minDate, maxDate, secondary, monthNames, monthNamesShort));
+	result
+		.find('select.ui-datepicker-year')
+		.children()
+		.each(function () {
+			$(this).text($(this).text() - 1911 + '年');
+		});
+	result.find('span.ui-datepicker-year').each(function () {
+		$(this).text($(this).text() - 1911);
+	});
+
+	return result.html();
+};
 export default {
 	name: 'FormModal',
 	props: ['show', 'mode', 'data'],
 	mixins: [dateTime, comma, form],
 	data() {
-		const checkE_DATE2 = (rule, value, callback) => {
+		const checkE_DATE = (rule, value, callback) => {
 			if (!value) {
-				callback(new Error('請輸入預計施工完成日期'));
+				callback(new Error('請輸入結束日期'));
 			}
-			if (this.form.B_DATE2 && this.form.E_DATE2 && moment(value).isSameOrBefore(this.form.B_DATE2)) {
-				callback(new Error('結束日期不得早於起始日期'));
+
+			if (!this.form.B_DATE) {
+				callback();
+			}
+
+			const startDate = `${this.form.B_DATE.substr(0, 3) + 1911}-${this.form.B_DATE.substr(3, 2)}-${this.form.B_DATE.substr(5, 2)}`;
+			const endDate = `${this.form.E_DATE.substr(0, 3) + 1911}-${this.form.E_DATE.substr(3, 2)}-${this.form.E_DATE.substr(5, 2)}`;
+			if (moment(startDate).isAfter(endDate)) {
+				callback(new Error('施工期程起始日期不能大於結束日期'));
 			}
 			callback();
 		};
@@ -370,6 +419,18 @@ export default {
 		const checkLATLNG = (rule, value, callback) => {
 			if (isNaN(value)) {
 				callback(new Error('經緯度格式錯誤'));
+			}
+			callback();
+		};
+		const checkS_B_BDATE = (rule, value, callback) => {
+			if (!this.PUB_COMP && !value) {
+				callback(new Error('請輸入營利事業負責人生日'));
+			}
+			callback();
+		};
+		const checkS_C_ID = (rule, value, callback) => {
+			if (!this.PUB_COMP && !value) {
+				callback(new Error('請輸入營利事業聯絡人身分證字號'));
 			}
 			callback();
 		};
@@ -409,10 +470,10 @@ export default {
 				S_B_NAM: [{ required: true, message: '請輸入營利事業負責人姓名', trigger: 'blur' }],
 				S_B_TIT: [{ required: true, message: '請輸入營利事業負責人職稱', trigger: 'blur' }],
 				S_B_ID: [{ required: true, message: '請輸入營利事業負責人身分證字號', trigger: 'blur' }],
-				S_B_BDATE2: [{ required: true, message: '請輸入營利事業負責人生日', trigger: 'blur' }],
+				S_B_BDATE: [{ validator: checkS_B_BDATE, trigger: 'blur' }],
 				S_C_NAM: [{ required: true, message: '請輸入營利事業聯絡人姓名', trigger: 'blur' }],
 				S_C_TIT: [{ required: true, message: '請輸入營利事業聯絡人職稱', trigger: 'blur' }],
-				S_C_ID: [{ required: true, message: '請輸入營利事業聯絡人身分證字號', trigger: 'blur' }],
+				S_C_ID: [{ validator: checkS_C_ID, trigger: 'blur' }],
 				S_C_ADDR: [{ required: true, message: '請輸入營利事業聯絡人地址', trigger: 'blur' }],
 				S_C_TEL: [{ required: true, message: '請輸入營利事業聯絡人電話', trigger: 'blur' }]
 			}),
@@ -437,8 +498,8 @@ export default {
 				AREA: [{ validator: checkArea, trigger: 'blur' }],
 				AREA_F: [{ validator: checkAreaF, trigger: 'blur' }],
 				VOLUMEL: [{ validator: checkVolumel, trigger: 'blur' }],
-				B_DATE2: [{ required: true, message: '請輸入開始日期', trigger: 'blur' }],
-				E_DATE2: [{ validator: checkE_DATE2, trigger: 'blur' }]
+				B_DATE: [{ required: true, message: '請輸入開始日期', trigger: 'blur' }],
+				E_DATE: [{ validator: checkE_DATE, trigger: 'blur' }]
 			}),
 			rules2: Object.freeze({
 				Code: [{ required: true, message: '請選擇銀行代碼', trigger: 'change' }],
@@ -462,9 +523,11 @@ export default {
 			return `${this.form.C_NO}-${this.form.SER_NO}`;
 		},
 		totalDays() {
-			if (!this.form.B_DATE2 || !this.form.E_DATE2) return '';
-			var date1 = new Date(this.form.B_DATE2);
-			var date2 = new Date(this.form.E_DATE2);
+			if (!this.form.B_DATE || !this.form.E_DATE) return '';
+			const startDate = `${+this.form.B_DATE.substr(0, 3) + 1911}-${this.form.B_DATE.substr(3, 2)}-${this.form.B_DATE.substr(5, 2)}`;
+			const endDate = `${+this.form.E_DATE.substr(0, 3) + 1911}-${this.form.E_DATE.substr(3, 2)}-${this.form.E_DATE.substr(5, 2)}`;
+			var date1 = new Date(startDate);
+			var date2 = new Date(endDate);
 
 			// 計算毫秒差異
 			var diff = Math.abs(date2 - date1 + 1000 * 60 * 60 * 24);

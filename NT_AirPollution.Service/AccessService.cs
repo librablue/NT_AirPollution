@@ -501,7 +501,7 @@ namespace NT_AirPollution.Service
         /// <exception cref="Exception"></exception>
         public bool AddABUDF_B(FormView form)
         {
-            double workDays = (form.E_DATE2 - form.B_DATE2).TotalDays + 1;
+            double workDays = (base.ChineseDateToWestDate(form.E_DATE) - base.ChineseDateToWestDate(form.B_DATE)).TotalDays + 1;
             double downDays = form.StopWorks.Sum(o => o.DOWN_DAY);
             string B_STAT;
             if (form.P_KIND == "一次全繳")

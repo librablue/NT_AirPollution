@@ -119,8 +119,6 @@ namespace NT_AirPollution.Model.Domain
         /// 業主負責人生日
         /// </summary>
         public string S_B_BDATE { get; set; }
-        [Computed]
-        public DateTime S_B_BDATE2 { get; set; }
 
         /// <summary>
         /// 業主聯絡人
@@ -191,8 +189,6 @@ namespace NT_AirPollution.Model.Domain
         /// 承包商負責人生日
         /// </summary>
         public string R_B_BDATE { get; set; }
-        [Computed]
-        public DateTime R_B_BDATE2 { get; set; }
 
         /// <summary>
         /// 工務所地址
@@ -263,21 +259,11 @@ namespace NT_AirPollution.Model.Domain
         /// 預計施工期程(起日)
         /// </summary>
         public string B_DATE { get; set; }
-        /// <summary>
-        /// 預計施工期程(起日)
-        /// </summary>
-        [Computed]
-        public DateTime B_DATE2 { get; set; }
 
         /// <summary>
         /// 預計施工期程(迄日)
         /// </summary>
         public string E_DATE { get; set; }
-        /// <summary>
-        /// 預計施工期程(迄日)
-        /// </summary>
-        [Computed]
-        public DateTime E_DATE2 { get; set; }
 
         /// <summary>
         /// 應繳總金額

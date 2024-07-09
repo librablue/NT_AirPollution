@@ -110,3 +110,15 @@ input[type='number'] {
     flex-wrap: wrap;
     align-items: center;
 }
+
+.ui-datepicker .ui-datepicker-header {
+    padding: 4px 30px;
+}
+.ui-datepicker-year {
+    width: 80px !important;
+    margin: 0 4px;
+}
+.ui-datepicker-month {
+    width: 80px !important;
+    margin: 0 4px;
+}

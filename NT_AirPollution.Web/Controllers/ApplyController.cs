@@ -58,7 +58,6 @@ namespace NT_AirPollution.Web.Controllers
                 company.ClientUserID = BaseService.CurrentUser.ID;
                 company.S_B_ID = company.S_B_ID?.ToUpper();
                 company.S_C_ID = company.S_C_ID?.ToUpper();
-                company.S_B_BDATE = company.S_B_BDATE2?.AddYears(-1911).ToString("yyyMMdd");
 
                 // 用統編找現有資料
                 var filter = new ClientUserCompany
@@ -103,7 +102,6 @@ namespace NT_AirPollution.Web.Controllers
                 company.ClientUserID = BaseService.CurrentUser.ID;
                 company.S_B_ID = company.S_B_ID?.ToUpper();
                 company.S_C_ID = company.S_C_ID?.ToUpper();
-                company.S_B_BDATE = company.S_B_BDATE2?.AddYears(-1911).ToString("yyyMMdd");
                 company.ModifyDate = DateTime.Now;
                 _clientUserService.UpdateCompany(company);
                 return Json(new AjaxResult { Status = true });
@@ -149,7 +147,6 @@ namespace NT_AirPollution.Web.Controllers
             {
                 contractor.ClientUserID = BaseService.CurrentUser.ID;
                 contractor.R_B_ID = contractor.R_B_ID?.ToUpper();
-                contractor.R_B_BDATE = contractor.R_B_BDATE2?.AddYears(-1911).ToString("yyyMMdd");
 
                 // 用統編找現有資料
                 var filter = new ClientUserContractor
@@ -193,7 +190,6 @@ namespace NT_AirPollution.Web.Controllers
 
                 contractor.ClientUserID = BaseService.CurrentUser.ID;
                 contractor.R_B_ID = contractor.R_B_ID?.ToUpper();
-                contractor.R_B_BDATE = contractor.R_B_BDATE2?.AddYears(-1911).ToString("yyyMMdd");
                 contractor.ModifyDate = DateTime.Now;
                 _clientUserService.UpdateContractor(contractor);
                 return Json(new AjaxResult { Status = true });
@@ -243,7 +239,7 @@ namespace NT_AirPollution.Web.Controllers
                     throw new Exception(firstError);
                 }
 
-                if (form.B_DATE2 > form.E_DATE2)
+                if (_formService.ChineseDateToWestDate(form.B_DATE) > _formService.ChineseDateToWestDate(form.E_DATE))
                     throw new Exception("施工期程起始日期不能大於結束日期");
 
                 var allDists = _optionService.GetDistrict();
@@ -252,10 +248,6 @@ namespace NT_AirPollution.Web.Controllers
                 form.TOWN_NA = allDists.First(o => o.Code == form.TOWN_NO).Name;
                 form.KIND = allProjectCode.First(o => o.ID == form.KIND_NO).Name;
                 form.AP_DATE = DateTime.Now.AddYears(-1911).ToString("yyyMMdd");
-                form.B_DATE = form.B_DATE2.AddYears(-1911).ToString("yyyMMdd");
-                form.E_DATE = form.E_DATE2.AddYears(-1911).ToString("yyyMMdd");
-                form.S_B_BDATE = form.S_B_BDATE2.AddYears(-1911).ToString("yyyMMdd");
-                form.R_B_BDATE = form.R_B_BDATE2.AddYears(-1911).ToString("yyyMMdd");
                 form.C_DATE = DateTime.Now;
                 form.M_DATE = DateTime.Now;
                 form.ClientUserID = BaseService.CurrentUser.ID;
@@ -293,7 +285,7 @@ namespace NT_AirPollution.Web.Controllers
                 if (formInDB.ClientUserID != BaseService.CurrentUser.ID)
                     throw new Exception("無法修改他人申請單");
 
-                if (form.B_DATE2 > form.E_DATE2)
+                if (_formService.ChineseDateToWestDate(form.B_DATE) > _formService.ChineseDateToWestDate(form.E_DATE))
                     throw new Exception("施工期程起始日期不能大於結束日期");
 
 
@@ -320,10 +312,6 @@ namespace NT_AirPollution.Web.Controllers
                 form.TOWN_NA = allDists.First(o => o.Code == form.TOWN_NO).Name;
                 form.KIND = allProjectCode.First(o => o.ID == form.KIND_NO).Name;
                 form.AP_DATE = formInDB.AP_DATE;
-                form.B_DATE = form.B_DATE2.AddYears(-1911).ToString("yyyMMdd");
-                form.E_DATE = form.E_DATE2.AddYears(-1911).ToString("yyyMMdd");
-                form.S_B_BDATE = form.S_B_BDATE2.AddYears(-1911).ToString("yyyMMdd");
-                form.R_B_BDATE = form.R_B_BDATE2.AddYears(-1911).ToString("yyyMMdd");
                 form.M_DATE = DateTime.Now;
 
                 // 有管制編號才修改Access

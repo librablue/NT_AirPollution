@@ -16,7 +16,7 @@
             <el-form-item label="案件狀態">{{form.WorkStatus | workStatus}}</el-form-item>
             <el-form-item label="管制編號">{{form.C_NO}}-{{form.SER_NO}}</el-form-item>
             <el-form-item label="工程名稱">{{form.COMP_NAM}}</el-form-item>
-            <el-form-item label="申報工期">{{form.B_DATE2 | date}}~{{form.E_DATE2 | date}}</el-form-item>
+            <el-form-item label="申報工期">{{form.B_DATE}}~{{form.E_DATE}}</el-form-item>
             <el-form-item>
                 <el-button type="success" icon="el-icon-plus" @@click="showModal()">新增空品不良回報</el-button>
             </el-form-item>

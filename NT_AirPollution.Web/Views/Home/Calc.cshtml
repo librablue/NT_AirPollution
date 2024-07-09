@@ -3,6 +3,7 @@
 }
 
 @section styles {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/themes/base/jquery-ui.min.css">
     <link rel="stylesheet" href="@Url.Content("~/static/css/member.css")" />
     <style>
         .el-col {
@@ -20,6 +21,8 @@
     </style>
 }
 @section scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <script src="@Url.Content("~/static/js/calc.js")"></script>
 }
 
@@ -37,11 +40,15 @@
                         <el-option v-for="item in projectCode" :key="item.ID" :label="`${item.ID}. ${item.Name}`" :value="item.ID"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item prop="B_DATE2" label="開始日期">
-                    <el-date-picker class="w100p" v-model="form.B_DATE2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
+                <el-form-item prop="B_DATE" label="開始日期">
+                    <div class="el-input">
+                        <input type="text" class="el-input__inner datepicker" data-key="B_DATE" v-model="form.B_DATE" readonly />
+                    </div>
                 </el-form-item>
-                <el-form-item prop="E_DATE2" label="結束日期">
-                    <el-date-picker class="w100p" v-model="form.E_DATE2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
+                <el-form-item prop="E_DATE" label="結束日期">
+                    <div class="el-input">
+                        <input type="text" class="el-input__inner datepicker" data-key="E_DATE" v-model="form.E_DATE" readonly />
+                    </div>
                 </el-form-item>
                 <el-form-item v-if="isShowAREA()" prop="AREA" :label="projectCodeText" v-cloak>
                     <el-input type="number" v-model="form.AREA"></el-input>
@@ -55,22 +62,22 @@
                 <div v-if="form.KIND_NO === 'B'" v-cloak>
                     <div style="margin-bottom:10px">鬆方體積換算表</div>
                     @*<div class="flex-row" style="align-items: flex-end">
-                        <div style="flex:1; padding: 0 10px">
-                            <el-form-item label="實方體積(立方公尺)">
-                                <el-input type="number" v-model="form.D2"></el-input>
-                            </el-form-item>
-                        </div>
-                        <div style="flex: 1; padding: 0 10px">
-                            <el-form-item label="鬆實方比值">
-                                <el-input type="number" v-model="form.RATIOLB"></el-input>
-                            </el-form-item>
-                        </div>
-                        <div>
-                            <el-form-item>
-                                <el-button type="primary" round @@click="calcD2">換算</el-button>
-                            </el-form-item>
-                        </div>
-                    </div>*@
+                            <div style="flex:1; padding: 0 10px">
+                                <el-form-item label="實方體積(立方公尺)">
+                                    <el-input type="number" v-model="form.D2"></el-input>
+                                </el-form-item>
+                            </div>
+                            <div style="flex: 1; padding: 0 10px">
+                                <el-form-item label="鬆實方比值">
+                                    <el-input type="number" v-model="form.RATIOLB"></el-input>
+                                </el-form-item>
+                            </div>
+                            <div>
+                                <el-form-item>
+                                    <el-button type="primary" round @@click="calcD2">換算</el-button>
+                                </el-form-item>
+                            </div>
+                        </div>*@
                     <div class="flex-row" style="align-items: flex-end">
                         <div style="flex:1; padding: 0 10px">
                             <el-form-item label="鬆方重量(公噸)">

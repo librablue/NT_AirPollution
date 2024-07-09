@@ -94,25 +94,23 @@ export default {
 		};
 	},
 	mounted() {
-        if (this.currentUser.RoleID === 1) {
-            this.filter.FormStatus = 1;
-        }
-        else if (this.currentUser.RoleID === 2) {
-            this.filter.FormStatus = 3;
-        }
-        else if (this.currentUser.RoleID === 99) {
-            this.filter.FormStatus = -1;
-        }
+		if (this.currentUser.RoleID === 1) {
+			this.filter.FormStatus = 1;
+		} else if (this.currentUser.RoleID === 2) {
+			this.filter.FormStatus = 3;
+		} else if (this.currentUser.RoleID === 99) {
+			this.filter.FormStatus = -1;
+		}
 
-        this.getForms();
+		this.getForms();
 	},
 	computed: {
 		...mapGetters(['currentUser']),
 		formStatusList() {
 			if (this.currentUser.RoleID === 1) {
 				return [
-                    { value: 1, label: '審理中' },
-					{ value: 2, label: '待補件' },
+					{ value: 1, label: '審理中' },
+					{ value: 2, label: '待補件' }
 				];
 			} else if (this.currentUser.RoleID === 2) {
 				return [
@@ -123,7 +121,7 @@ export default {
 			} else if (this.currentUser.RoleID === 99) {
 				return [
 					{ value: -1, label: '全部' },
-                    { value: 0, label: '未申請' },
+					{ value: 0, label: '未申請' },
 					{ value: 1, label: '審理中' },
 					{ value: 2, label: '待補件' },
 					{ value: 3, label: '通過待繳費' },
@@ -136,6 +134,37 @@ export default {
 		}
 	},
 	methods: {
+		initDatePicker() {
+			$('.datepicker').datepicker({
+				dateFormat: 'yy/mm/dd',
+				changeYear: true,
+				changeMonth: true,
+				beforeShow: function (input, inst) {
+					const inputVal = input.value;
+					if (inputVal) {
+						const year = +inputVal.substr(0, 3) + 1911;
+						const month = inputVal.substr(3, 2);
+						const day = inputVal.substr(5, 2);
+						return {
+							defaultDate: `${year}/${month}/${day}`
+						};
+					}
+
+					return {};
+				},
+				onSelect: (dateText, inst) => {
+					var objDate = {
+						y: `${inst.selectedYear - 1911 < 0 ? inst.selectedYear : inst.selectedYear - 1911}`.padStart(3, '0'),
+						m: `${inst.selectedMonth + 1}`.padStart(2, '0'),
+						d: `${inst.selectedDay}`.padStart(2, '0')
+					};
+
+					var dateFormate = `${objDate.y}${objDate.m}${objDate.d}`;
+					inst.input.val(dateFormate);
+					this.selectRow[inst.input[0].dataset.key] = dateFormate;
+				}
+			});
+		},
 		getForms() {
 			this.loading = true;
 			this.axios.post('api/Form/GetForms', this.filter).then(res => {
@@ -147,6 +176,9 @@ export default {
 			this.mode = 'Update';
 			this.selectRow = row;
 			this.formModalVisible = true;
+            this.$nextTick(() => {
+                this.initDatePicker();
+            });
 		},
 		copyRow(row) {
 			this.mode = 'Copy';
