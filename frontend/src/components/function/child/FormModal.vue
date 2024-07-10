@@ -358,14 +358,12 @@ $.datepicker.setDefaults($.datepicker.regional['zh-TW']);
 $.datepicker._phoenixGenerateMonthYearHeader = $.datepicker._generateMonthYearHeader;
 $.datepicker._generateMonthYearHeader = function (inst, drawMonth, drawYear, minDate, maxDate, secondary, monthNames, monthNamesShort) {
 	var result = $($.datepicker._phoenixGenerateMonthYearHeader(inst, drawMonth, drawYear, minDate, maxDate, secondary, monthNames, monthNamesShort));
-	const yearAry = [];
-	for (let i = new Date().getFullYear(); i >= 1934; i--) {
-		yearAry.push(i);
-	}
 	result
 		.find('select.ui-datepicker-year')
-		.empty()
-		.append(yearAry.map(year => `<option value="${year}" ${year === drawYear ? 'selected' : ''}>${(year - 1911).toString().padStart(3, '0')}</option>`).join(''));
+		.children()
+		.each(function () {
+			$(this).text($(this).text() - 1911 + '年');
+		});
 
 	return result.html();
 };
@@ -550,6 +548,38 @@ export default {
 		}
 	},
 	methods: {
+		initDatePicker() {
+			$('.datepicker').datepicker({
+				dateFormat: 'yy/mm/dd',
+				yearRange: '-90:+10',
+				changeYear: true,
+				changeMonth: true,
+				beforeShow: function (input, inst) {
+					const inputVal = input.value;
+					if (inputVal) {
+						const year = +inputVal.substr(0, 3) + 1911;
+						const month = inputVal.substr(3, 2);
+						const day = inputVal.substr(5, 2);
+						return {
+							defaultDate: `${year}/${month}/${day}`
+						};
+					}
+
+					return {};
+				},
+				onSelect: (dateText, inst) => {
+					var objDate = {
+						y: `${inst.selectedYear - 1911 < 0 ? inst.selectedYear : inst.selectedYear - 1911}`.padStart(3, '0'),
+						m: `${inst.selectedMonth + 1}`.padStart(2, '0'),
+						d: `${inst.selectedDay}`.padStart(2, '0')
+					};
+
+					var dateFormate = `${objDate.y}${objDate.m}${objDate.d}`;
+					inst.input.val(dateFormate);
+					this.form[inst.input[0].dataset.key] = dateFormate;
+				}
+			});
+		},
 		getDistrict() {
 			this.axios.get('api/Option/GetDistrict').then(res => {
 				this.district = Object.freeze(res.data);
@@ -707,6 +737,10 @@ export default {
 							E2: null
 						}
 					};
+
+					this.$nextTick(() => {
+						this.initDatePicker();
+					});
 				}
 			}
 		},

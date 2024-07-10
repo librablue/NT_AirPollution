@@ -42,14 +42,12 @@
     $.datepicker._phoenixGenerateMonthYearHeader = $.datepicker._generateMonthYearHeader;
     $.datepicker._generateMonthYearHeader = function (inst, drawMonth, drawYear, minDate, maxDate, secondary, monthNames, monthNamesShort) {
         var result = $($.datepicker._phoenixGenerateMonthYearHeader(inst, drawMonth, drawYear, minDate, maxDate, secondary, monthNames, monthNamesShort));
-        const yearAry = [];
-        for (let i = new Date().getFullYear(); i >= 1934; i--) {
-            yearAry.push(i);
-        }
         result
             .find('select.ui-datepicker-year')
-            .empty()
-            .append(yearAry.map(year => `<option value="${year}" ${year === drawYear? 'selected' : ''}>${(year - 1911).toString().padStart(3, '0')}</option>`).join(''));
+            .children()
+            .each(function () {
+                $(this).text($(this).text() - 1911 + '年');
+            });
 
         return result.html();
     };
@@ -288,6 +286,7 @@
             initDatePicker() {
                 $('.datepicker').datepicker({
 					dateFormat: 'yy/mm/dd',
+                    yearRange: '-90:+10',
 					changeYear: true,
 					changeMonth: true,
 					beforeShow: function (input, inst) {

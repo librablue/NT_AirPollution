@@ -134,37 +134,6 @@ export default {
 		}
 	},
 	methods: {
-		initDatePicker() {
-			$('.datepicker').datepicker({
-				dateFormat: 'yy/mm/dd',
-				changeYear: true,
-				changeMonth: true,
-				beforeShow: function (input, inst) {
-					const inputVal = input.value;
-					if (inputVal) {
-						const year = +inputVal.substr(0, 3) + 1911;
-						const month = inputVal.substr(3, 2);
-						const day = inputVal.substr(5, 2);
-						return {
-							defaultDate: `${year}/${month}/${day}`
-						};
-					}
-
-					return {};
-				},
-				onSelect: (dateText, inst) => {
-					var objDate = {
-						y: `${inst.selectedYear - 1911 < 0 ? inst.selectedYear : inst.selectedYear - 1911}`.padStart(3, '0'),
-						m: `${inst.selectedMonth + 1}`.padStart(2, '0'),
-						d: `${inst.selectedDay}`.padStart(2, '0')
-					};
-
-					var dateFormate = `${objDate.y}${objDate.m}${objDate.d}`;
-					inst.input.val(dateFormate);
-					this.selectRow[inst.input[0].dataset.key] = dateFormate;
-				}
-			});
-		},
 		getForms() {
 			this.loading = true;
 			this.axios.post('api/Form/GetForms', this.filter).then(res => {
@@ -176,9 +145,6 @@ export default {
 			this.mode = 'Update';
 			this.selectRow = row;
 			this.formModalVisible = true;
-            this.$nextTick(() => {
-                this.initDatePicker();
-            });
 		},
 		copyRow(row) {
 			this.mode = 'Copy';
