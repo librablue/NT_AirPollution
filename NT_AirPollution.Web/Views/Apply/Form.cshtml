@@ -328,10 +328,10 @@
                     </div>
                     <div v-if="selectRow.KIND_NO === '1' || selectRow.KIND_NO === '2'" class="flex-row">
                         <el-form-item prop="AREA_F" label="基地面積">
-                            <el-input type="number" v-model="selectRow.AREA_F"></el-input>
+                            <el-input type="number" style="width:120px" v-model="selectRow.AREA_F"></el-input> 平方公尺
                         </el-form-item>
                         <el-form-item prop="AREA_B" label="建築面積">
-                            <el-input type="number" v-model="selectRow.AREA_B"></el-input>
+                            <el-input type="number" style="width:120px" v-model="selectRow.AREA_B"></el-input> 平方公尺
                         </el-form-item>
                         <el-form-item prop="PERC_B" label="建蔽率">{{calcPERC_B}}%</el-form-item>
                     </div>
