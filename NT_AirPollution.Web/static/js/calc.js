@@ -17,23 +17,21 @@
         yearSuffix: '年'
     };
     $.datepicker.setDefaults($.datepicker.regional['zh-TW']);
-
     $.datepicker._phoenixGenerateMonthYearHeader = $.datepicker._generateMonthYearHeader;
     $.datepicker._generateMonthYearHeader = function (inst, drawMonth, drawYear, minDate, maxDate, secondary, monthNames, monthNamesShort) {
         var result = $($.datepicker._phoenixGenerateMonthYearHeader(inst, drawMonth, drawYear, minDate, maxDate, secondary, monthNames, monthNamesShort));
+        const yearAry = [];
+        for (let i = new Date().getFullYear(); i >= 1934; i--) {
+            yearAry.push(i);
+        }
         result
             .find('select.ui-datepicker-year')
-            .children()
-            .each(function () {
-                $(this).text($(this).text() - 1911 + '年');
-            });
-        result.find('span.ui-datepicker-year').each(function () {
-            $(this).text($(this).text() - 1911);
-        });
+            .empty()
+            .append(yearAry.map(year => `<option value="${year}" ${year === drawYear? 'selected' : ''}>${(year - 1911).toString().padStart(3, '0')}</option>`).join(''));
 
         return result.html();
     };
-
+    
 	new Vue({
 		el: '#app',
 		filters: {

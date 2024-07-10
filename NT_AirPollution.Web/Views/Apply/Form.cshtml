@@ -324,7 +324,7 @@
                             <el-input type="number" v-model="selectRow.MONEY"></el-input>
                         </el-form-item>
                         <el-form-item prop="C_MONEY" label="工程環保經費(元)"><div style="min-width:120px">{{calcC_MONEY | comma}}</div></el-form-item>
-                        <el-form-item prop="PERCENT" label="工程合約經費比例(">{{selectRow.PERCENT}}%</el-form-item>
+                        <el-form-item prop="PERCENT" label="工程合約經費比例">{{selectRow.PERCENT}}%</el-form-item>
                     </div>
                     <div v-if="selectRow.KIND_NO === '1' || selectRow.KIND_NO === '2'" class="flex-row">
                         <el-form-item prop="AREA_F" label="基地面積">

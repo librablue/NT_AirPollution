@@ -1,38 +1,36 @@
 ﻿document.addEventListener('DOMContentLoaded', () => {
-	$.datepicker.regional['zh-TW'] = {
-		closeText: '關閉',
-		prevText: '&#x3C;上月',
-		nextText: '下月&#x3E;',
-		currentText: '今天',
-		monthNames: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
-		monthNamesShort: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
-		dayNames: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
-		dayNamesShort: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
-		dayNamesMin: ['日', '一', '二', '三', '四', '五', '六'],
-		weekHeader: '周',
-		dateFormat: 'yy/mm/dd',
-		firstDay: 1,
-		isRTL: false,
-		showMonthAfterYear: true,
-		yearSuffix: '年'
-	};
-	$.datepicker.setDefaults($.datepicker.regional['zh-TW']);
+    $.datepicker.regional['zh-TW'] = {
+        closeText: '關閉',
+        prevText: '&#x3C;上月',
+        nextText: '下月&#x3E;',
+        currentText: '今天',
+        monthNames: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+        monthNamesShort: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+        dayNames: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
+        dayNamesShort: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+        dayNamesMin: ['日', '一', '二', '三', '四', '五', '六'],
+        weekHeader: '周',
+        dateFormat: 'yy/mm/dd',
+        firstDay: 1,
+        isRTL: false,
+        showMonthAfterYear: true,
+        yearSuffix: '年'
+    };
+    $.datepicker.setDefaults($.datepicker.regional['zh-TW']);
+    $.datepicker._phoenixGenerateMonthYearHeader = $.datepicker._generateMonthYearHeader;
+    $.datepicker._generateMonthYearHeader = function (inst, drawMonth, drawYear, minDate, maxDate, secondary, monthNames, monthNamesShort) {
+        var result = $($.datepicker._phoenixGenerateMonthYearHeader(inst, drawMonth, drawYear, minDate, maxDate, secondary, monthNames, monthNamesShort));
+        const yearAry = [];
+        for (let i = new Date().getFullYear(); i >= 1934; i--) {
+            yearAry.push(i);
+        }
+        result
+            .find('select.ui-datepicker-year')
+            .empty()
+            .append(yearAry.map(year => `<option value="${year}" ${year === drawYear? 'selected' : ''}>${(year - 1911).toString().padStart(3, '0')}</option>`).join(''));
 
-	$.datepicker._phoenixGenerateMonthYearHeader = $.datepicker._generateMonthYearHeader;
-	$.datepicker._generateMonthYearHeader = function (inst, drawMonth, drawYear, minDate, maxDate, secondary, monthNames, monthNamesShort) {
-		var result = $($.datepicker._phoenixGenerateMonthYearHeader(inst, drawMonth, drawYear, minDate, maxDate, secondary, monthNames, monthNamesShort));
-		result
-			.find('select.ui-datepicker-year')
-			.children()
-			.each(function () {
-				$(this).text($(this).text() - 1911 + '年');
-			});
-		result.find('span.ui-datepicker-year').each(function () {
-			$(this).text($(this).text() - 1911);
-		});
-
-		return result.html();
-	};
+        return result.html();
+    };
 
 	new Vue({
 		el: '#app',

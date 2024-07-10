@@ -39,19 +39,17 @@
         yearSuffix: '年'
     };
     $.datepicker.setDefaults($.datepicker.regional['zh-TW']);
-
     $.datepicker._phoenixGenerateMonthYearHeader = $.datepicker._generateMonthYearHeader;
     $.datepicker._generateMonthYearHeader = function (inst, drawMonth, drawYear, minDate, maxDate, secondary, monthNames, monthNamesShort) {
         var result = $($.datepicker._phoenixGenerateMonthYearHeader(inst, drawMonth, drawYear, minDate, maxDate, secondary, monthNames, monthNamesShort));
+        const yearAry = [];
+        for (let i = new Date().getFullYear(); i >= 1934; i--) {
+            yearAry.push(i);
+        }
         result
             .find('select.ui-datepicker-year')
-            .children()
-            .each(function () {
-                $(this).text($(this).text() - 1911 + '年');
-            });
-        result.find('span.ui-datepicker-year').each(function () {
-            $(this).text($(this).text() - 1911);
-        });
+            .empty()
+            .append(yearAry.map(year => `<option value="${year}" ${year === drawYear? 'selected' : ''}>${(year - 1911).toString().padStart(3, '0')}</option>`).join(''));
 
         return result.html();
     };
@@ -162,7 +160,6 @@
                 selectRow: {
                     P_KIND: '一次全繳',
                     REC_YN: '無',
-                    Attachments: [],
                     StopWorks: [],
                     RefundBank: {},
                     PaymentProof: {},
@@ -232,7 +229,7 @@
                 }),
                 tab4Rules: Object.freeze({
                     MONEY: [{ required: true, message: '請輸入工程合約經費', trigger: 'blur' }],
-                    C_MONEY: [{ required: true, message: '請輸入工程環保經費', trigger: 'blur' }],
+                    // C_MONEY: [{ required: true, message: '請輸入工程環保經費', trigger: 'blur' }],
                     AREA: [{  required: true, message: '請輸入工程面積', trigger: 'blur' }],
                     AREA_F: [{  required: true, message: '請輸入基地面積', trigger: 'blur' }],
                     AREA_B: [{  required: true, message: '請輸入建築面積', trigger: 'blur' }],
@@ -339,9 +336,6 @@
                     this.companies = Object.freeze(res.data);
                 });
             },
-            filterAttachments(infoID) {
-                return this.selectRow.Attachments.filter(item => item.InfoID === infoID);
-            },
             selectCompanyChange() {
                 const result = this.companies.find(item => item.ID === this.selectCompany);
                 if (result) {
@@ -412,7 +406,6 @@
                     CreateUserEmail: document.querySelector('#hfUserEmail').value,
                     FormStatus: 1,
                     C_DATE: moment().format('YYYY-MM-DD'),
-                    Attachments: [],
                     StopWorks: [],
                     RefundBank: {},
                     PaymentProof: {},
@@ -480,7 +473,6 @@
                 //     StopWorks: [],
                 //     RefundBank: {},
                 //     PaymentProof: {},
-                //     Attachments: [],
                 //     RATIOLB: 1.31,
                 //     DENSITYL: 1.51,
                 //     D2: null,
@@ -489,12 +481,6 @@
 
                 this.dialogVisible = true;
                 this.$nextTick(() => {
-                    // 清空附件
-                    for (let i = 1; i <= 8; i++) {
-                        const file = document.querySelector(`#file${i}`);
-                        if (file) file.value = '';
-                    }
-
                     this.initDatePicker();
                 });
             },
@@ -515,6 +501,9 @@
                 if (this.selectRow.CalcStatus === 2) {
                     this.failReason2DialogVisible = true;
                 }
+                this.$nextTick(() => {
+                    this.initDatePicker();
+                });
             },
             LatLon2UTM(Lat, Lon, AreaCode, Flag) {
                 var E1, E2, PH2, LM2, PH1, LM1, Temp1, Temp2, Temp3, Temp4;
@@ -652,51 +641,6 @@
                 pt[1] = Lon;
                 return pt;
             },
-            addFile(infoID) {
-                const lastID = this.selectRow.Attachments.length === 0 ? 0 : this.selectRow.Attachments[this.selectRow.Attachments.length - 1].ID;
-                this.selectRow.Attachments.push({
-                    ID: lastID + 1,
-                    InfoID: infoID,
-                    FileName: null
-                });
-            },
-            deleteFile(row) {
-                if (!confirm('是否確認刪除?')) return;
-                const findIdx = this.selectRow.Attachments.findIndex((item, idx) => item.ID === row.ID);
-                this.selectRow.Attachments.splice(findIdx, 1);
-            },
-            // uploadAttachment(e, row) {
-            //     if (e.target.files.length === 0) {
-            //         alert('請選擇檔案');
-            //         return false;
-            //     }
-
-            //     const ext = e.target.files[0].name.split('.').pop();
-            //     const allowExt = ['pdf'];
-            //     if (!allowExt.includes(ext)) {
-            //         alert('附件只允許上傳 pdf 文件');
-            //         return false;
-            //     }
-
-            //     const formData = new FormData();
-            //     formData.append('file', e.target.files[0]);
-            //     axios
-            //         .post('/Apply/UploadAttachment', formData)
-            //         .then(res => {
-            //             if (!res.data.Status) {
-            //                 alert(res.data.Message);
-            //                 return;
-            //             }
-
-            //             row.FileName = res.data.Message;
-            //             row.DisplayName = e.target.files[0].name;
-            //             this.$message.success('檔案上傳完成');
-            //         })
-            //         .catch(err => {
-            //             alert('系統發生未預期錯誤');
-            //             console.log(err);
-            //         });
-            // },
             uploadSuccess1(res, file, fileList) {
                 this.$refs.upload1.clearFiles();
                 if(!res.Status) {
@@ -843,7 +787,10 @@
                 this.selectRow.LAT = point[0] || null;
                 this.selectRow.LNG = point[1] || null;
                 this.selectRow.FormStatus = 0;
-                this.selectRow.Attachments.length = 0;
+                this.selectRow.FileName1 = null;
+                this.selectRow.DisplayName1 = null;
+                this.selectRow.FileName2 = null;
+                this.selectRow.DisplayName2 = null;
                 this.selectRow.StopWorks.length = 0;
                 const clearAry = ['C_NO', 'SER_NO', 'AP_DATE', 'C_DATE'];
                 for (const key of clearAry) {

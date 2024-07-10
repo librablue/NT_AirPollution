@@ -263,18 +263,18 @@
 					</el-form>
 				</el-tab-pane>
 				<el-tab-pane label="檢附資料" name="5">
-                    <div class="attach-row">
-                        <div>
-                            <div class="title">首期申報附件</div>
-                            <a v-if="form.FileName1" :href="`api/Form/Download?f=${form.FileName1}&n=${form.DisplayName1}`" class="link-download">{{form.DisplayName1}}</a>
-                            <a v-else href="javascript:;" class="link-download">暫無上傳檔案</a>
-                        </div>
-                        <div>
-                            <div class="title">結算申報附件</div>
-                            <a v-if="form.FileName2" :href="`api/Form/Download?f=${form.FileName2}&n=${form.DisplayName2}`" class="link-download">{{form.DisplayName2}}</a>
-                            <a v-else href="javascript:;" class="link-download">暫無上傳檔案</a>
-                        </div>
-                    </div>
+					<div class="attach-row">
+						<div>
+							<div class="title">首期申報附件</div>
+							<a v-if="form.FileName1" :href="`api/Form/Download?f=${form.FileName1}&n=${form.DisplayName1}`" class="link-download">{{form.DisplayName1}}</a>
+							<a v-else href="javascript:;" class="link-download">暫無上傳檔案</a>
+						</div>
+						<div>
+							<div class="title">結算申報附件</div>
+							<a v-if="form.FileName2" :href="`api/Form/Download?f=${form.FileName2}&n=${form.DisplayName2}`" class="link-download">{{form.DisplayName2}}</a>
+							<a v-else href="javascript:;" class="link-download">暫無上傳檔案</a>
+						</div>
+					</div>
 				</el-tab-pane>
 				<el-tab-pane label="停復工" name="6">
 					<el-button type="primary" icon="el-icon-plus" @click="addStopWork()">新 增</el-button>
@@ -355,19 +355,17 @@ $.datepicker.regional['zh-TW'] = {
 	yearSuffix: '年'
 };
 $.datepicker.setDefaults($.datepicker.regional['zh-TW']);
-
 $.datepicker._phoenixGenerateMonthYearHeader = $.datepicker._generateMonthYearHeader;
 $.datepicker._generateMonthYearHeader = function (inst, drawMonth, drawYear, minDate, maxDate, secondary, monthNames, monthNamesShort) {
 	var result = $($.datepicker._phoenixGenerateMonthYearHeader(inst, drawMonth, drawYear, minDate, maxDate, secondary, monthNames, monthNamesShort));
+	const yearAry = [];
+	for (let i = new Date().getFullYear(); i >= 1934; i--) {
+		yearAry.push(i);
+	}
 	result
 		.find('select.ui-datepicker-year')
-		.children()
-		.each(function () {
-			$(this).text($(this).text() - 1911 + '年');
-		});
-	result.find('span.ui-datepicker-year').each(function () {
-		$(this).text($(this).text() - 1911);
-	});
+		.empty()
+		.append(yearAry.map(year => `<option value="${year}" ${year === drawYear ? 'selected' : ''}>${(year - 1911).toString().padStart(3, '0')}</option>`).join(''));
 
 	return result.html();
 };
@@ -787,8 +785,8 @@ export default {
 	padding: 6px 0;
 }
 .hint-message {
-    font-size: 14px;
-    color: #2a629a;
-    margin-bottom: 20px;
+	font-size: 14px;
+	color: #2a629a;
+	margin-bottom: 20px;
 }
 </style>
