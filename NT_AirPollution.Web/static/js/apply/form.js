@@ -107,7 +107,7 @@
                     callback(new Error('請輸入結束日期'));
                 }
 
-                if(!this.selectRow.B_DATE) {
+                if (!this.selectRow.B_DATE) {
                     callback();
                 }
 
@@ -130,9 +130,24 @@
                 }
                 callback();
             };
+            const checkS_B_ID = (rule, value, callback) => {
+                const idRegex = /^[A-Z][12]\d{8}$/;
+                if (!idRegex.text(value)) {
+                    callback(new Error('營利事業負責人身分證字號格式錯誤'));
+                }
+                callback();
+            };
             const checkS_C_ID = (rule, value, callback) => {
-                if (!this.PUB_COMP && !value) {
-                    callback(new Error('請輸入營利事業聯絡人身分證字號'));
+                const idRegex = /^[A-Z][12]\d{8}$/;
+                if (!this.PUB_COMP && !idRegex.text(value)) {
+                    callback(new Error('營利事業聯絡人身分證字號格式錯誤'));
+                }
+                callback();
+            };
+            const checkR_B_ID = (rule, value, callback) => {
+                const idRegex = /^[A-Z][12]\d{8}$/;
+                if (!idRegex.text(value)) {
+                    callback(new Error('承造負責人身分證字號格式錯誤'));
                 }
                 callback();
             };
@@ -202,7 +217,7 @@
                     S_TEL: [{ required: true, message: '請輸入營利事業主連絡電話', trigger: 'blur' }],
                     S_B_NAM: [{ required: true, message: '請輸入營利事業負責人姓名', trigger: 'blur' }],
                     S_B_TIT: [{ required: true, message: '請輸入營利事業負責人職稱', trigger: 'blur' }],
-                    S_B_ID: [{ required: true, message: '請輸入營利事業負責人身分證字號', trigger: 'blur' }],
+                    S_B_ID: [{ validator: checkS_B_ID, trigger: 'blur' }],
                     S_B_BDATE: [{ validator: checkS_B_BDATE, trigger: 'blur' }],
                     S_C_NAM: [{ required: true, message: '請輸入營利事業聯絡人姓名', trigger: 'blur' }],
                     S_C_TIT: [{ required: true, message: '請輸入營利事業聯絡人職稱', trigger: 'blur' }],
@@ -218,7 +233,7 @@
                     R_TEL: [{ required: true, message: '請輸入承造連絡電話', trigger: 'blur' }],
                     R_B_NAM: [{ required: true, message: '請輸入承造負責人姓名', trigger: 'blur' }],
                     R_B_TIT: [{ required: true, message: '請輸入承造負責人職稱', trigger: 'blur' }],
-                    R_B_ID: [{ required: true, message: '請輸入承造負責人身分證字號', trigger: 'blur' }],
+                    R_B_ID: [{ validator: checkR_B_ID, trigger: 'blur' }],
                     R_B_BDATE: [{ required: true, message: '請輸入承造負責人生日', trigger: 'blur' }],
                     R_ADDR3: [{ required: true, message: '請輸入工務所地址', trigger: 'blur' }],
                     R_M_NAM: [{ required: true, message: '請輸入工地主任姓名', trigger: 'blur' }],
@@ -228,9 +243,9 @@
                 tab4Rules: Object.freeze({
                     MONEY: [{ required: true, message: '請輸入工程合約經費', trigger: 'blur' }],
                     // C_MONEY: [{ required: true, message: '請輸入工程環保經費', trigger: 'blur' }],
-                    AREA: [{  required: true, message: '請輸入工程面積', trigger: 'blur' }],
-                    AREA_F: [{  required: true, message: '請輸入基地面積', trigger: 'blur' }],
-                    AREA_B: [{  required: true, message: '請輸入建築面積', trigger: 'blur' }],
+                    AREA: [{ required: true, message: '請輸入工程面積', trigger: 'blur' }],
+                    AREA_F: [{ required: true, message: '請輸入基地面積', trigger: 'blur' }],
+                    AREA_B: [{ required: true, message: '請輸入建築面積', trigger: 'blur' }],
                     VOLUMEL: [{ required: true, message: '請輸入外運土石體積', trigger: 'blur' }],
                     B_DATE: [{ required: true, message: '請輸入開始日期', trigger: 'blur' }],
                     E_DATE: [{ validator: checkE_DATE, trigger: 'blur' }]
@@ -279,42 +294,42 @@
                 }
             },
             calcPERC_B() {
-                if(!this.selectRow.AREA_B || !this.selectRow.AREA_F) return 0;
-                return (+this.selectRow.AREA_B / +this.selectRow.AREA_F * 100).toFixed(2);
+                if (!this.selectRow.AREA_B || !this.selectRow.AREA_F) return 0;
+                return ((+this.selectRow.AREA_B / +this.selectRow.AREA_F) * 100).toFixed(2);
             }
         },
         methods: {
             initDatePicker() {
                 $('.datepicker').datepicker({
-					dateFormat: 'yy/mm/dd',
+                    dateFormat: 'yy/mm/dd',
                     yearRange: '-90:+10',
-					changeYear: true,
-					changeMonth: true,
-					beforeShow: function (input, inst) {
-						const inputVal = input.value;
-						if (inputVal) {
-							const year = +inputVal.substr(0, 3) + 1911;
-							const month = inputVal.substr(3, 2);
-							const day = inputVal.substr(5, 2);
-							return {
-								defaultDate: `${year}/${month}/${day}`
-							};
-						}
+                    changeYear: true,
+                    changeMonth: true,
+                    beforeShow: function (input, inst) {
+                        const inputVal = input.value;
+                        if (inputVal) {
+                            const year = +inputVal.substr(0, 3) + 1911;
+                            const month = inputVal.substr(3, 2);
+                            const day = inputVal.substr(5, 2);
+                            return {
+                                defaultDate: `${year}/${month}/${day}`
+                            };
+                        }
 
-						return {};
-					},
-					onSelect: (dateText, inst) => {
-						var objDate = {
-							y: `${inst.selectedYear - 1911 < 0 ? inst.selectedYear : inst.selectedYear - 1911}`.padStart(3, '0'),
-							m: `${inst.selectedMonth + 1}`.padStart(2, '0'),
-							d: `${inst.selectedDay}`.padStart(2, '0')
-						};
+                        return {};
+                    },
+                    onSelect: (dateText, inst) => {
+                        var objDate = {
+                            y: `${inst.selectedYear - 1911 < 0 ? inst.selectedYear : inst.selectedYear - 1911}`.padStart(3, '0'),
+                            m: `${inst.selectedMonth + 1}`.padStart(2, '0'),
+                            d: `${inst.selectedDay}`.padStart(2, '0')
+                        };
 
-						var dateFormate = `${objDate.y}${objDate.m}${objDate.d}`;
-						inst.input.val(dateFormate);
-						this.selectRow[inst.input[0].dataset.key] = dateFormate;
-					}
-				});
+                        var dateFormate = `${objDate.y}${objDate.m}${objDate.d}`;
+                        inst.input.val(dateFormate);
+                        this.selectRow[inst.input[0].dataset.key] = dateFormate;
+                    }
+                });
             },
             getDistrict() {
                 axios.get('/Option/GetDistrict').then(res => {
@@ -414,7 +429,6 @@
                     D2: null,
                     E2: null
                 });
-
 
                 // this.selectRow = {
                 //     SER_NO: 1,
@@ -647,7 +661,7 @@
             uploadSuccess1(res, file, fileList) {
                 this.loading.close();
                 this.$refs.upload1.clearFiles();
-                if(!res.Status) {
+                if (!res.Status) {
                     alert(res.Message);
                     return;
                 }
@@ -657,7 +671,7 @@
             uploadSuccess2(res, file, fileList) {
                 this.loading.close();
                 this.$refs.upload2.clearFiles();
-                if(!res.Status) {
+                if (!res.Status) {
                     alert(res.Message);
                     return;
                 }
@@ -713,9 +727,11 @@
                         if (this.selectRow.KIND_NO === '1' || this.selectRow.KIND_NO === '2') {
                             this.selectRow.AREA = this.selectRow.AREA_B;
                         }
+                        const loading = this.$loading();
                         axios
                             .post(`/Apply/${this.mode}Form`, this.selectRow)
                             .then(res => {
+                                loading.close();
                                 if (!res.data.Status) {
                                     alert(res.data.Message);
                                     return;
@@ -726,6 +742,7 @@
                                 this.dialogVisible = false;
                             })
                             .catch(err => {
+                                loading.close();
                                 alert('系統發生未預期錯誤');
                                 console.log(err);
                             });
@@ -896,7 +913,7 @@
                     });
             },
             SendCalcStatus1(row) {
-                if(!row.FileName2) {
+                if (!row.FileName2) {
                     alert('提出結算申請前，需檢視內容並上傳附件');
                     return;
                 }
