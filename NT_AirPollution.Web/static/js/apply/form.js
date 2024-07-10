@@ -253,7 +253,6 @@
         mounted() {
             this.getDistrict();
             this.getProjectCode();
-            this.getAttachmentInfo();
             this.getCompanies();
             this.getContractor();
         },
@@ -423,70 +422,70 @@
                     E2: null
                 };
 
-                this.selectRow = {
-                    SER_NO: 1,
-                    P_KIND: '一次全繳',
-                    REC_YN: '無',
-                    PUB_COMP: true,
-                    TOWN_NO: 'M2',
-                    CreateUserName: document.querySelector('#hfUserName').value,
-                    CreateUserEmail: document.querySelector('#hfUserEmail').value,
-                    COMP_NAM: 'COMP_NAM',
-                    KIND_NO: '1',
-                    ADDR: 'ADDR',
-                    B_SERNO: 'B_SERNO',
-                    UTME: 123,
-                    UTMN: 456,
-                    LAT: 24.1477358,
-                    LNG: 120.6736482,
-                    STATE: 'STATE',
-                    EIACOMMENTS: 'EIACOMMENTS',
-                    RECCOMMENTS: 'RECCOMMENTS',
-                    S_NAME: 'S_NAME',
-                    S_G_NO: 'S_G_NO',
-                    S_ADDR1: 'S_ADDR1',
-                    S_ADDR2: 'S_ADDR2',
-                    S_TEL: 'S_TEL',
-                    S_B_NAM: 'S_B_NAM',
-                    S_B_TIT: 'S_B_TIT',
-                    S_B_ID: 'S_B_ID',
-                    S_B_BDATE: '0740714',
-                    S_C_NAM: 'S_C_NAM',
-                    S_C_TIT: 'S_C_TIT',
-                    S_C_ID: 'S_C_ID',
-                    S_C_ADDR: 'S_C_ADDR',
-                    S_C_TEL: 'S_C_TEL',
-                    R_NAME: 'R_NAME',
-                    R_G_NO: 'R_G_NO',
-                    R_ADDR1: 'R_ADDR1',
-                    R_ADDR2: 'R_ADDR2',
-                    R_TEL: 'R_TEL',
-                    R_B_NAM: 'R_B_NAM',
-                    R_B_TIT: 'R_B_TIT',
-                    R_B_ID: 'R_B_ID',
-                    R_B_BDATE: '0740714',
-                    R_ADDR3: 'R_ADDR3',
-                    R_M_NAM: 'R_M_NAM',
-                    R_C_NAM: 'R_C_NAM',
-                    R_TEL1: 'R_TEL1',
-                    MONEY: 1,
-                    C_MONEY: 2,
-                    PERCENT: 3,
-                    AREA: 1,
-                    VOLUMEL: null,
-                    B_DATE: '1130101',
-                    E_DATE: '1130131',
-                    FormStatus: 1,
-                    C_DATE: moment().format('YYYY-MM-DD'),
-                    StopWorks: [],
-                    RefundBank: {},
-                    PaymentProof: {},
-                    Attachments: [],
-                    RATIOLB: 1.31,
-                    DENSITYL: 1.51,
-                    D2: null,
-                    E2: null
-                };
+                // this.selectRow = {
+                //     SER_NO: 1,
+                //     P_KIND: '一次全繳',
+                //     REC_YN: '無',
+                //     PUB_COMP: true,
+                //     TOWN_NO: 'M2',
+                //     CreateUserName: document.querySelector('#hfUserName').value,
+                //     CreateUserEmail: document.querySelector('#hfUserEmail').value,
+                //     COMP_NAM: 'COMP_NAM',
+                //     KIND_NO: '1',
+                //     ADDR: 'ADDR',
+                //     B_SERNO: 'B_SERNO',
+                //     UTME: 123,
+                //     UTMN: 456,
+                //     LAT: 24.1477358,
+                //     LNG: 120.6736482,
+                //     STATE: 'STATE',
+                //     EIACOMMENTS: 'EIACOMMENTS',
+                //     RECCOMMENTS: 'RECCOMMENTS',
+                //     S_NAME: 'S_NAME',
+                //     S_G_NO: 'S_G_NO',
+                //     S_ADDR1: 'S_ADDR1',
+                //     S_ADDR2: 'S_ADDR2',
+                //     S_TEL: 'S_TEL',
+                //     S_B_NAM: 'S_B_NAM',
+                //     S_B_TIT: 'S_B_TIT',
+                //     S_B_ID: 'S_B_ID',
+                //     S_B_BDATE: '0740714',
+                //     S_C_NAM: 'S_C_NAM',
+                //     S_C_TIT: 'S_C_TIT',
+                //     S_C_ID: 'S_C_ID',
+                //     S_C_ADDR: 'S_C_ADDR',
+                //     S_C_TEL: 'S_C_TEL',
+                //     R_NAME: 'R_NAME',
+                //     R_G_NO: 'R_G_NO',
+                //     R_ADDR1: 'R_ADDR1',
+                //     R_ADDR2: 'R_ADDR2',
+                //     R_TEL: 'R_TEL',
+                //     R_B_NAM: 'R_B_NAM',
+                //     R_B_TIT: 'R_B_TIT',
+                //     R_B_ID: 'R_B_ID',
+                //     R_B_BDATE: '0740714',
+                //     R_ADDR3: 'R_ADDR3',
+                //     R_M_NAM: 'R_M_NAM',
+                //     R_C_NAM: 'R_C_NAM',
+                //     R_TEL1: 'R_TEL1',
+                //     MONEY: 1,
+                //     C_MONEY: 2,
+                //     PERCENT: 3,
+                //     AREA: 1,
+                //     VOLUMEL: null,
+                //     B_DATE: '1130101',
+                //     E_DATE: '1130131',
+                //     FormStatus: 1,
+                //     C_DATE: moment().format('YYYY-MM-DD'),
+                //     StopWorks: [],
+                //     RefundBank: {},
+                //     PaymentProof: {},
+                //     Attachments: [],
+                //     RATIOLB: 1.31,
+                //     DENSITYL: 1.51,
+                //     D2: null,
+                //     E2: null
+                // };
 
                 this.dialogVisible = true;
                 this.$nextTick(() => {
@@ -666,37 +665,55 @@
                 const findIdx = this.selectRow.Attachments.findIndex((item, idx) => item.ID === row.ID);
                 this.selectRow.Attachments.splice(findIdx, 1);
             },
-            uploadAttachment(e, row) {
-                if (e.target.files.length === 0) {
-                    alert('請選擇檔案');
-                    return false;
+            // uploadAttachment(e, row) {
+            //     if (e.target.files.length === 0) {
+            //         alert('請選擇檔案');
+            //         return false;
+            //     }
+
+            //     const ext = e.target.files[0].name.split('.').pop();
+            //     const allowExt = ['pdf'];
+            //     if (!allowExt.includes(ext)) {
+            //         alert('附件只允許上傳 pdf 文件');
+            //         return false;
+            //     }
+
+            //     const formData = new FormData();
+            //     formData.append('file', e.target.files[0]);
+            //     axios
+            //         .post('/Apply/UploadAttachment', formData)
+            //         .then(res => {
+            //             if (!res.data.Status) {
+            //                 alert(res.data.Message);
+            //                 return;
+            //             }
+
+            //             row.FileName = res.data.Message;
+            //             row.DisplayName = e.target.files[0].name;
+            //             this.$message.success('檔案上傳完成');
+            //         })
+            //         .catch(err => {
+            //             alert('系統發生未預期錯誤');
+            //             console.log(err);
+            //         });
+            // },
+            uploadSuccess1(res, file, fileList) {
+                this.$refs.upload1.clearFiles();
+                if(!res.Status) {
+                    alert(res.Message);
+                    return;
                 }
-
-                const ext = e.target.files[0].name.split('.').pop();
-                const allowExt = ['pdf'];
-                if (!allowExt.includes(ext)) {
-                    alert('附件只允許上傳 pdf 文件');
-                    return false;
+                this.selectRow.FileName1 = res.Message;
+                this.selectRow.DisplayName1 = file.name;
+            },
+            uploadSuccess2(res, file, fileList) {
+                this.$refs.upload2.clearFiles();
+                if(!res.Status) {
+                    alert(res.Message);
+                    return;
                 }
-
-                const formData = new FormData();
-                formData.append('file', e.target.files[0]);
-                axios
-                    .post('/Apply/UploadAttachment', formData)
-                    .then(res => {
-                        if (!res.data.Status) {
-                            alert(res.data.Message);
-                            return;
-                        }
-
-                        row.FileName = res.data.Message;
-                        row.DisplayName = e.target.files[0].name;
-                        this.$message.success('檔案上傳完成');
-                    })
-                    .catch(err => {
-                        alert('系統發生未預期錯誤');
-                        console.log(err);
-                    });
+                this.selectRow.FileName2 = res.Message;
+                this.selectRow.DisplayName2 = file.name;
             },
             selfCheckConfirm() {
                 this.isSelfChecked = true;
@@ -858,10 +875,10 @@
             },
             dialogClose() {
                 // 清空附件
-                for (let i = 0; i < this.filterAttachmentInfo.length; i++) {
-                    const file = document.querySelector(`#file${i}`);
-                    if (file) file.value = '';
-                }
+                // for (let i = 0; i < this.filterAttachmentInfo.length; i++) {
+                //     const file = document.querySelector(`#file${i}`);
+                //     if (file) file.value = '';
+                // }
             },
             downloadPayment(row) {
                 const loading = this.$loading();
@@ -973,18 +990,18 @@
                         console.log(err);
                     });
             },
-            showPaymentProofModal(row) {
-                this.selectRow = JSON.parse(JSON.stringify(row));
-                this.selectRow.PaymentProof = Object.assign({}, row.PaymentProof, {
-                    FormID: row.ID,
-                    File: null
-                });
-                this.paymentProofModalVisible = true;
-            },
-            deletePaymentProof() {
-                if (!confirm('是否確認刪除?')) return false;
-                this.selectRow.PaymentProof.ProofFile = null;
-            },
+            // showPaymentProofModal(row) {
+            //     this.selectRow = JSON.parse(JSON.stringify(row));
+            //     this.selectRow.PaymentProof = Object.assign({}, row.PaymentProof, {
+            //         FormID: row.ID,
+            //         File: null
+            //     });
+            //     this.paymentProofModalVisible = true;
+            // },
+            // deletePaymentProof() {
+            //     if (!confirm('是否確認刪除?')) return false;
+            //     this.selectRow.PaymentProof.ProofFile = null;
+            // },
             //savePaymentProof() {
             //    const formData = new FormData();
             //    // 附件

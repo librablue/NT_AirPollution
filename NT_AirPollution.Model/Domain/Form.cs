@@ -570,5 +570,21 @@ namespace NT_AirPollution.Model.Domain
         /// 結算繳費期限
         /// </summary>
         public DateTime? PayEndDate2 { get; set; }
+        /// <summary>
+        /// 初審附件原始檔名
+        /// </summary>
+        public string FileName1 { get; set; }
+        /// <summary>
+        /// 初審附件顯示檔名
+        /// </summary>
+        public string DisplayName1 { get; set; }
+        /// <summary>
+        /// 結算附件原始檔名
+        /// </summary>
+        public string FileName2 { get; set; }
+        /// <summary>
+        /// 結算附件顯示檔名
+        /// </summary>
+        public string DisplayName2 { get; set; }
     }
 }

@@ -520,32 +520,39 @@ h3 {
   margin-bottom: 22px;
 }
 
-.file-list {
-  margin-right: 30px;
+.attach-tip-list {
+  list-style-type: disc;
+  margin-left: 20px;
 }
-.file-list li {
+.attach-tip-list li {
+  margin-bottom: 10px;
+  color: #F4A261;
+}
+
+.attach-row {
   display: flex;
-  align-items: center;
-  padding: 4px 0;
+  flex-wrap: wrap;
+  align-items: flex-start;
 }
-
-.link-add {
-  display: inline-block;
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  font-size: 24px;
-  line-height: 24px;
-  color: #67c23a;
+.attach-row > div {
+  padding: 10px;
 }
-
-.link-delete {
-  color: #f56c6c;
-  margin-right: 10px;
+.attach-row .title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1f2f3d;
+  margin-bottom: 10px;
 }
 
 .link-download {
-  color: #3652ad;
+  display: block;
+  margin: 20px 0;
+  font-size: 18px;
+  font-weight: 700;
+  text-align: center;
+  color: #0f67b1;
+  border: 1px dashed #0f67b1;
+  padding: 6px 0;
 }
 
 .photo-wrap {

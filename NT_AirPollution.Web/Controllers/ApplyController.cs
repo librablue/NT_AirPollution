@@ -365,7 +365,7 @@ namespace NT_AirPollution.Web.Controllers
         /// 上傳附件
         /// </summary>
         [HttpPost]
-        public JsonResult UploadAttachment(HttpPostedFileBase file)
+        public JsonResult UploadFile(HttpPostedFileBase file)
         {
             try
             {

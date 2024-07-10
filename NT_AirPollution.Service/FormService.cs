@@ -49,10 +49,6 @@ namespace NT_AirPollution.Service
 
                 foreach (var item in forms)
                 {
-                    item.Attachments = cn.Query<Attachment>(@"
-                        SELECT * FROM Attachment WHERE FormID=@FormID",
-                        new { FormID = item.ID }).ToList();
-
                     item.RefundBank = cn.QueryFirstOrDefault<RefundBank>(@"
                         SELECT * FROM RefundBank WHERE FormID=@FormID",
                         new { FormID = item.ID });
@@ -92,10 +88,6 @@ namespace NT_AirPollution.Service
 
                 if (result != null)
                 {
-                    result.Attachments = cn.Query<Attachment>(@"
-                        SELECT * FROM Attachment WHERE FormID=@FormID",
-                        new { FormID = result.ID }).ToList();
-
                     result.RefundBank = cn.QueryFirstOrDefault<RefundBank>(@"
                         SELECT * FROM RefundBank WHERE FormID=@FormID",
                         new { FormID = result.ID });
@@ -152,10 +144,6 @@ namespace NT_AirPollution.Service
 
                 foreach (var item in result)
                 {
-                    item.Attachments = cn.Query<Attachment>(@"
-                        SELECT * FROM Attachment WHERE FormID=@FormID",
-                        new { FormID = item.ID }).ToList();
-
                     item.RefundBank = cn.QueryFirstOrDefault<RefundBank>(@"
                         SELECT * FROM RefundBank WHERE FormID=@FormID",
                         new { FormID = item.ID });
@@ -204,10 +192,6 @@ namespace NT_AirPollution.Service
                 var now = DateTime.Now;
                 foreach (var item in result)
                 {
-                    item.Attachments = cn.Query<Attachment>(@"
-                        SELECT * FROM Attachment WHERE FormID=@FormID",
-                        new { FormID = item.ID }).ToList();
-
                     item.RefundBank = cn.QueryFirstOrDefault<RefundBank>(@"
                         SELECT * FROM RefundBank WHERE FormID=@FormID",
                         new { FormID = item.ID });
@@ -275,10 +259,6 @@ namespace NT_AirPollution.Service
 
                 foreach (var item in result)
                 {
-                    item.Attachments = cn.Query<Attachment>(@"
-                        SELECT * FROM Attachment WHERE FormID=@FormID",
-                        new { FormID = item.ID }).ToList();
-
                     item.RefundBank = cn.QueryFirstOrDefault<RefundBank>(@"
                         SELECT * FROM RefundBank WHERE FormID=@FormID",
                         new { FormID = item.ID });
@@ -319,10 +299,6 @@ namespace NT_AirPollution.Service
 
                 foreach (var item in result)
                 {
-                    item.Attachments = cn.Query<Attachment>(@"
-                        SELECT * FROM Attachment WHERE FormID=@FormID",
-                        new { FormID = item.ID }).ToList();
-
                     item.RefundBank = cn.QueryFirstOrDefault<RefundBank>(@"
                         SELECT * FROM RefundBank WHERE FormID=@FormID",
                         new { FormID = item.ID });
@@ -372,32 +348,15 @@ namespace NT_AirPollution.Service
         {
             using (var cn = new SqlConnection(connStr))
             {
-                cn.Open();
-                using (var trans = cn.BeginTransaction())
+                try
                 {
-                    try
-                    {
-                        long id = cn.Insert(form, trans);
-
-                        // 附件
-                        var attachments = form.Attachments.Where(o => !string.IsNullOrEmpty(o.FileName));
-                        foreach (var item in attachments)
-                        {
-                            item.ID = 0;
-                            item.FormID = id;
-                            item.CreateDate = DateTime.Now;
-                        }
-                        cn.Insert(attachments, trans);
-
-                        trans.Commit();
-                        return id;
-                    }
-                    catch (Exception ex)
-                    {
-                        trans.Rollback();
-                        Logger.Error($"AddForm: {ex.StackTrace}|{ex.Message}");
-                        throw new Exception("系統發生未預期錯誤");
-                    }
+                    long id = cn.Insert(form);
+                    return id;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"AddForm: {ex.StackTrace}|{ex.Message}");
+                    throw new Exception("系統發生未預期錯誤");
                 }
             }
         }
@@ -411,34 +370,15 @@ namespace NT_AirPollution.Service
         {
             using (var cn = new SqlConnection(connStr))
             {
-                cn.Open();
-                using (var trans = cn.BeginTransaction())
+                try
                 {
-                    try
-                    {
-                        cn.Update(form, trans);
-
-                        // 附件
-                        cn.Execute(@"DELETE FROM Attachment WHERE FormID=@FormID", new { FormID = form.ID }, trans);
-                        var attachments = form.Attachments.Where(o => !string.IsNullOrEmpty(o.FileName));
-                        foreach (var item in attachments)
-                        {
-                            item.ID = 0;
-                            item.FormID = form.ID;
-                            item.CreateDate = item.CreateDate ?? DateTime.Now;
-                        }
-
-                        cn.Insert(attachments, trans);
-
-                        trans.Commit();
-                        return true;
-                    }
-                    catch (Exception ex)
-                    {
-                        trans.Rollback();
-                        Logger.Error($"UpdateForm: {ex.StackTrace}|{ex.Message}");
-                        throw new Exception("系統發生未預期錯誤");
-                    }
+                    cn.Update(form);
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"UpdateForm: {ex.StackTrace}|{ex.Message}");
+                    throw new Exception("系統發生未預期錯誤");
                 }
             }
         }

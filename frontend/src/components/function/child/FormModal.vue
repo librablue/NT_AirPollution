@@ -263,33 +263,18 @@
 					</el-form>
 				</el-tab-pane>
 				<el-tab-pane label="檢附資料" name="5">
-					<div class="table-responsive">
-						<table class="table">
-							<thead>
-								<tr>
-									<th>檢附資料名稱</th>
-									<th>說明</th>
-									<th>
-										檢附資料上傳(
-										<a :href="`api/Form/DownloadZip?id=${form.ID}`">下載全部</a>)
-									</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr v-for="(item, idx) in filterAttachmentInfo" :key="idx">
-									<th>{{item.FileTitle}}</th>
-									<td>{{item.Description}}</td>
-									<td>
-										<ul class="file-list">
-											<li v-for="sub in filterAttachments(item.ID)" :key="sub.ID">
-												<a :href="`api/Form/Download?f=${sub.FileName}&n=${sub.DisplayName}`" class="link-download">{{sub.DisplayName}}</a>
-											</li>
-										</ul>
-									</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
+                    <div class="attach-row">
+                        <div>
+                            <div class="title">首期申報附件</div>
+                            <a v-if="form.FileName1" :href="`api/Form/Download?f=${form.FileName1}&n=${form.DisplayName1}`" class="link-download">{{form.DisplayName1}}</a>
+                            <a v-else href="javascript:;" class="link-download">暫無上傳檔案</a>
+                        </div>
+                        <div>
+                            <div class="title">結算申報附件</div>
+                            <a v-if="form.FileName2" :href="`api/Form/Download?f=${form.FileName2}&n=${form.DisplayName2}`" class="link-download">{{form.DisplayName2}}</a>
+                            <a v-else href="javascript:;" class="link-download">暫無上傳檔案</a>
+                        </div>
+                    </div>
 				</el-tab-pane>
 				<el-tab-pane label="停復工" name="6">
 					<el-button type="primary" icon="el-icon-plus" @click="addStopWork()">新 增</el-button>
@@ -777,8 +762,29 @@ export default {
 .modal-header {
 	margin: 10px 0;
 }
-.file-list {
-	list-style-type: none;
+.attach-row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	& > div {
+		padding: 10px;
+	}
+	.title {
+		font-size: 22px;
+		font-weight: 700;
+		color: #1f2f3d;
+		margin-bottom: 10px;
+	}
+}
+.link-download {
+	display: block;
+	margin: 20px 0;
+	font-size: 18px;
+	font-weight: 700;
+	text-align: center;
+	color: #0f67b1;
+	border: 1px dashed #0f67b1;
+	padding: 6px 0;
 }
 .hint-message {
     font-size: 14px;
