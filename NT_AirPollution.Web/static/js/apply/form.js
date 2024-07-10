@@ -137,6 +137,7 @@
                 callback();
             };
             return {
+                loading: null,
                 mode: '',
                 filter: {
                     StartDate: moment().format('YYYY-MM-01'),
@@ -640,7 +641,11 @@
                 pt[1] = Lon;
                 return pt;
             },
+            onUploading() {
+                this.loading = this.$loading();
+            },
             uploadSuccess1(res, file, fileList) {
+                this.loading.close();
                 this.$refs.upload1.clearFiles();
                 if(!res.Status) {
                     alert(res.Message);
@@ -650,6 +655,7 @@
                 this.selectRow.DisplayName1 = file.name;
             },
             uploadSuccess2(res, file, fileList) {
+                this.loading.close();
                 this.$refs.upload2.clearFiles();
                 if(!res.Status) {
                     alert(res.Message);

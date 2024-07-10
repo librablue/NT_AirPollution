@@ -410,7 +410,7 @@
                 <div class="attach-row">
                     <div>
                         <div class="title">首期申報附件</div>
-                        <el-upload v-if="selectRow.FormStatus <= 2" ref="upload1" drag action="@Url.Content("~/Apply/UploadFile")" :show-file-list="false" accept=".pdf" :on-success="uploadSuccess1">
+                        <el-upload v-if="selectRow.FormStatus <= 2" ref="upload1" drag action="@Url.Content("~/Apply/UploadFile")" :show-file-list="false" accept=".pdf" :on-progress="onUploading" :on-success="uploadSuccess1">
                             <i class="el-icon-upload"></i>
                             <div class="el-upload__text">將文件拖曳到此處，或<em>點擊上傳</em></div>
                             <div class="el-upload__tip" slot="tip">只能上傳pdf文件</div>
@@ -419,7 +419,7 @@
                     </div>
                     <div>
                         <div class="title">結算申報附件</div>
-                        <el-upload v-if="selectRow.CalcStatus <= 2" ref="upload2" drag action="@Url.Content("~/Apply/UploadFile")" :show-file-list="false" accept=".pdf" :on-success="uploadSuccess2">
+                        <el-upload v-if="selectRow.CalcStatus <= 2" ref="upload2" drag action="@Url.Content("~/Apply/UploadFile")" :show-file-list="false" accept=".pdf" :on-progress="onUploading" :on-success="uploadSuccess2">
                             <i class="el-icon-upload"></i>
                             <div class="el-upload__text">將文件拖曳到此處，或<em>點擊上傳</em></div>
                             <div class="el-upload__tip" slot="tip">只能上傳pdf文件</div>
