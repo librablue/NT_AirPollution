@@ -228,6 +228,12 @@ namespace NT_AirPollution.Web.Controllers
             return Json(result);
         }
 
+        public JsonResult GetEmptyFormModel()
+        {
+            FormView form = new FormView();
+            return Json(new AjaxResult { Status = true, Message = form }, JsonRequestBehavior.AllowGet);
+        }
+
         [HttpPost]
         public JsonResult AddForm(FormView form)
         {

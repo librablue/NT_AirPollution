@@ -174,7 +174,6 @@
                 bankAccountDialogVisible: false,
                 paymentProofModalVisible: false,
                 selfCheckModalVisible: false,
-                isSelfChecked: false,
                 activeTab: '1',
                 tab1Rules: Object.freeze({
                     PUB_COMP: [{ required: true, message: '請選擇案件類型', trigger: 'change' }],
@@ -391,13 +390,13 @@
                         console.log(err);
                     });
             },
-            addForm() {
+            async addForm() {
                 this.mode = 'Add';
                 this.activeTab = '1';
                 this.selectCompany = null;
                 this.selectContractor = null;
-                this.isSelfChecked = false;
-                this.selectRow = {
+                const emptyModel = await axios.get('Apply/GetEmptyFormModel');
+                this.selectRow = Object.assign(emptyModel.data.Message, {
                     SER_NO: 1,
                     P_KIND: '一次全繳',
                     KIND_NO: null,
@@ -413,7 +412,8 @@
                     DENSITYL: 1.51,
                     D2: null,
                     E2: null
-                };
+                });
+
 
                 // this.selectRow = {
                 //     SER_NO: 1,
@@ -487,7 +487,6 @@
             showModal(row) {
                 this.mode = 'Update';
                 this.activeTab = '1';
-                this.isSelfChecked = true;
                 this.selectRow = JSON.parse(JSON.stringify(row));
                 const point = this.selectRow.LATLNG.split(',');
                 this.selectRow.LAT = point[0] || null;
@@ -664,10 +663,6 @@
                 this.selectRow.FileName2 = res.Message;
                 this.selectRow.DisplayName2 = file.name;
             },
-            selfCheckConfirm() {
-                this.isSelfChecked = true;
-                this.selfCheckModalVisible = false;
-            },
             goPrevTab() {
                 let intActiveTab = +this.activeTab;
                 if (intActiveTab > 1) {
@@ -707,12 +702,6 @@
                         break;
                     }
                     case '6': {
-                        // 附件自主檢查視窗
-                        if (!this.isSelfChecked) {
-                            this.selfCheckModalVisible = true;
-                            return;
-                        }
-
                         if (!confirm('是否確認繼續?')) return false;
                         const point = this.LatLon2UTM(this.selectRow.LAT, this.selectRow.LNG, 0, 0);
                         this.selectRow.UTME = point[0];
@@ -743,10 +732,14 @@
                     }
                 }
             },
-            sendFormStatus1(row) {
+            showSelfCheckModal(row) {
+                this.selectRow = JSON.parse(JSON.stringify(row));
+                this.selfCheckModalVisible = true;
+            },
+            sendFormStatus1() {
                 if (!confirm('是否確認提送審查?')) return false;
                 axios
-                    .post(`/Apply/SendFormStatus1`, row)
+                    .post(`/Apply/SendFormStatus1`, this.selectRow)
                     .then(res => {
                         if (!res.data.Status) {
                             alert(res.data.Message);
