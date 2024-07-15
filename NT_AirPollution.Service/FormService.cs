@@ -1115,6 +1115,7 @@ namespace NT_AirPollution.Service
                 double interest = 0;
                 // 遲繳天數
                 var delayDays = (DateTime.Now - payEndDate).Days;
+                if (delayDays < 0) delayDays = 0;
                 // 利率
                 double rate = 0;
                 var interestRate = _optionService.GetRates().FirstOrDefault();

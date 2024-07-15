@@ -250,6 +250,7 @@
             this.getProjectCode();
             this.getCompanies();
             this.getContractor();
+            this.getAttachmentInfo();
         },
         computed: {
             totalDays() {
@@ -895,6 +896,10 @@
                     });
             },
             SendCalcStatus1(row) {
+                if(!row.FileName2) {
+                    alert('提出結算申請前，需檢視內容並上傳附件');
+                    return;
+                }
                 if (!confirm('是否確認提出結算申請?')) return;
                 axios
                     .post('/Apply/SendCalcStatus1', row)
