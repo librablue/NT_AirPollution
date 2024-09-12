@@ -250,6 +250,7 @@ namespace NT_AirPollution.Web.Controllers
                 if (string.IsNullOrEmpty(user.Captcha) || !ReCaptcha.ValidateCaptcha(user.Captcha))
                     throw new Exception("請勾選我不是機器人。");
 
+                ModelState.Remove("UserName");
                 if (!ModelState.IsValid)
                 {
                     string firstError = ModelState.Values.SelectMany(o => o.Errors).First().ErrorMessage;
