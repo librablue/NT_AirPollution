@@ -131,22 +131,22 @@
                 callback();
             };
             const checkS_B_ID = (rule, value, callback) => {
-                const idRegex = /^[A-Z][12]\d{8}$/;
-                if (!idRegex.text(value)) {
+                const idRegx = /^[A-Z][12]\d{8}$/;
+                if (!idRegx.test(value)) {
                     callback(new Error('營利事業負責人身分證字號格式錯誤'));
                 }
                 callback();
             };
             const checkS_C_ID = (rule, value, callback) => {
-                const idRegex = /^[A-Z][12]\d{8}$/;
-                if (!this.PUB_COMP && !idRegex.text(value)) {
+                const idRegx = /^[A-Z][12]\d{8}$/;
+                if (!this.PUB_COMP && !idRegx.test(value)) {
                     callback(new Error('營利事業聯絡人身分證字號格式錯誤'));
                 }
                 callback();
             };
             const checkR_B_ID = (rule, value, callback) => {
-                const idRegex = /^[A-Z][12]\d{8}$/;
-                if (!idRegex.text(value)) {
+                const idRegx = /^[A-Z][12]\d{8}$/;
+                if (!idRegx.test(value)) {
                     callback(new Error('承造負責人身分證字號格式錯誤'));
                 }
                 callback();
