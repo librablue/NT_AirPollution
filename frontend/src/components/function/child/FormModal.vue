@@ -1,5 +1,5 @@
 <template>
-	<vxe-modal title="申請案件明細" v-model="visible" width="80%" height="90%" :lock-scroll="false" esc-closable resize show-footer>
+	<vxe-modal title="申請案件明細" v-model="visible" width="80%" height="90%" :lock-scroll="false" esc-closable resize :show-footer="mode !== 'Read'">
 		<template #default>
 			<el-form inline>
 				<el-form-item label="管制編號">{{C_NO}}</el-form-item>
@@ -7,7 +7,7 @@
 				<el-form-item label="結算應繳金額">{{(form.S_AMT2 === null ? '未結算' : form.S_AMT2) | comma}}</el-form-item>
 			</el-form>
 			<el-tabs v-model="activeTab">
-				<el-tab-pane label="基本資料" name="1">
+				<el-tab-pane label="工地基本資料" name="1">
 					<el-form ref="tab1Form" :rules="tab1Rules" :model="form" label-width="auto">
 						<el-form-item label="管制編號">{{C_NO}}</el-form-item>
 						<el-form-item prop="TOWN_NO" label="鄉鎮分類">
@@ -65,7 +65,7 @@
 						</el-form-item>
 					</el-form>
 				</el-tab-pane>
-				<el-tab-pane label="營建資料" name="2">
+				<el-tab-pane label="營建業主基本資料" name="2">
 					<el-form ref="tab2Form" :rules="tab2Rules" :model="form" label-width="auto">
 						<div class="contact-group">
 							<div class="flex-row">
@@ -129,7 +129,7 @@
 						</div>
 					</el-form>
 				</el-tab-pane>
-				<el-tab-pane label="承造資料" name="3">
+				<el-tab-pane label="承(包)造單位基本資料" name="3">
 					<el-form ref="tab3Form" :rules="tab3Rules" :model="form" label-width="auto">
 						<div class="contact-group">
 							<div class="flex-row">

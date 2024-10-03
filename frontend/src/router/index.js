@@ -26,6 +26,11 @@ export default new Router({
 					component: (resolve) => require(['@/components/function/Form2'], resolve)
 				},
                 {
+					path: '/function/form3',
+					name: 'function_form3',
+					component: (resolve) => require(['@/components/function/Form3'], resolve)
+				},
+                {
 					path: '/function/news',
 					name: 'function_news',
 					component: (resolve) => require(['@/components/function/News'], resolve)

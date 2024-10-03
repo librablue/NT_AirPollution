@@ -113,7 +113,7 @@
 
     <el-dialog :title="mode === 'Add' ? '空污費申報' : selectRow.COMP_NAM" :visible.sync="dialogVisible" width="90%" :close-on-click-modal="false" @@close="dialogClose" v-cloak>
         <el-tabs v-model="activeTab">
-            <el-tab-pane label="基本資料" name="1" :disabled="selectRow.FormStatus <= 2">
+            <el-tab-pane label="工地基本資料" name="1" :disabled="selectRow.FormStatus <= 2">
                 <el-form ref="tab1Form" :rules="tab1Rules" :model="selectRow" label-width="auto" :disabled="selectRow.FormStatus >= 3">
                     <el-form-item prop="PUB_COMP" label="案件類型">
                         <el-select v-model="selectRow.PUB_COMP">
@@ -180,7 +180,7 @@
                     </el-form-item>
                 </el-form>
             </el-tab-pane>
-            <el-tab-pane label="營建資料" name="2" :disabled="selectRow.FormStatus <= 2">
+            <el-tab-pane label="營建業主基本資料" name="2" :disabled="selectRow.FormStatus <= 2">
                 <el-form ref="tab2Form" :rules="tab2Rules" :model="selectRow" label-width="auto" :disabled="selectRow.FormStatus >= 3">
                     <div style="margin-bottom:10px" v-if="selectRow.FormStatus < 3">
                         <label class="el-form-item__label">快速選取</label>
@@ -251,7 +251,7 @@
                     </div>
                 </el-form>
             </el-tab-pane>
-            <el-tab-pane label="承造資料" name="3" :disabled="selectRow.FormStatus <= 2">
+            <el-tab-pane label="承(包)造單位基本資料" name="3" :disabled="selectRow.FormStatus <= 2">
                 <el-form ref="tab3Form" :rules="tab3Rules" :model="selectRow" label-width="auto" :disabled="selectRow.FormStatus >= 3">
                     <div style="margin-bottom:10px" v-if="selectRow.FormStatus < 3">
                         <label class="el-form-item__label">快速選取</label>
@@ -408,22 +408,26 @@
                     <li>檔案格式PDF(小於100Mb)</li>
                 </ul>
                 <div class="attach-row">
-                    <div>
+                    <div style="min-width:380px">
                         <div class="title">首期申報附件</div>
-                        <el-upload v-if="selectRow.FormStatus <= 2" ref="upload1" drag action="@Url.Content("~/Apply/UploadFile")" :show-file-list="false" accept=".pdf" :on-progress="onUploading" :on-success="uploadSuccess1">
-                            <i class="el-icon-upload"></i>
-                            <div class="el-upload__text">將文件拖曳到此處，或<em>點擊上傳</em></div>
-                            <div class="el-upload__tip" slot="tip">只能上傳pdf文件</div>
-                        </el-upload>
+                        <template v-if="selectRow.FormStatus <= 2">
+                            <el-upload ref="upload1" drag action="@Url.Content("~/Apply/UploadFile")" :show-file-list="false" accept=".pdf" :on-progress="onUploading" :on-success="uploadSuccess1">
+                                <i class="el-icon-upload"></i>
+                                <div class="el-upload__text">將文件拖曳到此處，或<em>點擊上傳</em></div>
+                                <div class="el-upload__tip" slot="tip">只能上傳pdf文件</div>
+                            </el-upload>
+                        </template>
                         <a v-if="selectRow.FileName1" :href="`@Url.Content("~/Option/Download")?f=${selectRow.FileName1}&n=${selectRow.DisplayName1}`" class="link-download">{{selectRow.DisplayName1}}</a>
                     </div>
-                    <div>
-                        <div class="title">結算申報附件</div>
-                        <el-upload v-if="selectRow.CalcStatus <= 2" ref="upload2" drag action="@Url.Content("~/Apply/UploadFile")" :show-file-list="false" accept=".pdf" :on-progress="onUploading" :on-success="uploadSuccess2">
-                            <i class="el-icon-upload"></i>
-                            <div class="el-upload__text">將文件拖曳到此處，或<em>點擊上傳</em></div>
-                            <div class="el-upload__tip" slot="tip">只能上傳pdf文件</div>
-                        </el-upload>
+                    <div style="min-width:380px">
+                        <template v-if="selectRow.CalcStatus <= 2">
+                            <div class="title">結算申報附件</div>
+                            <el-upload ref="upload2" drag action="@Url.Content("~/Apply/UploadFile")" :show-file-list="false" accept=".pdf" :on-progress="onUploading" :on-success="uploadSuccess2">
+                                <i class="el-icon-upload"></i>
+                                <div class="el-upload__text">將文件拖曳到此處，或<em>點擊上傳</em></div>
+                                <div class="el-upload__tip" slot="tip">只能上傳pdf文件</div>
+                            </el-upload>
+                        </template>
                         <a v-if="selectRow.FileName2" :href="`@Url.Content("~/Option/Download")?f=${selectRow.FileName2}&n=${selectRow.DisplayName2}`" class="link-download">{{selectRow.DisplayName2}}</a>
                     </div>
                 </div>
@@ -454,7 +458,8 @@
         </el-tabs>
 
         <span slot="footer" class="dialog-footer">
-            <template v-if="mode === 'Add' || selectRow.FormStatus <= 2">
+            @*新增/初審通過前/初審通過後且結算通過前*@
+            <template v-if="mode === 'Add' || selectRow.FormStatus <= 2 || (selectRow.FormStatus > 2 && selectRow.CalcStatus <= 2)">
                 <el-button icon="el-icon-close" @@click="dialogVisible = false">取 消</el-button>
                 <el-button type="primary" icon="el-icon-arrow-left" :disabled="activeTab === '1'" @@click="goPrevTab">上一步</el-button>
                 <el-button type="primary" @@click="goNextTab">{{activeTab === '6' ? '儲存' : '下一步'}} <i class="el-icon-arrow-right el-icon--right"></i></el-button>
