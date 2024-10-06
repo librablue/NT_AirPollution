@@ -29,9 +29,6 @@
 <div id="app" class="container main">
     <div class="entry-wrap">
         <div class="aside">
-            <img class="w100p" src="@Url.Content("~/static/image/illu-calc.svg")" />
-        </div>
-        <div class="side-form">
             <h1>營建空污費試算</h1>
             <el-form class="round" ref="form" :rules="rules" :model="form" label-position="top">
                 <el-form-item prop="KIND_NO" label="工程類別">
@@ -105,21 +102,23 @@
                 <div class="bottom-btn-row">
                     <button type="button" class="btn-send btn-block" @@click="sendForm">試 算</button>
                 </div>
-                <ul class="calc-result" v-if="calcResult" v-cloak>
-                    <li>
-                        <div class="title">案件工程</div>
-                        <div class="content">第{{calcResult.Level}}級 {{getProjectCodeItem(form.KIND_NO).ID}}.{{getProjectCodeItem(form.KIND_NO).Name}}</div>
-                    </li>
-                    <li>
-                        <div class="title">營建空污費費率</div>
-                        <div class="content">{{calcResult.Rate}}</div>
-                    </li>
-                    <li>
-                        <div class="title">需繳納營建空污費</div>
-                        <div class="content">$ {{calcResult.TotalMoney | comma}} 元整(新台幣)</div>
-                    </li>
-                </ul>
             </el-form>
+        </div>
+        <div class="side-form">
+            <ul class="calc-result" v-if="calcResult" v-cloak>
+                <li>
+                    <div class="title">案件工程</div>
+                    <div class="content">第{{calcResult.Level}}級 {{getProjectCodeItem(form.KIND_NO).ID}}.{{getProjectCodeItem(form.KIND_NO).Name}}</div>
+                </li>
+                <li>
+                    <div class="title">營建空污費費率</div>
+                    <div class="content">{{calcResult.Rate}}</div>
+                </li>
+                <li>
+                    <div class="title">需繳納營建空污費</div>
+                    <div class="content">$ {{calcResult.TotalMoney | comma}} 元整(新台幣)</div>
+                </li>
+            </ul>
         </div>
     </div>
 </div>

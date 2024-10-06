@@ -40,6 +40,10 @@ input[type=number] {
   -moz-appearance: textfield;
 }
 
+input:disabled {
+  cursor: not-allowed;
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -743,6 +747,11 @@ h3 {
   margin: 10px 12px;
   border-radius: 6px;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+.form-wrap .form-item .btn-delete {
+  position: absolute;
+  top: 0;
+  right: 0;
 }
 .form-wrap .form-item .status {
   position: absolute;

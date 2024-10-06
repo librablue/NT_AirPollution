@@ -63,6 +63,7 @@
                 <div class="empty-text">查無任何申報資料</div>
             </div>
             <div class="form-item" v-for="(item, idx) in forms" :key="idx" v-cloak>
+                <el-button v-if="!item.C_NO" type="danger" class="btn-delete" size="small" icon="el-icon-delete" @@click="deleteForm(item)">刪 除</el-button>
                 <div class="status">案件類型: {{item.PUB_COMP ? '公共工程' : '私人工程'}}</div>
                 <ul class="info-list">
                     <li>
@@ -223,7 +224,7 @@
                             </el-form-item>
                             <el-form-item prop="S_B_BDATE" label="負責人生日">
                                 <div class="el-input">
-                                    <input type="text" class="el-input__inner datepicker" data-key="S_B_BDATE" v-model="selectRow.S_B_BDATE" readonly />
+                                    <input type="text" class="el-input__inner datepicker" data-key="S_B_BDATE" v-model="selectRow.S_B_BDATE" :disabled="selectRow.FormStatus >= 3" readonly />
                                 </div>
                             </el-form-item>
                         </div>
@@ -294,7 +295,7 @@
                             </el-form-item>
                             <el-form-item prop="R_B_BDATE" label="負責人生日">
                                 <div class="el-input">
-                                    <input type="text" class="el-input__inner datepicker" data-key="R_B_BDATE" v-model="selectRow.R_B_BDATE" readonly />
+                                    <input type="text" class="el-input__inner datepicker" data-key="R_B_BDATE" v-model="selectRow.R_B_BDATE" :disabled="selectRow.FormStatus >= 3" readonly />
                                 </div>
                             </el-form-item>
                         </div>
@@ -318,7 +319,7 @@
                 </el-form>
             </el-tab-pane>
             <el-tab-pane label="經費資料" name="4" :disabled="selectRow.FormStatus <= 2">
-                <el-form ref="tab4Form" :rules="tab4Rules" :model="selectRow" label-width="auto" :disabled="selectRow.FormStatus >= 3">
+                <el-form ref="tab4Form" :rules="tab4Rules" :model="selectRow" label-width="auto" :disabled="selectRow.CalcStatus > 2">
                     <div class="flex-row">
                         <el-form-item prop="MONEY" label="工程合約經費(元)">
                             <el-input type="number" v-model="selectRow.MONEY"></el-input>
@@ -376,24 +377,24 @@
                     <div class="flex-row">
                         <el-form-item prop="B_DATE" label="開始日期">
                             <div class="el-input">
-                                <input type="text" class="el-input__inner datepicker" data-key="B_DATE" v-model="selectRow.B_DATE" readonly />
+                                <input type="text" class="el-input__inner datepicker" data-key="B_DATE" v-model="selectRow.B_DATE" :disabled="selectRow.FormStatus > 2" readonly />
                             </div>
                         </el-form-item>
                         <el-form-item prop="E_DATE" label="結束日期">
                             <div class="el-input">
-                                <input type="text" class="el-input__inner datepicker" data-key="E_DATE" v-model="selectRow.E_DATE" readonly />
+                                <input type="text" class="el-input__inner datepicker" data-key="E_DATE" v-model="selectRow.E_DATE" :disabled="selectRow.CalcStatus > 2" readonly />
                             </div>
                         </el-form-item>
                         <el-form-item label="預計施工天數">{{totalDays}}</el-form-item>
                     </div>
                     <el-form-item label="規定繳費方式">
-                        <el-select v-model="selectRow.P_KIND">
+                        <el-select v-model="selectRow.P_KIND" :disabled="selectRow.FormStatus >= 3">
                             <el-option label="一次全繳" value="一次全繳"></el-option>
                             <el-option label="分兩次繳清" value="分兩次繳清"></el-option>
                         </el-select>
                     </el-form-item>
                     <el-form-item label="空汙防制措施計畫書">
-                        <el-select v-model="selectRow.REC_YN">
+                        <el-select v-model="selectRow.REC_YN" :disabled="selectRow.FormStatus >= 3">
                             <el-option label="有" value="有"></el-option>
                             <el-option label="無" value="無"></el-option>
                         </el-select>
@@ -420,7 +421,7 @@
                         <a v-if="selectRow.FileName1" :href="`@Url.Content("~/Option/Download")?f=${selectRow.FileName1}&n=${selectRow.DisplayName1}`" class="link-download">{{selectRow.DisplayName1}}</a>
                     </div>
                     <div style="min-width:380px">
-                        <template v-if="selectRow.CalcStatus <= 2">
+                        <template v-if="selectRow.FormStatus > 2 && selectRow.CalcStatus <= 2">
                             <div class="title">結算申報附件</div>
                             <el-upload ref="upload2" drag action="@Url.Content("~/Apply/UploadFile")" :show-file-list="false" accept=".pdf" :on-progress="onUploading" :on-success="uploadSuccess2">
                                 <i class="el-icon-upload"></i>

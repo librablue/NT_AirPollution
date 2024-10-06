@@ -384,6 +384,29 @@ namespace NT_AirPollution.Service
         }
 
         /// <summary>
+        /// 刪除申請單
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public bool DeleteForm(FormView form)
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                try
+                {
+                    cn.Delete(form);
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"DeleteForm: {ex.StackTrace}|{ex.Message}");
+                    throw new Exception("系統發生未預期錯誤");
+                }
+            }
+        }
+
+        /// <summary>
         /// 取得Payment By帳號
         /// </summary>
         /// <param name="paymentID"></param>

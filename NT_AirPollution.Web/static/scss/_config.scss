@@ -39,6 +39,10 @@ input[type='number'] {
 	-moz-appearance: textfield;
 }
 
+input:disabled  {
+    cursor: not-allowed;
+}
+
 .visually-hidden {
 	position: absolute;
 	width: 1px;

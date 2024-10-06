@@ -824,6 +824,25 @@
                     this.initDatePicker();
                 });
             },
+            deleteForm(row) {
+                if (!confirm('是否確認刪除?')) return;
+                const loading = this.$loading();
+                axios
+                    .post('/Apply/DeleteForm', row)
+                    .then(res => {
+                        loading.close();
+                        if (!res.data.Status) {
+                            alert(res.data.Message);
+                            return;
+                        }
+                        this.getForms();
+                    })
+                    .catch(err => {
+                        loading.close();
+                        alert('系統發生未預期錯誤');
+                        console.log(err);
+                    });
+            },
             getStopDays(row) {
                 if (!row.DOWN_DATE2 || !row.UP_DATE2) return '';
                 var date1 = new Date(row.DOWN_DATE2);

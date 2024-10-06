@@ -334,6 +334,11 @@ h3 {
 		margin: 10px 12px;
 		border-radius: 6px;
 		box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+        .btn-delete {
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
 		.status {
 			position: absolute;
 			top: 0;

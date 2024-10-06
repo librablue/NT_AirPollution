@@ -366,6 +366,34 @@ namespace NT_AirPollution.Web.Controllers
             }
         }
 
+        [HttpPost]
+        public JsonResult DeleteForm(FormView form)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    string firstError = ModelState.Values.SelectMany(o => o.Errors).First().ErrorMessage;
+                    throw new Exception(firstError);
+                }
+
+                var formInDB = _formService.GetFormByID(form.ID);
+                if (formInDB.ClientUserID != BaseService.CurrentUser.ID)
+                    throw new Exception("無法刪除他人申請單");
+
+                if(!string.IsNullOrEmpty(formInDB.C_NO))
+                    throw new Exception("申請單已審核無法刪除");
+
+                _formService.DeleteForm(form);
+
+                return Json(new AjaxResult { Status = true });
+
+            }
+            catch (Exception ex)
+            {
+                return Json(new AjaxResult { Status = false, Message = ex.Message });
+            }
+        }
 
         /// <summary>
         /// 上傳附件
