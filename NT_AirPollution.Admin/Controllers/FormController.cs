@@ -153,6 +153,34 @@ namespace NT_AirPollution.Admin.Controllers
         {
             try
             {
+                // 初審
+                if(BaseService.CurrentAdmin.RoleID == 1)
+                {
+                    if (form.FormStatus == FormStatus.通過待繳費)
+                        form.VerifyStage1 = VerifyStage.初審;
+                    else
+                        form.VerifyStage1 = null;
+
+                    if (form.CalcStatus == CalcStatus.通過待繳費)
+                        form.VerifyStage2 = VerifyStage.初審;
+                    else
+                        form.VerifyStage2 = null;
+                }
+
+                // 複審
+                if (BaseService.CurrentAdmin.RoleID == 2)
+                {
+                    if (form.FormStatus == FormStatus.通過待繳費)
+                        form.VerifyStage1 = VerifyStage.複審;
+                    else
+                        form.VerifyStage1 = VerifyStage.初審;
+
+                    if (form.CalcStatus == CalcStatus.通過待繳費)
+                        form.VerifyStage2 = VerifyStage.複審;
+                    else
+                        form.VerifyStage2 = VerifyStage.初審;
+                }
+
                 switch (form.FormStatus)
                 {
                     case FormStatus.待補件:

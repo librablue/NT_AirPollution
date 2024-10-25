@@ -547,6 +547,10 @@ namespace NT_AirPollution.Model.Domain
         /// </summary>
         public DateTime? VerifyDate1 { get; set; }
         /// <summary>
+        /// 0.未申請 1.申請中 2.初審 3.複審
+        /// </summary>
+        public VerifyStage? VerifyStage1 { get; set; }
+        /// <summary>
         /// 退件原因
         /// </summary>
         public string FailReason1 { get; set; }
@@ -562,6 +566,10 @@ namespace NT_AirPollution.Model.Domain
         /// 結算審核日期
         /// </summary>
         public DateTime? VerifyDate2 { get; set; }
+        /// <summary>
+        /// 0.未申請 1.申請中 2.初審 3.複審
+        /// </summary>
+        public VerifyStage? VerifyStage2 { get; set; }
         /// <summary>
         /// 結算退件原因
         /// </summary>

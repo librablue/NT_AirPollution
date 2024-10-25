@@ -79,6 +79,7 @@
     <Compile Include="Domain\StopWork.cs" />
     <Compile Include="Domain\VerifyLog.cs" />
     <Compile Include="Enum\CalcStatus.cs" />
+    <Compile Include="Enum\VerifyStage.cs" />
     <Compile Include="Enum\WorkStatus.cs" />
     <Compile Include="Enum\Commitment.cs" />
     <Compile Include="Enum\UserType.cs" />

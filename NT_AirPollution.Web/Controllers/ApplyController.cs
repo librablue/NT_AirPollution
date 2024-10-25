@@ -259,7 +259,9 @@ namespace NT_AirPollution.Web.Controllers
                 form.ClientUserID = BaseService.CurrentUser.ID;
                 form.FormStatus = FormStatus.未申請;
                 form.CalcStatus = CalcStatus.未申請;
-                
+                form.VerifyStage1 = VerifyStage.未申請;
+                form.VerifyStage2 = VerifyStage.未申請;
+
                 if (form.KIND_NO == "1" || form.KIND_NO == "2")
                 {
                     // 1、2類工程面積=建築面積
@@ -329,6 +331,8 @@ namespace NT_AirPollution.Web.Controllers
                 form.FailReason2 = formInDB.FailReason2;
                 form.FormStatus = formInDB.FormStatus;
                 form.CalcStatus = formInDB.CalcStatus;
+                form.VerifyStage1 = formInDB.VerifyStage1;
+                form.VerifyStage2 = formInDB.VerifyStage2;
                 // 可修改的欄位
                 form.TOWN_NA = allDists.First(o => o.Code == form.TOWN_NO).Name;
                 form.KIND = allProjectCode.First(o => o.ID == form.KIND_NO).Name;
@@ -455,6 +459,7 @@ namespace NT_AirPollution.Web.Controllers
 
                 formInDB.M_DATE = DateTime.Now;
                 formInDB.FormStatus = FormStatus.審理中;
+                formInDB.VerifyStage1 = VerifyStage.申請中;
                 _formService.UpdateForm(formInDB);
 
                 return Json(new AjaxResult { Status = true });
@@ -481,6 +486,7 @@ namespace NT_AirPollution.Web.Controllers
 
                 formInDB.AP_DATE1 = DateTime.Now.AddYears(-1911).ToString("yyyMMdd");
                 formInDB.CalcStatus = CalcStatus.審理中;
+                formInDB.VerifyStage2 = VerifyStage.申請中;
                 _formService.UpdateForm(formInDB);
 
                 return Json(new AjaxResult { Status = true });

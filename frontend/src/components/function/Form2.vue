@@ -85,7 +85,9 @@ export default {
 				C_NO: '',
 				ClientUserEmail: '',
 				FormStatus: -1,
-				CalcStatus: -1
+				CalcStatus: -1,
+                VerifyStage1: 3,
+                VerifyStage2: 1,
 			},
 			forms: [],
 			selectRow: {},
@@ -96,9 +98,13 @@ export default {
 	mounted() {
         if (this.currentUser.RoleID === 1) {
             this.filter.CalcStatus = 1;
+            this.filter.VerifyStage1 = 3;
+            this.filter.VerifyStage2 = 1;
         }
         else if (this.currentUser.RoleID === 2) {
             this.filter.CalcStatus = 3;
+            this.filter.VerifyStage1 = 3;
+            this.filter.VerifyStage2 = 2;
         }
         else if (this.currentUser.RoleID === 99) {
             this.filter.CalcStatus = -1;

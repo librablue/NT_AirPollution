@@ -87,7 +87,9 @@ export default {
 				C_NO: '',
 				ClientUserEmail: '',
 				FormStatus: -1,
-				CalcStatus: -1
+				CalcStatus: -1,
+                VerifyStage1: -1,
+                VerifyStage2: -1,
 			},
 			forms: [],
 			selectRow: {},

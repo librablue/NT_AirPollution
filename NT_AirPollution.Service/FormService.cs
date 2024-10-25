@@ -38,13 +38,17 @@ namespace NT_AirPollution.Service
                     WHERE (@C_NO='' OR C_NO=@C_NO)
                         AND (@CreateUserEmail='' OR CreateUserEmail=@CreateUserEmail)
                         AND (@FormStatus=-1 OR FormStatus=@FormStatus)
-                        AND (@CalcStatus=-1 OR CalcStatus=@CalcStatus)",
+                        AND (@CalcStatus=-1 OR CalcStatus=@CalcStatus)
+                        AND (@VerifyStage1=-1 OR VerifyStage1=@VerifyStage1)
+                        AND (@VerifyStage2=-1 OR VerifyStage2=@VerifyStage2)",
                     new
                     {
                         C_NO = filter.C_NO ?? "",
                         CreateUserEmail = filter.CreateUserEmail ?? "",
                         FormStatus = filter.FormStatus,
-                        CalcStatus = filter.CalcStatus
+                        CalcStatus = filter.CalcStatus,
+                        VerifyStage1 = filter.VerifyStage1,
+                        VerifyStage2 = filter.VerifyStage2
                     }).ToList();
 
                 foreach (var item in forms)
