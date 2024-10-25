@@ -62,43 +62,6 @@
             date: value => {
                 if (!value || value === '0001-01-01T00:00:00') return '';
                 return moment(value).format('YYYY-MM-DD');
-            },
-            formStatus: value => {
-                switch (value) {
-                    case 0:
-                        return '未送審';
-                    case 1:
-                        return '審理中';
-                    case 2:
-                        return '待補件';
-                    case 3:
-                        return '通過待繳費';
-                    case 4:
-                        return '繳費完成';
-                    case 5:
-                        return '免繳費';
-                    default:
-                        return '';
-                }
-            },
-            calcStatus: value => {
-                switch (value) {
-                    case 0:
-                        return '未申請';
-                    case 1:
-                        return '審理中';
-                    case 2:
-                        return '待補件';
-                    case 3:
-                        return '通過待繳費';
-                    case 4:
-                    case 5:
-                        return '通過待退費';
-                    case 6:
-                        return '繳退費完成';
-                    default:
-                        return '';
-                }
             }
         },
         data() {
@@ -337,6 +300,55 @@
                         this.selectRow[inst.input[0].dataset.key] = dateFormate;
                     }
                 });
+            },
+            getFormStatus(item) {
+                switch (item.FormStatus) {
+                    case 0:
+                        return '未送審';
+                    case 1:
+                        return '審理中';
+                    case 2:
+                        return '待補件';
+                    case 3:
+                        if (item.VerifyStage1 === 3)
+                            return '通過待繳費';
+                        else
+                            return '審理中';
+                    case 4:
+                        return '繳費完成';
+                    case 5:
+                        return '免繳費';
+                    default:
+                        return '';
+                }
+            },
+            getCalcStatus(item) {
+                switch (item.CalcStatus) {
+                    case 0:
+                        return '未申請';
+                    case 1:
+                        return '審理中';
+                    case 2:
+                        return '待補件';
+                    case 3:
+                        if (item.VerifyStage2 === 3)
+                            return '通過待繳費';
+                        else
+                            return '審理中';
+                    case 4:
+                    case 5:
+                        if (item.VerifyStage2 === 3)
+                            return '通過待退費';
+                        else
+                            return '審理中';
+                    case 6:
+                        if (item.VerifyStage2 === 3)
+                            return '繳退費完成';
+                        else
+                            return '審理中';
+                    default:
+                        return '';
+                }
             },
             getDistrict() {
                 axios.get('/Option/GetDistrict').then(res => {

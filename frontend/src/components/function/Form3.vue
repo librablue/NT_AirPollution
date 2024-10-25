@@ -13,9 +13,25 @@
 					<el-option v-for="item in formStatusList" :key="item.value" :label="item.label" :value="item.value"></el-option>
 				</el-select>
 			</el-form-item>
+            <el-form-item label="初/複審">
+				<el-select style="width: 140px" v-model="filter.VerifyStage1">
+                    <el-option label="全部" :value="-1"></el-option>
+                    <el-option label="送審中" :value="1"></el-option>
+					<el-option label="初審" :value="2"></el-option>
+					<el-option label="複審" :value="3"></el-option>
+				</el-select>
+			</el-form-item>
 			<el-form-item label="結算進度">
 				<el-select style="width: 180px" v-model="filter.CalcStatus">
 					<el-option v-for="item in calcStatusList" :key="item.value" :label="item.label" :value="item.value"></el-option>
+				</el-select>
+			</el-form-item>
+            <el-form-item label="初/複審">
+				<el-select style="width: 140px" v-model="filter.VerifyStage2">
+                    <el-option label="全部" :value="-1"></el-option>
+                    <el-option label="送審中" :value="1"></el-option>
+					<el-option label="初審" :value="2"></el-option>
+					<el-option label="複審" :value="3"></el-option>
 				</el-select>
 			</el-form-item>
 			<el-form-item>
@@ -33,8 +49,14 @@
 			<vxe-table-column field="FormStatus" title="審核進度" width="120" align="center" sortable fixed="left">
 				<template v-slot="{ row }">{{row.FormStatus | formStatus}}</template>
 			</vxe-table-column>
+            <vxe-table-column field="VerifyStage1" title="初/複審" width="120" align="center" sortable fixed="left">
+				<template v-slot="{ row }">{{row.VerifyStage1 | verifyStage}}</template>
+			</vxe-table-column>
 			<vxe-table-column field="CalcStatus" title="結算進度" width="120" align="center" sortable fixed="left">
 				<template v-slot="{ row }">{{row.CalcStatus | calcStatus}}</template>
+			</vxe-table-column>
+            <vxe-table-column field="VerifyStage2" title="初/複審" width="120" align="center" sortable fixed="left">
+				<template v-slot="{ row }">{{row.VerifyStage2 | verifyStage}}</template>
 			</vxe-table-column>
 			<vxe-table-column field="C_NO" title="管制編號" width="140" align="center" sortable fixed="left">
 				<template #default="{ row }">

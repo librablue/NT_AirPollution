@@ -153,41 +153,23 @@ namespace NT_AirPollution.Admin.Controllers
         {
             try
             {
-                // 初審
-                if(BaseService.CurrentAdmin.RoleID == 1)
-                {
-                    if (form.FormStatus == FormStatus.通過待繳費)
-                        form.VerifyStage1 = VerifyStage.初審;
-                    else
-                        form.VerifyStage1 = null;
-
-                    if (form.CalcStatus == CalcStatus.通過待繳費)
-                        form.VerifyStage2 = VerifyStage.初審;
-                    else
-                        form.VerifyStage2 = null;
-                }
-
-                // 複審
-                if (BaseService.CurrentAdmin.RoleID == 2)
-                {
-                    if (form.FormStatus == FormStatus.通過待繳費)
-                        form.VerifyStage1 = VerifyStage.複審;
-                    else
-                        form.VerifyStage1 = VerifyStage.初審;
-
-                    if (form.CalcStatus == CalcStatus.通過待繳費)
-                        form.VerifyStage2 = VerifyStage.複審;
-                    else
-                        form.VerifyStage2 = VerifyStage.初審;
-                }
-
                 switch (form.FormStatus)
                 {
                     case FormStatus.待補件:
+                        form.VerifyStage1 = VerifyStage.未申請;
                         break;
                     case FormStatus.通過待繳費:
                         // 審核日期
                         form.VerifyDate1 = DateTime.Now;
+
+                        // 初審
+                        if (BaseService.CurrentAdmin.RoleID == 1)
+                            form.VerifyStage1 = VerifyStage.初審;
+
+                        // 複審
+                        if (BaseService.CurrentAdmin.RoleID == 2)
+                            form.VerifyStage1 = VerifyStage.複審;
+
                         //// 申報日期
                         //DateTime applyDate = _formService.ChineseDateToWestDate(form.AP_DATE);
                         //// 如果沒輸入繳費期限，系統幫忙算
@@ -212,7 +194,7 @@ namespace NT_AirPollution.Admin.Controllers
                         form.S_AMT = result.TotalMoney;
 
                         // 10000以上才能分期
-                        if(form.S_AMT < 10000)
+                        if (form.S_AMT < 10000)
                         {
                             form.P_KIND = "一次全繳";
                         }
@@ -277,15 +259,23 @@ namespace NT_AirPollution.Admin.Controllers
                 switch (form.CalcStatus)
                 {
                     case CalcStatus.待補件:
+                        form.VerifyStage2 = VerifyStage.未申請;
                         break;
                     case CalcStatus.通過待繳費:
-                        form.VerifyDate2 = DateTime.Now;
-                        break;
                     case CalcStatus.通過待退費小於4000:
                     case CalcStatus.通過待退費大於4000:
-                        break;
                     case CalcStatus.繳退費完成:
-                        form.FIN_DATE = DateTime.Now.AddYears(-1911).ToString("yyyMMdd");
+                        form.VerifyDate2 = DateTime.Now;
+                        if(form.CalcStatus == CalcStatus.繳退費完成)
+                            form.FIN_DATE = DateTime.Now.AddYears(-1911).ToString("yyyMMdd");
+                        
+                        // 初審
+                        if (BaseService.CurrentAdmin.RoleID == 1)
+                            form.VerifyStage2 = VerifyStage.初審;
+
+                        // 複審
+                        if (BaseService.CurrentAdmin.RoleID == 2)
+                            form.VerifyStage2 = VerifyStage.複審;
                         break;
                 }
 

@@ -12,8 +12,8 @@ namespace NT_AirPollution.Model.Enum
     public enum VerifyStage
     {
         未申請 = 0,
-        申請中 = 1,
-        初審 = 1,
-        複審 = 2
+        送審中 = 1,
+        初審 = 2,
+        複審 = 3
     }
 }

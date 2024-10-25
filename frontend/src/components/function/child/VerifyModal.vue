@@ -69,7 +69,6 @@ export default {
 				];
 			} else if (this.currentUser.RoleID === 2) {
 				return [
-					{ value: 1, label: '審理中' },
 					{ value: 2, label: '待補件' },
 					{ value: 3, label: '通過待繳費' },
 					{ value: 4, label: '已繳費完成' },
@@ -92,15 +91,12 @@ export default {
 		calcStatusList() {
 			if (this.currentUser.RoleID === 1) {
 				return [
-					{ value: 0, label: '未申請' },
 					{ value: 1, label: '審理中' },
 					{ value: 2, label: '待補件' },
 					{ value: 3, label: '通過待繳費' }
 				];
 			} else if (this.currentUser.RoleID === 2) {
 				return [
-					{ value: 0, label: '未申請' },
-					{ value: 1, label: '審理中' },
 					{ value: 2, label: '待補件' },
 					{ value: 3, label: '通過待繳費' },
 					{ value: 4, label: '通過待退費(<4000)' },
@@ -126,8 +122,7 @@ export default {
 	methods: {
 		updateStatus() {
 			if (this.form.FormStatus > 2 && !this.form.C_NO) {
-				alert('若要通過審核，請先產生管制編號');
-				return;
+				return alert('若要通過審核，請先產生管制編號');
 			}
 			if (!confirm('是否確認繼續?')) return false;
 			const loading = this.$loading();

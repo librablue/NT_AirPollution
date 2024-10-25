@@ -459,7 +459,7 @@ namespace NT_AirPollution.Web.Controllers
 
                 formInDB.M_DATE = DateTime.Now;
                 formInDB.FormStatus = FormStatus.審理中;
-                formInDB.VerifyStage1 = VerifyStage.申請中;
+                formInDB.VerifyStage1 = VerifyStage.送審中;
                 _formService.UpdateForm(formInDB);
 
                 return Json(new AjaxResult { Status = true });
@@ -486,7 +486,7 @@ namespace NT_AirPollution.Web.Controllers
 
                 formInDB.AP_DATE1 = DateTime.Now.AddYears(-1911).ToString("yyyMMdd");
                 formInDB.CalcStatus = CalcStatus.審理中;
-                formInDB.VerifyStage2 = VerifyStage.申請中;
+                formInDB.VerifyStage2 = VerifyStage.送審中;
                 _formService.UpdateForm(formInDB);
 
                 return Json(new AjaxResult { Status = true });

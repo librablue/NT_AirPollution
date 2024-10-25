@@ -67,6 +67,20 @@ const form = {
                     return '';
             }
         },
+        verifyStage: value => {
+            switch (value) {
+                case 0:
+                    return '未送審';
+                case 1:
+                    return '申請中';
+                case 2:
+                    return '初審';
+                case 3:
+                    return '複審';
+                default:
+                    return '';
+            }
+        },
         area1(val) {
             switch (val) {
                 case 1:
