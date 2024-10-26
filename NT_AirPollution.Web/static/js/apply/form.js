@@ -793,6 +793,7 @@
                         }
 
                         this.getForms();
+                        this.selfCheckModalVisible = false;
                     })
                     .catch(err => {
                         alert('系統發生未預期錯誤');

@@ -30,8 +30,14 @@
 			<vxe-table-column field="FormStatus" title="審核進度" width="120" align="center" sortable fixed="left">
 				<template v-slot="{ row }">{{row.FormStatus | formStatus}}</template>
 			</vxe-table-column>
+            <vxe-table-column field="VerifyStage1" title="初/複審" width="120" align="center" sortable fixed="left">
+				<template v-slot="{ row }">{{row.VerifyStage1 | verifyStage}}</template>
+			</vxe-table-column>
 			<vxe-table-column field="CalcStatus" title="結算進度" width="120" align="center" sortable fixed="left">
 				<template v-slot="{ row }">{{row.CalcStatus | calcStatus}}</template>
+			</vxe-table-column>
+            <vxe-table-column field="VerifyStage2" title="初/複審" width="120" align="center" sortable fixed="left">
+				<template v-slot="{ row }">{{row.VerifyStage2 | verifyStage}}</template>
 			</vxe-table-column>
 			<vxe-table-column field="C_NO" title="管制編號" width="140" align="center" sortable fixed="left">
 				<template #default="{ row }">
@@ -101,7 +107,7 @@ export default {
             this.filter.VerifyStage1 = 1;
 		} else if (this.currentUser.RoleID === 2) {
 			this.filter.FormStatus = 3;
-            this.filter.VerifyStage1 = 2;
+            this.filter.VerifyStage1 = -1;
 		} else if (this.currentUser.RoleID === 99) {
 			this.filter.FormStatus = -1;
 		}
@@ -141,6 +147,9 @@ export default {
 		getForms() {
 			this.loading = true;
 			this.axios.post('api/Form/GetForms', this.filter).then(res => {
+                if(this.currentUser.RoleID === 2) {
+                    res.data = res.data.filter(item => item.VerifyStage1 >= 2);
+                }
 				this.forms = res.data;
 				this.loading = false;
 			});
