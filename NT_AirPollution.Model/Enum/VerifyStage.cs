@@ -13,7 +13,7 @@ namespace NT_AirPollution.Model.Enum
     {
         未申請 = 0,
         送審中 = 1,
-        初審 = 2,
-        複審 = 3
+        初審通過 = 2,
+        複審通過 = 3
     }
 }

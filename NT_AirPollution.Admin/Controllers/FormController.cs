@@ -164,11 +164,11 @@ namespace NT_AirPollution.Admin.Controllers
 
                         // 初審
                         if (BaseService.CurrentAdmin.RoleID == 1)
-                            form.VerifyStage1 = VerifyStage.初審;
+                            form.VerifyStage1 = VerifyStage.初審通過;
 
                         // 複審
                         if (BaseService.CurrentAdmin.RoleID == 2)
-                            form.VerifyStage1 = VerifyStage.複審;
+                            form.VerifyStage1 = VerifyStage.複審通過;
 
                         //// 申報日期
                         //DateTime applyDate = _formService.ChineseDateToWestDate(form.AP_DATE);
@@ -271,11 +271,11 @@ namespace NT_AirPollution.Admin.Controllers
                         
                         // 初審
                         if (BaseService.CurrentAdmin.RoleID == 1)
-                            form.VerifyStage2 = VerifyStage.初審;
+                            form.VerifyStage2 = VerifyStage.初審通過;
 
                         // 複審
                         if (BaseService.CurrentAdmin.RoleID == 2)
-                            form.VerifyStage2 = VerifyStage.複審;
+                            form.VerifyStage2 = VerifyStage.複審通過;
                         break;
                 }
 

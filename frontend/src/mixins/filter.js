@@ -74,9 +74,9 @@ const form = {
                 case 1:
                     return '申請中';
                 case 2:
-                    return '初審';
+                    return '初審通過';
                 case 3:
-                    return '複審';
+                    return '複審通過';
                 default:
                     return '';
             }
