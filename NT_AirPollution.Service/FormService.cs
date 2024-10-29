@@ -707,7 +707,7 @@ namespace NT_AirPollution.Service
                 {
                     Level = level,
                     Rate = rate,
-                    TotalMoney = Convert.ToInt32(Math.Round(basicNum * rate, 0, MidpointRounding.AwayFromZero))
+                    TotalMoney = Convert.ToDouble(Math.Round(basicNum * rate, 0, MidpointRounding.AwayFromZero))
                 };
 
                 return result;

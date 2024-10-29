@@ -164,7 +164,6 @@ export default {
 			this.selectRow = JSON.parse(JSON.stringify(row));
 			this.selectRow.FormStatus = 0;
 			this.selectRow.calcStatus = 0;
-			this.selectRow.Attachments.length = 0;
 			this.selectRow.StopWorks.length = 0;
 			const clearAry = ['SER_NO', 'AP_DATE', 'C_DATE', 'S_AMT', 'S_AMT2'];
 			for (const key of clearAry) {

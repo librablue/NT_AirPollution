@@ -609,9 +609,6 @@ export default {
 				this.attachmentInfo = Object.freeze(res.data);
 			});
 		},
-		filterAttachments(infoID) {
-			return this.form.Attachments.filter(item => item.InfoID === infoID);
-		},
 		getStopDays(row) {
 			if (!row.DOWN_DATE2 || !row.UP_DATE2) return '';
 			var date1 = new Date(row.DOWN_DATE2);
