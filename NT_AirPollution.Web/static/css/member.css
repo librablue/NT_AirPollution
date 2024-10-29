@@ -530,7 +530,7 @@ h3 {
 }
 .attach-tip-list li {
   margin-bottom: 10px;
-  color: #F4A261;
+  color: #f4a261;
 }
 
 .attach-row {
@@ -551,12 +551,15 @@ h3 {
 .link-download {
   display: block;
   margin: 20px 0;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
   text-align: center;
   color: #0f67b1;
   border: 1px dashed #0f67b1;
   padding: 6px 0;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .photo-wrap {
@@ -774,12 +777,17 @@ h3 {
   line-height: 28px;
 }
 .form-wrap .form-item .info-list .title {
+  width: 80px;
   color: #2a629a;
   font-weight: 700;
   margin-right: 10px;
 }
 .form-wrap .form-item .info-list .content {
   margin-right: 20px;
+  flex: 1;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 .form-wrap .form-item .info-list .link-row {
   display: flex;
