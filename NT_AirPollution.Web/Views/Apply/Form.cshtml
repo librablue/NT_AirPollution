@@ -418,7 +418,7 @@
                     <li>檔案格式PDF(小於100Mb)</li>
                 </ul>
                 <div class="attach-row">
-                    <div style="min-width:380px">
+                    <div style="width:360px">
                         <div class="title">首期申報附件</div>
                         <template v-if="selectRow.FormStatus <= 2">
                             <el-upload ref="upload1" drag action="@Url.Content("~/Apply/UploadFile")" :show-file-list="false" accept=".pdf" :on-progress="onUploading" :on-success="uploadSuccess1">
@@ -427,9 +427,9 @@
                                 <div class="el-upload__tip" slot="tip">只能上傳pdf文件</div>
                             </el-upload>
                         </template>
-                        <a v-if="selectRow.FileName1" :href="`@Url.Content("~/Option/Download")?f=${selectRow.FileName1}&n=${selectRow.DisplayName1}`" class="link-download">{{selectRow.DisplayName1}}</a>
+                        <a v-if="selectRow.FileName1" :href="`@Url.Content("~/Option/Download")?f=${selectRow.FileName1}&n=${selectRow.DisplayName1}`" class="link-download" :title="selectRow.DisplayName1">{{selectRow.DisplayName1}}</a>
                     </div>
-                    <div style="min-width:380px">
+                    <div style="width:360px">
                         <template v-if="selectRow.FormStatus > 2 && selectRow.CalcStatus <= 2">
                             <div class="title">結算申報附件</div>
                             <el-upload ref="upload2" drag action="@Url.Content("~/Apply/UploadFile")" :show-file-list="false" accept=".pdf" :on-progress="onUploading" :on-success="uploadSuccess2">
@@ -438,7 +438,7 @@
                                 <div class="el-upload__tip" slot="tip">只能上傳pdf文件</div>
                             </el-upload>
                         </template>
-                        <a v-if="selectRow.FileName2" :href="`@Url.Content("~/Option/Download")?f=${selectRow.FileName2}&n=${selectRow.DisplayName2}`" class="link-download">{{selectRow.DisplayName2}}</a>
+                        <a v-if="selectRow.FileName2" :href="`@Url.Content("~/Option/Download")?f=${selectRow.FileName2}&n=${selectRow.DisplayName2}`" class="link-download" :title="selectRow.DisplayName2">{{selectRow.DisplayName2}}</a>
                     </div>
                 </div>
             </el-tab-pane>

@@ -536,7 +536,7 @@ h3 {
 .attach-row {
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-start;
+  align-items: flex-end;
 }
 .attach-row > div {
   padding: 10px;
