@@ -42,12 +42,9 @@
 			<vxe-table-column field="C_NO" title="管制編號" width="140" align="center" sortable fixed="left">
 				<template #default="{ row }">
 					<span v-if="row.C_NO">{{row.C_NO}}-{{row.SER_NO}}</span>
-					<el-button v-else type="text" @click="createC_NO(row)">產生管制編號</el-button>
 				</template>
 			</vxe-table-column>
-			<vxe-table-column field="CreateUserEmail" title="Email" width="160" align="center" fixed="left">
-				<template #default="{ row }">{{ row.CreateUserEmail }}</template>
-			</vxe-table-column>
+			<vxe-table-column field="COMP_L" title="工程分級" width="100" align="center"></vxe-table-column>
 			<vxe-table-column field="S_C_NAM" title="業主聯絡人" width="120" align="center"></vxe-table-column>
 			<vxe-table-column field="S_C_TEL" title="業主聯絡電話" width="180" align="center"></vxe-table-column>
 			<vxe-table-column field="COMP_NAM" title="工程名稱" width="180" align="center"></vxe-table-column>
@@ -184,21 +181,6 @@ export default {
 		showVerifyModal(row) {
 			this.selectRow = row;
 			this.verifyModalVisible = true;
-		},
-		createC_NO(row) {
-			if (!confirm('管制編號產生後無法修改，是否確認繼續?')) return;
-			const loading = this.$loading();
-			this.axios
-				.post('api/Form/CreateC_NO', row)
-				.then(res => {
-					row.C_NO = res.data;
-					this.$message.success('管制編號已產生');
-					loading.close();
-				})
-				.catch(err => {
-					this.$message.error(err.response.data.ExceptionMessage);
-					loading.close();
-				});
 		}
 	}
 };

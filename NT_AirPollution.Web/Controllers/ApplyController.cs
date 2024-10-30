@@ -457,6 +457,10 @@ namespace NT_AirPollution.Web.Controllers
                 if (formInDB.ClientUserID != BaseService.CurrentUser.ID)
                     throw new Exception("無法修改他人申請單");
 
+                // 停工天數
+                double downDays = form.StopWorks.Sum(o => (o.UP_DATE2 - o.DOWN_DATE2).TotalDays + 1);
+                var result = _formService.CalcTotalMoney(form, downDays);
+                formInDB.COMP_L = result.Level;
                 formInDB.M_DATE = DateTime.Now;
                 formInDB.FormStatus = FormStatus.審理中;
                 formInDB.VerifyStage1 = VerifyStage.送審中;

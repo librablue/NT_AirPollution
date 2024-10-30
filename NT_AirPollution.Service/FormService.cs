@@ -663,6 +663,8 @@ namespace NT_AirPollution.Service
                 double basicNum = 0;
                 // 級數
                 int level = 0;
+                // 級數文字
+                string levelStr = "";
                 // 費率
                 double rate = 0;
                 switch (form.KIND_NO)
@@ -690,22 +692,25 @@ namespace NT_AirPollution.Service
                 if (basicNum >= projectCode.Level1)
                 {
                     level = 1;
+                    levelStr = "第一級";
                     rate = projectCode.Rate1;
                 }
                 else if (basicNum * projectCode.Rate3 >= projectCode.Level2)
                 {
                     level = 2;
+                    levelStr = "第二級";
                     rate = projectCode.Rate2;
                 }
                 else
                 {
                     level = 3;
+                    levelStr = "第三級";
                     rate = projectCode.Rate3;
                 }
 
                 var result = new CalcMoneyResult
                 {
-                    Level = level,
+                    Level = levelStr,
                     Rate = rate,
                     TotalMoney = Convert.ToDouble(Math.Round(basicNum * rate, 0, MidpointRounding.AwayFromZero))
                 };
