@@ -310,14 +310,11 @@
                     case 2:
                         return '待補件';
                     case 3:
-                        if (item.VerifyStage1 === 3)
-                            return '通過待繳費';
-                        else
-                            return '審理中';
+                        return item.VerifyStage1 === 3 ? '通過待繳費' : '審理中';
                     case 4:
-                        return '繳費完成';
+                        return item.VerifyStage1 === 3 ? '繳費完成' : '審理中';
                     case 5:
-                        return '免繳費';
+                        return item.VerifyStage1 === 3 ? '免繳費' : '審理中';
                     default:
                         return '';
                 }
@@ -331,21 +328,12 @@
                     case 2:
                         return '待補件';
                     case 3:
-                        if (item.VerifyStage2 === 3)
-                            return '通過待繳費';
-                        else
-                            return '審理中';
+                        return item.VerifyStage2 === 3 ? '通過待繳費' : '審理中';
                     case 4:
                     case 5:
-                        if (item.VerifyStage2 === 3)
-                            return '通過待退費';
-                        else
-                            return '審理中';
+                        return item.VerifyStage2 === 3 ? '通過待退費' : '審理中';
                     case 6:
-                        if (item.VerifyStage2 === 3)
-                            return '繳退費完成';
-                        else
-                            return '審理中';
+                        return item.VerifyStage2 === 3 ? '繳退費完成' : '審理中';
                     default:
                         return '';
                 }

@@ -63,7 +63,6 @@
                 <div class="empty-text">查無任何申報資料</div>
             </div>
             <div class="form-item" v-for="(item, idx) in forms" :key="idx" v-cloak>
-                <el-button v-if="!item.C_NO" type="danger" class="btn-delete" size="small" icon="el-icon-delete" @@click="deleteForm(item)">刪 除</el-button>
                 <div class="status">案件類型: {{item.PUB_COMP ? '公共工程' : '私人工程'}}</div>
                 <ul class="info-list">
                     <li>
@@ -76,41 +75,42 @@
                     </li>
                     <li>
                         <div class="title">營建業主：</div>
-                        <div class="content">{{item.S_NAME}}</div>
+                        <div class="content" :title="item.S_NAME">{{item.S_NAME}}</div>
                     </li>
                     <li>
                         <div class="title">工程名稱：</div>
-                        <div class="content">{{item.COMP_NAM}}</div>
+                        <div class="content" :title="item.COMP_NAM">{{item.COMP_NAM}}</div>
                     </li>
-                    <li>
+                    <li style="border-bottom: 1px dashed #FF9C73;">
                         <div class="title">申報狀態：</div>
                         <div class="content">{{getFormStatus(item)}}</div>
-                        <el-button size="mini" type="info" round v-if="item.FormStatus === 0 || item.FormStatus === 2" @@click="showSelfCheckModal(item)">提送審查</el-button>
                         <div class="link-row">
+                            <el-button size="mini" type="info" round v-if="item.FormStatus === 0 || item.FormStatus === 2" @@click="showSelfCheckModal(item)">提送審查</el-button>
                             <template v-if="item.VerifyStage1 === 3">
-                                <el-button size="mini" type="info" round v-if="item.FormStatus === 3" @@click="downloadPayment(item)">下載繳費單</el-button>
-                                <el-button size="mini" type="info" round v-if="item.FormStatus === 4" @@click="downloadPaymentProof(item)">下載繳費證明</el-button>
-                                <el-button size="mini" type="info" round v-if="item.FormStatus === 5" @@click="downloadFreeProof(item)">下載免徵證明</el-button>
+                                <el-button v-if="item.FormStatus === 3" type="info" size="mini" round @@click="downloadPayment(item)">下載繳費單</el-button>
+                                <el-button v-if="item.FormStatus === 4" type="info" size="mini" round @@click="downloadPaymentProof(item)">下載繳費證明</el-button>
+                                <el-button v-if="item.FormStatus === 5" type="info" size="mini" round @@click="downloadFreeProof(item)">下載免徵證明</el-button>
                             </template>
                         </div>
                     </li>
-                    <li>
+                    <li style="border-bottom: 1px dashed #FF9C73;">
                         <div class="title">結算進度：</div>
                         <div class="content">{{getCalcStatus(item)}}</div>
-                        <el-button size="mini" type="info" round v-if="item.FormStatus === 4 && (item.CalcStatus === 0 || item.CalcStatus === 2)" @@click="SendCalcStatus1(item)">提送審查</el-button>
                         <div class="link-row">
+                            <el-button size="mini" type="info" round v-if="item.FormStatus === 4 && (item.CalcStatus === 0 || item.CalcStatus === 2)" @@click="SendCalcStatus1(item)">提送審查</el-button>
                             <template v-if="item.VerifyStage2 === 3">
-                                <el-button size="mini" type="info" round v-if="item.CalcStatus === 3" @@click="downloadRePayment(item)">下載繳費單</el-button>
-                                @*<el-button size="mini" type="info" round v-if="item.CalcStatus === 3" @@click="showPaymentProofModal(item)">上傳繳費證明</el-button>*@
-                                <el-button size="mini" type="info" round v-if="item.CalcStatus === 5" @@click="showBankAccountModal(item)">退費帳戶</el-button>
-                                <el-button size="mini" type="info" round v-if="item.CalcStatus > 3" @@click="downloadClearProof(item)">下載結清證明</el-button>
+                                <el-button v-if="item.CalcStatus === 3" type="info" size="mini" round @@click="downloadRePayment(item)">下載繳費單</el-button>
+                                @*<el-button v-if="item.CalcStatus === 3" type="info" size="mini" round @@click="showPaymentProofModal(item)">上傳繳費證明</el-button>*@
+                                <el-button v-if="item.CalcStatus === 5" type="info" size="mini" round @@click="showBankAccountModal(item)">退費帳戶</el-button>
+                                <el-button v-if="item.CalcStatus > 3" type="info" size="mini" round @@click="downloadClearProof(item)">下載結清證明</el-button>
                             </template>
                         </div>
                     </li>
                 </ul>
                 <div class="bottom-btn-row">
-                    <el-button icon="el-icon-search" @@click="showModal(item)">檢視內容</el-button>
+                    <el-button icon="el-icon-search" @@click="showModal(item)">檢視</el-button>
                     <el-button type="success" icon="el-icon-copy-document" @@click="copyForm(item)">複製</el-button>
+                    <el-button v-if="!item.C_NO" type="danger" class="btn-delete" icon="el-icon-delete" @@click="deleteForm(item)">刪除</el-button>
                 </div>
             </div>
         </div>

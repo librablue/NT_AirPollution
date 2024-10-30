@@ -40,6 +40,10 @@ input[type=number] {
   -moz-appearance: textfield;
 }
 
+input:disabled {
+  cursor: not-allowed;
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -105,6 +109,20 @@ input[type=number] {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+}
+
+.ui-datepicker .ui-datepicker-header {
+  padding: 4px 30px;
+}
+
+.ui-datepicker-year {
+  width: 80px !important;
+  margin: 0 4px;
+}
+
+.ui-datepicker-month {
+  width: 80px !important;
+  margin: 0 4px;
 }
 
 .visually-hidden {
@@ -782,23 +800,9 @@ footer ul {
   line-height: 1.875rem;
   margin: 0 10px 10px;
 }
-footer ul .office {
-  font-weight: 700;
-}
-footer .bottom {
-  padding: 10px 15px;
-  border-top: 1px solid #ccc;
-  text-align: center;
-}
-footer .bottom ul {
-  margin: 0;
-}
-
-@media (min-width: 1200px) {
-  footer .contact-row {
-    justify-content: space-around;
-  }
-}/*# sourceMappingURL=index.css.map */
+footer ul li {
+  display: flex;
+  align-items: flex-start;
 }
 footer ul .office {
   font-weight: 700;
@@ -822,4 +826,4 @@ footer .bottom ul {
   footer .contact-row {
     justify-content: space-around;
   }
-}/*# sourceMappingURL=index.css.map */
+}/*# sourceMappingURL=index.css.map */ngURL=index.css.map */
