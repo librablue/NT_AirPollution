@@ -268,6 +268,11 @@ namespace NT_AirPollution.Web.Controllers
                     // 建蔽率=(建築面積AREA_B)/(基地面積AREA_F)*100%
                     form.PERC_B = Math.Round((double)(form.AREA_B / form.AREA_F * 100), 2, MidpointRounding.AwayFromZero);
                 }
+                else if (form.KIND_NO == "3")
+                {
+                    // 3類工程面積=總樓地板面積
+                    form.AREA = form.AREA2;
+                }
                 else
                 {
                     form.AREA_F = null;
@@ -344,6 +349,11 @@ namespace NT_AirPollution.Web.Controllers
                     form.AREA = form.AREA_B;
                     // 建蔽率=(建築面積AREA_B)/(基地面積AREA_F)*100%
                     form.PERC_B = Math.Round((double)(form.AREA_B / form.AREA_F * 100), 2, MidpointRounding.AwayFromZero);
+                }
+                else if (form.KIND_NO == "3")
+                {
+                    // 3類工程面積=總樓地板面積
+                    form.AREA = form.AREA2;
                 }
                 else
                 {

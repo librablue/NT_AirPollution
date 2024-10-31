@@ -732,6 +732,10 @@
                         if (this.selectRow.KIND_NO === '1' || this.selectRow.KIND_NO === '2') {
                             this.selectRow.AREA = this.selectRow.AREA_B;
                         }
+                        // 3類工程面積=總樓地板面積
+                        else if (this.selectRow.KIND_NO === '3') {
+                            this.selectRow.AREA = this.selectRow.AREA2;
+                        }
                         const loading = this.$loading();
                         axios
                             .post(`/Apply/${this.mode}Form`, this.selectRow)
