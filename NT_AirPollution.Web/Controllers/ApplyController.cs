@@ -253,7 +253,6 @@ namespace NT_AirPollution.Web.Controllers
                 form.SER_NO = 1;
                 form.TOWN_NA = allDists.First(o => o.Code == form.TOWN_NO).Name;
                 form.KIND = allProjectCode.First(o => o.ID == form.KIND_NO).Name;
-                form.AP_DATE = DateTime.Now.AddYears(-1911).ToString("yyyMMdd");
                 form.C_DATE = DateTime.Now;
                 form.M_DATE = DateTime.Now;
                 form.ClientUserID = BaseService.CurrentUser.ID;
@@ -461,6 +460,8 @@ namespace NT_AirPollution.Web.Controllers
                 double downDays = form.StopWorks.Sum(o => (o.UP_DATE2 - o.DOWN_DATE2).TotalDays + 1);
                 var result = _formService.CalcTotalMoney(form, downDays);
                 formInDB.COMP_L = result.Level;
+                // 提送審查的時間當作申報日期(計算繳費期限用)
+                formInDB.AP_DATE = DateTime.Now.AddYears(-1911).ToString("yyyMMdd");
                 formInDB.M_DATE = DateTime.Now;
                 formInDB.FormStatus = FormStatus.審理中;
                 formInDB.VerifyStage1 = VerifyStage.送審中;
