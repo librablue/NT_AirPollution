@@ -50,8 +50,8 @@
                 <el-form-item v-if="isShowAREA()" prop="AREA" :label="projectCodeText" v-cloak>
                     <el-input type="number" v-model="form.AREA"></el-input>
                 </el-form-item>
-                <el-form-item v-if="form.KIND_NO === '3'" prop="VOLUMEL" :label="projectCodeText" v-cloak>
-                    <el-input type="number" v-model="form.VOLUMEL"></el-input>
+                <el-form-item v-if="form.KIND_NO === '3'" prop="AREA2" :label="projectCodeText" v-cloak>
+                    <el-input type="number" v-model="form.AREA2"></el-input>
                 </el-form-item>
                 <el-form-item v-if="isShowMONEY()" prop="MONEY" label="工程合約經費(元)" v-cloak>
                     <el-input type="number" v-model="form.MONEY" placeholder="未稅金額(元)"></el-input>
@@ -96,9 +96,6 @@
                         <el-input type="number" v-model="form.VOLUMEL"></el-input>
                     </el-form-item>
                 </div>
-                <el-form-item label="預計施工天數">
-                    <div class="txt-day" v-cloak>{{totalDays}}</div>
-                </el-form-item>
                 <div class="bottom-btn-row">
                     <button type="button" class="btn-send btn-block" @@click="sendForm">試 算</button>
                 </div>
@@ -109,6 +106,10 @@
                 <li>
                     <div class="title">案件工程</div>
                     <div class="content">{{calcResult.Level}} {{getProjectCodeItem(form.KIND_NO).ID}}.{{getProjectCodeItem(form.KIND_NO).Name}}</div>
+                </li>
+                <li>
+                    <div class="title">施工工期</div>
+                    <div class="content">共 {{totalDays}} 日曆天</div>
                 </li>
                 <li>
                     <div class="title">營建空污費費率</div>

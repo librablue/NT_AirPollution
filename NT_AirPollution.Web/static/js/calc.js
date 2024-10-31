@@ -102,7 +102,8 @@
 					KIND_NO: [{ required: true, message: '請選擇工程類別', trigger: 'change' }],
 					MONEY: [{ validator: checkMoney }],
 					AREA: [{ validator: checkArea }],
-					VOLUMEL: [{ validator: checkVolumel }],
+                    AREA2: [{ required: true, message: '請輸入總樓地板面積', trigger: 'blur' }],
+					VOLUMEL: [{ required: true, message: '請輸入外運土石體積', trigger: 'blur' }],
 					B_DATE: [{ required: true, message: '請輸入開始日期', trigger: 'blur' }],
 					E_DATE: [{ validator: checkE_DATE }]
 				})

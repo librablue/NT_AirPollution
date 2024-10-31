@@ -65,13 +65,6 @@
             }
         },
         data() {
-            const checkVOLUMEL = (rule, value, callback) => {
-                const message = this.selectRow.KIND_NO === '3' ? '請輸入總樓地板面積' : '請輸入外運土石體積';
-                if (!value) {
-                    callback(new Error(message));
-                }
-                callback();
-            };
             const checkE_DATE = (rule, value, callback) => {
                 if (!value) {
                     callback(new Error('請輸入結束日期'));
@@ -218,9 +211,10 @@
                     MONEY: [{ required: true, message: '請輸入工程合約經費', trigger: 'blur' }],
                     // C_MONEY: [{ required: true, message: '請輸入工程環保經費', trigger: 'blur' }],
                     AREA: [{ required: true, message: '請輸入工程面積', trigger: 'blur' }],
+                    AREA2: [{ required: true, message: '請輸入總樓地板面積', trigger: 'blur' }],
                     AREA_F: [{ required: true, message: '請輸入基地面積', trigger: 'blur' }],
                     AREA_B: [{ required: true, message: '請輸入建築面積', trigger: 'blur' }],
-                    VOLUMEL: [{ validator: checkVOLUMEL, trigger: 'blur' }],
+                    VOLUMEL: [{ required: true, message: '請輸入外運土石體積', trigger: 'blur' }],
                     B_DATE: [{ required: true, message: '請輸入開始日期', trigger: 'blur' }],
                     E_DATE: [{ validator: checkE_DATE, trigger: 'blur' }]
                 }),

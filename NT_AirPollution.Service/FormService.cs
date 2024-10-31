@@ -681,6 +681,8 @@ namespace NT_AirPollution.Service
                         basicNum = form.AREA.Value * diffDays / 30;
                         break;
                     case "3":
+                        basicNum = form.AREA2.Value;
+                        break;
                     case "B":
                         basicNum = form.VOLUMEL.Value;
                         break;
