@@ -727,9 +727,13 @@ export default {
 					this.form.UTMN = point[1];
 					this.form.LATLNG = `${this.form.LAT},${this.form.LNG}`;
 					this.form.C_MONEY = this.calcC_MONEY;
-					// RC或SRC需填寫建築面積&基地面積，AREA跟AREA_B都是建築面積
+					// 1、2類工程面積=建築面積
 					if (this.form.KIND_NO === '1' || this.form.KIND_NO === '2') {
-						this.form.AREA_B = this.form.AREA;
+						this.form.AREA = this.form.AREA_B;
+					}
+					// 3類工程面積=總樓地板面積
+					else if (this.form.KIND_NO === '3') {
+						this.form.AREA = this.form.AREA2;
 					}
 					this.axios
 						.post(`api/Form/${this.mode}Form`, this.form)
