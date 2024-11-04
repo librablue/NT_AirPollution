@@ -5,9 +5,6 @@
 			<el-form-item label="管制編號">
 				<el-input style="width: 140px" v-model="filter.C_NO"></el-input>
 			</el-form-item>
-			<el-form-item label="Email">
-				<el-input v-model="filter.ClientUserEmail"></el-input>
-			</el-form-item>
 			<el-form-item label="結算進度">
 				<el-select style="width: 180px" v-model="filter.CalcStatus">
 					<el-option v-for="item in calcStatusList" :key="item.value" :label="item.label" :value="item.value"></el-option>
@@ -86,7 +83,6 @@ export default {
 			loading: false,
 			filter: {
 				C_NO: '',
-				ClientUserEmail: '',
 				FormStatus: -1,
 				CalcStatus: -1,
                 VerifyStage1: 3,

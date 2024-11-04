@@ -36,7 +36,6 @@ namespace NT_AirPollution.Service
                 var forms = cn.Query<FormView>(@"
                     SELECT * FROM Form
                     WHERE (@C_NO='' OR C_NO=@C_NO)
-                        AND (@CreateUserEmail='' OR CreateUserEmail=@CreateUserEmail)
                         AND (@FormStatus=-1 OR FormStatus=@FormStatus)
                         AND (@CalcStatus=-1 OR CalcStatus=@CalcStatus)
                         AND (@VerifyStage1=-1 OR VerifyStage1=@VerifyStage1)
@@ -44,7 +43,6 @@ namespace NT_AirPollution.Service
                     new
                     {
                         C_NO = filter.C_NO ?? "",
-                        CreateUserEmail = filter.CreateUserEmail ?? "",
                         FormStatus = filter.FormStatus,
                         CalcStatus = filter.CalcStatus,
                         VerifyStage1 = filter.VerifyStage1,
