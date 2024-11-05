@@ -181,115 +181,97 @@ namespace NT_AirPollution.Admin.Controllers
         {
             try
             {
-                switch (form.FormStatus)
+                // 初審
+                if (BaseService.CurrentAdmin.RoleID == 1)
                 {
-                    case FormStatus.待補件:
-                        form.VerifyStage1 = VerifyStage.未申請;
-                        break;
-                    case FormStatus.通過待繳費:
-                        // 審核日期
-                        form.VerifyDate1 = DateTime.Now;
-
-                        // 初審
-                        if (BaseService.CurrentAdmin.RoleID == 1)
+                    switch (form.FormStatus)
+                    {
+                        case FormStatus.待補件:
+                            form.VerifyStage1 = VerifyStage.未申請;
+                            break;
+                        case FormStatus.通過待繳費:
+                            // 審核日期
+                            form.VerifyDate1 = DateTime.Now;
                             form.VerifyStage1 = VerifyStage.初審通過;
+                            break;
+                    }
 
-                        // 複審
-                        if (BaseService.CurrentAdmin.RoleID == 2)
+                    switch (form.CalcStatus)
+                    {
+                        case CalcStatus.待補件:
+                            form.VerifyStage2 = VerifyStage.未申請;
+                            break;
+                        case CalcStatus.通過待繳費:
+                            form.VerifyDate2 = DateTime.Now;
+                            form.VerifyStage2 = VerifyStage.初審通過;
+                            break;
+                    }
+                }
+
+                // 複審
+                if (BaseService.CurrentAdmin.RoleID == 2)
+                {
+                    switch (form.FormStatus)
+                    {
+                        case FormStatus.待補件:
+                            form.VerifyStage1 = VerifyStage.未申請;
+                            break;
+                        case FormStatus.通過待繳費:
+                            // 審核日期
+                            form.VerifyDate1 = DateTime.Now;
                             form.VerifyStage1 = VerifyStage.複審通過;
 
-                        //// 申報日期
-                        //DateTime applyDate = _formService.ChineseDateToWestDate(form.AP_DATE);
-                        //// 如果沒輸入繳費期限，系統幫忙算
-                        //if (!form.PayEndDate1.HasValue)
-                        //{
-                        //    /*
-                        //     * 公共工程繳費期限 = 申請日期加30天or開工日(不能超過開工日)
-                        //     * 私人工程繳費期限 = 申請日期加3天or開工日(不能超過開工日)
-                        //     */
-                        //    if (form.PUB_COMP)
-                        //        form.PayEndDate1 = applyDate.AddDays(30);
-                        //    else
-                        //        form.PayEndDate1 = applyDate.AddDays(3);
+                            // 100元以下免繳
+                            if (form.S_AMT <= 100)
+                                form.FormStatus = FormStatus.免繳費;
+                            break;
+                    }
 
-                        //    if (applyDate > form.B_DATE2)
-                        //        form.PayEndDate1 = form.B_DATE2;
-                        //}
+                    // 3.4.5指令共用，用退費金額<4000判斷4，>=4000判斷5
+                    if (form.CalcStatus == CalcStatus.通過待繳費)
+                    {
+                        // 停工天數
+                        double downDays = form.StopWorks.Sum(o => (o.UP_DATE2 - o.DOWN_DATE2).TotalDays + 1);
+                        var result = _formService.CalcTotalMoney(form, downDays);
+                        form.S_AMT2 = result.TotalMoney;
+                        form.COMP_L = result.Level;
 
-                        // 100元以下免繳
-                        if (form.S_AMT <= 100)
-                            form.FormStatus = FormStatus.免繳費;
+                        if (form.S_AMT2 > form.S_AMT)
+                            form.CalcStatus = CalcStatus.通過待繳費;
+                        else if (form.P_AMT == form.S_AMT2)
+                            form.CalcStatus = CalcStatus.繳退費完成;
+                        else if (form.P_AMT - form.S_AMT2 < 4000)
+                            form.CalcStatus = CalcStatus.通過待退費小於4000;
+                        else if (form.P_AMT - form.S_AMT2 >= 4000)
+                            form.CalcStatus = CalcStatus.通過待退費大於4000;
+                    }
 
-                        break;
-                    case FormStatus.已繳費完成:
-                        break;
-                }
-
-                // 3.4.5指令共用，用退費金額<4000判斷4，>=4000判斷5
-                if (form.CalcStatus == CalcStatus.通過待繳費)
-                {
-                    //// 結算日期
-                    //DateTime applyDate = _formService.ChineseDateToWestDate(form.AP_DATE1);
-                    //// 如果沒輸入繳費期限，系統幫忙算
-                    //if (!form.PayEndDate2.HasValue)
-                    //{
-                    //    /*
-                    //     * 公共工程繳費期限 = 申請日期加30天or開工日(不能超過開工日)
-                    //     * 私人工程繳費期限 = 申請日期加3天or開工日(不能超過開工日)
-                    //     */
-                    //    if (form.PUB_COMP)
-                    //        form.PayEndDate2 = applyDate.AddDays(30);
-                    //    else
-                    //        form.PayEndDate2 = applyDate.AddDays(3);
-
-                    //    if (applyDate > form.B_DATE2)
-                    //        form.PayEndDate2 = form.B_DATE2;
-                    //}
-
-                    // 停工天數
-                    double downDays = form.StopWorks.Sum(o => (o.UP_DATE2 - o.DOWN_DATE2).TotalDays + 1);
-                    var result = _formService.CalcTotalMoney(form, downDays);
-                    form.S_AMT2 = result.TotalMoney;
-                    form.COMP_L = result.Level;
-
-                    if (form.S_AMT2 > form.S_AMT)
-                        form.CalcStatus = CalcStatus.通過待繳費;
-                    else if (form.P_AMT == form.S_AMT2)
-                        form.CalcStatus = CalcStatus.繳退費完成;
-                    else if (form.P_AMT - form.S_AMT2 < 4000)
-                        form.CalcStatus = CalcStatus.通過待退費小於4000;
-                    else if (form.P_AMT - form.S_AMT2 >= 4000)
-                        form.CalcStatus = CalcStatus.通過待退費大於4000;
-                }
-
-                switch (form.CalcStatus)
-                {
-                    case CalcStatus.待補件:
-                        form.VerifyStage2 = VerifyStage.未申請;
-                        break;
-                    case CalcStatus.通過待繳費:
-                    case CalcStatus.通過待退費小於4000:
-                    case CalcStatus.通過待退費大於4000:
-                    case CalcStatus.繳退費完成:
-                        form.VerifyDate2 = DateTime.Now;
-                        if(form.CalcStatus == CalcStatus.繳退費完成)
-                            form.FIN_DATE = DateTime.Now.AddYears(-1911).ToString("yyyMMdd");
-                        
-                        // 初審
-                        if (BaseService.CurrentAdmin.RoleID == 1)
-                            form.VerifyStage2 = VerifyStage.初審通過;
-
-                        // 複審
-                        if (BaseService.CurrentAdmin.RoleID == 2)
+                    switch (form.CalcStatus)
+                    {
+                        case CalcStatus.待補件:
+                            form.VerifyStage2 = VerifyStage.未申請;
+                            break;
+                        case CalcStatus.通過待繳費:
+                        case CalcStatus.通過待退費小於4000:
+                        case CalcStatus.通過待退費大於4000:
+                        case CalcStatus.繳退費完成:
+                            form.VerifyDate2 = DateTime.Now;
                             form.VerifyStage2 = VerifyStage.複審通過;
-                        break;
+
+                            if (form.CalcStatus == CalcStatus.繳退費完成)
+                                form.FIN_DATE = DateTime.Now.AddYears(-1911).ToString("yyyMMdd");
+                            break;
+                    }
                 }
+
 
                 // 更新 Access
                 _accessService.AddABUDF_B(form);
-
+                // 更新表單
                 _formService.UpdateForm(form);
+                // 寄送通知
                 _formService.SendStatusMail(form);
+
                 return true;
             }
             catch (Exception ex)

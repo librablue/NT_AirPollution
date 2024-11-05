@@ -98,10 +98,7 @@ export default {
 			} else if (this.currentUser.RoleID === 2) {
 				return [
 					{ value: 2, label: '待補件' },
-					{ value: 3, label: '通過待繳費' },
-					{ value: 4, label: '通過待退費(<4000)' },
-					{ value: 5, label: '通過待退費(>=4000)' },
-					{ value: 6, label: '繳退費完成' }
+					{ value: 3, label: '通過待繳費' }
 				];
 			} else if (this.currentUser.RoleID === 99) {
 				return [

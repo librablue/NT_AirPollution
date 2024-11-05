@@ -40,15 +40,6 @@
             <el-form-item label="工程名稱">
                 <el-input v-model="filter.COMP_NAM"></el-input>
             </el-form-item>
-            <el-form-item label="狀態">
-                <el-select style="width:140px" v-model="filter.Status">
-                    <el-option label="請選擇" :value="0"></el-option>
-                    <el-option label="審理中" :value="1"></el-option>
-                    <el-option label="待補件" :value="2"></el-option>
-                    <el-option label="通過待繳費" :value="3"></el-option>
-                    <el-option label="已繳費完成" :value="4"></el-option>
-                </el-select>
-            </el-form-item>
             <el-form-item>
                 <el-button type="primary" icon="el-icon-search" @@click="getForms">查 詢</el-button>
             </el-form-item>
@@ -82,7 +73,7 @@
                         <div class="content" :title="item.COMP_NAM">{{item.COMP_NAM}}</div>
                     </li>
                     <li style="border-bottom: 1px dashed #FF9C73;">
-                        <div class="title">申報狀態：</div>
+                        <div class="title">申報進度：</div>
                         <div class="content">{{getFormStatus(item)}}</div>
                         <div class="link-row">
                             <el-button size="mini" type="info" round v-if="item.FormStatus === 0 || item.FormStatus === 2" @@click="showSelfCheckModal(item)">提送審查</el-button>

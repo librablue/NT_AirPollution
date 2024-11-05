@@ -60,21 +60,26 @@ namespace NT_AirPollution.WriteOffTask
 
                         // 更新Access
                         _accessService.UpdateABUDF_1(abudf_1);
-                        // 取的SQL付款資訊
+                        // 取得SQL付款資訊
                         var paymentInDB = _formService.GetPaymentByPaymentID(account);
-                        // 取的申請單
+                        // 取得申請單
                         var form = _formService.GetFormByID(paymentInDB.FormID);
                         // 依期數判斷更新哪種狀態
                         if (paymentInDB.Term == "1")
                         {
                             form.FormStatus = FormStatus.已繳費完成;
+                            form.VerifyStage1 = VerifyStage.複審通過;
                             form.IsMailFormStatus = true;
                         }
                         if (paymentInDB.Term == "2")
                         {
                             form.CalcStatus = CalcStatus.繳退費完成;
+                            form.VerifyStage2 = VerifyStage.複審通過;
                             form.IsMailCalcStatus = true;
                         }
+
+                        form.FIN_DATE = DateTime.Now.AddYears(-1911).ToString("yyyMMdd");
+
                         // 更新申請單
                         _formService.UpdateForm(form);
                         // 寄信通知

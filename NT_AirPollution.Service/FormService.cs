@@ -129,7 +129,6 @@ namespace NT_AirPollution.Service
                         AND (@PUB_COMP IS NULL OR PUB_COMP=@PUB_COMP)
                         AND (@COMP_NAM='' OR COMP_NAM LIKE '%'+@COMP_NAM+'%')
                         AND (@CreateUserName='' OR CreateUserName=@CreateUserName)
-                        AND (@FormStatus=0 OR FormStatus=@FormStatus)
                         AND C_DATE BETWEEN @StartDate AND @EndDate
                         AND ClientUserID=@ClientUserID",
                     new
@@ -138,7 +137,6 @@ namespace NT_AirPollution.Service
                         PUB_COMP = filter.PUB_COMP,
                         COMP_NAM = filter.COMP_NAM ?? "",
                         CreateUserName = filter.CreateUserName ?? "",
-                        FormStatus = filter.FormStatus,
                         StartDate = filter.StartDate,
                         EndDate = filter.EndDate.ToString("yyyy-MM-dd 23:59:59"),
                         ClientUserID = filter.ClientUserID
