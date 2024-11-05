@@ -208,7 +208,7 @@
 							</el-form-item>
 							<el-form-item prop="PERC_B" label="建蔽率">{{calcPERC_B}}%</el-form-item>
 						</div>
-						<div v-else-if="selectRow.KIND_NO === '3'">
+						<div v-else-if="form.KIND_NO === '3'">
 							<el-form-item prop="AREA2" label="總樓地板面積(平方公尺)">
 								<el-input type="number" v-model="form.AREA2"></el-input>
 							</el-form-item>

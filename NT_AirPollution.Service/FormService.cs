@@ -1097,6 +1097,8 @@ namespace NT_AirPollution.Service
                 double totalPrice, currentPrice;
                 // 申報日期
                 DateTime applyDate = this.ChineseDateToWestDate(form.AP_DATE);
+                // 開工日期
+                DateTime B_BATE = this.ChineseDateToWestDate(form.B_DATE);
 
                 /*
                  * 公共工程繳費期限 = 申請日期加30天or開工日(不能超過開工日)
@@ -1107,8 +1109,8 @@ namespace NT_AirPollution.Service
                 if (string.IsNullOrEmpty(form.AP_DATE1))
                 {
                     payEndDate = applyDate.AddDays(form.PUB_COMP ? 30 : 3);
-                    if (applyDate > base.ChineseDateToWestDate(form.B_DATE))
-                        payEndDate = base.ChineseDateToWestDate(form.B_DATE);
+                    if (applyDate > B_BATE)
+                        payEndDate = B_BATE;
                 }
                 // 結算用審核通過日加3或30天
                 else
@@ -1138,15 +1140,15 @@ namespace NT_AirPollution.Service
                 // 填發日期(開工日或申報日)
                 DateTime pdate = this.ChineseDateToWestDate(form.AP_DATE);
                 // 如果申報日 > 開工日，取開工日
-                if (pdate > base.ChineseDateToWestDate(form.B_DATE))
-                    pdate = base.ChineseDateToWestDate(form.B_DATE);
+                if (pdate > B_BATE)
+                    pdate = B_BATE;
 
                 // 滯納金
                 double penalty = 0;
                 // 利息
                 double interest = 0;
-                // 遲繳天數
-                var delayDays = (DateTime.Now - payEndDate).Days;
+                // 遲繳天數(繳費期限 - 開工日期)
+                var delayDays = (payEndDate - B_BATE).Days;
                 if (delayDays < 0) delayDays = 0;
                 // 利率
                 double rate = 0;
@@ -1172,7 +1174,7 @@ namespace NT_AirPollution.Service
                     interest = Math.Round(currentPrice * rate / 100 / 365 * (delayDays - 30), 0, MidpointRounding.AwayFromZero);
                 }
 
-                double sumPrice = currentPrice + interest + penalty;
+                double sumPrice = Math.Round(currentPrice + interest + penalty, 0);
                 ABUDF_1 abudf_1 = _accessService.GetABUDF_1(form);
                 string transNo = ((abudf_1?.FLNO?.Length == 16) ? abudf_1?.FLNO?.Substring(10, 6) : "000000");
                 if (abudf_1 == null)
