@@ -124,7 +124,7 @@ namespace NT_AirPollution.Web.Controllers
                 }
 
                 // 驗證信
-                string template = ($@"{HostingEnvironment.ApplicationPhysicalPath}/App_Data/Template/VerifyCode.txt");
+                string template = ($@"{AppDomain.CurrentDomain.BaseDirectory}/App_Data/Template/VerifyCode.txt");
                 using (StreamReader sr = new StreamReader(template))
                 {
                     string content = sr.ReadToEnd();
@@ -215,7 +215,7 @@ namespace NT_AirPollution.Web.Controllers
                 }
 
                 // 驗證信
-                string template = ($@"{HostingEnvironment.ApplicationPhysicalPath}/App_Data/Template/VerifyCode.txt");
+                string template = ($@"{AppDomain.CurrentDomain.BaseDirectory}/App_Data/Template/VerifyCode.txt");
                 using (StreamReader sr = new StreamReader(template))
                 {
                     string content = sr.ReadToEnd();
