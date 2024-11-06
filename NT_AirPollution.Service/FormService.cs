@@ -1089,31 +1089,33 @@ namespace NT_AirPollution.Service
                 string tempFile = $@"{_paymentPath}\Download\{fileName}.xlsx";
                 string pdfFile = $@"{_paymentPath}\Download\{fileName}.pdf";
 
-                // 審核日期、繳費期限
-                DateTime verifyDate, payEndDate;
-                // 總金額、本次繳費金額
-                double totalPrice, currentPrice;
-                // 申報日期
-                DateTime applyDate = this.ChineseDateToWestDate(form.AP_DATE);
+                // 審核日期、繳費期限、申報日期
+                DateTime verifyDate, payEndDate, applyDate;
                 // 開工日期
                 DateTime B_BATE = this.ChineseDateToWestDate(form.B_DATE);
+                // 總金額、本次繳費金額
+                double totalPrice, currentPrice;
 
                 /*
                  * 公共工程繳費期限 = 申請日期加30天or開工日(不能超過開工日)
                  * 私人工程繳費期限 = 申請日期加3天or開工日(不能超過開工日)
                  */
 
-                // 初次申報
+                // 申報
                 if (string.IsNullOrEmpty(form.AP_DATE1))
                 {
+                    applyDate = this.ChineseDateToWestDate(form.AP_DATE);
                     payEndDate = applyDate.AddDays(form.PUB_COMP ? 30 : 3);
                     if (applyDate > B_BATE)
                         payEndDate = B_BATE;
                 }
-                // 結算用審核通過日加3或30天
+                // 結算
                 else
+                {
+                    applyDate = this.ChineseDateToWestDate(form.AP_DATE1);
+                    // 結算用審核通過日加3或30天
                     payEndDate = form.VerifyDate2.Value.AddDays(form.PUB_COMP ? 30 : 3);
-
+                }
 
                 // 如果繳費期限小於今天表示逾期申報取今天，限當日繳清
                 if (payEndDate < DateTime.Now)
@@ -1145,8 +1147,8 @@ namespace NT_AirPollution.Service
                 double penalty = 0;
                 // 利息
                 double interest = 0;
-                // 遲繳天數(繳費期限 - 開工日期)
-                var delayDays = (payEndDate - B_BATE).Days;
+                // 遲繳天數(申報日期 - 開工日期)
+                var delayDays = (applyDate - B_BATE).Days;
                 if (delayDays < 0) delayDays = 0;
                 // 利率
                 double rate = 0;
