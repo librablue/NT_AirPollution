@@ -1204,7 +1204,7 @@ namespace NT_AirPollution.Service
                 ABUDF_I abudf_I = new ABUDF_I();
                 abudf_I.C_NO = form.C_NO;
                 abudf_I.SER_NO = form.SER_NO;
-                abudf_I.P_TIME = string.IsNullOrEmpty(form.AP_DATE1) ? "1" : "2";
+                abudf_I.P_TIME = string.IsNullOrEmpty(form.AP_DATE1) ? "01" : "02";
                 if (delayDays > 0)
                 {
                     abudf_I.S_DATE = payEndDate.AddDays(1).AddYears(-1911).ToString("yyyMMdd");
@@ -1303,8 +1303,8 @@ namespace NT_AirPollution.Service
                 ws.Cell("K40").SetValue(barcodeMarketB);
                 ws.Cell("K41").SetValue($"*{barcodeMarketC}*");
                 ws.Cell("K42").SetValue(barcodeMarketC);
-                ws.Cell("K45").SetValue($"*1{barcodeMarketA.Substring(0, 6)}{barcodePostB}*");
-                ws.Cell("K46").SetValue($"1{barcodeMarketA.Substring(0, 6)}{barcodePostB}");
+                ws.Cell("K45").SetValue($"*{barcodePostB}*");
+                ws.Cell("K46").SetValue(barcodePostB);
                 ws.Cell("K47").SetValue($"*{barcodePostC}*");
                 ws.Cell("K48").SetValue(barcodePostC);
                 wb.SaveAs(tempFile);
