@@ -602,7 +602,7 @@ namespace NT_AirPollution.Service
                     {
                         C_NO = form.C_NO,
                         SER_NO = form.SER_NO,
-                        P_TIME = string.IsNullOrEmpty(form.AP_DATE1) ? "1" : "2"
+                        P_TIME = string.IsNullOrEmpty(form.AP_DATE1) ? "01" : "02"
                     });
 
                 return result;
