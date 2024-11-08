@@ -621,6 +621,16 @@ namespace NT_AirPollution.Service
             {
                 try
                 {
+                    // ABUDF_1關聯到ABUDF_I，所以要先刪除ABUDF_I
+                    cn.Execute(@"
+                        DELETE FROM ABUDF_I WHERE [C_NO]=? AND [SER_NO]=? AND [P_TIME]=?",
+                        new
+                        {
+                            C_NO = abudf_1.C_NO,
+                            SER_NO = abudf_1.SER_NO,
+                            P_TIME = abudf_1.P_TIME
+                        });
+
                     cn.Execute(@"DELETE FROM ABUDF_1 WHERE [FLNO]=?",
                         new { FLNO = abudf_1.FLNO });
 

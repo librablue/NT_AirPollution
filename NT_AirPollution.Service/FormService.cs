@@ -1182,7 +1182,7 @@ namespace NT_AirPollution.Service
                     abudf_1 = new ABUDF_1();
                     abudf_1.C_NO = form.C_NO;
                     abudf_1.SER_NO = form.SER_NO;
-                    abudf_1.P_TIME = string.IsNullOrEmpty(form.AP_DATE1) ? "1" : "2";
+                    abudf_1.P_TIME = string.IsNullOrEmpty(form.AP_DATE1) ? "01" : "02";
                     abudf_1.P_DATE = pdate.AddYears(-1911).ToString("yyyMMdd");
                     abudf_1.E_DATE = payEndDate.AddYears(-1911).ToString("yyyMMdd");
 
