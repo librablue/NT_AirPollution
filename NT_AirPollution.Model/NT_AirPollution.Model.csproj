@@ -41,7 +41,9 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -88,6 +90,7 @@
     <Compile Include="View\AdminUserFilterView.cs" />
     <Compile Include="View\CalcMoneyResult.cs" />
     <Compile Include="View\Downloads.cs" />
+    <Compile Include="View\PaymentInfo.cs" />
     <Compile Include="View\RoadFilter.cs" />
     <Compile Include="View\AirReport.cs" />
     <Compile Include="View\AirFilter.cs" />
