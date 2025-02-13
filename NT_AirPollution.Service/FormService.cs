@@ -1093,21 +1093,57 @@ namespace NT_AirPollution.Service
                 DateTime verifyDate, payEndDate, applyDate;
                 // 開工日期
                 DateTime B_BATE = this.ChineseDateToWestDate(form.B_DATE);
-                // 總金額、本次繳費金額
-                double totalPrice, currentPrice;
+                // 今天日期
+                DateTime today = Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd"));
+                // 總金額、本次繳費金額、滯納金、利息
+                double totalPrice, currentPrice, penalty, interest;
+                // 遲繳天數
+                int delayDays;
 
                 /*
-                 * 公共工程繳費期限 = 申請日期加30天or開工日(不能超過開工日)
-                 * 私人工程繳費期限 = 申請日期加3天or開工日(不能超過開工日)
+                 * 公共工程繳費期限 = 30天
+                 * 私人工程繳費期限 = 3天
+                 * 審核通過日在開工日前，那免滯納金就是從開工日開始算3天或30天
+                 * 開工後申報，皆無免滯納金優惠，無關審核通過日期，皆由開工日隔天致繳費當天來算滯納金&利息
                  */
 
                 // 申報
                 if (string.IsNullOrEmpty(form.AP_DATE1))
                 {
                     applyDate = this.ChineseDateToWestDate(form.AP_DATE);
-                    payEndDate = applyDate.AddDays(form.PUB_COMP ? 30 : 3);
-                    if (applyDate > B_BATE)
-                        payEndDate = B_BATE;
+                    verifyDate = form.VerifyDate1.Value;
+                    #region 計算繳費期限
+                    // 申報日 <= 開工日
+                    if (applyDate <= B_BATE)
+                    {
+                        // 審核日 <= 開工日
+                        if (verifyDate <= B_BATE)
+                        {
+                            // 開工日加 3 or 30 天
+                            payEndDate = B_BATE.AddDays(form.PUB_COMP ? 30 : 3);
+                        }
+                        else
+                        {
+                            // 審核日加 3 or 30 天
+                            payEndDate = verifyDate.AddDays(form.PUB_COMP ? 30 : 3);
+                        }
+                    }
+                    else
+                    {
+                        // 繳費期限 = 審核日
+                        payEndDate = verifyDate;
+                    }
+                    #endregion
+
+                    #region 計算遲繳天數
+                    // 如果今天 > 繳款期限
+                    if(today > payEndDate)
+                    {
+                        // 延遲天數 = 今天 - 開工日
+                        delayDays = (today - B_BATE).Days;
+                    }
+                    
+                    #endregion
                 }
                 // 結算
                 else
@@ -1116,10 +1152,6 @@ namespace NT_AirPollution.Service
                     // 結算用審核通過日加3或30天
                     payEndDate = form.VerifyDate2.Value.AddDays(form.PUB_COMP ? 30 : 3);
                 }
-
-                // 如果繳費期限小於今天表示逾期申報取今天，限當日繳清
-                if (payEndDate < DateTime.Now)
-                    payEndDate = Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd 23:59:59"));
 
 
                 // 判斷結算日期
@@ -1143,36 +1175,33 @@ namespace NT_AirPollution.Service
                 if (pdate > B_BATE)
                     pdate = B_BATE;
 
-                // 滯納金
-                double penalty = 0;
-                // 利息
-                double interest = 0;
-                // 遲繳天數(申報日期 - 開工日期)
-                var delayDays = (applyDate - B_BATE).Days;
-                if (delayDays < 0) delayDays = 0;
-                // 利率
-                double rate = 0;
-                var interestRate = _optionService.GetRates().FirstOrDefault();
-                if (interestRate != null)
-                    rate = interestRate.Rate;
+                
+                //// 遲繳天數(申報日期 - 開工日期)
+                //var delayDays = (applyDate - B_BATE).Days;
+                //if (delayDays < 0) delayDays = 0;
+                //// 利率
+                //double rate = 0;
+                //var interestRate = _optionService.GetRates().FirstOrDefault();
+                //if (interestRate != null)
+                //    rate = interestRate.Rate;
 
-                if (delayDays <= 30)
-                {
-                    // 滯納金－每逾一日按滯納之金額加徵百分之○．五滯納金
-                    penalty = Math.Round(currentPrice * 0.005 * delayDays, 0, MidpointRounding.AwayFromZero);
-                    // 30天內只算滯納金
-                    interest = 0;
-                }
-                else
-                {
-                    // 30天內只算滯納金
-                    // 滯納金－每逾一日按滯納之金額加徵百分之○．五滯納金
-                    penalty = Math.Round(currentPrice * 0.005 * 30, 0, MidpointRounding.AwayFromZero);
+                //if (delayDays <= 30)
+                //{
+                //    // 滯納金－每逾一日按滯納之金額加徵百分之○．五滯納金
+                //    penalty = Math.Round(currentPrice * 0.005 * delayDays, 0, MidpointRounding.AwayFromZero);
+                //    // 30天內只算滯納金
+                //    interest = 0;
+                //}
+                //else
+                //{
+                //    // 30天內只算滯納金
+                //    // 滯納金－每逾一日按滯納之金額加徵百分之○．五滯納金
+                //    penalty = Math.Round(currentPrice * 0.005 * 30, 0, MidpointRounding.AwayFromZero);
 
-                    // 30天後算利息
-                    // 利息－依繳納當日郵政儲金匯業局一年期定期存款固定利率按日加計
-                    interest = Math.Round(currentPrice * rate / 100 / 365 * (delayDays - 30), 0, MidpointRounding.AwayFromZero);
-                }
+                //    // 30天後算利息
+                //    // 利息－依繳納當日郵政儲金匯業局一年期定期存款固定利率按日加計
+                //    interest = Math.Round(currentPrice * rate / 100 / 365 * (delayDays - 30), 0, MidpointRounding.AwayFromZero);
+                //}
 
                 double sumPrice = Math.Round(currentPrice + interest + penalty, 0);
                 ABUDF_1 abudf_1 = _accessService.GetABUDF_1(form);
@@ -1506,11 +1535,11 @@ namespace NT_AirPollution.Service
                 doc.Range.Replace("@B_SERNO", form.B_SERNO);
                 doc.Range.Replace("@S_AMT", form.S_AMT.Value.ToString("N0"));
                 var payment = form.Payments.FirstOrDefault(o => o.Term == "1");
-                if(payment.Penalty > 0)
+                if (payment.Penalty > 0)
                     doc.Range.Replace("@Penalty", $"(含滯納金{payment.Penalty}元)");
                 else
                     doc.Range.Replace("@Penalty", "");
-                
+
                 doc.Range.Replace("@A_DATE", payment.PayDate.Value.ToString("yyyy-MM-dd"));
                 doc.Range.Replace("@Year", DateTime.Now.AddYears(-1911).ToString("yyy"));
                 doc.Range.Replace("@Month", DateTime.Now.AddYears(-1911).ToString("MM"));
