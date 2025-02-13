@@ -1494,7 +1494,7 @@ namespace NT_AirPollution.Service
             // 深拷貝
             PaymentInfo result = base.DeepCopy<PaymentInfo>(info);
             // 繳費期限
-            int payDays = result.IsPublic ? 30 : 3;
+            int payDays = result.IsPublic ? 30 - 1 : 3 - 1;
             // 今天日期
             DateTime today = DateTime.Now;
             var interestRate = _optionService.GetRates().FirstOrDefault();
