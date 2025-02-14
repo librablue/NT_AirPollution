@@ -12,7 +12,7 @@ namespace NT_AirPollution.Model.Domain
     {
         [Key]
         public long ID { get; set; }
-        public int YearMth { get; set; }
+        public DateTime Date { get; set; }
         public double Rate { get; set; }
     }
 }

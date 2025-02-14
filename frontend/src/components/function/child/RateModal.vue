@@ -2,8 +2,8 @@
 	<vxe-modal class="edit-modal" title="編輯視窗" v-model="visible" width="300px" :lock-scroll="false" esc-closable resize show-footer>
 		<template #default>
 			<el-form ref="form" :model="rate" :rules="rules" size="small" label-position="top">
-				<el-form-item prop="YearMth" label="年月">
-					<el-date-picker v-model="rate.YearMth" type="month" format="yyyyMM" value-format="yyyyMM" placeholder="年月"></el-date-picker>
+				<el-form-item prop="Date" label="日期">
+					<el-date-picker v-model="rate.Date" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
 				</el-form-item>
                 <el-form-item prop="Rate" label="利率(%)">
 					<el-input v-model="rate.Rate"></el-input>
@@ -29,11 +29,11 @@ export default {
 		return {
 			visible: false,
 			rate: {
-				YearMth: '',
+				Date: '',
 				Rate: null
 			},
 			rules: {
-				YearMth: [{ required: true, message: '請選擇年月', trigger: 'blur' }],
+				Date: [{ required: true, message: '請選擇日期', trigger: 'blur' }],
 				Rate: [{ required: true, message: '請輸入利率', trigger: 'blur' }]
 			}
 		};

@@ -61,7 +61,7 @@ namespace NT_AirPollution.Service
             using (var cn = new SqlConnection(connStr))
             {
                 var result = cn.GetAll<InterestRate>()
-                    .OrderByDescending(o => o.YearMth).ToList();
+                    .OrderByDescending(o => o.Date).ToList();
                 return result;
             }
         }
