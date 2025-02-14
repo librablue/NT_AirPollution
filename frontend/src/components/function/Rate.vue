@@ -13,14 +13,16 @@
 				</el-button>
 			</el-form-item>
 		</el-form>
-		<div style="width:280px">
+		<div style="width:320px">
             <vxe-table :data="rates" :loading="loading" size="small" max-height="640px" show-overflow border resizable auto-resize :sort-config="{ trigger: 'cell', defaultSort: { field: 'CreateDate', order: 'desc' }}">
 			<vxe-table-column title="功能" align="center" width="60" fixed="left">
 				<template v-slot="{ row }">
 					<el-button type="danger" size="mini" icon="el-icon-delete" circle @click="deleteNews(row)"></el-button>
 				</template>
 			</vxe-table-column>
-			<vxe-table-column field="YearMth" title="年月" align="center" width="100"></vxe-table-column>
+			<vxe-table-column field="Date" title="日期" align="center" width="140">
+                <template v-slot="{ row }">{{row.Date | date}}</template>
+            </vxe-table-column>
 			<vxe-table-column field="Rate" title="利率(%)" align="right" width="100"></vxe-table-column>
 		</vxe-table>
         </div>
@@ -29,9 +31,11 @@
 </template>
 
 <script>
+import { dateTime } from '@/mixins/filter';
 import RateModal from '@/components/function/child/RateModal';
 export default {
 	name: 'Rate',
+    mixins: [dateTime],
 	components: { RateModal },
 	data() {
 		return {
