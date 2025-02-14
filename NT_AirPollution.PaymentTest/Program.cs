@@ -91,7 +91,7 @@ namespace NT_AirPollution.PaymentTest
             int payDays = result.IsPublic ? 30 - 1 : 3 - 1;
             // 今天日期
             DateTime today = info.Today;
-            result.Rate = 2;
+            result.Rate = 1.6;
 
             // 申報日 <= 開工日
             if (result.ApplyDate <= result.StartDate)
