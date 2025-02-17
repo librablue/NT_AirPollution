@@ -340,7 +340,6 @@ namespace NT_AirPollution.Web.Controllers
                 // 可修改的欄位
                 form.TOWN_NA = allDists.First(o => o.Code == form.TOWN_NO).Name;
                 form.KIND = allProjectCode.First(o => o.ID == form.KIND_NO).Name;
-                form.AP_DATE = formInDB.AP_DATE;
                 form.M_DATE = DateTime.Now;
 
                 if (form.KIND_NO == "1" || form.KIND_NO == "2")
