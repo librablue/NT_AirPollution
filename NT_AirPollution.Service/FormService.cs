@@ -1089,92 +1089,44 @@ namespace NT_AirPollution.Service
                 string tempFile = $@"{_paymentPath}\Download\{fileName}.xlsx";
                 string pdfFile = $@"{_paymentPath}\Download\{fileName}.pdf";
 
-                // 審核日期、繳費期限、申報日期
-                DateTime verifyDate, payEndDate, applyDate;
-                // 開工日期
-                DateTime B_BATE = this.ChineseDateToWestDate(form.B_DATE);
-                // 總金額、本次繳費金額
-                double totalPrice, currentPrice;
-
-                /*
-                 * 公共工程繳費期限 = 申請日期加30天or開工日(不能超過開工日)
-                 * 私人工程繳費期限 = 申請日期加3天or開工日(不能超過開工日)
-                 */
+                PaymentInfo info = new PaymentInfo
+                {
+                    IsPublic = form.PUB_COMP,
+                    StartDate = this.ChineseDateToWestDate(form.B_DATE),
+                };
 
                 // 申報
                 if (string.IsNullOrEmpty(form.AP_DATE1))
                 {
-                    applyDate = this.ChineseDateToWestDate(form.AP_DATE);
-                    payEndDate = applyDate.AddDays(form.PUB_COMP ? 30 : 3);
-                    if (applyDate > B_BATE)
-                        payEndDate = B_BATE;
+                    info.ApplyDate = this.ChineseDateToWestDate(form.AP_DATE);
+                    info.VerifyDate = form.VerifyDate1.Value;
+                    info.TotalPrice = form.S_AMT.Value;
+                    info.CurrentPrice = form.P_AMT.Value;
                 }
                 // 結算
                 else
                 {
-                    applyDate = this.ChineseDateToWestDate(form.AP_DATE1);
+                    info.ApplyDate = this.ChineseDateToWestDate(form.AP_DATE1);
+                    info.VerifyDate = form.VerifyDate2.Value;
+                    info.TotalPrice = form.S_AMT2.Value;
+                    info.CurrentPrice = form.S_AMT2.Value - form.P_AMT.Value;
                     // 結算用審核通過日加3或30天
-                    payEndDate = form.VerifyDate2.Value.AddDays(form.PUB_COMP ? 30 : 3);
+                    //payEndDate = form.VerifyDate2.Value.AddDays(form.PUB_COMP ? 30 : 3);
                 }
 
-                // 如果繳費期限小於今天表示逾期申報取今天，限當日繳清
-                if (payEndDate < DateTime.Now)
-                    payEndDate = Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd 23:59:59"));
-
-
-                // 判斷結算日期
-                if (string.IsNullOrEmpty(form.AP_DATE1))
-                {
-                    verifyDate = form.VerifyDate1.Value;
-                    totalPrice = form.S_AMT.Value;
-                    currentPrice = form.P_AMT.Value;
-                }
-                else
-                {
-                    verifyDate = form.VerifyDate2.Value;
-                    totalPrice = form.S_AMT2.Value;
-                    currentPrice = form.S_AMT2.Value - form.P_AMT.Value;
-                }
+                // 計算繳費資訊
+                var res = CalcPayment(info);
 
 
                 // 填發日期(開工日或申報日)
                 DateTime pdate = this.ChineseDateToWestDate(form.AP_DATE);
+                DateTime B_BATE = this.ChineseDateToWestDate(form.B_DATE);
                 // 如果申報日 > 開工日，取開工日
                 if (pdate > B_BATE)
                     pdate = B_BATE;
 
-                // 滯納金
-                double penalty = 0;
-                // 利息
-                double interest = 0;
-                // 遲繳天數(申報日期 - 開工日期)
-                var delayDays = (applyDate - B_BATE).Days;
-                if (delayDays < 0) delayDays = 0;
-                // 利率
-                double rate = 0;
-                var interestRate = _optionService.GetRates().FirstOrDefault();
-                if (interestRate != null)
-                    rate = interestRate.Rate;
 
-                if (delayDays <= 30)
-                {
-                    // 滯納金－每逾一日按滯納之金額加徵百分之○．五滯納金
-                    penalty = Math.Round(currentPrice * 0.005 * delayDays, 0, MidpointRounding.AwayFromZero);
-                    // 30天內只算滯納金
-                    interest = 0;
-                }
-                else
-                {
-                    // 30天內只算滯納金
-                    // 滯納金－每逾一日按滯納之金額加徵百分之○．五滯納金
-                    penalty = Math.Round(currentPrice * 0.005 * 30, 0, MidpointRounding.AwayFromZero);
-
-                    // 30天後算利息
-                    // 利息－依繳納當日郵政儲金匯業局一年期定期存款固定利率按日加計
-                    interest = Math.Round(currentPrice * rate / 100 / 365 * (delayDays - 30), 0, MidpointRounding.AwayFromZero);
-                }
-
-                double sumPrice = Math.Round(currentPrice + interest + penalty, 0);
+                double sumPrice = Math.Round(res.CurrentPrice + res.Interest + res.Penalty, 0);
                 ABUDF_1 abudf_1 = _accessService.GetABUDF_1(form);
                 string transNo = ((abudf_1?.FLNO?.Length == 16) ? abudf_1?.FLNO?.Substring(10, 6) : "000000");
                 if (abudf_1 == null)
@@ -1184,7 +1136,7 @@ namespace NT_AirPollution.Service
                     abudf_1.SER_NO = form.SER_NO;
                     abudf_1.P_TIME = string.IsNullOrEmpty(form.AP_DATE1) ? "01" : "02";
                     abudf_1.P_DATE = pdate.AddYears(-1911).ToString("yyyMMdd");
-                    abudf_1.E_DATE = payEndDate.AddYears(-1911).ToString("yyyMMdd");
+                    abudf_1.E_DATE = res.PayEndDate.AddYears(-1911).ToString("yyyMMdd");
 
                     // 取得聯單序號
                     if (transNo.Length < 16 || !transNo.StartsWith(base.botCode))
@@ -1205,15 +1157,15 @@ namespace NT_AirPollution.Service
                 abudf_I.C_NO = form.C_NO;
                 abudf_I.SER_NO = form.SER_NO;
                 abudf_I.P_TIME = string.IsNullOrEmpty(form.AP_DATE1) ? "01" : "02";
-                if (delayDays > 0)
+                if (res.DelayDays > 0)
                 {
-                    abudf_I.S_DATE = payEndDate.AddDays(1).AddYears(-1911).ToString("yyyMMdd");
+                    abudf_I.S_DATE = res.PayEndDate.AddDays(1).AddYears(-1911).ToString("yyyMMdd");
                     abudf_I.E_DATE = DateTime.Now.AddYears(-1911).ToString("yyyMMdd");
                 }
-                abudf_I.PERCENT = rate;
+                abudf_I.PERCENT = res.Rate;
                 abudf_I.F_AMT = sumPrice;
-                abudf_I.I_AMT = interest;
-                abudf_I.PEN_AMT = penalty;
+                abudf_I.I_AMT = res.Interest;
+                abudf_I.PEN_AMT = res.Penalty;
                 abudf_I.PEN_RATE = 0.5;
                 abudf_I.KEYIN = "EPB02";
                 abudf_I.C_DATE = DateTime.Now;
@@ -1226,12 +1178,12 @@ namespace NT_AirPollution.Service
                 {
                     FormID = form.ID,
                     Term = abudf_1.P_TIME,
-                    PayEndDate = payEndDate,
+                    PayEndDate = res.PayEndDate,
                     PaymentID = abudf_1.FLNO,
                     PayableAmount = sumPrice,
-                    Penalty = penalty,
-                    Interest = interest,
-                    Percent = rate,
+                    Penalty = res.Penalty,
+                    Interest = res.Interest,
+                    Percent = res.Rate,
                     CreateDate = DateTime.Now
                 });
                 #endregion
@@ -1259,12 +1211,12 @@ namespace NT_AirPollution.Service
                 ws.Cell("D7").SetValue(form.P_KIND);
                 ws.Cell("F7").SetValue(ws.Cell("F7").GetText().Replace("#P_NUM#", form.P_KIND == "一次全繳" ? "1" : "2").Replace("#P_TIME#", abudf_1.P_TIME));
                 ws.Cell("O7").SetValue(ws.Cell("O7").GetText().Replace("#P_NUM#", form.P_KIND == "一次全繳" ? "1" : "2").Replace("#P_TIME#", abudf_1.P_TIME));
-                ws.Cell("D8").SetValue(ws.Cell("D8").GetText().Replace("#PayEndDate#", payEndDate.AddYears(-1911).ToString("yyy年MM月dd日")));
-                ws.Cell("O8").SetValue(totalPrice.ToString("N0"));
-                ws.Cell("D9").SetValue(currentPrice.ToString("N0"));
-                ws.Cell("O9").SetValue(this.GetChineseMoney(totalPrice.ToString()));
-                ws.Cell("D10").SetValue(penalty.ToString("N0"));
-                ws.Cell("D11").SetValue(interest.ToString("N0"));
+                ws.Cell("D8").SetValue(ws.Cell("D8").GetText().Replace("#PayEndDate#", res.PayEndDate.AddYears(-1911).ToString("yyy年MM月dd日")));
+                ws.Cell("O8").SetValue(res.TotalPrice.ToString("N0"));
+                ws.Cell("D9").SetValue(res.CurrentPrice.ToString("N0"));
+                ws.Cell("O9").SetValue(this.GetChineseMoney(res.TotalPrice.ToString()));
+                ws.Cell("D10").SetValue(res.Penalty.ToString("N0"));
+                ws.Cell("D11").SetValue(res.Interest.ToString("N0"));
                 ws.Cell("D12").SetValue(sumPrice.ToString("N0"));
                 ws.Cell("M12").SetValue(form.B_SERNO);
                 ws.Cell("D13").SetValue(this.GetChineseMoney(sumPrice.ToString()));
@@ -1276,10 +1228,10 @@ namespace NT_AirPollution.Service
                 ws.Cell("P19").SetValue(form.B_SERNO);
                 ws.Cell("D20").SetValue(form.P_KIND);
                 ws.Cell("F20").SetValue(ws.Cell("F20").GetText().Replace("#P_NUM#", form.P_KIND == "一次全繳" ? "1" : "2").Replace("#P_TIME#", abudf_1.P_TIME));
-                ws.Cell("D21").SetValue(ws.Cell("D21").GetText().Replace("#PayEndDate#", payEndDate.AddYears(-1911).ToString("yyy年MM月dd日")));
-                ws.Cell("D22").SetValue(currentPrice.ToString("N0"));
-                ws.Cell("D23").SetValue(penalty.ToString("N0"));
-                ws.Cell("I23").SetValue(interest.ToString("N0"));
+                ws.Cell("D21").SetValue(ws.Cell("D21").GetText().Replace("#PayEndDate#", res.PayEndDate.AddYears(-1911).ToString("yyy年MM月dd日")));
+                ws.Cell("D22").SetValue(res.CurrentPrice.ToString("N0"));
+                ws.Cell("D23").SetValue(res.Penalty.ToString("N0"));
+                ws.Cell("I23").SetValue(res.Interest.ToString("N0"));
                 ws.Cell("D24").SetValue(sumPrice.ToString("N0"));
                 ws.Cell("D25").SetValue(this.GetChineseMoney(sumPrice.ToString()));
                 ws.Cell("B29").SetValue(ws.Cell("B29").GetText().Replace("#VerifyDate#", pdate.AddYears(-1911).ToString("yyy年MM月dd日")));
@@ -1289,10 +1241,10 @@ namespace NT_AirPollution.Service
                 ws.Cell("P31").SetValue(form.B_SERNO);
                 ws.Cell("D32").SetValue(form.P_KIND);
                 ws.Cell("F32").SetValue(ws.Cell("F32").GetText().Replace("#P_NUM#", form.P_KIND == "一次全繳" ? "1" : "2").Replace("#P_TIME#", abudf_1.P_TIME));
-                ws.Cell("O32").SetValue(payEndDate.AddYears(-1911).ToString("yyy年MM月dd日"));
-                ws.Cell("D34").SetValue(currentPrice.ToString("N0"));
-                ws.Cell("I34").SetValue(penalty.ToString("N0"));
-                ws.Cell("O34").SetValue(interest.ToString("N0"));
+                ws.Cell("O32").SetValue(res.PayEndDate.AddYears(-1911).ToString("yyy年MM月dd日"));
+                ws.Cell("D34").SetValue(res.CurrentPrice.ToString("N0"));
+                ws.Cell("I34").SetValue(res.Penalty.ToString("N0"));
+                ws.Cell("O34").SetValue(res.Interest.ToString("N0"));
                 ws.Cell("D35").SetValue(sumPrice.ToString("N0"));
                 ws.Cell("G35").SetValue(ws.Cell("G35").GetText().Replace("#F_AMTC#", this.GetChineseMoney(sumPrice.ToString())));
                 ws.Cell("I36").SetValue(barcodeMarketB);
@@ -1506,11 +1458,11 @@ namespace NT_AirPollution.Service
                 doc.Range.Replace("@B_SERNO", form.B_SERNO);
                 doc.Range.Replace("@S_AMT", form.S_AMT.Value.ToString("N0"));
                 var payment = form.Payments.FirstOrDefault(o => o.Term == "1");
-                if(payment.Penalty > 0)
+                if (payment.Penalty > 0)
                     doc.Range.Replace("@Penalty", $"(含滯納金{payment.Penalty}元)");
                 else
                     doc.Range.Replace("@Penalty", "");
-                
+
                 doc.Range.Replace("@A_DATE", payment.PayDate.Value.ToString("yyyy-MM-dd"));
                 doc.Range.Replace("@Year", DateTime.Now.AddYears(-1911).ToString("yyy"));
                 doc.Range.Replace("@Month", DateTime.Now.AddYears(-1911).ToString("MM"));
@@ -1524,6 +1476,87 @@ namespace NT_AirPollution.Service
                 Logger.Error($"CreateFreeProofPDF: {ex.StackTrace}|{ex.Message}");
                 throw ex;
             }
+        }
+
+        /// <summary>
+        /// 計算繳費相關資訊
+        /// </summary>
+        /// <param name="info"></param>
+        public PaymentInfo CalcPayment(PaymentInfo info)
+        {
+            /*
+            * 公共工程繳費期限 = 30天
+            * 私人工程繳費期限 = 3天
+            * 審核通過日在開工日前，那免滯納金就是從開工日開始算3天或30天
+            * 開工後申報，皆無免滯納金優惠，無關審核通過日期，皆由開工日隔天至繳費當天來算滯納金&利息
+            */
+
+            // 深拷貝
+            PaymentInfo result = base.DeepCopy<PaymentInfo>(info);
+            // 繳費期限
+            int payDays = result.IsPublic ? 30 - 1 : 3 - 1;
+            // 今天日期
+            DateTime today = DateTime.Now;
+            var interestRate = _optionService.GetRates().FirstOrDefault();
+            if (interestRate != null)
+                result.Rate = interestRate.Rate;
+
+            // 申報日 <= 開工日
+            if (result.ApplyDate <= result.StartDate)
+            {
+                // 審核日 <= 開工日
+                if (result.VerifyDate <= result.StartDate)
+                {
+                    // 開工日加 3 or 30 天
+                    result.PayEndDate = result.StartDate.AddDays(payDays);
+                }
+                else
+                {
+                    // 審核日加 3 or 30 天
+                    result.PayEndDate = result.VerifyDate.AddDays(payDays);
+                }
+
+                if (today > result.PayEndDate)
+                {
+                    // 延遲天數 = 今天 - 開工日
+                    result.DelayDays = (today - result.StartDate).Days;
+                }
+            }
+            else
+            {
+                // 繳費期限 = 當天
+                result.PayEndDate = today;
+                // 延遲天數 = 今天 - 開工日
+                result.DelayDays = (today - result.StartDate).Days;
+            }
+
+            if (result.DelayDays <= 30)
+            {
+                // 滯納金－每逾一日按滯納之金額加徵百分之○．五滯納金
+                result.Penalty = Math.Round(result.CurrentPrice * 0.005 * result.DelayDays, 0, MidpointRounding.AwayFromZero);
+                // 30天內只算滯納金
+                result.Interest = 0;
+            }
+            else
+            {
+                // 30天內只算滯納金
+                // 滯納金－每逾一日按滯納之金額加徵百分之○．五滯納金
+                result.Penalty = Math.Round(result.CurrentPrice * 0.005 * 30, 0, MidpointRounding.AwayFromZero);
+
+                // 30天後算利息
+                // 106/03 前:(應繳金額+滯納金)*郵局儲匯局定存利率(浮動)*(逾期天數-30)/365
+                // 106/03 後:(應繳金額)*郵局儲匯局定存利率(浮動)*(逾期天數-30)/365
+                if (DateTime.Now < new DateTime(2016, 3, 1))
+                {
+                    result.Interest = Math.Round((result.CurrentPrice + result.Penalty) * result.Rate / 100 * (result.DelayDays - 30) / 365, 0, MidpointRounding.AwayFromZero);
+                }
+                else
+                {
+                    result.Interest = Math.Round(result.CurrentPrice * result.Rate / 100 * (result.DelayDays - 30) / 365, 0, MidpointRounding.AwayFromZero);
+                }
+            }
+
+            return result;
         }
     }
 }

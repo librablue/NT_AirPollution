@@ -62,5 +62,17 @@ namespace NT_AirPollution.Service
         {
             return Convert.ToDateTime($"{Convert.ToInt32(dt.Substring(0, 3)) + 1911}-{dt.Substring(3, 2)}-{dt.Substring(5, 2)}");
         }
+
+        /// <summary>
+        /// 物件深拷貝
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public T DeepCopy<T>(T obj)
+        {
+            string json = JsonConvert.SerializeObject(obj);
+            return JsonConvert.DeserializeObject<T>(json);
+        }
     }
 }
