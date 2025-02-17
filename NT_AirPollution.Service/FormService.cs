@@ -1118,12 +1118,8 @@ namespace NT_AirPollution.Service
                 var res = CalcPayment(info);
 
 
-                // 填發日期(開工日或申報日)
+                // 填發日期(開工日)
                 DateTime pdate = this.ChineseDateToWestDate(form.AP_DATE);
-                DateTime B_BATE = this.ChineseDateToWestDate(form.B_DATE);
-                // 如果申報日 > 開工日，取開工日
-                if (pdate > B_BATE)
-                    pdate = B_BATE;
 
 
                 double sumPrice = Math.Round(res.CurrentPrice + res.Interest + res.Penalty, 0);
