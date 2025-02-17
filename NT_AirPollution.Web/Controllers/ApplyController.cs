@@ -524,7 +524,7 @@ namespace NT_AirPollution.Web.Controllers
                 throw new Exception("申請單不存在");
 
             string fileName = $"繳款單{form.C_NO}-{form.SER_NO}({(form.P_KIND == "一次繳清" ? "一次繳清" : "第一期")})";
-            string pdfPath = _formService.CreatePaymentPDF(fileName, form);
+            string pdfPath = _formService.CreatePaymentPDF(fileName, formInDB);
 
             // 傳到前端的檔名
             // Uri.EscapeDataString 防中文亂碼
@@ -545,7 +545,7 @@ namespace NT_AirPollution.Web.Controllers
                 throw new Exception("申請單不存在");
 
             string fileName = $"繳款單{form.C_NO}-{form.SER_NO}(結算補繳)";
-            string pdfPath = _formService.CreatePaymentPDF(fileName, form);
+            string pdfPath = _formService.CreatePaymentPDF(fileName, formInDB);
 
             // 傳到前端的檔名
             // Uri.EscapeDataString 防中文亂碼
@@ -618,7 +618,7 @@ namespace NT_AirPollution.Web.Controllers
             if (formInDB == null || (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email))
                 throw new Exception("申請單不存在");
 
-            string pdfPath = _formService.CreateClearProofPDF(form);
+            string pdfPath = _formService.CreateClearProofPDF(formInDB);
 
             // 傳到前端的檔名
             // Uri.EscapeDataString 防中文亂碼
@@ -638,7 +638,7 @@ namespace NT_AirPollution.Web.Controllers
             if (formInDB == null || (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email))
                 throw new Exception("申請單不存在");
 
-            string pdfPath = _formService.CreateFreeProofPDF(form);
+            string pdfPath = _formService.CreateFreeProofPDF(formInDB);
 
             // 傳到前端的檔名
             // Uri.EscapeDataString 防中文亂碼
@@ -658,7 +658,7 @@ namespace NT_AirPollution.Web.Controllers
             if (formInDB == null || (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email))
                 throw new Exception("申請單不存在");
 
-            string pdfPath = _formService.CreatePaymentProofPDF(form);
+            string pdfPath = _formService.CreatePaymentProofPDF(formInDB);
 
             // 傳到前端的檔名
             // Uri.EscapeDataString 防中文亂碼
