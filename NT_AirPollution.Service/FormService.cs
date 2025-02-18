@@ -1118,8 +1118,12 @@ namespace NT_AirPollution.Service
                 var res = CalcPayment(info);
 
 
-                // 填發日期(開工日)
+                // 填發日期(開工日或申報日)
                 DateTime pdate = this.ChineseDateToWestDate(form.AP_DATE);
+                DateTime B_BATE = this.ChineseDateToWestDate(form.B_DATE);
+                // 如果申報日 > 開工日，取開工日
+                if (pdate > B_BATE)
+                    pdate = B_BATE;
 
 
                 double sumPrice = Math.Round(res.CurrentPrice + res.Interest + res.Penalty, 0);
@@ -1493,9 +1497,7 @@ namespace NT_AirPollution.Service
             int payDays = result.IsPublic ? 30 - 1 : 3 - 1;
             // 今天日期
             DateTime today = DateTime.Now;
-            var interestRate = _optionService.GetRates().FirstOrDefault();
-            if (interestRate != null)
-                result.Rate = interestRate.Rate;
+
 
             // 申報日 <= 開工日
             if (result.ApplyDate <= result.StartDate)
@@ -1535,6 +1537,10 @@ namespace NT_AirPollution.Service
             }
             else
             {
+                var interestRate = _optionService.GetRates().FirstOrDefault();
+                if (interestRate != null)
+                    result.Rate = interestRate.Rate;
+
                 // 30天內只算滯納金
                 // 滯納金－每逾一日按滯納之金額加徵百分之○．五滯納金
                 result.Penalty = Math.Round(result.CurrentPrice * 0.005 * 30, 0, MidpointRounding.AwayFromZero);
