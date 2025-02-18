@@ -124,9 +124,6 @@ export default {
             if(this.form.FormStatus > 2 && !this.form.S_AMT){
                 return alert('若要通過審核，請先開啟案件瀏覽並儲存，才會產生繳費金額');
             }
-            if(this.form.CalcStatus > 2 && !this.form.S_AMT2){
-                return alert('若要通過審核，請先開啟案件瀏覽並儲存，才會產生結算金額');
-            }
 
 			if (!confirm('是否確認繼續?')) return false;
 			const loading = this.$loading();
