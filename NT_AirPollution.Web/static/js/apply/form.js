@@ -87,12 +87,6 @@
                 }
                 callback();
             };
-            const checkS_G_NO = (rule, value, callback) => {
-                if (this.PUB_COMP && !value) {
-                    callback(new Error('請輸入營利事業統一編號'));
-                }
-                callback();
-            };
             const checkS_B_ID = (rule, value, callback) => {
                 const idRegx = /^[A-Z][12]\d{8}$/;
                 if (!this.PUB_COMP && !idRegx.test(value)) {
@@ -104,12 +98,6 @@
                 const idRegx = /^[A-Z][12]\d{8}$/;
                 if (!this.PUB_COMP && !idRegx.test(value)) {
                     callback(new Error('營利事業聯絡人身分證字號格式錯誤'));
-                }
-                callback();
-            };
-            const checkR_G_NO = (rule, value, callback) => {
-                if (this.PUB_COMP && !value) {
-                    callback(new Error('請輸入承造營利事業統一編號'));
                 }
                 callback();
             };
@@ -179,7 +167,6 @@
                 }),
                 tab2Rules: Object.freeze({
                     S_NAME: [{ required: true, message: '請輸入營建業主名稱', trigger: 'blur' }],
-                    S_G_NO: [{ validator: checkS_G_NO, trigger: 'blur' }],
                     S_ADDR1: [{ required: true, message: '請輸入營利事業營業地址', trigger: 'blur' }],
                     S_ADDR2: [{ required: true, message: '請輸入營利事業聯絡地址', trigger: 'blur' }],
                     S_TEL: [{ required: true, message: '請輸入營利事業主連絡電話', trigger: 'blur' }],
@@ -194,7 +181,6 @@
                 }),
                 tab3Rules: Object.freeze({
                     R_NAME: [{ required: true, message: '請輸入承造單位名稱', trigger: 'blur' }],
-                    R_G_NO: [{ validator: checkR_G_NO, trigger: 'blur' }],
                     R_ADDR1: [{ required: true, message: '請輸入承造營業地址', trigger: 'blur' }],
                     R_ADDR2: [{ required: true, message: '請輸入承造聯絡地址', trigger: 'blur' }],
                     R_TEL: [{ required: true, message: '請輸入承造連絡電話', trigger: 'blur' }],
