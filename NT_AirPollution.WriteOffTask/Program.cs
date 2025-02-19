@@ -65,13 +65,13 @@ namespace NT_AirPollution.WriteOffTask
                         // 取得申請單
                         var form = _formService.GetFormByID(paymentInDB.FormID);
                         // 依期數判斷更新哪種狀態
-                        if (paymentInDB.Term == "1")
+                        if (paymentInDB.Term == "01")
                         {
                             form.FormStatus = FormStatus.已繳費完成;
                             form.VerifyStage1 = VerifyStage.複審通過;
                             form.IsMailFormStatus = true;
                         }
-                        if (paymentInDB.Term == "2")
+                        if (paymentInDB.Term == "02")
                         {
                             form.CalcStatus = CalcStatus.繳退費完成;
                             form.VerifyStage2 = VerifyStage.複審通過;

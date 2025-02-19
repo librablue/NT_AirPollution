@@ -1,5 +1,5 @@
 <template>
-	<vxe-modal title="申請案件明細" v-model="visible" width="80%" height="90%" :lock-scroll="false" esc-closable resize :show-footer="mode !== 'Read'">
+	<vxe-modal title="申請案件明細" v-model="visible" width="80%" height="90%" :lock-scroll="false" esc-closable resize show-footer>
 		<template #default>
 			<el-form inline>
 				<el-form-item label="管制編號">{{C_NO}}</el-form-item>

@@ -1452,13 +1452,13 @@ namespace NT_AirPollution.Service
                 doc.Range.Replace("@C_NO", $"{form.C_NO}-{form.SER_NO}");
                 doc.Range.Replace("@B_SERNO", form.B_SERNO);
                 doc.Range.Replace("@S_AMT", form.S_AMT.Value.ToString("N0"));
-                var payment = form.Payments.FirstOrDefault(o => o.Term == "1");
-                if (payment.Penalty > 0)
+                var payment = form.Payments.FirstOrDefault(o => o.Term == "01");
+                if (payment?.Penalty > 0)
                     doc.Range.Replace("@Penalty", $"(含滯納金{payment.Penalty}元)");
                 else
                     doc.Range.Replace("@Penalty", "");
 
-                doc.Range.Replace("@A_DATE", payment.PayDate.Value.ToString("yyyy-MM-dd"));
+                doc.Range.Replace("@A_DATE", payment?.PayDate?.ToString("yyyy-MM-dd") ?? "");
                 doc.Range.Replace("@Year", DateTime.Now.AddYears(-1911).ToString("yyy"));
                 doc.Range.Replace("@Month", DateTime.Now.AddYears(-1911).ToString("MM"));
                 doc.Range.Replace("@Date", DateTime.Now.AddYears(-1911).ToString("dd"));
