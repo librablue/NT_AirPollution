@@ -438,8 +438,13 @@ namespace NT_AirPollution.Service
                 {
                     try
                     {
-                        cn.Execute(@"DELETE FROM dbo.Payment WHERE FormID=@FormID",
-                            new { FormID = payment.FormID }, trans);
+                        cn.Execute(@"DELETE FROM dbo.Payment
+                            WHERE FormID=@FormID AND Term=@Term",
+                            new
+                            {
+                                FormID = payment.FormID,
+                                Term = payment.Term
+                            }, trans);
 
                         long id = cn.Insert(payment, trans);
 
@@ -1110,8 +1115,6 @@ namespace NT_AirPollution.Service
                     info.VerifyDate = form.VerifyDate2.Value;
                     info.TotalPrice = form.S_AMT2.Value;
                     info.CurrentPrice = form.S_AMT2.Value - form.P_AMT.Value;
-                    // 結算用審核通過日加3或30天
-                    //payEndDate = form.VerifyDate2.Value.AddDays(form.PUB_COMP ? 30 : 3);
                 }
 
                 // 計算繳費資訊
