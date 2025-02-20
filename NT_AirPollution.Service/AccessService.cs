@@ -631,8 +631,13 @@ namespace NT_AirPollution.Service
                             P_TIME = abudf_1.P_TIME
                         });
 
-                    cn.Execute(@"DELETE FROM ABUDF_1 WHERE [FLNO]=?",
-                        new { FLNO = abudf_1.FLNO });
+                    cn.Execute(@"DELETE FROM ABUDF_1 WHERE [C_NO]=? AND [SER_NO]=? AND [P_TIME]=?",
+                        new
+                        {
+                            C_NO = abudf_1.C_NO,
+                            SER_NO = abudf_1.SER_NO,
+                            P_TIME = abudf_1.P_TIME
+                        });
 
                     cn.Execute(@"
                         INSERT INTO ABUDF_1 ([C_NO],[SER_NO],[P_TIME],[P_DATE],[E_DATE],[FLNO],[B_AMT],[KEYIN],[C_DATE],[M_DATE])
