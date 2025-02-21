@@ -121,7 +121,7 @@ namespace NT_AirPollution.Admin.Controllers
                     form.P_NUM = form.P_KIND == "一次全繳" ? 1 : 2;
                     form.P_AMT = form.S_AMT;
                     if (form.P_KIND == "分兩次繳清")
-                        form.P_AMT = Math.Round((form.S_AMT ?? 0) / 2, 0, MidpointRounding.AwayFromZero);
+                        form.P_AMT = Math.Round((form.S_AMT.GetValueOrDefault()) / 2, 0, MidpointRounding.AwayFromZero);
 
                     // 100元以下免繳
                     if (form.S_AMT <= 100)

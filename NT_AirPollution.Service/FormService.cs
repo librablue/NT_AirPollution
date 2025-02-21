@@ -1328,7 +1328,7 @@ namespace NT_AirPollution.Service
 
                 idx = 0;
                 // 已繳金額
-                double paidAmount = form.Payments.Sum(o => o.PayAmount ?? 0);
+                double paidAmount = form.Payments.Sum(o => o.PayAmount.GetValueOrDefault());
                 foreach (char item in paidAmount.ToString().Reverse())
                 {
                     ws.Row(10).Cell(16 - idx).SetValue(item.ToString());
@@ -1337,7 +1337,7 @@ namespace NT_AirPollution.Service
 
                 idx = 0;
                 // 應退金額
-                double returnMoney = Math.Abs(paidAmount - form.S_AMT2 ?? 0);
+                double returnMoney = Math.Abs(paidAmount - form.S_AMT2.GetValueOrDefault());
                 if (form.CalcStatus == CalcStatus.通過待退費小於4000 || form.CalcStatus == CalcStatus.通過待退費大於4000)
                 {
                     foreach (char item in returnMoney.ToString().Reverse())
@@ -1349,7 +1349,7 @@ namespace NT_AirPollution.Service
 
                 idx = 0;
                 // 補繳金額
-                double appendMoney = Math.Abs(form.S_AMT2 ?? 0 - paidAmount);
+                double appendMoney = Math.Abs(form.S_AMT2.GetValueOrDefault() - paidAmount);
                 if (form.CalcStatus == CalcStatus.通過待繳費)
                 {
                     foreach (char item in appendMoney.ToString().Reverse())
