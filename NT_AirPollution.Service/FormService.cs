@@ -1119,6 +1119,12 @@ namespace NT_AirPollution.Service
 
                 // 計算繳費資訊
                 var res = CalcPayment(info);
+                // 結算沒有滯納金&利息
+                if(!string.IsNullOrEmpty(form.AP_DATE1))
+                {
+                    res.Interest = 0;
+                    res.Penalty = 0;
+                }
 
                 // 填發日期(申報日)
                 DateTime pdate = this.ChineseDateToWestDate(form.AP_DATE);
@@ -1529,7 +1535,7 @@ namespace NT_AirPollution.Service
             if (result.DelayDays <= 30)
             {
                 // 滯納金－每逾一日按滯納之金額加徵百分之○．五滯納金
-                result.Penalty = Math.Round(result.CurrentPrice * 0.005 * result.DelayDays, 0, MidpointRounding.AwayFromZero);
+                result.Penalty = Math.Round(result.TotalPrice * 0.005 * result.DelayDays, 0, MidpointRounding.AwayFromZero);
                 // 30天內只算滯納金
                 result.Interest = 0;
             }
@@ -1541,18 +1547,18 @@ namespace NT_AirPollution.Service
 
                 // 30天內只算滯納金
                 // 滯納金－每逾一日按滯納之金額加徵百分之○．五滯納金
-                result.Penalty = Math.Round(result.CurrentPrice * 0.005 * 30, 0, MidpointRounding.AwayFromZero);
+                result.Penalty = Math.Round(result.TotalPrice * 0.005 * 30, 0, MidpointRounding.AwayFromZero);
 
                 // 30天後算利息
                 // 106/03 前:(應繳金額+滯納金)*郵局儲匯局定存利率(浮動)*(逾期天數-30)/365
                 // 106/03 後:(應繳金額)*郵局儲匯局定存利率(浮動)*(逾期天數-30)/365
                 if (DateTime.Now < new DateTime(2016, 3, 1))
                 {
-                    result.Interest = Math.Round((result.CurrentPrice + result.Penalty) * result.Rate / 100 * (result.DelayDays - 30) / 365, 0, MidpointRounding.AwayFromZero);
+                    result.Interest = Math.Round((result.TotalPrice + result.Penalty) * result.Rate / 100 * (result.DelayDays - 30) / 365, 0, MidpointRounding.AwayFromZero);
                 }
                 else
                 {
-                    result.Interest = Math.Round(result.CurrentPrice * result.Rate / 100 * (result.DelayDays - 30) / 365, 0, MidpointRounding.AwayFromZero);
+                    result.Interest = Math.Round(result.TotalPrice * result.Rate / 100 * (result.DelayDays - 30) / 365, 0, MidpointRounding.AwayFromZero);
                 }
             }
 
