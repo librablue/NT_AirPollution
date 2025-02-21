@@ -109,26 +109,36 @@ namespace NT_AirPollution.Admin.Controllers
                 // 停工天數
                 double downDays = form.StopWorks.Sum(o => (o.UP_DATE2 - o.DOWN_DATE2).TotalDays + 1);
                 var result = _formService.CalcTotalMoney(form, downDays);
-                form.S_AMT = result.TotalMoney;
+
+                // 申報
+                if (string.IsNullOrEmpty(form.AP_DATE1))
+                {
+                    form.S_AMT = result.TotalMoney;
+                    // 10000以上才能分期
+                    if (form.S_AMT < 10000)
+                        form.P_KIND = "一次全繳";
+
+                    form.P_NUM = form.P_KIND == "一次全繳" ? 1 : 2;
+                    form.P_AMT = form.S_AMT;
+                    if (form.P_KIND == "分兩次繳清")
+                        form.P_AMT = Math.Round((form.S_AMT ?? 0) / 2, 0, MidpointRounding.AwayFromZero);
+
+                    // 100元以下免繳
+                    if (form.S_AMT <= 100)
+                    {
+                        form.P_KIND = "一次全繳";
+                        form.P_NUM = 1;
+                        form.P_AMT = form.S_AMT;
+                    }
+                }
+                // 結算
+                else
+                {
+                    form.S_AMT2 = result.TotalMoney;
+                }
+
                 form.COMP_L = result.Level;
 
-                // 10000以上才能分期
-                if (form.S_AMT < 10000)
-                    form.P_KIND = "一次全繳";
-
-                form.P_NUM = form.P_KIND == "一次全繳" ? 1 : 2;
-                form.P_AMT = form.S_AMT;
-                if (form.P_KIND == "分兩次繳清")
-                    form.P_AMT = form.S_AMT / 2;
-
-
-                // 100元以下免繳
-                if (form.S_AMT <= 100)
-                {
-                    form.P_KIND = "一次全繳";
-                    form.P_NUM = 1;
-                    form.P_AMT = form.S_AMT;
-                }
 
                 // 有管制編號才更新Access
                 if (!string.IsNullOrEmpty(form.C_NO))

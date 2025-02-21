@@ -1,5 +1,5 @@
 <template>
-	<vxe-modal title="申請案件明細" v-model="visible" width="80%" height="90%" :lock-scroll="false" esc-closable resize show-footer>
+	<vxe-modal title="申請案件明細" v-model="visible" width="80%" height="90%" :lock-scroll="false" esc-closable resize :show-footer="mode !== 'Read'">
 		<template #default>
 			<el-form inline>
 				<el-form-item label="管制編號">{{C_NO}}</el-form-item>
@@ -318,12 +318,15 @@
 						</table>
 					</div>
 				</el-tab-pane>
-				<el-tab-pane v-if="form.RefundBank.ID" label="退款帳戶" name="7">
-					<el-form-item label="銀行代碼">{{form.RefundBank.Code}}</el-form-item>
-					<el-form-item label="銀行帳號">{{form.RefundBank.Account}}</el-form-item>
-					<el-form-item label="存摺照片">
-						<img style="width:640px" :src="`api/Option/Download?f=${form.RefundBank.Photo}`" />
-					</el-form-item>
+				<el-tab-pane label="退款帳戶" name="7">
+					<el-form v-if="form.RefundBank.ID">
+						<el-form-item label="銀行代碼">{{form.RefundBank.Code}}</el-form-item>
+						<el-form-item label="銀行帳號">{{form.RefundBank.Account}}</el-form-item>
+						<el-form-item label="存摺照片">
+							<img style="width:640px" :src="`api/Option/Download?f=${form.RefundBank.Photo}`" />
+						</el-form-item>
+					</el-form>
+					<div v-else>暫無資料</div>
 				</el-tab-pane>
 				<!-- <el-tab-pane v-if="form.PaymentProof.ID" label="繳費證明" name="8">
 					<el-form-item label="繳費證明">
@@ -338,7 +341,7 @@
 			</el-button>
 			<el-button type="primary" icon="el-icon-arrow-left" :disabled="activeTab === '1'" @click="goPrevTab">上一步</el-button>
 			<el-button type="primary" @click="goNextTab">
-				{{activeTab === '6' ? (mode === 'Update' ? '儲存' : '複製') : '下一步'}}
+				{{activeTab === '7' ? (mode === 'Update' ? '儲存' : '複製') : '下一步'}}
 				<i class="el-icon-arrow-right el-icon--right"></i>
 			</el-button>
 		</template>
@@ -471,7 +474,6 @@ export default {
 		};
 		return {
 			visible: false,
-			loading: false,
 			form: {},
 			district: Object.freeze([]),
 			projectCode: Object.freeze([]),
@@ -721,12 +723,14 @@ export default {
 
 					break;
 				}
-				case '5': {
+				case '5':
+				case '6': {
 					this.activeTab = (+this.activeTab + 1).toString();
 					break;
 				}
-				case '6': {
+				case '7': {
 					if (!confirm('是否確認繼續?')) return false;
+                    const loading = this.$loading();
 					const point = this.LatLon2UTM(this.form.LAT, this.form.LNG, 0, 0);
 					this.form.UTME = point[0];
 					this.form.UTMN = point[1];
@@ -743,12 +747,14 @@ export default {
 					this.axios
 						.post(`api/Form/${this.mode}Form`, this.form)
 						.then(res => {
-							this.$emit('on-updated');
+                            this.$emit('on-updated');
 							this.$message.success('畫面資料已儲存');
 							this.visible = false;
+                            loading.close();
 						})
 						.catch(err => {
-							this.$message.error(err.response.data.ExceptionMessage);
+                            this.$message.error(err.response.data.ExceptionMessage);
+                            loading.close();
 						});
 					break;
 				}
