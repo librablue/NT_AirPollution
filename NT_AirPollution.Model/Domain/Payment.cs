@@ -26,7 +26,7 @@ namespace NT_AirPollution.Model.Domain
         /// </summary>
         public string PaymentID { get; set; }
         /// <summary>
-        /// 應繳金額
+        /// 應繳金額(含滯納金&利息)
         /// </summary>
         public double PayableAmount { get; set; }
         /// <summary>

@@ -80,8 +80,13 @@ namespace NT_AirPollution.WriteOffTask
 
                         form.FIN_DATE = DateTime.Now.AddYears(-1911).ToString("yyyMMdd");
 
-                        // 更新申請單
-                        _formService.UpdateForm(form);
+                        // 如果繳費金額=應繳金額才更新成繳費完成
+                        if (payment.PayAmount == paymentInDB.PayableAmount)
+                        {
+                            // 更新申請單
+                            _formService.UpdateForm(form);
+                        }
+                        
                         // 寄信通知
                         _formService.SendStatusMail(form);
                         // 更新付款資訊

@@ -1337,10 +1337,10 @@ namespace NT_AirPollution.Service
 
                 idx = 0;
                 // 應退金額
+                double returnMoney = Math.Abs(paidAmount - form.S_AMT2 ?? 0);
                 if (form.CalcStatus == CalcStatus.通過待退費小於4000 || form.CalcStatus == CalcStatus.通過待退費大於4000)
                 {
-                    double diffMoney = Math.Abs(paidAmount - form.S_AMT2.Value);
-                    foreach (char item in diffMoney.ToString().Reverse())
+                    foreach (char item in returnMoney.ToString().Reverse())
                     {
                         ws.Row(11).Cell(16 - idx).SetValue(item.ToString());
                         idx += 2;
@@ -1349,14 +1349,23 @@ namespace NT_AirPollution.Service
 
                 idx = 0;
                 // 補繳金額
+                double appendMoney = Math.Abs(form.S_AMT2 ?? 0 - paidAmount);
                 if (form.CalcStatus == CalcStatus.通過待繳費)
                 {
-                    double diffMoney = Math.Abs(form.S_AMT2.Value - paidAmount);
-                    foreach (char item in diffMoney.ToString().Reverse())
+                    foreach (char item in appendMoney.ToString().Reverse())
                     {
                         ws.Row(12).Cell(16 - idx).SetValue(item.ToString());
                         idx += 2;
                     }
+                }
+
+                idx = 0;
+                // 實際繳費 = 已繳-應退+補繳
+                double totalMoney = paidAmount - returnMoney + appendMoney;
+                foreach (char item in totalMoney.ToString().Reverse())
+                {
+                    ws.Row(14).Cell(16 - idx).SetValue(item.ToString());
+                    idx += 2;
                 }
 
                 string tempFile = $@"{_paymentPath}\Download\結清證明{form.C_NO}-{form.SER_NO}.xlsx";
