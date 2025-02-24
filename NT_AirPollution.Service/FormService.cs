@@ -1120,7 +1120,7 @@ namespace NT_AirPollution.Service
                 // 計算繳費資訊
                 var res = CalcPayment(info);
                 // 結算沒有滯納金&利息
-                if(!string.IsNullOrEmpty(form.AP_DATE1))
+                if (!string.IsNullOrEmpty(form.AP_DATE1))
                 {
                     res.Interest = 0;
                     res.Penalty = 0;
@@ -1328,8 +1328,8 @@ namespace NT_AirPollution.Service
 
                 idx = 0;
                 // 已繳金額
-                double paidAmount = form.Payments.Sum(o => o.PayAmount.GetValueOrDefault());
-                foreach (char item in paidAmount.ToString().Reverse())
+                //double paidAmount = form.Payments.Sum(o => o.PayAmount.GetValueOrDefault());
+                foreach (char item in form.P_AMT.ToString().Reverse())
                 {
                     ws.Row(10).Cell(16 - idx).SetValue(item.ToString());
                     idx += 2;
@@ -1337,31 +1337,33 @@ namespace NT_AirPollution.Service
 
                 idx = 0;
                 // 應退金額
-                double returnMoney = Math.Abs(paidAmount - form.S_AMT2.GetValueOrDefault());
-                if (form.CalcStatus == CalcStatus.通過待退費小於4000 || form.CalcStatus == CalcStatus.通過待退費大於4000)
+                double returnMoney = form.S_AMT2.GetValueOrDefault() - form.P_AMT.GetValueOrDefault();
+                if (returnMoney > 0)
+                    returnMoney = 0;
+
+                // 避免顯示負號
+                returnMoney = Math.Abs(returnMoney);
+                foreach (char item in returnMoney.ToString().Reverse())
                 {
-                    foreach (char item in returnMoney.ToString().Reverse())
-                    {
-                        ws.Row(11).Cell(16 - idx).SetValue(item.ToString());
-                        idx += 2;
-                    }
+                    ws.Row(11).Cell(16 - idx).SetValue(item.ToString());
+                    idx += 2;
                 }
 
                 idx = 0;
                 // 補繳金額
-                double appendMoney = Math.Abs(form.S_AMT2.GetValueOrDefault() - paidAmount);
-                if (form.CalcStatus == CalcStatus.通過待繳費)
+                double appendMoney = form.S_AMT2.GetValueOrDefault() - form.P_AMT.GetValueOrDefault();
+                if (appendMoney < 0)
+                    appendMoney = 0;
+
+                foreach (char item in appendMoney.ToString().Reverse())
                 {
-                    foreach (char item in appendMoney.ToString().Reverse())
-                    {
-                        ws.Row(12).Cell(16 - idx).SetValue(item.ToString());
-                        idx += 2;
-                    }
+                    ws.Row(12).Cell(16 - idx).SetValue(item.ToString());
+                    idx += 2;
                 }
 
                 idx = 0;
                 // 實際繳費 = 已繳-應退+補繳
-                double totalMoney = paidAmount - returnMoney + appendMoney;
+                double totalMoney = form.P_AMT.GetValueOrDefault() - returnMoney + appendMoney;
                 foreach (char item in totalMoney.ToString().Reverse())
                 {
                     ws.Row(14).Cell(16 - idx).SetValue(item.ToString());
