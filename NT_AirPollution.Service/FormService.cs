@@ -1469,10 +1469,10 @@ namespace NT_AirPollution.Service
                 doc.Range.Replace("@COMP_NAM", form.COMP_NAM);
                 doc.Range.Replace("@C_NO", $"{form.C_NO}-{form.SER_NO}");
                 doc.Range.Replace("@B_SERNO", form.B_SERNO);
-                doc.Range.Replace("@S_AMT", form.S_AMT.Value.ToString("N0"));
+                doc.Range.Replace("@P_AMT", form.P_AMT.Value.ToString("N0"));
                 var payment = form.Payments.FirstOrDefault(o => o.Term == "01");
                 if (payment?.Penalty > 0)
-                    doc.Range.Replace("@Penalty", $"(含滯納金{payment.Penalty}元)");
+                    doc.Range.Replace("@Penalty", $"(不含滯納金{payment.Penalty}元)");
                 else
                     doc.Range.Replace("@Penalty", "");
 
