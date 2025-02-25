@@ -671,24 +671,6 @@ export default {
 			if (!confirm('是否確認刪除?')) return;
 			this.form.StopWorks.splice(idx, 1);
 		},
-		finalCalc(key) {
-			this.$refs.form.validate(valid => {
-				if (!valid) {
-					alert('欄位驗證錯誤，請檢查修正後重新送出');
-					return false;
-				}
-
-				this.axios
-					.post('api/Form/GetFinalCalc', this.form)
-					.then(res => {
-						this.form[key] = res.data;
-						this.$message.success('已更新應繳金額');
-					})
-					.catch(err => {
-						this.$message.error(err.response.data.ExceptionMessage);
-					});
-			});
-		},
 		goPrevTab() {
 			let intActiveTab = +this.activeTab;
 			if (intActiveTab > 1) {

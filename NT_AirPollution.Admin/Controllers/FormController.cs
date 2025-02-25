@@ -29,20 +29,6 @@ namespace NT_AirPollution.Admin.Controllers
         }
 
         /// <summary>
-        /// 結算金額
-        /// </summary>
-        /// <param name="form"></param>
-        /// <returns></returns>
-        [HttpPost]
-        public double GetFinalCalc(FormView form)
-        {
-            // 停工天數
-            double downDays = form.StopWorks.Sum(o => (o.UP_DATE2 - o.DOWN_DATE2).TotalDays + 1);
-            var result = _formService.CalcTotalMoney(form, downDays);
-            return result.TotalMoney;
-        }
-
-        /// <summary>
         /// 複製表單追加序號
         /// </summary>
         /// <param name="form"></param>
@@ -248,11 +234,11 @@ namespace NT_AirPollution.Admin.Controllers
 
                         if (form.S_AMT2 > form.P_AMT)
                             form.CalcStatus = CalcStatus.通過待繳費;
-                        else if (form.P_AMT == form.P_AMT)
+                        else if (form.S_AMT2 == form.P_AMT)
                             form.CalcStatus = CalcStatus.繳退費完成;
-                        else if (form.P_AMT - form.P_AMT < 4000)
+                        else if (form.S_AMT2 - form.P_AMT < 4000)
                             form.CalcStatus = CalcStatus.通過待退費小於4000;
-                        else if (form.P_AMT - form.P_AMT >= 4000)
+                        else if (form.S_AMT2 - form.P_AMT >= 4000)
                             form.CalcStatus = CalcStatus.通過待退費大於4000;
                     }
 
@@ -268,7 +254,9 @@ namespace NT_AirPollution.Admin.Controllers
                             form.VerifyDate2 = DateTime.Now;
                             form.VerifyStage2 = VerifyStage.複審通過;
 
-                            if (form.CalcStatus == CalcStatus.繳退費完成)
+                            if (form.CalcStatus == CalcStatus.通過待退費小於4000 || 
+                                form.CalcStatus == CalcStatus.通過待退費大於4000 ||
+                                form.CalcStatus == CalcStatus.繳退費完成)
                                 form.FIN_DATE = DateTime.Now.AddYears(-1911).ToString("yyyMMdd");
                             break;
                     }
@@ -276,7 +264,7 @@ namespace NT_AirPollution.Admin.Controllers
 
 
                 // 更新 Access
-                _accessService.AddABUDF_B(form);
+                //_accessService.AddABUDF_B(form);
                 // 更新表單
                 _formService.UpdateForm(form);
                 // 寄送通知
