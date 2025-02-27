@@ -44,11 +44,11 @@ namespace NT_AirPollution.Web.Controllers
 
         public ActionResult Logout()
         {
-            Response.Cookies[FormsAuthentication.FormsCookieName].Expires = DateTime.Now.AddYears(-1);
+            Response.Cookies["member"].Expires = DateTime.Now.AddYears(-1);
             return RedirectToAction("Index", "Home");
         }
 
-        [CustomAuthorize(Roles = "Member1,Member2")]
+        [CustomAuthorize("Member1", "Member2")]
         public ActionResult Edit()
         {
             return View();
@@ -86,7 +86,11 @@ namespace NT_AirPollution.Web.Controllers
                         FormsAuthentication.FormsCookiePath);
 
                 string encTicket = FormsAuthentication.Encrypt(ticket);
-                Response.Cookies.Add(new HttpCookie(FormsAuthentication.FormsCookieName, encTicket));
+                Response.Cookies.Add(new HttpCookie("member", encTicket)
+                {
+                    HttpOnly = true,
+                    Secure = true
+                });
 
                 return Json(new AjaxResult { Status = true, Message = result.UserType });
             }
@@ -279,7 +283,7 @@ namespace NT_AirPollution.Web.Controllers
             }
         }
 
-        [CustomAuthorize(Roles = "Member1,Member2")]
+        [CustomAuthorize("Member1", "Member2")]
         [HttpPost]
         public JsonResult UpdateProfile(ClientUser user)
         {
@@ -296,7 +300,7 @@ namespace NT_AirPollution.Web.Controllers
             }
         }
 
-        [CustomAuthorize(Roles = "Member1,Member2")]
+        [CustomAuthorize("Member1", "Member2")]
         [HttpPost]
         public JsonResult UpdatePassword(ClientUser user)
         {
@@ -322,7 +326,7 @@ namespace NT_AirPollution.Web.Controllers
             }
         }
 
-        [CustomAuthorize(Roles = "Member1,Member2")]
+        [CustomAuthorize("Member1", "Member2")]
         public JsonResult GetCurrentUser()
         {
             try

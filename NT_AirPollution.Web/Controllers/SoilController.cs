@@ -11,7 +11,7 @@ using System.Web.Security;
 
 namespace NT_AirPollution.Web.Controllers
 {
-    [CustomAuthorize(Roles = "Member2")]
+    [CustomAuthorize("Member2")]
     public class SoilController : BaseController
     {
         private readonly SoilService _soilService = new SoilService();

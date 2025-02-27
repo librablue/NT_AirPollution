@@ -15,7 +15,7 @@ using System.Web.Mvc;
 
 namespace NT_AirPollution.Web.Controllers
 {
-    [CustomAuthorize(Roles = "Member1")]
+    [CustomAuthorize("Member1")]
     public class ApplyController : BaseController
     {
         private readonly string _uploadPath = ConfigurationManager.AppSettings["UploadPath"].ToString();

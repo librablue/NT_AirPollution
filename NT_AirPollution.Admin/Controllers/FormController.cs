@@ -14,7 +14,7 @@ using System.Web.Http;
 
 namespace NT_AirPollution.Admin.Controllers
 {
-    [AuthorizeUser]
+    [CustomAuthorize]
     public class FormController : ApiController
     {
         private readonly string _uploadPath = ConfigurationManager.AppSettings["UploadPath"].ToString();

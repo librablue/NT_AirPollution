@@ -12,7 +12,7 @@ using System.Web.Mvc;
 
 namespace NT_AirPollution.Web.Controllers
 {
-    [CustomAuthorize(Roles = "Member2")]
+    [CustomAuthorize("Member2")]
     public class AirController : BaseController
     {
         private readonly string _uploadPath = ConfigurationManager.AppSettings["UploadPath"].ToString();

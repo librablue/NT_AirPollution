@@ -44,7 +44,11 @@ namespace NT_AirPollution.Admin.Controllers
                     FormsAuthentication.FormsCookiePath);
 
                 string encTicket = FormsAuthentication.Encrypt(ticket);
-                HttpContext.Current.Response.Cookies.Add(new HttpCookie(FormsAuthentication.FormsCookieName, encTicket));
+                HttpContext.Current.Response.Cookies.Add(new HttpCookie("admin", encTicket)
+                {
+                    HttpOnly = true,
+                    Secure = true
+                });
 
                 return new AjaxResult { Status = true, Message = result };
             }
@@ -54,7 +58,7 @@ namespace NT_AirPollution.Admin.Controllers
             }
         }
 
-        [AuthorizeUser]
+        [CustomAuthorize]
         public AdminUser GetCurrentUser()
         {
             return BaseService.CurrentAdmin;
@@ -63,7 +67,7 @@ namespace NT_AirPollution.Admin.Controllers
         [HttpGet]
         public void Logout()
         {
-            HttpContext.Current.Response.Cookies[FormsAuthentication.FormsCookieName].Expires = DateTime.Now.AddYears(-1);
+            HttpContext.Current.Response.Cookies["admin"].Expires = DateTime.Now.AddYears(-1);
         }
 
         [HttpGet]
@@ -136,7 +140,7 @@ namespace NT_AirPollution.Admin.Controllers
             return verifyCode;
         }
 
-        [AuthorizeUser]
+        [CustomAuthorize]
         [HttpPost]
         public AjaxResult UpdatePassword(AdminUser user)
         {
@@ -152,7 +156,7 @@ namespace NT_AirPollution.Admin.Controllers
             }
         }
 
-        [AuthorizeUser]
+        [CustomAuthorize]
         [HttpPost]
         public List<AdminUser> GetUsers(AdminUserFilterView filter)
         {
@@ -160,7 +164,7 @@ namespace NT_AirPollution.Admin.Controllers
             return result;
         }
 
-        [AuthorizeUser]
+        [CustomAuthorize]
         public AjaxResult AddUser(AdminUser user)
         {
             try
@@ -174,7 +178,7 @@ namespace NT_AirPollution.Admin.Controllers
             }
         }
 
-        [AuthorizeUser]
+        [CustomAuthorize]
         public AjaxResult UpdateUser(AdminUser user)
         {
             try

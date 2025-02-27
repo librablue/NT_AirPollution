@@ -1,14 +1,8 @@
-﻿using Dapper;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using NT_AirPollution.Model.Domain;
 using NT_AirPollution.Model.View;
 using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web;
 using System.Web.Security;
 
@@ -25,15 +19,10 @@ namespace NT_AirPollution.Service
         {
             get
             {
-                if (HttpContext.Current.User.Identity.IsAuthenticated)
-                {
-                    FormsIdentity id = (FormsIdentity)HttpContext.Current.User.Identity;
-                    FormsAuthenticationTicket ticket = id.Ticket;
-                    UserData clientUser = JsonConvert.DeserializeObject<UserData>(ticket.UserData);
-                    return clientUser;
-                }
-
-                return null;
+                HttpCookie authCookie = HttpContext.Current.Request.Cookies["member"];
+                FormsAuthenticationTicket authTicket = FormsAuthentication.Decrypt(authCookie.Value);
+                UserData userData = JsonConvert.DeserializeObject<UserData>(authTicket.UserData);
+                return userData;
             }
         }
 
@@ -41,15 +30,10 @@ namespace NT_AirPollution.Service
         {
             get
             {
-                if (HttpContext.Current.User.Identity.IsAuthenticated)
-                {
-                    FormsIdentity id = (FormsIdentity)HttpContext.Current.User.Identity;
-                    FormsAuthenticationTicket ticket = id.Ticket;
-                    AdminUser user = JsonConvert.DeserializeObject<AdminUser>(ticket.UserData);
-                    return user;
-                }
-
-                return null;
+                HttpCookie authCookie = HttpContext.Current.Request.Cookies["admin"];
+                FormsAuthenticationTicket authTicket = FormsAuthentication.Decrypt(authCookie.Value);
+                AdminUser userData = JsonConvert.DeserializeObject<AdminUser>(authTicket.UserData);
+                return userData;
             }
         }
 

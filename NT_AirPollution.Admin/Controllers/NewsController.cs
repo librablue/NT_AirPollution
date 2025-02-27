@@ -14,7 +14,7 @@ using System.Web.Http;
 
 namespace NT_AirPollution.Admin.Controllers
 {
-    [AuthorizeUser]
+    [CustomAuthorize]
     public class NewsController : ApiController
     {
         private readonly string _staticUploadPath = ConfigurationManager.AppSettings["StaticUploadPath"].ToString();

@@ -15,7 +15,7 @@ using System.Web.UI;
 
 namespace NT_AirPollution.Web.Controllers
 {
-    [CustomAuthorize(Roles = "Member2")]
+    [CustomAuthorize("Member2")]
     public class RoadController : BaseController
     {
         private readonly RoadService _roadService = new RoadService();
