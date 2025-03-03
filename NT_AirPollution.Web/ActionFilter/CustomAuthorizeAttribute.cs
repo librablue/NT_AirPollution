@@ -71,25 +71,32 @@ namespace NT_AirPollution.Web.ActionFilter
 
         protected override void HandleUnauthorizedRequest(AuthorizationContext filterContext)
         {
-            string username = (string)filterContext.HttpContext.Items["AuthUser"] ?? "Unknown";
-            UserData userData = JsonConvert.DeserializeObject<UserData>(filterContext.HttpContext.Items["AuthRoles"].ToString());
+            try
+            {
+                // 未登入
+                if (!filterContext.HttpContext.User.Identity.IsAuthenticated)
+                {
+                    filterContext.Result = new RedirectResult("~/Member/Login");
+                    return;
+                }
 
-            // 获取用户请求的控制器和操作方法信息
-            var controllerName = filterContext.RouteData.Values["controller"].ToString();
-            var actionName = filterContext.RouteData.Values["action"].ToString();
-            
-            // 未登入
-            if (!filterContext.HttpContext.User.Identity.IsAuthenticated)
+                string username = (string)filterContext.HttpContext.Items["AuthUser"]?.ToString();
+                UserData userData = JsonConvert.DeserializeObject<UserData>(filterContext.HttpContext.Items["AuthRoles"]?.ToString());
+
+                // 获取用户请求的控制器和操作方法信息
+                var controllerName = filterContext.RouteData.Values["controller"].ToString();
+                var actionName = filterContext.RouteData.Values["action"].ToString();
+
+                // 角色不允許
+                if (!userData.Role.Intersect(allowedRoles).Any())
+                {
+                    filterContext.Result = new RedirectResult($"~/Member/Login?ReturnUrl=%2f{controllerName}%2f{actionName}");
+                    return;
+                }
+            }
+            catch (Exception ex)
             {
                 filterContext.Result = new RedirectResult("~/Member/Login");
-                return;
-            }
-
-            // 角色不允許
-            if (!userData.Role.Intersect(allowedRoles).Any())
-            {
-                filterContext.Result = new RedirectResult($"~/Member/Login?ReturnUrl=%2f{controllerName}%2f{actionName}");
-                return;
             }
         }
     }
