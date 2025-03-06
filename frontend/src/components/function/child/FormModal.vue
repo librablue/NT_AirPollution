@@ -323,7 +323,7 @@
 						<el-form-item label="銀行代碼">{{form.RefundBank.Code}}</el-form-item>
 						<el-form-item label="銀行帳號">{{form.RefundBank.Account}}</el-form-item>
 						<el-form-item label="存摺照片">
-							<img style="width:640px" :src="`api/Option/Download?f=${form.RefundBank.Photo}`" />
+							<img style="width:640px" :src="`api/Form/Download?f=${form.RefundBank.Photo}`" />
 						</el-form-item>
 					</el-form>
 					<div v-else>暫無資料</div>

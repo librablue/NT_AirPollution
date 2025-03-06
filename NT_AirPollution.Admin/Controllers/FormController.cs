@@ -285,7 +285,7 @@ namespace NT_AirPollution.Admin.Controllers
         /// <param name="f">下載檔名</param>
         /// <returns></returns>
         [HttpGet]
-        public HttpResponseMessage Download(string f, string n)
+        public HttpResponseMessage Download(string f, string n = null)
         {
             var FilePath = $@"{_uploadPath}\{f}";
             var stream = new FileStream(FilePath, FileMode.Open);
