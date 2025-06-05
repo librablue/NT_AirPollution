@@ -22,7 +22,7 @@ namespace NT_AirPollution.MailTask
             string strMailFromShowName = "南投縣政府環境保護局";
             string strSmtpServer = "smtp.gmail.com";
             string strAccount = "recycle@chuangjing.com.tw";
-            string strPassword = "54304613@r";
+            string strPassword = "obln bqas bkck lglj";
             int intPort = 587;
 
             MailMessage msg = new MailMessage();
