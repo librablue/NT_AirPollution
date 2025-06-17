@@ -41,6 +41,7 @@ namespace NT_AirPollution.MailTask
                     }
                     catch (Exception ex)
                     {
+                        Console.WriteLine(ex.StackTrace);
                         // 記錄失敗次數
                         box.FailTimes += 1;
                         cn.Update(box);
