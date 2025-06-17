@@ -55,7 +55,15 @@
                 })
             };
         },
+        mounted() {
+            window.onTurnstileVerified = (token) => {
+                this.onTurnstileVerified(token);
+            };
+        },
         methods: {
+            onTurnstileVerified(token) {
+                this.form.Captcha = token;
+            },
             sendCode() {
                 this.step = 'VERIFY_MAIL';
                 this.$refs.form.validate(valid => {
@@ -94,7 +102,6 @@
             },
             sendForm() {
                 this.step = 'SUBMIT';
-                this.form.Captcha = grecaptcha.getResponse();
                 this.$refs.form.validate(valid => {
                     if (!valid) {
                         return false;
@@ -105,7 +112,7 @@
                         .post('/Member/Forget', this.form)
                         .then(res => {
                             if (!res.data.Status) {
-                                grecaptcha.reset();
+                                turnstile.reset();
                                 this.form.Captcha = '';
                                 alert(res.data.Message);
                                 return;
@@ -116,7 +123,7 @@
                         })
                         .catch(err => {
                             console.log(err);
-                            grecaptcha.reset();
+                            turnstile.reset();
                             this.form.Captcha = '';
                             alert('系統發生未預期錯誤');
                         });

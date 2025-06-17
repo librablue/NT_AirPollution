@@ -1,5 +1,4 @@
-﻿@using hbehr.recaptcha;
-@{
+﻿@{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -7,6 +6,7 @@
     <link rel="stylesheet" href="@Url.Content("~/static/css/member.css")" />
 }
 @section scripts {
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <script src="@Url.Content("~/static/js/member/forget.js")"></script>
 }
 
@@ -35,7 +35,7 @@
                     <el-input type="password" v-model="form.Password2"></el-input>
                 </el-form-item>
                 <el-form-item prop="Captcha">
-                    @ReCaptcha.GetCaptcha()
+                    <div class="cf-turnstile" ref="turnstile" data-sitekey="0x4AAAAAABhSHvzd7NfLlsbI" data-callback="onTurnstileVerified"></div>
                 </el-form-item>
                 <div class="bottom-btn-row">
                     <button type="button" class="btn-send btn-block" @@click="sendForm">確認送出</button>

@@ -1,5 +1,5 @@
-﻿using hbehr.recaptcha;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using NT_AirPollution.Model.Domain;
 using NT_AirPollution.Model.Enum;
 using NT_AirPollution.Model.View;
@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Hosting;
 using System.Web.Mvc;
@@ -19,6 +21,7 @@ namespace NT_AirPollution.Web.Controllers
 {
     public class MemberController : BaseController
     {
+        private readonly string _secretKey = ConfigurationManager.AppSettings["secretKey"].ToString();
         private readonly string _uploadPath = ConfigurationManager.AppSettings["UploadPath"].ToString();
         private readonly ClientUserService _clientUserService = new ClientUserService();
         private readonly FormService _formService = new FormService();
@@ -52,15 +55,32 @@ namespace NT_AirPollution.Web.Controllers
         public ActionResult Edit()
         {
             return View();
-        } 
+        }
 
         [HttpPost]
-        public JsonResult Login(ClientUser user)
+        public async Task<JsonResult> Login(ClientUser user)
         {
             try
             {
-                if (string.IsNullOrEmpty(user.Captcha) || !ReCaptcha.ValidateCaptcha(user.Captcha))
-                    throw new Exception("請勾選我不是機器人。");
+                using (var client = new HttpClient())
+                {
+                    var values = new Dictionary<string, string>
+                    {
+                        { "secret", _secretKey },
+                        { "response", user.Captcha },
+                        { "remoteip", Request.UserHostAddress }
+                    };
+
+                    var content = new FormUrlEncodedContent(values);
+                    var response = await client.PostAsync("https://challenges.cloudflare.com/turnstile/v0/siteverify", content);
+                    var responseString = await response.Content.ReadAsStringAsync();
+
+                    JObject tokenResult = JObject.Parse(responseString);
+                    bool success = tokenResult.Value<bool>("success");
+                    if (string.IsNullOrEmpty(user.Captcha) || !success)
+                        throw new Exception("請勾選機器人驗證。");
+                }
+               
 
                 if (string.IsNullOrEmpty(user.Email) || string.IsNullOrEmpty(user.Password))
                     throw new Exception("欄位驗證錯誤。");
@@ -156,12 +176,29 @@ namespace NT_AirPollution.Web.Controllers
         }
 
         [HttpPost]
-        public JsonResult Regist(ClientUser user)
+        public async Task<JsonResult> Regist(ClientUser user)
         {
             try
             {
-                if (string.IsNullOrEmpty(user.Captcha) || !ReCaptcha.ValidateCaptcha(user.Captcha))
-                    throw new Exception("請勾選我不是機器人。");
+                using (var client = new HttpClient())
+                {
+                    var values = new Dictionary<string, string>
+                    {
+                        { "secret", _secretKey },
+                        { "response", user.Captcha },
+                        { "remoteip", Request.UserHostAddress }
+                    };
+
+                    var content = new FormUrlEncodedContent(values);
+                    var response = await client.PostAsync("https://challenges.cloudflare.com/turnstile/v0/siteverify", content);
+                    var responseString = await response.Content.ReadAsStringAsync();
+
+                    JObject tokenResult = JObject.Parse(responseString);
+                    bool success = tokenResult.Value<bool>("success");
+                    if (string.IsNullOrEmpty(user.Captcha) || !success)
+                        throw new Exception("請勾選機器人驗證。");
+                }
+
 
                 if (!ModelState.IsValid)
                 {
@@ -247,12 +284,29 @@ namespace NT_AirPollution.Web.Controllers
         }
 
         [HttpPost]
-        public JsonResult Forget(ClientUser user)
+        public async Task<JsonResult> Forget(ClientUser user)
         {
             try
             {
-                if (string.IsNullOrEmpty(user.Captcha) || !ReCaptcha.ValidateCaptcha(user.Captcha))
-                    throw new Exception("請勾選我不是機器人。");
+                using (var client = new HttpClient())
+                {
+                    var values = new Dictionary<string, string>
+                    {
+                        { "secret", _secretKey },
+                        { "response", user.Captcha },
+                        { "remoteip", Request.UserHostAddress }
+                    };
+
+                    var content = new FormUrlEncodedContent(values);
+                    var response = await client.PostAsync("https://challenges.cloudflare.com/turnstile/v0/siteverify", content);
+                    var responseString = await response.Content.ReadAsStringAsync();
+
+                    JObject tokenResult = JObject.Parse(responseString);
+                    bool success = tokenResult.Value<bool>("success");
+                    if (string.IsNullOrEmpty(user.Captcha) || !success)
+                        throw new Exception("請勾選機器人驗證。");
+                }
+
 
                 ModelState.Remove("UserName");
                 if (!ModelState.IsValid)
