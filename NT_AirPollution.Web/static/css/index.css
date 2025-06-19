@@ -200,7 +200,8 @@ input:disabled {
 }
 
 .bottom-btn-row {
-  text-align: center;
+  display: flex;
+  justify-content: center;
   padding: 20px 0;
 }
 .bottom-btn-row .btn-send {
@@ -232,6 +233,8 @@ input:disabled {
 }
 
 .navbar {
+  display: flex;
+  align-items: center;
   position: fixed;
   top: 0;
   left: 0;
@@ -253,7 +256,7 @@ input:disabled {
 }
 .navbar .navbar-logo {
   display: inline-block;
-  width: 140px;
+  width: 200px;
   margin-right: 60px;
 }
 .navbar .navbar-logo img {
@@ -826,4 +829,4 @@ footer .bottom ul {
   footer .contact-row {
     justify-content: space-around;
   }
-}/*# sourceMappingURL=index.css.map */ngURL=index.css.map */
+}/*# sourceMappingURL=index.css.map */

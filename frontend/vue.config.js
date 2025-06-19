@@ -5,7 +5,7 @@ function resolve(dir) {
 
 module.exports = {
     lintOnSave: false,
-    publicPath: process.env.NODE_ENV === 'production' ? '/NT_AirPollutionMgr' : '/',
+    publicPath: process.env.NODE_ENV === 'production' ? '/AirPollutionMgr' : '/',
     assetsDir: 'static',
     chainWebpack: config => {
         config.resolve.alias

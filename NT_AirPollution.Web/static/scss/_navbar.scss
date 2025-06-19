@@ -1,4 +1,6 @@
 .navbar {
+    display: flex;
+    align-items: center;
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -19,7 +21,7 @@
 	}
 	.navbar-logo {
 		display: inline-block;
-		width: 140px;
+		width: 200px;
 		margin-right: 60px;
 		img {
 			width: 100%;
