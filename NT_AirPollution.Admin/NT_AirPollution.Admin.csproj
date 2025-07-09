@@ -192,6 +192,12 @@
   <ItemGroup>
     <Content Include="App_Data\Template\RoadReportTemplate.xlsx" />
     <Content Include="license\Aspose.total.lic" />
+    <Content Include="NLog.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="NLog.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
