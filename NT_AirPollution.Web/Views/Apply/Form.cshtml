@@ -214,7 +214,7 @@
                             </el-form-item>
                         </div>
                         <div class="flex-row">
-                            <el-form-item prop="S_B_ID" label="負責人身分證字號">
+                            <el-form-item prop="S_B_ID" label="負責人身分證字號" :rules="S_B_IDRules">
                                 <el-input v-model="selectRow.S_B_ID" maxlength="20"></el-input>
                             </el-form-item>
                             <el-form-item prop="S_B_BDATE" label="負責人生日">
@@ -234,7 +234,7 @@
                             </el-form-item>
                         </div>
                         <div class="flex-row">
-                            <el-form-item prop="S_C_ID" label="聯絡人身分證字號">
+                            <el-form-item prop="S_C_ID" label="聯絡人身分證字號" :rules="S_C_IDRules">
                                 <el-input v-model="selectRow.S_C_ID" maxlength="20"></el-input>
                             </el-form-item>
                             <el-form-item prop="S_C_TEL" label="電話">
@@ -285,7 +285,7 @@
                             </el-form-item>
                         </div>
                         <div class="flex-row">
-                            <el-form-item prop="R_B_ID" label="身分證字號">
+                            <el-form-item prop="R_B_ID" label="身分證字號" :rules="R_B_IDRules">
                                 <el-input v-model="selectRow.R_B_ID" maxlength="30"></el-input>
                             </el-form-item>
                             <el-form-item prop="R_B_BDATE" label="負責人生日">
