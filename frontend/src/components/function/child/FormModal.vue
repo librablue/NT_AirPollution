@@ -712,7 +712,7 @@ export default {
 				}
 				case '7': {
 					if (!confirm('是否確認繼續?')) return false;
-                    const loading = this.$loading();
+					const loading = this.$loading();
 					const point = this.LatLon2UTM(this.form.LAT, this.form.LNG, 0, 0);
 					this.form.UTME = point[0];
 					this.form.UTMN = point[1];
@@ -729,14 +729,14 @@ export default {
 					this.axios
 						.post(`api/Form/${this.mode}Form`, this.form)
 						.then(res => {
-                            this.$emit('on-updated');
+							this.$emit('on-updated');
 							this.$message.success('畫面資料已儲存');
 							this.visible = false;
-                            loading.close();
+							loading.close();
 						})
 						.catch(err => {
-                            this.$message.error(err.response.data.ExceptionMessage);
-                            loading.close();
+							this.$message.error(err.response.data.ExceptionMessage);
+							loading.close();
 						});
 					break;
 				}
@@ -982,13 +982,17 @@ export default {
 }
 .link-download {
 	display: block;
+	width: 300px;
 	margin: 20px 0;
 	font-size: 18px;
 	font-weight: 700;
 	text-align: center;
 	color: #0f67b1;
 	border: 1px dashed #0f67b1;
-	padding: 6px 0;
+	padding: 6px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 .hint-message {
 	font-size: 14px;
