@@ -67,6 +67,21 @@ namespace NT_AirPollution.Service
         }
 
         /// <summary>
+        /// 測試連線用
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<dynamic> GetC_NO()
+        {
+            using (var cn = new OleDbConnection(accessConnStr))
+            {
+                var result = cn.Query(@"
+                    SELECT TOP 10 * FROM ABUDF");
+
+                return result;
+            }
+        }
+
+        /// <summary>
         /// 取得最新管制編號
         /// </summary>
         /// <param name="form"></param>
