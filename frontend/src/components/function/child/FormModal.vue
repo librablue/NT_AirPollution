@@ -96,7 +96,7 @@
 								</el-form-item>
 							</div>
 							<div class="flex-row">
-								<el-form-item prop="S_B_ID" label="負責人身分證字號">
+								<el-form-item prop="S_B_ID" label="負責人身分證字號" :rules="S_B_IDRules">
 									<el-input v-model="form.S_B_ID" maxlength="20"></el-input>
 								</el-form-item>
 								<el-form-item prop="S_B_BDATE" label="負責人生日">
@@ -116,7 +116,7 @@
 								</el-form-item>
 							</div>
 							<div class="flex-row">
-								<el-form-item prop="S_C_ID" label="聯絡人身分證字號">
+								<el-form-item prop="S_C_ID" label="聯絡人身分證字號" :rules="S_C_IDRules">
 									<el-input v-model="form.S_C_ID" maxlength="20"></el-input>
 								</el-form-item>
 								<el-form-item prop="S_C_TEL" label="電話">
@@ -160,7 +160,7 @@
 								</el-form-item>
 							</div>
 							<div class="flex-row">
-								<el-form-item prop="R_B_ID" label="身分證字號">
+								<el-form-item prop="R_B_ID" label="身分證字號" :rules="R_B_IDRules">
 									<el-input v-model="form.R_B_ID" maxlength="30"></el-input>
 								</el-form-item>
 								<el-form-item prop="R_B_BDATE" label="負責人生日">
@@ -453,21 +453,21 @@ export default {
 		};
 		const checkS_B_ID = (rule, value, callback) => {
 			const idRegx = /^[A-Z][12]\d{8}$/;
-			if (!this.PUB_COMP && !idRegx.test(value)) {
+			if (!this.form.PUB_COMP && !idRegx.test(value)) {
 				callback(new Error('營利事業負責人身分證字號格式錯誤'));
 			}
 			callback();
 		};
 		const checkS_C_ID = (rule, value, callback) => {
 			const idRegx = /^[A-Z][12]\d{8}$/;
-			if (!this.PUB_COMP && !idRegx.test(value)) {
+			if (!this.form.PUB_COMP && !idRegx.test(value)) {
 				callback(new Error('營利事業聯絡人身分證字號格式錯誤'));
 			}
 			callback();
 		};
 		const checkR_B_ID = (rule, value, callback) => {
 			const idRegx = /^[A-Z][12]\d{8}$/;
-			if (!this.PUB_COMP && !idRegx.test(value)) {
+			if (!this.form.PUB_COMP && !idRegx.test(value)) {
 				callback(new Error('承造負責人身分證字號格式錯誤'));
 			}
 			callback();
@@ -505,10 +505,10 @@ export default {
 				S_TEL: [{ required: true, message: '請輸入營利事業主連絡電話', trigger: 'blur' }],
 				S_B_NAM: [{ required: true, message: '請輸入營利事業負責人姓名', trigger: 'blur' }],
 				S_B_TIT: [{ required: true, message: '請輸入營利事業負責人職稱', trigger: 'blur' }],
-				S_B_ID: [{ validator: checkS_B_ID, trigger: 'blur' }],
+				// S_B_ID: [{ validator: checkS_B_ID, trigger: 'blur' }],
 				S_C_NAM: [{ required: true, message: '請輸入營利事業聯絡人姓名', trigger: 'blur' }],
 				S_C_TIT: [{ required: true, message: '請輸入營利事業聯絡人職稱', trigger: 'blur' }],
-				S_C_ID: [{ validator: checkS_C_ID, trigger: 'blur' }],
+				// S_C_ID: [{ validator: checkS_C_ID, trigger: 'blur' }],
 				S_C_ADDR: [{ required: true, message: '請輸入營利事業聯絡人地址', trigger: 'blur' }],
 				S_C_TEL: [{ required: true, message: '請輸入營利事業聯絡人電話', trigger: 'blur' }]
 			}),
@@ -519,7 +519,7 @@ export default {
 				R_TEL: [{ required: true, message: '請輸入承造連絡電話', trigger: 'blur' }],
 				R_B_NAM: [{ required: true, message: '請輸入承造負責人姓名', trigger: 'blur' }],
 				R_B_TIT: [{ required: true, message: '請輸入承造負責人職稱', trigger: 'blur' }],
-				R_B_ID: [{ validator: checkR_B_ID, trigger: 'blur' }],
+				// R_B_ID: [{ validator: checkR_B_ID, trigger: 'blur' }],
 				R_ADDR3: [{ required: true, message: '請輸入工務所地址', trigger: 'blur' }],
 				R_M_NAM: [{ required: true, message: '請輸入工地主任姓名', trigger: 'blur' }],
 				R_C_NAM: [{ required: true, message: '請輸入工地環保負責人姓名', trigger: 'blur' }],
@@ -554,6 +554,27 @@ export default {
 		C_NO() {
 			if (!this.form.C_NO || !this.form.SER_NO) return '待取號';
 			return `${this.form.C_NO}-${this.form.SER_NO}`;
+		},
+		S_B_IDRules() {
+			const rules = [{ validator: this.checkS_B_ID, trigger: 'blur' }];
+			if (!this.form.PUB_COMP) {
+				rules.unshift({ required: true, message: '營利事業負責人身分證字號格式錯誤', trigger: 'blur' });
+			}
+			return rules;
+		},
+		S_C_IDRules() {
+			const rules = [{ validator: this.checkS_C_ID, trigger: 'blur' }];
+			if (!this.form.PUB_COMP) {
+				rules.unshift({ required: true, message: '營利事業聯絡人身分證字號格式錯誤', trigger: 'blur' });
+			}
+			return rules;
+		},
+		R_B_IDRules() {
+			const rules = [{ validator: this.checkR_B_ID, trigger: 'blur' }];
+			if (!this.form.PUB_COMP) {
+				rules.unshift({ required: true, message: '承造負責人身分證字號格式錯誤', trigger: 'blur' });
+			}
+			return rules;
 		},
 		totalDays() {
 			if (!this.form.B_DATE || !this.form.E_DATE) return '';
