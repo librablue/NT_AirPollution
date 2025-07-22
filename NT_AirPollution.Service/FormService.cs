@@ -1133,7 +1133,8 @@ namespace NT_AirPollution.Service
                 double sumPrice = Math.Round(res.CurrentPrice + res.Interest + res.Penalty, 0);
                 ABUDF_1 abudf_1 = _accessService.GetABUDF_1(form);
                 string transNo = ((abudf_1?.FLNO?.Length == 16) ? abudf_1?.FLNO?.Substring(10, 6) : "000000");
-                if (abudf_1 == null)
+                // 只要還沒繳費，每次下載繳費單就刪掉再新增
+                if (string.IsNullOrEmpty(abudf_1.PM_DATE))
                 {
                     abudf_1 = new ABUDF_1();
                     abudf_1.C_NO = form.C_NO;
