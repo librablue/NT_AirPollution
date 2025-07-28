@@ -75,7 +75,7 @@ namespace NT_AirPollution.Service
             using (var cn = new OleDbConnection(accessConnStr))
             {
                 var result = cn.Query(@"
-                    SELECT TOP 10 * FROM ABUDF");
+                    SELECT TOP 10 * FROM ABUDF", commandTimeout: 180);
 
                 return result;
             }
@@ -98,7 +98,7 @@ namespace NT_AirPollution.Service
                     new
                     {
                         C_NO = $"M{chineseYear}{form.TOWN_NO}{form.KIND_NO}"
-                    });
+                    }, commandTimeout: 180);
 
                 if (result == null)
                 {
@@ -124,7 +124,7 @@ namespace NT_AirPollution.Service
                     SELECT SER_NO FROM ABUDF
                     WHERE C_NO=@C_NO
                     ORDER BY SER_NO DESC",
-                    new { C_NO = form.C_NO });
+                    new { C_NO = form.C_NO }, commandTimeout: 180);
 
                 return result.SER_NO;
             }
@@ -246,7 +246,7 @@ namespace NT_AirPollution.Service
                             M_DATE = form.M_DATE.Value.ToString("yyyy-MM-dd HH:mm:ss"),
                             KEYIN = "EPB02",
                             RECCOMMENTS = form.RECCOMMENTS
-                        });
+                        }, commandTimeout: 180);
 
                     // 20240115說前台不用停復工
                     //foreach (var item in form.StopWorks)
@@ -473,7 +473,7 @@ namespace NT_AirPollution.Service
                             M_DATE = form.M_DATE.Value.ToString("yyyy-MM-dd HH:mm:ss"),
                             C_NO = form.C_NO,
                             SER_NO = form.SER_NO
-                        });
+                        }, commandTimeout: 180);
 
 
                     // 20240115說前台不用停復工
@@ -532,7 +532,7 @@ namespace NT_AirPollution.Service
                 try
                 {
                     cn.Execute(@"DELETE FROM ABUDF_B WHERE [C_NO]=? AND [SER_NO]=?",
-                        new { C_NO = form.C_NO, SER_NO = form.SER_NO });
+                        new { C_NO = form.C_NO, SER_NO = form.SER_NO }, commandTimeout: 180);
 
                     cn.Execute(@"
                         INSERT INTO ABUDF_B ([C_NO],[SER_NO],[AP_DATE1],[B_STAT],[KIND_NO],[KIND],[YEAR],[A_KIND],[MONEY],[AREA],[VOLUMEL],[B_DAY],[B_DATE],[E_DATE],[S_AMT],[T_DAY],[PRE_C_AMT],[PRE_C_AMT1],[KEYIN],[C_DATE],[M_DATE])
@@ -560,7 +560,7 @@ namespace NT_AirPollution.Service
                             KEYIN = "EPB02",
                             C_DATE = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
                             M_DATE = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
-                        });
+                        }, commandTimeout: 180);
 
                     return true;
                 }
@@ -586,7 +586,7 @@ namespace NT_AirPollution.Service
                     SELECT TOP 1 * FROM ABUDF_1
                     WHERE P_DATE=@P_DATE AND LEFT(FLNO,4)=@BotCode
                     ORDER BY C_DATE DESC, M_DATE DESC",
-                    new { P_DATE = pdate, BotCode = base.botCode });
+                    new { P_DATE = pdate, BotCode = base.botCode }, commandTimeout: 180);
 
                 if (result == null || result.FLNO == "" || !int.TryParse(result.FLNO, out int flno))
                 {
@@ -618,7 +618,7 @@ namespace NT_AirPollution.Service
                         C_NO = form.C_NO,
                         SER_NO = form.SER_NO,
                         P_TIME = string.IsNullOrEmpty(form.AP_DATE1) ? "01" : "02"
-                    });
+                    }, commandTimeout: 180);
 
                 return result;
             }
@@ -644,7 +644,7 @@ namespace NT_AirPollution.Service
                             C_NO = abudf_1.C_NO,
                             SER_NO = abudf_1.SER_NO,
                             P_TIME = abudf_1.P_TIME
-                        });
+                        }, commandTimeout: 180);
 
                     cn.Execute(@"DELETE FROM ABUDF_1 WHERE [C_NO]=? AND [SER_NO]=? AND [P_TIME]=?",
                         new
@@ -652,7 +652,7 @@ namespace NT_AirPollution.Service
                             C_NO = abudf_1.C_NO,
                             SER_NO = abudf_1.SER_NO,
                             P_TIME = abudf_1.P_TIME
-                        });
+                        }, commandTimeout: 180);
 
                     cn.Execute(@"
                         INSERT INTO ABUDF_1 ([C_NO],[SER_NO],[P_TIME],[P_DATE],[E_DATE],[FLNO],[B_AMT],[KEYIN],[C_DATE],[M_DATE])
@@ -669,7 +669,7 @@ namespace NT_AirPollution.Service
                             KEYIN = "EPB02",
                             C_DATE = abudf_1.C_DATE.ToString("yyyy-MM-dd HH:mm:ss"),
                             M_DATE = abudf_1.M_DATE.ToString("yyyy-MM-dd HH:mm:ss")
-                        });
+                        }, commandTimeout: 180);
 
                     return true;
                 }
@@ -709,7 +709,7 @@ namespace NT_AirPollution.Service
                             A_DATE = abudf_1.A_DATE,
                             M_DATE = abudf_1.M_DATE.ToString("yyyy-MM-dd HH:mm:ss"),
                             FLNO = abudf_1.FLNO
-                        });
+                        }, commandTimeout: 180);
 
                     return true;
                 }
@@ -740,7 +740,7 @@ namespace NT_AirPollution.Service
                             C_NO = abudf_I.C_NO,
                             SER_NO = abudf_I.SER_NO,
                             P_TIME = abudf_I.P_TIME
-                        });
+                        }, commandTimeout: 180);
 
                     cn.Execute(@"
                         INSERT INTO ABUDF_I ([C_NO],[SER_NO],[P_TIME],[S_DATE],[E_DATE],[PERCENT],[F_AMT],[I_AMT],[PEN_AMT],[PEN_RATE],[KEYIN],[C_DATE],[M_DATE])
@@ -760,7 +760,7 @@ namespace NT_AirPollution.Service
                             KEYIN = "EPB02",
                             C_DATE = abudf_I.C_DATE.ToString("yyyy-MM-dd HH:mm:ss"),
                             M_DATE = abudf_I.M_DATE.ToString("yyyy-MM-dd HH:mm:ss")
-                        });
+                        }, commandTimeout: 180);
 
                     return true;
                 }
