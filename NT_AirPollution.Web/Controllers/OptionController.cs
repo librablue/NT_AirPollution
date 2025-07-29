@@ -36,7 +36,7 @@ namespace NT_AirPollution.Web.Controllers
         /// 下載檔案
         /// </summary>
         /// <param name="f">原始檔名</param>
-        /// <param name="f">下載檔名</param>
+        /// <param name="n">下載檔名</param>
         /// <returns></returns>
         public FileResult Download(string f, string n)
         {
