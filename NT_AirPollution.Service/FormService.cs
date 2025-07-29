@@ -472,10 +472,12 @@ namespace NT_AirPollution.Service
                     SELECT * FROM dbo.Payment WHERE PaymentID=@PaymentID",
                     new { PaymentID = paymentID });
 
+                if (actualPayment == null) return new List<Payment>();
+
                 // 找出相同FormID的所有銷帳單號
                 var allPayment = cn.Query<Payment>(@"
                     SELECT * FROM dbo.Payment WHERE FormID=@FormID",
-                    new { FormID = actualPayment.FormID }).ToList();
+                    new { FormID = actualPayment?.FormID }).ToList();
 
                 return allPayment;
             }
