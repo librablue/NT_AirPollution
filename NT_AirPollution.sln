@@ -17,7 +17,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NT_AirPollution.WriteOffTas
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NT_AirPollution.PaymentTest", "NT_AirPollution.PaymentTest\NT_AirPollution.PaymentTest.csproj", "{49A914F8-1676-4A71-87E1-7C8F9466D14B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NT_AirPollution.AccessTest", "NT_AirPollution.AccessTest\NT_AirPollution.AccessTest.csproj", "{C8B91461-0D37-4BC0-AC56-A6B7E48D17D9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NT_AirPollution.AccessWorker", "NT_AirPollution.AccessWorker\NT_AirPollution.AccessWorker.csproj", "{892BC498-9CAA-4B4E-AFB5-62F72423B9A4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,10 +53,10 @@ Global
 		{49A914F8-1676-4A71-87E1-7C8F9466D14B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{49A914F8-1676-4A71-87E1-7C8F9466D14B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{49A914F8-1676-4A71-87E1-7C8F9466D14B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C8B91461-0D37-4BC0-AC56-A6B7E48D17D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C8B91461-0D37-4BC0-AC56-A6B7E48D17D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C8B91461-0D37-4BC0-AC56-A6B7E48D17D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C8B91461-0D37-4BC0-AC56-A6B7E48D17D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{892BC498-9CAA-4B4E-AFB5-62F72423B9A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{892BC498-9CAA-4B4E-AFB5-62F72423B9A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{892BC498-9CAA-4B4E-AFB5-62F72423B9A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{892BC498-9CAA-4B4E-AFB5-62F72423B9A4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

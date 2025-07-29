@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C8B91461-0D37-4BC0-AC56-A6B7E48D17D9}</ProjectGuid>
+    <ProjectGuid>{892BC498-9CAA-4B4E-AFB5-62F72423B9A4}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>NT_AirPollution.AccessTest</RootNamespace>
-    <AssemblyName>NT_AirPollution.AccessTest</AssemblyName>
+    <RootNamespace>NT_AirPollution.AccessWorker</RootNamespace>
+    <AssemblyName>NT_AirPollution.AccessWorker</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -22,7 +22,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -35,7 +34,11 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="NLog, Version=6.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\packages\NLog.6.0.1\lib\net46\NLog.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -50,8 +53,22 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <Content Include="NLog.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="license\Aspose.total.lic">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="NLog.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\NT_AirPollution.Model\NT_AirPollution.Model.csproj">
+      <Project>{4a0d9c90-215e-49de-b26f-72f78c875d0f}</Project>
+      <Name>NT_AirPollution.Model</Name>
+    </ProjectReference>
     <ProjectReference Include="..\NT_AirPollution.Service\NT_AirPollution.Service.csproj">
       <Project>{7750f50b-9b37-442f-a855-e44648b86199}</Project>
       <Name>NT_AirPollution.Service</Name>

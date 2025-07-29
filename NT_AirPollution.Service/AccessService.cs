@@ -16,36 +16,6 @@ namespace NT_AirPollution.Service
         private readonly string password = "Ciohe@2565!";
 
         /// <summary>
-        /// 測試連線用
-        /// </summary>
-        /// <returns></returns>
-        public IEnumerable<dynamic> GetC_NO()
-        {
-            try
-            {
-#if !DEBUG
-        using (var impersonation = new ImpersonationContext(domain, userName, password))
-        {
-#endif
-                using (var cn = new OleDbConnection(accessConnStr))
-                {
-                    var result = cn.Query(@"
-                    SELECT TOP 10 * FROM ABUDF", commandTimeout: 180);
-
-                    return result;
-                }
-#if !DEBUG
-        }
-#endif
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex.StackTrace);
-                throw ex;
-            }
-        }
-
-        /// <summary>
         /// 取得最新管制編號
         /// </summary>
         /// <param name="form"></param>

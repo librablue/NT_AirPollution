@@ -164,7 +164,9 @@
     <Content Include="NLog.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="license\Aspose.total.lic" />
+    <Content Include="license\Aspose.total.lic">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="App_Data\Payment\Template\Payment.xlsx" />
     <Content Include="App_Data\Payment\Template\結清證明.xlsx" />
     <Content Include="App_Data\Payment\Template\free3of9.ttf" />

@@ -324,6 +324,45 @@ namespace NT_AirPollution.Service
         }
 
         /// <summary>
+        /// 產生繳費單排程使用
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<FormView> GetFormByAccessWorker()
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                var forms = cn.Query<FormView>(@"
+                    SELECT * FROM Form
+                    WHERE (VerifyStage1=3 AND FormStatus=3)
+                        OR (VerifyStage2=3 AND CalcStatus=3)");
+
+                foreach (var form in forms)
+                {
+                    form.RefundBank = cn.QueryFirstOrDefault<RefundBank>(@"
+                        SELECT * FROM RefundBank WHERE FormID=@FormID",
+                        new { FormID = form.ID });
+                    if (form.RefundBank == null) form.RefundBank = new RefundBank();
+
+                    form.Payments = cn.Query<Payment>(@"
+                        SELECT * FROM Payment WHERE FormID=@FormID",
+                        new { FormID = form.ID }).ToList();
+
+                    form.StopWorks = cn.Query<StopWork>(@"
+                        SELECT * FROM StopWork WHERE FormID=@FormID",
+                        new { FormID = form.ID }).ToList();
+
+                    foreach (var sub in form.StopWorks)
+                    {
+                        sub.DOWN_DATE2 = base.ChineseDateToWestDate(sub.DOWN_DATE);
+                        sub.UP_DATE2 = base.ChineseDateToWestDate(sub.UP_DATE);
+                    }
+                }
+
+                return forms;
+            }
+        }
+
+        /// <summary>
         /// 取得申請表單數
         /// </summary>
         /// <returns></returns>
@@ -1268,7 +1307,7 @@ namespace NT_AirPollution.Service
 
                 // 轉PDF
                 Aspose.Cells.License license = new Aspose.Cells.License();
-                license.SetLicense(HostingEnvironment.MapPath(@"~/license/Aspose.total.lic"));
+                license.SetLicense($@"{AppDomain.CurrentDomain.BaseDirectory}/license/Aspose.total.lic");
                 var workbook = new Aspose.Cells.Workbook(tempFile);
                 foreach (Aspose.Cells.Worksheet worksheet in workbook.Worksheets)
                 {
@@ -1376,7 +1415,7 @@ namespace NT_AirPollution.Service
 
                 // 轉PDF
                 Aspose.Cells.License license = new Aspose.Cells.License();
-                license.SetLicense(HostingEnvironment.MapPath(@"~/license/Aspose.total.lic"));
+                license.SetLicense($@"{AppDomain.CurrentDomain.BaseDirectory}/license/Aspose.total.lic");
                 var workbook = new Aspose.Cells.Workbook(tempFile);
                 foreach (Aspose.Cells.Worksheet worksheet in workbook.Worksheets)
                 {
@@ -1433,7 +1472,7 @@ namespace NT_AirPollution.Service
 
                 // 轉PDF
                 Aspose.Cells.License license = new Aspose.Cells.License();
-                license.SetLicense(HostingEnvironment.MapPath(@"~/license/Aspose.total.lic"));
+                license.SetLicense($@"{AppDomain.CurrentDomain.BaseDirectory}/license/Aspose.total.lic");
                 var workbook = new Aspose.Cells.Workbook(tempFile);
                 foreach (Aspose.Cells.Worksheet worksheet in workbook.Worksheets)
                 {
@@ -1465,7 +1504,7 @@ namespace NT_AirPollution.Service
                 string resultFile = $@"{_paymentPath}\Download\{form.C_NO}-{form.SER_NO}繳費證明.pdf";
 
                 Aspose.Words.License license = new Aspose.Words.License();
-                license.SetLicense(HostingEnvironment.MapPath(@"~/license/Aspose.total.lic"));
+                license.SetLicense($@"{AppDomain.CurrentDomain.BaseDirectory}/license/Aspose.total.lic");
 
                 Aspose.Words.Document doc = new Aspose.Words.Document(templateFile);
                 doc.Range.Replace("@S_NAME", form.S_NAME);

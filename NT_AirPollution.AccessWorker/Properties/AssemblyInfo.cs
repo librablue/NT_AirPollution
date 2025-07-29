@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // 組件的一般資訊是由下列的屬性集控制。
 // 變更這些屬性的值即可修改組件的相關
 // 資訊。
-[assembly: AssemblyTitle("NT_AirPollution.AccessTest")]
+[assembly: AssemblyTitle("NT_AirPollution.AccessWorker")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("HP")]
-[assembly: AssemblyProduct("NT_AirPollution.AccessTest")]
-[assembly: AssemblyCopyright("Copyright © HP 2025")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("NT_AirPollution.AccessWorker")]
+[assembly: AssemblyCopyright("Copyright ©  2025")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // 下列 GUID 為專案公開 (Expose) 至 COM 時所要使用的 typelib ID
-[assembly: Guid("c8b91461-0d37-4bc0-ac56-a6b7e48d17d9")]
+[assembly: Guid("892bc498-9caa-4b4e-afb5-62f72423b9a4")]
 
 // 組件的版本資訊由下列四個值所組成:
 //
