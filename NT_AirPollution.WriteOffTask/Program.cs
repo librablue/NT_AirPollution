@@ -45,14 +45,51 @@ namespace NT_AirPollution.WriteOffTask
                         string account = line[i].Substring(8, 16);
                         int payAmount = Convert.ToInt32(line[i].Substring(100, 10));
                         DateTime payDate = Convert.ToDateTime($"{2011 + Convert.ToInt32(line[i].Substring(93, 2))}-{line[i].Substring(95, 2)}-{line[i].Substring(97, 2)}");
+                        // 取得SQL付款資訊
+                        var paymentsInDB = _formService.GetAllPaymentByPaymentID(account);
+                        // 查無付款資訊跳過
+                        if (paymentsInDB.Count() == 0)
+                            continue;
 
-                        var payment = new Payment
+                        // 真實繳費單號
+                        var actualPayment = paymentsInDB.FirstOrDefault(o => o.PaymentID == account);
+                        // 最新繳費單號
+                        var lastPayment = paymentsInDB.OrderByDescending(o => o.CreateDate).FirstOrDefault();
+
+                        // 取得申請單
+                        var form = _formService.GetFormByID(actualPayment.FormID);
+                        // 依期數判斷更新哪種狀態
+                        if (actualPayment.Term == "01")
                         {
-                            PaymentID = account,
-                            PayAmount = payAmount,
-                            PayDate = payDate,
-                            BankLog = line[i]
-                        };
+                            form.FormStatus = FormStatus.已繳費完成;
+                            form.VerifyStage1 = VerifyStage.複審通過;
+                            form.IsMailFormStatus = true;
+                        }
+                        if (actualPayment.Term == "02")
+                        {
+                            form.CalcStatus = CalcStatus.繳退費完成;
+                            form.VerifyStage2 = VerifyStage.複審通過;
+                            form.IsMailCalcStatus = true;
+                        }
+
+                        form.FIN_DATE = DateTime.Now.AddYears(-1911).ToString("yyyMMdd");
+
+                        // 如果繳費金額=應繳金額才更新成繳費完成
+                        if (payAmount == actualPayment.PayableAmount)
+                        {
+                            // 更新申請單
+                            _formService.UpdateForm(form);
+                        }
+
+                        // 寄信通知
+                        _formService.SendStatusMail(form);
+                        // 更新付款資訊
+                        actualPayment.PayAmount = payAmount;
+                        actualPayment.PayDate = payDate;
+                        actualPayment.BankLog = line[i];
+                        _formService.UpdatePayment(actualPayment);
+
+
 
                         var abudf_1 = new ABUDF_1
                         {
@@ -65,43 +102,7 @@ namespace NT_AirPollution.WriteOffTask
                         };
 
                         // 更新Access
-                        _accessService.UpdateABUDF_1(abudf_1);
-                        // 取得SQL付款資訊
-                        var paymentInDB = _formService.GetPaymentByPaymentID(account);
-                        
-                        // 查無付款資訊跳過
-                        if (paymentInDB == null)
-                            continue;
-
-                        // 取得申請單
-                        var form = _formService.GetFormByID(paymentInDB.FormID);
-                        // 依期數判斷更新哪種狀態
-                        if (paymentInDB.Term == "01")
-                        {
-                            form.FormStatus = FormStatus.已繳費完成;
-                            form.VerifyStage1 = VerifyStage.複審通過;
-                            form.IsMailFormStatus = true;
-                        }
-                        if (paymentInDB.Term == "02")
-                        {
-                            form.CalcStatus = CalcStatus.繳退費完成;
-                            form.VerifyStage2 = VerifyStage.複審通過;
-                            form.IsMailCalcStatus = true;
-                        }
-
-                        form.FIN_DATE = DateTime.Now.AddYears(-1911).ToString("yyyMMdd");
-
-                        // 如果繳費金額=應繳金額才更新成繳費完成
-                        if (payment.PayAmount == paymentInDB.PayableAmount)
-                        {
-                            // 更新申請單
-                            _formService.UpdateForm(form);
-                        }
-
-                        // 寄信通知
-                        _formService.SendStatusMail(form);
-                        // 更新付款資訊
-                        _formService.UpdatePayment(payment);
+                        _accessService.UpdateABUDF_1(abudf_1, lastPayment.PaymentID);
                     }
 
                     string fileName = Path.GetFileName(file);

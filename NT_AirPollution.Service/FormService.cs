@@ -445,20 +445,39 @@ namespace NT_AirPollution.Service
             }
         }
 
-        /// <summary>
-        /// 取得Payment By帳號
-        /// </summary>
-        /// <param name="paymentID"></param>
-        /// <returns></returns>
         public Payment GetPaymentByPaymentID(string paymentID)
         {
             using (var cn = new SqlConnection(connStr))
             {
-                var result = cn.QueryFirstOrDefault<Payment>(@"
+                // 找出銷帳檔的那筆銷帳單號
+                var payment = cn.QueryFirstOrDefault<Payment>(@"
                     SELECT * FROM dbo.Payment WHERE PaymentID=@PaymentID",
                     new { PaymentID = paymentID });
 
-                return result;
+                return payment;
+            }
+        }
+
+        /// <summary>
+        /// 取得申請單所有銷帳單號
+        /// </summary>
+        /// <param name="paymentID"></param>
+        /// <returns></returns>
+        public List<Payment> GetAllPaymentByPaymentID(string paymentID)
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                // 找出銷帳檔的那筆銷帳單號
+                var actualPayment = cn.QueryFirstOrDefault<Payment>(@"
+                    SELECT * FROM dbo.Payment WHERE PaymentID=@PaymentID",
+                    new { PaymentID = paymentID });
+
+                // 找出相同FormID的所有銷帳單號
+                var allPayment = cn.Query<Payment>(@"
+                    SELECT * FROM dbo.Payment WHERE FormID=@FormID",
+                    new { FormID = actualPayment.FormID }).ToList();
+
+                return allPayment;
             }
         }
 
@@ -472,30 +491,19 @@ namespace NT_AirPollution.Service
         {
             using (var cn = new SqlConnection(connStr))
             {
-                cn.Open();
-                using (var trans = cn.BeginTransaction())
+                try
                 {
-                    try
-                    {
-                        cn.Execute(@"DELETE FROM dbo.Payment
-                            WHERE FormID=@FormID AND Term=@Term",
-                            new
-                            {
-                                FormID = payment.FormID,
-                                Term = payment.Term
-                            }, trans);
+                    if (payment.ID == 0)
+                        cn.Insert(payment);
+                    else
+                        cn.Update(payment);
 
-                        long id = cn.Insert(payment, trans);
-
-                        trans.Commit();
-                        return true;
-                    }
-                    catch (Exception ex)
-                    {
-                        trans.Rollback();
-                        Logger.Error($"AddPayment: {ex.StackTrace}|{ex.Message}");
-                        throw new Exception("系統發生未預期錯誤");
-                    }
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"AddPayment: {ex.StackTrace}|{ex.Message}");
+                    throw new Exception("系統發生未預期錯誤");
                 }
             }
         }
@@ -514,13 +522,15 @@ namespace NT_AirPollution.Service
                 {
                     try
                     {
-                        // 查出該筆繳款資料
-                        var paymentInDB = cn.QueryFirstOrDefault<Payment>(@"
-                            SELECT * FROM dbo.Payment WHERE PaymentID=@PaymentID",
-                            new { PaymentID = payment.PaymentID }, trans);
+                        // 因每次下載繳費單都會新增一筆銷帳編號紀錄，因此沖帳時刪除多餘的銷帳編號
+                        cn.Execute(@"
+                            DELETE FROM dbo.Payment WHERE FormID=@FormID AND PaymentID<>@PaymentID",
+                            new
+                            {
+                                FormID = payment.FormID,
+                                PaymentID = payment.PaymentID
+                            }, trans);
 
-                        if (paymentInDB == null)
-                            throw new Exception($"銷帳查無銀行帳號 {payment.PaymentID}");
 
                         // 更新繳款資訊
                         cn.Execute(@"
@@ -535,7 +545,7 @@ namespace NT_AirPollution.Service
                                 PayAmount = payment.PayAmount,
                                 PayDate = payment.PayDate,
                                 BankLog = payment.BankLog,
-                                FormID = paymentInDB.FormID
+                                FormID = payment.FormID
                             }, trans);
 
                         trans.Commit();
@@ -1218,18 +1228,35 @@ namespace NT_AirPollution.Service
                 #endregion
 
                 #region 寫入Payment
-                this.AddPayment(new Payment
+                var payment = this.GetPaymentByPaymentID(abudf_1.FLNO);
+                if (payment == null)
                 {
-                    FormID = form.ID,
-                    Term = abudf_1.P_TIME,
-                    PayEndDate = res.PayEndDate,
-                    PaymentID = abudf_1.FLNO,
-                    PayableAmount = sumPrice,
-                    Penalty = res.Penalty,
-                    Interest = res.Interest,
-                    Percent = res.Rate,
-                    CreateDate = DateTime.Now
-                });
+                    payment = new Payment
+                    {
+                        FormID = form.ID,
+                        Term = abudf_1.P_TIME,
+                        PayEndDate = res.PayEndDate,
+                        PaymentID = abudf_1.FLNO,
+                        PayableAmount = sumPrice,
+                        Penalty = res.Penalty,
+                        Interest = res.Interest,
+                        Percent = res.Rate,
+                        CreateDate = DateTime.Now
+                    };
+                }
+                else
+                {
+                    payment.FormID = form.ID;
+                    payment.Term = abudf_1.P_TIME;
+                    payment.PayEndDate = res.PayEndDate;
+                    payment.PayableAmount = sumPrice;
+                    payment.Penalty = res.Penalty;
+                    payment.Interest = res.Interest;
+                    payment.Percent = res.Rate;
+                    payment.CreateDate = DateTime.Now;
+                }
+
+                this.AddPayment(payment);
                 #endregion
 
 
