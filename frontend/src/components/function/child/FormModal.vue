@@ -16,7 +16,7 @@
 								<el-option v-for="item in district" :key="item.Code" :label="item.Name" :value="item.Code"></el-option>
 							</el-select>
 						</el-form-item>
-						<el-form-item label="申請日期">{{form.C_DATE | date}}</el-form-item>
+						<el-form-item label="申報日期">{{form.AP_DATE | westDate}}</el-form-item>
 						<el-form-item prop="CreateUserName" label="申請人">
 							<el-input v-model="form.CreateUserName" maxlength="20"></el-input>
 						</el-form-item>
@@ -405,6 +405,19 @@ export default {
 	name: 'FormModal',
 	props: ['show', 'mode', 'data'],
 	mixins: [dateTime, comma, form],
+	filters: {
+		westDate(val) {
+			if (!val) return '';
+
+			// 將民國年轉成西元年
+			const rocYear = parseInt(val.substring(0, 3), 10) + 1911;
+			const month = val.substring(3, 5);
+			const day = val.substring(5, 7);
+
+			// 用 moment 組成日期
+			return moment(`${rocYear}-${month}-${day}`, 'YYYY-MM-DD').format('YYYY-MM-DD');
+		}
+	},
 	data() {
 		const checkE_DATE = (rule, value, callback) => {
 			if (!value) {

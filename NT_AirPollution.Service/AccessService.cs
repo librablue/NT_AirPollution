@@ -81,7 +81,7 @@ namespace NT_AirPollution.Service
                         ORDER BY SER_NO DESC",
                         new { C_NO = form.C_NO }, commandTimeout: 180);
 
-                    return result.SER_NO;
+                    return result?.SER_NO ?? 1;
                 }
 #if !DEBUG
         }
