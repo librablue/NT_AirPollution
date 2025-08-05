@@ -886,19 +886,40 @@
 					})
 					.then(res => {
 						loading.close();
-						const url = window.URL.createObjectURL(new Blob([res.data]));
+
+						const contentType = res.headers['content-type'];
+						const fileName = decodeURI(res.headers['file-name'] || '');
+
+						// 判斷是否為錯誤 JSON（不是 application/pdf）
+						if (contentType && contentType.includes('application/json')) {
+							const reader = new FileReader();
+							reader.onload = () => {
+								try {
+									const json = JSON.parse(reader.result);
+									alert(json.Message || '下載失敗');
+								} catch (e) {
+									alert('發生未知錯誤');
+								}
+							};
+							reader.readAsText(res.data);
+							return;
+						}
+
+						// 成功下載檔案
+						const blob = new Blob([res.data], { type: 'application/pdf' });
+						const url = window.URL.createObjectURL(blob);
 						const link = document.createElement('a');
 						link.href = url;
-						const fileName = decodeURI(res.headers['file-name']);
-						link.setAttribute('download', fileName);
+						link.setAttribute('download', fileName || 'download.pdf');
 						document.body.appendChild(link);
 						link.click();
 						link.remove();
+						window.URL.revokeObjectURL(url);
 					})
 					.catch(err => {
 						loading.close();
 						alert('系統發生未預期錯誤');
-						console.log(err);
+						console.error(err);
 					});
 			},
 			downloadFreeProof(row) {
@@ -909,14 +930,35 @@
 					})
 					.then(res => {
 						loading.close();
-						const url = window.URL.createObjectURL(new Blob([res.data]));
+
+						const contentType = res.headers['content-type'];
+						const fileName = decodeURI(res.headers['file-name'] || '');
+
+						// 判斷是否為錯誤 JSON（不是 application/pdf）
+						if (contentType && contentType.includes('application/json')) {
+							const reader = new FileReader();
+							reader.onload = () => {
+								try {
+									const json = JSON.parse(reader.result);
+									alert(json.Message || '下載失敗');
+								} catch (e) {
+									alert('發生未知錯誤');
+								}
+							};
+							reader.readAsText(res.data);
+							return;
+						}
+
+						// 成功下載檔案
+						const blob = new Blob([res.data], { type: 'application/pdf' });
+						const url = window.URL.createObjectURL(blob);
 						const link = document.createElement('a');
 						link.href = url;
-						const fileName = decodeURI(res.headers['file-name']);
-						link.setAttribute('download', fileName);
+						link.setAttribute('download', fileName || 'download.pdf');
 						document.body.appendChild(link);
 						link.click();
 						link.remove();
+						window.URL.revokeObjectURL(url);
 					})
 					.catch(err => {
 						loading.close();
@@ -932,14 +974,35 @@
 					})
 					.then(res => {
 						loading.close();
-						const url = window.URL.createObjectURL(new Blob([res.data]));
+
+						const contentType = res.headers['content-type'];
+						const fileName = decodeURI(res.headers['file-name'] || '');
+
+						// 判斷是否為錯誤 JSON（不是 application/pdf）
+						if (contentType && contentType.includes('application/json')) {
+							const reader = new FileReader();
+							reader.onload = () => {
+								try {
+									const json = JSON.parse(reader.result);
+									alert(json.Message || '下載失敗');
+								} catch (e) {
+									alert('發生未知錯誤');
+								}
+							};
+							reader.readAsText(res.data);
+							return;
+						}
+
+						// 成功下載檔案
+						const blob = new Blob([res.data], { type: 'application/pdf' });
+						const url = window.URL.createObjectURL(blob);
 						const link = document.createElement('a');
 						link.href = url;
-						const fileName = decodeURI(res.headers['file-name']);
-						link.setAttribute('download', fileName);
+						link.setAttribute('download', fileName || 'download.pdf');
 						document.body.appendChild(link);
 						link.click();
 						link.remove();
+						window.URL.revokeObjectURL(url);
 					})
 					.catch(err => {
 						loading.close();
@@ -977,14 +1040,35 @@
 					})
 					.then(res => {
 						loading.close();
-						const url = window.URL.createObjectURL(new Blob([res.data]));
+
+						const contentType = res.headers['content-type'];
+						const fileName = decodeURI(res.headers['file-name'] || '');
+
+						// 判斷是否為錯誤 JSON（不是 application/pdf）
+						if (contentType && contentType.includes('application/json')) {
+							const reader = new FileReader();
+							reader.onload = () => {
+								try {
+									const json = JSON.parse(reader.result);
+									alert(json.Message || '下載失敗');
+								} catch (e) {
+									alert('發生未知錯誤');
+								}
+							};
+							reader.readAsText(res.data);
+							return;
+						}
+
+						// 成功下載檔案
+						const blob = new Blob([res.data], { type: 'application/pdf' });
+						const url = window.URL.createObjectURL(blob);
 						const link = document.createElement('a');
 						link.href = url;
-						const fileName = decodeURI(res.headers['file-name']);
-						link.setAttribute('download', fileName);
+						link.setAttribute('download', fileName || 'download.pdf');
 						document.body.appendChild(link);
 						link.click();
 						link.remove();
+						window.URL.revokeObjectURL(url);
 					})
 					.catch(err => {
 						loading.close();
@@ -1107,14 +1191,35 @@
 					})
 					.then(res => {
 						loading.close();
-						const url = window.URL.createObjectURL(new Blob([res.data]));
+
+						const contentType = res.headers['content-type'];
+						const fileName = decodeURI(res.headers['file-name'] || '');
+
+						// 判斷是否為錯誤 JSON（不是 application/pdf）
+						if (contentType && contentType.includes('application/json')) {
+							const reader = new FileReader();
+							reader.onload = () => {
+								try {
+									const json = JSON.parse(reader.result);
+									alert(json.Message || '下載失敗');
+								} catch (e) {
+									alert('發生未知錯誤');
+								}
+							};
+							reader.readAsText(res.data);
+							return;
+						}
+
+						// 成功下載檔案
+						const blob = new Blob([res.data], { type: 'application/pdf' });
+						const url = window.URL.createObjectURL(blob);
 						const link = document.createElement('a');
 						link.href = url;
-						const fileName = decodeURI(res.headers['file-name']);
-						link.setAttribute('download', fileName);
+						link.setAttribute('download', fileName || 'download.pdf');
 						document.body.appendChild(link);
 						link.click();
 						link.remove();
+						window.URL.revokeObjectURL(url);
 					})
 					.catch(err => {
 						loading.close();
@@ -1133,8 +1238,8 @@
 			'selectRow.PUB_COMP'(val) {
 				this.$nextTick(() => {
 					this.$refs.tab2Form.validateField('S_B_ID');
-                    this.$refs.tab2Form.validateField('S_C_ID');
-                    this.$refs.tab3Form.validateField('R_B_ID');
+					this.$refs.tab2Form.validateField('S_C_ID');
+					this.$refs.tab3Form.validateField('R_B_ID');
 				});
 			}
 		}

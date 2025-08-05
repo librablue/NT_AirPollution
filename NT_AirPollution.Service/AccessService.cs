@@ -32,9 +32,9 @@ namespace NT_AirPollution.Service
                 using (var cn = new OleDbConnection(accessConnStr))
                 {
                     var result = cn.QueryFirstOrDefault(@"
-                    SELECT * FROM ABUDF
-                    WHERE C_NO LIKE @C_NO+'%'
-                    ORDER BY C_NO DESC",
+                        SELECT * FROM ABUDF
+                        WHERE C_NO LIKE @C_NO+'%'
+                        ORDER BY C_NO DESC",
                         new
                         {
                             C_NO = $"M{chineseYear}{form.TOWN_NO}{form.KIND_NO}"
@@ -76,9 +76,9 @@ namespace NT_AirPollution.Service
                 using (var cn = new OleDbConnection(accessConnStr))
                 {
                     var result = cn.QueryFirstOrDefault(@"
-                    SELECT SER_NO FROM ABUDF
-                    WHERE C_NO=@C_NO
-                    ORDER BY SER_NO DESC",
+                        SELECT SER_NO FROM ABUDF
+                        WHERE C_NO=@C_NO
+                        ORDER BY SER_NO DESC",
                         new { C_NO = form.C_NO }, commandTimeout: 180);
 
                     return result.SER_NO;
@@ -574,9 +574,9 @@ namespace NT_AirPollution.Service
                 using (var cn = new OleDbConnection(accessConnStr))
                 {
                     var result = cn.QueryFirstOrDefault(@"
-                    SELECT TOP 1 * FROM ABUDF_1
-                    WHERE P_DATE=@P_DATE AND LEFT(FLNO,4)=@BotCode
-                    ORDER BY C_DATE DESC, M_DATE DESC",
+                        SELECT TOP 1 * FROM ABUDF_1
+                        WHERE P_DATE=@P_DATE AND LEFT(FLNO,4)=@BotCode
+                        ORDER BY C_DATE DESC, M_DATE DESC",
                         new { P_DATE = pdate, BotCode = base.botCode }, commandTimeout: 180);
 
                     if (result == null || result.FLNO == "" || !int.TryParse(result.FLNO, out int flno))
@@ -617,8 +617,8 @@ namespace NT_AirPollution.Service
                 using (var cn = new OleDbConnection(accessConnStr))
                 {
                     var result = cn.QueryFirstOrDefault<ABUDF_1>(@"
-                    SELECT TOP 1 * FROM ABUDF_1
-                    WHERE C_NO=@C_NO AND SER_NO=@SER_NO AND P_TIME=@P_TIME",
+                        SELECT TOP 1 * FROM ABUDF_1
+                        WHERE C_NO=@C_NO AND SER_NO=@SER_NO AND P_TIME=@P_TIME",
                         new
                         {
                             C_NO = form.C_NO,

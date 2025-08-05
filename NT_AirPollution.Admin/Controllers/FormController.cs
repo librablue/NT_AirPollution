@@ -20,6 +20,7 @@ namespace NT_AirPollution.Admin.Controllers
         private readonly string _uploadPath = ConfigurationManager.AppSettings["UploadPath"].ToString();
         private readonly FormService _formService = new FormService();
         private readonly AccessService _accessService = new AccessService();
+        private readonly OptionService _optionService = new OptionService();
 
         [HttpPost]
         public List<FormView> GetForms(FormFilter filter)
@@ -123,8 +124,12 @@ namespace NT_AirPollution.Admin.Controllers
                     form.S_AMT2 = result.TotalMoney;
                 }
 
-                form.COMP_L = result.Level;
+                var allDists = _optionService.GetDistrict();
+                var allProjectCode = _optionService.GetProjectCode();
 
+                form.COMP_L = result.Level;
+                form.TOWN_NA = allDists.First(o => o.Code == form.TOWN_NO).Name;
+                form.KIND = allProjectCode.First(o => o.ID == form.KIND_NO).Name;
 
                 // 有管制編號才更新Access
                 if (!string.IsNullOrEmpty(form.C_NO))

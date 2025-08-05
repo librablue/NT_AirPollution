@@ -393,7 +393,7 @@ namespace NT_AirPollution.Web.Controllers
                 if (formInDB.ClientUserID != BaseService.CurrentUser.ID)
                     throw new Exception("無法刪除他人申請單");
 
-                if(!string.IsNullOrEmpty(formInDB.C_NO))
+                if (!string.IsNullOrEmpty(formInDB.C_NO))
                     throw new Exception("申請單已審核無法刪除");
 
                 _formService.DeleteForm(form);
@@ -516,23 +516,28 @@ namespace NT_AirPollution.Web.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        public FileResult DownloadPayment(FormView form)
+        public ActionResult DownloadPayment(FormView form)
         {
-            var formInDB = _formService.GetFormByID(form.ID);
-            if (formInDB == null || (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email))
-                throw new Exception("申請單不存在");
+            try
+            {
+                var formInDB = _formService.GetFormByID(form.ID);
+                if (formInDB == null || (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email))
+                    throw new Exception("申請單不存在");
 
-            string fileName = $"繳款單{form.C_NO}-{form.SER_NO}({(form.P_KIND == "一次繳清" ? "一次繳清" : "第一期")})";
-            string pdfFile = $@"{_paymentPath}\Download\{fileName}.pdf";
+                string fileName = $"繳款單{form.C_NO}-{form.SER_NO}({(form.P_KIND == "一次繳清" ? "一次繳清" : "第一期")})";
+                string pdfPath = $@"{_paymentPath}\Download\{fileName}.pdf";
+                if (!System.IO.File.Exists(pdfPath))
+                    throw new Exception("繳費單尚未產生，請稍後再下載");
 
-            if (!System.IO.File.Exists(pdfFile))
-                throw new Exception("繳款單尚未產生，請稍後再下載");
+                // 傳到前端的檔名，避免中文亂碼
+                Response.AddHeader("file-name", Uri.EscapeDataString(Path.GetFileName(pdfPath)));
 
-
-            // 傳到前端的檔名（防止中文亂碼）
-            Response.Headers.Add("file-name", Uri.EscapeDataString(Path.GetFileName(pdfFile)));
-
-            return File(pdfFile, System.Net.Mime.MediaTypeNames.Application.Octet, Path.GetFileName(pdfFile));
+                return File(pdfPath, "application/pdf", Path.GetFileName(pdfPath));
+            }
+            catch (Exception ex)
+            {
+                return Json(new { Status = false, Message = ex.Message });
+            }
         }
 
         /// <summary>
@@ -540,23 +545,27 @@ namespace NT_AirPollution.Web.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        public FileResult DownloadRePayment(FormView form)
+        public ActionResult DownloadRePayment(FormView form)
         {
-            var formInDB = _formService.GetFormByID(form.ID);
-            if (formInDB == null || (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email))
-                throw new Exception("申請單不存在");
+            try
+            {
+                var formInDB = _formService.GetFormByID(form.ID);
+                if (formInDB == null || (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email))
+                    throw new Exception("申請單不存在");
 
-            string fileName = $"繳款單{form.C_NO}-{form.SER_NO}(結算補繳)";
-            string pdfFile = $@"{_paymentPath}\Download\{fileName}.pdf";
+                string fileName = $"繳款單{form.C_NO}-{form.SER_NO}(結算補繳)";
+                string pdfPath = _formService.CreatePaymentPDF(fileName, formInDB);
 
-            if (!System.IO.File.Exists(pdfFile))
-                throw new Exception("繳款單尚未產生，請稍後再下載");
+                // 傳到前端的檔名
+                // Uri.EscapeDataString 防中文亂碼
+                Response.Headers.Add("file-name", Uri.EscapeDataString(Path.GetFileName(pdfPath)));
 
-            // 傳到前端的檔名
-            // Uri.EscapeDataString 防中文亂碼
-            Response.Headers.Add("file-name", Uri.EscapeDataString(Path.GetFileName(pdfFile)));
-
-            return File(pdfFile, System.Net.Mime.MediaTypeNames.Application.Octet, Path.GetFileName(pdfFile));
+                return File(pdfPath, System.Net.Mime.MediaTypeNames.Application.Octet, Path.GetFileName(pdfPath));
+            }
+            catch (Exception ex)
+            {
+                return Json(new { Status = false, Message = "補繳費單產生失敗，請稍後再試" });
+            }
         }
 
         /// <summary>
@@ -617,19 +626,26 @@ namespace NT_AirPollution.Web.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        public FileResult DownloadClearProof(FormView form)
+        public ActionResult DownloadClearProof(FormView form)
         {
-            var formInDB = _formService.GetFormByID(form.ID);
-            if (formInDB == null || (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email))
-                throw new Exception("申請單不存在");
+            try
+            {
+                var formInDB = _formService.GetFormByID(form.ID);
+                if (formInDB == null || (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email))
+                    throw new Exception("申請單不存在");
 
-            string pdfPath = _formService.CreateClearProofPDF(formInDB);
+                string pdfPath = _formService.CreateClearProofPDF(formInDB);
 
-            // 傳到前端的檔名
-            // Uri.EscapeDataString 防中文亂碼
-            Response.Headers.Add("file-name", Uri.EscapeDataString(Path.GetFileName(pdfPath)));
+                // 傳到前端的檔名
+                // Uri.EscapeDataString 防中文亂碼
+                Response.Headers.Add("file-name", Uri.EscapeDataString(Path.GetFileName(pdfPath)));
 
-            return File(pdfPath, System.Net.Mime.MediaTypeNames.Application.Octet, Path.GetFileName(pdfPath));
+                return File(pdfPath, System.Net.Mime.MediaTypeNames.Application.Octet, Path.GetFileName(pdfPath));
+            }
+            catch (Exception ex)
+            {
+                return Json(new { Status = false, Message = "結清證明產生失敗，請稍後再試" });
+            }
         }
 
         /// <summary>
@@ -637,19 +653,26 @@ namespace NT_AirPollution.Web.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        public FileResult DownloadFreeProof(FormView form)
+        public ActionResult DownloadFreeProof(FormView form)
         {
-            var formInDB = _formService.GetFormByID(form.ID);
-            if (formInDB == null || (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email))
-                throw new Exception("申請單不存在");
+            try
+            {
+                var formInDB = _formService.GetFormByID(form.ID);
+                if (formInDB == null || (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email))
+                    throw new Exception("申請單不存在");
 
-            string pdfPath = _formService.CreateFreeProofPDF(formInDB);
+                string pdfPath = _formService.CreateFreeProofPDF(formInDB);
 
-            // 傳到前端的檔名
-            // Uri.EscapeDataString 防中文亂碼
-            Response.Headers.Add("file-name", Uri.EscapeDataString(Path.GetFileName(pdfPath)));
+                // 傳到前端的檔名
+                // Uri.EscapeDataString 防中文亂碼
+                Response.Headers.Add("file-name", Uri.EscapeDataString(Path.GetFileName(pdfPath)));
 
-            return File(pdfPath, System.Net.Mime.MediaTypeNames.Application.Octet, Path.GetFileName(pdfPath));
+                return File(pdfPath, System.Net.Mime.MediaTypeNames.Application.Octet, Path.GetFileName(pdfPath));
+            }
+            catch (Exception ex)
+            {
+                return Json(new { Status = false, Message = "免徵證明產生失敗，請稍後再試" });
+            }
         }
 
         /// <summary>
@@ -657,19 +680,26 @@ namespace NT_AirPollution.Web.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        public FileResult DownloadPaymentProof(FormView form)
+        public ActionResult DownloadPaymentProof(FormView form)
         {
-            var formInDB = _formService.GetFormByID(form.ID);
-            if (formInDB == null || (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email))
-                throw new Exception("申請單不存在");
+            try
+            {
+                var formInDB = _formService.GetFormByID(form.ID);
+                if (formInDB == null || (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email))
+                    throw new Exception("申請單不存在");
 
-            string pdfPath = _formService.CreatePaymentProofPDF(formInDB);
+                string pdfPath = _formService.CreatePaymentProofPDF(formInDB);
 
-            // 傳到前端的檔名
-            // Uri.EscapeDataString 防中文亂碼
-            Response.Headers.Add("file-name", Uri.EscapeDataString(Path.GetFileName(pdfPath)));
+                // 傳到前端的檔名
+                // Uri.EscapeDataString 防中文亂碼
+                Response.Headers.Add("file-name", Uri.EscapeDataString(Path.GetFileName(pdfPath)));
 
-            return File(pdfPath, System.Net.Mime.MediaTypeNames.Application.Octet, Path.GetFileName(pdfPath));
+                return File(pdfPath, System.Net.Mime.MediaTypeNames.Application.Octet, Path.GetFileName(pdfPath));
+            }
+            catch (Exception ex)
+            {
+                return Json(new { Status = false, Message = "繳費證明產生失敗，請稍後再試" });
+            }
         }
 
         ///// <summary>
