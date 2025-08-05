@@ -74,6 +74,7 @@
     <Content Include="license\Aspose.total.lic">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="connectionStrings.config" />
     <None Include="NLog.xsd">
       <SubType>Designer</SubType>
     </None>

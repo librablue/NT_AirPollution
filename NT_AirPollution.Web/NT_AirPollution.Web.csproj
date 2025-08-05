@@ -172,6 +172,7 @@
     <Content Include="App_Data\Payment\Template\free3of9.ttf" />
     <Content Include="App_Data\Payment\Template\免徵證明.xlsx" />
     <Content Include="App_Data\Payment\Template\繳費證明.docx" />
+    <Content Include="connectionStrings.config" />
     <None Include="NLog.xsd">
       <SubType>Designer</SubType>
     </None>
