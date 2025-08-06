@@ -58,7 +58,7 @@
                 <ul class="info-list">
                     <li>
                         <div class="title">管制編號：</div>
-                        <div class="content">{{item.C_NO || '(待取號)'}}</div>
+                        <div class="content">{{item.C_NO ? `${item.C_NO}-${item.SER_NO}` : '(待取號)'}}</div>
                     </li>
                     <li>
                         <div class="title">申報日期：</div>
@@ -149,9 +149,6 @@
                     <el-form-item prop="ADDR" label="工地地址或地號">
                         <el-input v-model="selectRow.ADDR" maxlength="100"></el-input>
                     </el-form-item>
-                    <el-form-item prop="B_SERNO" label="建照字號或合約編號">
-                        <el-input v-model="selectRow.B_SERNO" maxlength="60"></el-input>
-                    </el-form-item>
                     <div class="flex-row">
                         <el-form-item prop="LAT" label="座標(緯度)">
                             <el-input type="number" v-model="selectRow.LAT" maxlength="20"></el-input>
@@ -160,6 +157,9 @@
                             <el-input type="number" v-model="selectRow.LNG" maxlength="20"></el-input>
                         </el-form-item>
                     </div>
+                    <el-form-item prop="B_SERNO" label="建照字號或合約編號">
+                        <el-input v-model="selectRow.B_SERNO" maxlength="60"></el-input>
+                    </el-form-item>
                     <el-form-item prop="STATE">
                         <span slot="label">
                             工程內容概述 <el-tooltip class="item" effect="dark" content="請填寫工程施作大約內容(例如：施作道路工程，請填寫鋪設AC路面、混凝土排水溝等)" placement="top">

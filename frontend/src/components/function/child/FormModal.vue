@@ -35,9 +35,6 @@
 						<el-form-item prop="ADDR" label="工地地址或地號">
 							<el-input v-model="form.ADDR" maxlength="100"></el-input>
 						</el-form-item>
-						<el-form-item prop="B_SERNO" label="建照字號或合約編號">
-							<el-input v-model="form.B_SERNO" maxlength="60"></el-input>
-						</el-form-item>
 						<div class="flex-row">
 							<el-form-item prop="LAT" label="座標(緯度)">
 								<el-input type="number" v-model="form.LAT" maxlength="20"></el-input>
@@ -46,6 +43,9 @@
 								<el-input type="number" v-model="form.LNG" maxlength="20"></el-input>
 							</el-form-item>
 						</div>
+                        <el-form-item prop="B_SERNO" label="建照字號或合約編號">
+							<el-input v-model="form.B_SERNO" maxlength="60"></el-input>
+						</el-form-item>
 						<div class="flex-row">
 							<el-form-item prop="UTME" label="座標X">
 								<el-input type="number" v-model="form.UTME" disabled></el-input>
