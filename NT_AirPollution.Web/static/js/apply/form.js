@@ -62,6 +62,17 @@
 			date: value => {
 				if (!value || value === '0001-01-01T00:00:00') return '';
 				return moment(value).format('YYYY-MM-DD');
+			},
+			westDate(val) {
+				if (!val) return '';
+
+				// 將民國年轉成西元年
+				const rocYear = parseInt(val.substring(0, 3), 10) + 1911;
+				const month = val.substring(3, 5);
+				const day = val.substring(5, 7);
+
+				// 用 moment 組成日期
+				return moment(`${rocYear}-${month}-${day}`, 'YYYY-MM-DD').format('YYYY-MM-DD');
 			}
 		},
 		data() {
