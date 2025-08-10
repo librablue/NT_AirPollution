@@ -674,7 +674,7 @@ namespace NT_AirPollution.Service
                         }, commandTimeout: 180);
 
                     cn.Execute(@"
-                        INSERT INTO ABUDF_1 ([C_NO],[SER_NO],[P_TIME],[P_DATE],[E_DATE],[FLNO],[B_AMT],[KEYIN],[C_DATE],[M_DATE])
+                        INSERT INTO ABUDF_1 ([C_NO],[SER_NO],[P_TIME],[P_DATE],[E_DATE],[FLNO],[F_AMT],[B_AMT],[KEYIN],[C_DATE],[M_DATE])
                         VALUES (?,?,?,?,?,?,?,?,?,?)",
                         new
                         {
@@ -684,6 +684,7 @@ namespace NT_AirPollution.Service
                             P_DATE = abudf_1.P_DATE,
                             E_DATE = abudf_1.E_DATE,
                             FLNO = abudf_1.FLNO,
+                            F_AMT = abudf_1.F_AMT,
                             B_AMT = abudf_1.B_AMT,
                             KEYIN = "EPB02",
                             C_DATE = abudf_1.C_DATE.ToString("yyyy-MM-dd HH:mm:ss"),
