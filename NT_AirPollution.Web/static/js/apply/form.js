@@ -92,9 +92,31 @@
 				}
 				callback();
 			};
-			const checkLATLNG = (rule, value, callback) => {
+			const checkLAT = (rule, value, callback) => {
 				if (isNaN(value)) {
-					callback(new Error('經緯度格式錯誤'));
+					callback(new Error('緯度格式錯誤'));
+				}
+                if (+value < -90 || +value > 90) {
+					callback(new Error('緯度格式錯誤'));
+				}
+
+				const point = this.LatLon2UTM(this.selectRow.LAT, this.selectRow.LNG, 0, 0);
+				if (!String(point[0]).startsWith('2') || !String(point[1]).startsWith('2')) {
+					callback(new Error('座標不在南投範圍內'));
+				}
+				callback();
+			};
+			const checkLNG = (rule, value, callback) => {
+				if (isNaN(value)) {
+					callback(new Error('經度格式錯誤'));
+				}
+                if (+value < -180 || +value > 180) {
+					callback(new Error('經度格式錯誤'));
+				}
+
+                const point = this.LatLon2UTM(this.selectRow.LAT, this.selectRow.LNG, 0, 0);
+				if (!String(point[0]).startsWith('2') || !String(point[1]).startsWith('2')) {
+					callback(new Error('座標不在南投範圍內'));
 				}
 				callback();
 			};
@@ -168,16 +190,17 @@
 					B_SERNO: [{ required: true, message: '請輸入建照字號或合約編號', trigger: 'blur' }],
 					LAT: [
 						{ required: true, message: '請輸入座標(緯度)', trigger: 'blur' },
-						{ validator: checkLATLNG, trigger: 'blur' }
+						{ validator: checkLAT, trigger: 'blur' }
 					],
 					LNG: [
 						{ required: true, message: '請輸入座標(經度)', trigger: 'blur' },
-						{ validator: checkLATLNG, trigger: 'blur' }
+						{ validator: checkLNG, trigger: 'blur' }
 					],
 					STATE: [{ required: true, message: '請輸入工程內容概述', trigger: 'blur' }]
 				}),
 				tab2Rules: Object.freeze({
 					S_NAME: [{ required: true, message: '請輸入營建業主名稱', trigger: 'blur' }],
+					S_G_NO: [{ required: true, message: '請輸入營利事業統一編號', trigger: 'blur' }],
 					S_ADDR1: [{ required: true, message: '請輸入營利事業營業地址', trigger: 'blur' }],
 					S_ADDR2: [{ required: true, message: '請輸入營利事業聯絡地址', trigger: 'blur' }],
 					S_TEL: [{ required: true, message: '請輸入營利事業主連絡電話', trigger: 'blur' }],
