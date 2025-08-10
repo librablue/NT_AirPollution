@@ -675,7 +675,7 @@ namespace NT_AirPollution.Service
 
                     cn.Execute(@"
                         INSERT INTO ABUDF_1 ([C_NO],[SER_NO],[P_TIME],[P_DATE],[E_DATE],[FLNO],[F_AMT],[B_AMT],[KEYIN],[C_DATE],[M_DATE])
-                        VALUES (?,?,?,?,?,?,?,?,?,?)",
+                        VALUES (?,?,?,?,?,?,?,?,?,?,?)",
                         new
                         {
                             C_NO = abudf_1.C_NO,
