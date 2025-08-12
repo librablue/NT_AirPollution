@@ -389,7 +389,7 @@ namespace NT_AirPollution.Service
                                     R_C_NAM = form.R_C_NAM,
                                     A_KIND = form.A_KIND,
                                     AREA = form.AREA,
-                                    VOLUMEL = form.VOLUMEL,
+                                    VOLUMEL = form.VOLUMEL ?? 0,
                                     RATIOLB = form.RATIOLB,
                                     DENSITYL = form.DENSITYL,
                                     MONEY = form.MONEY,

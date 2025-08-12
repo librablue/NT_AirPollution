@@ -48,6 +48,7 @@ namespace NT_AirPollution.Admin.Controllers
                 if (_formService.ChineseDateToWestDate(form.B_DATE) > _formService.ChineseDateToWestDate(form.E_DATE))
                     throw new Exception("施工期程起始日期不能大於結束日期");
 
+                form.ENG_WRAP = 0;
                 form.C_DATE = DateTime.Now;
                 form.M_DATE = DateTime.Now;
                 form.FormStatus = FormStatus.審理中;
@@ -159,6 +160,7 @@ namespace NT_AirPollution.Admin.Controllers
             {
                 string c_no = _accessService.GetC_NO(form);
                 form.C_NO = c_no;
+                form.ENG_WRAP = 0;
 
                 // 寫入 Access
                 _accessService.AddABUDF(form);
