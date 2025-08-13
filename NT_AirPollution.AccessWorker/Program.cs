@@ -29,8 +29,9 @@ namespace NT_AirPollution.AccessWorker
                         fileName = $"繳款單{form.C_NO}-{form.SER_NO}(結算補繳)";
                     }
 
+                    Console.WriteLine($@"產生繳款單: {form.C_NO}-{form.SER_NO}");
                     string pdfPath = _formService.CreatePaymentPDF(fileName, form);
-                    Console.WriteLine($@"產生繳款單: {pdfPath}");
+                    Console.WriteLine($@"已產生繳款單: {form.C_NO}-{form.SER_NO}");
                 }
             }
             catch (Exception ex)
