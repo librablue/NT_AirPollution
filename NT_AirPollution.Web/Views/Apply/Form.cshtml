@@ -125,7 +125,7 @@
                             <el-option v-for="item in district" :key="item.Code" :label="item.Name" :value="item.Code"></el-option>
                         </el-select>
                     </el-form-item>
-                    <el-form-item label="申報日期">{{item.AP_DATE | westDate}}</el-form-item>
+                    <el-form-item label="申報日期">{{selectRow.AP_DATE | westDate}}</el-form-item>
                     <el-form-item prop="CreateUserName" label="申請人">
                         <el-input v-model="selectRow.CreateUserName" maxlength="20"></el-input>
                     </el-form-item>
