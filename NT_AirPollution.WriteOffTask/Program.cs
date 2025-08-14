@@ -2,6 +2,7 @@
 using NT_AirPollution.Model.Access;
 using NT_AirPollution.Model.Domain;
 using NT_AirPollution.Model.Enum;
+using NT_AirPollution.Model.View;
 using NT_AirPollution.Service;
 using System;
 using System.Collections.Generic;
@@ -90,7 +91,7 @@ namespace NT_AirPollution.WriteOffTask
                         _formService.UpdatePayment(actualPayment);
 
 
-
+                        #region 更新ABUDF_1
                         var abudf_1 = new ABUDF_1
                         {
                             F_DATE = DateTime.Now.AddYears(-1911).ToString("yyyMMdd"),
@@ -100,9 +101,68 @@ namespace NT_AirPollution.WriteOffTask
                             M_DATE = DateTime.Now,
                             FLNO = account
                         };
-
-                        // 更新Access
                         _accessService.UpdateABUDF_1(abudf_1, lastPayment.PaymentID);
+                        #endregion
+
+                        #region 計算繳費資訊
+                        PaymentInfo info = new PaymentInfo
+                        {
+                            Today = payDate,
+                            IsPublic = form.PUB_COMP,
+                            StartDate = _formService.ChineseDateToWestDate(form.B_DATE)
+                        };
+                        // 申報
+                        if (string.IsNullOrEmpty(form.AP_DATE1))
+                        {
+                            info.ApplyDate = _formService.ChineseDateToWestDate(form.AP_DATE);
+                            info.VerifyDate = form.VerifyDate1.Value;
+                            info.TotalPrice = form.S_AMT.Value;
+                            info.CurrentPrice = form.P_AMT.Value;
+                        }
+                        // 結算
+                        else
+                        {
+                            info.ApplyDate = _formService.ChineseDateToWestDate(form.AP_DATE1);
+                            info.VerifyDate = form.VerifyDate2.Value;
+                            info.TotalPrice = form.S_AMT2.Value;
+                            info.CurrentPrice = form.S_AMT2.Value - form.P_AMT.Value;
+                        }
+
+                        // 計算繳費資訊
+                        var res = _formService.CalcPayment(info);
+                        // 結算沒有滯納金&利息
+                        if (!string.IsNullOrEmpty(form.AP_DATE1))
+                        {
+                            res.Interest = 0;
+                            res.Penalty = 0;
+                        }
+
+                        double sumPrice = Math.Round(res.CurrentPrice + res.Interest + res.Penalty, 0);
+                        #endregion
+
+                        #region 寫入ABUDF_I
+                        // 申報才寫
+                        if (string.IsNullOrEmpty(form.AP_DATE1))
+                        {
+                            ABUDF_I abudf_I = new ABUDF_I();
+                            abudf_I.C_NO = form.C_NO;
+                            abudf_I.SER_NO = form.SER_NO;
+                            abudf_I.P_TIME = string.IsNullOrEmpty(form.AP_DATE1) ? "01" : "02";
+                            // 逾期起始日(逾期:開工日隔天 沒逾期:開工日)
+                            abudf_I.S_DATE = res.StartDate.AddDays(res.ApplyDate <= res.StartDate ? 0 : 1).AddYears(-1911).ToString("yyyMMdd");
+                            // 逾期結束日是繳費日當天
+                            abudf_I.E_DATE = payDate.AddYears(-1911).ToString("yyyMMdd");
+                            abudf_I.PERCENT = res.Rate;
+                            abudf_I.F_AMT = sumPrice;
+                            abudf_I.I_AMT = res.Interest;
+                            abudf_I.PEN_AMT = res.Penalty;
+                            abudf_I.PEN_RATE = 0.5;
+                            abudf_I.KEYIN = "EPB02";
+                            abudf_I.C_DATE = DateTime.Now;
+                            abudf_I.M_DATE = DateTime.Now;
+                            _accessService.AddABUDF_I(abudf_I);
+                        }
+                        #endregion
                     }
 
                     string fileName = Path.GetFileName(file);

@@ -13,11 +13,15 @@ namespace NT_AirPollution.Model.View
     public class PaymentInfo
     {
         /// <summary>
+        /// 計算基準日(產生繳費單就是當日)
+        /// </summary>
+        public DateTime Today { get; set; }
+        /// <summary>
         /// 是否為公共工程
         /// </summary>
         public bool IsPublic { get; set; }
         /// <summary>
-        /// 申請日期
+        /// 申報日期
         /// </summary>
         public DateTime ApplyDate { get; set; }
         /// <summary>

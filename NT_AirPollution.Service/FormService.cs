@@ -1147,8 +1147,9 @@ namespace NT_AirPollution.Service
 
                 PaymentInfo info = new PaymentInfo
                 {
+                    Today = DateTime.Now,
                     IsPublic = form.PUB_COMP,
-                    StartDate = this.ChineseDateToWestDate(form.B_DATE),
+                    StartDate = this.ChineseDateToWestDate(form.B_DATE)
                 };
 
                 // 申報
@@ -1208,26 +1209,6 @@ namespace NT_AirPollution.Service
                     _accessService.AddABUDF_1(abudf_1);
                 }
 
-                #region 寫入ABUDF_I
-                ABUDF_I abudf_I = new ABUDF_I();
-                abudf_I.C_NO = form.C_NO;
-                abudf_I.SER_NO = form.SER_NO;
-                abudf_I.P_TIME = string.IsNullOrEmpty(form.AP_DATE1) ? "01" : "02";
-                if (res.DelayDays > 0)
-                {
-                    abudf_I.S_DATE = res.PayEndDate.AddDays(1).AddYears(-1911).ToString("yyyMMdd");
-                    abudf_I.E_DATE = DateTime.Now.AddYears(-1911).ToString("yyyMMdd");
-                }
-                abudf_I.PERCENT = res.Rate;
-                abudf_I.F_AMT = sumPrice;
-                abudf_I.I_AMT = res.Interest;
-                abudf_I.PEN_AMT = res.Penalty;
-                abudf_I.PEN_RATE = 0.5;
-                abudf_I.KEYIN = "EPB02";
-                abudf_I.C_DATE = DateTime.Now;
-                abudf_I.M_DATE = DateTime.Now;
-                _accessService.AddABUDF_I(abudf_I);
-                #endregion
 
                 #region 寫入Payment
                 var payment = this.GetPaymentByPaymentID(abudf_1.FLNO);
@@ -1579,8 +1560,6 @@ namespace NT_AirPollution.Service
             PaymentInfo result = base.DeepCopy<PaymentInfo>(info);
             // 繳費期限
             int payDays = result.IsPublic ? 30 - 1 : 3 - 1;
-            // 今天日期
-            DateTime today = DateTime.Now;
 
 
             // 申報日 <= 開工日
@@ -1598,18 +1577,18 @@ namespace NT_AirPollution.Service
                     result.PayEndDate = result.VerifyDate.AddDays(payDays);
                 }
 
-                if (today > result.PayEndDate)
+                if (info.Today > result.PayEndDate)
                 {
                     // 延遲天數 = 今天 - 開工日
-                    result.DelayDays = (today - result.StartDate).Days;
+                    result.DelayDays = (info.Today - result.StartDate).Days;
                 }
             }
             else
             {
                 // 繳費期限 = 當天
-                result.PayEndDate = today;
+                result.PayEndDate = info.Today;
                 // 延遲天數 = 今天 - 開工日
-                result.DelayDays = (today - result.StartDate).Days;
+                result.DelayDays = (info.Today - result.StartDate).Days;
             }
 
             if (result.DelayDays <= 30)
