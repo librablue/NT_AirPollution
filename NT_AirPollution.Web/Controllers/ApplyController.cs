@@ -525,14 +525,13 @@ namespace NT_AirPollution.Web.Controllers
                     throw new Exception("申請單不存在");
 
                 string fileName = $"繳款單{form.C_NO}-{form.SER_NO}({(form.P_KIND == "一次繳清" ? "一次繳清" : "第一期")})";
-                string pdfPath = $@"{_paymentPath}\Download\{fileName}.pdf";
-                if (!System.IO.File.Exists(pdfPath))
-                    throw new Exception("繳費單尚未產生，請稍後再下載");
+                string pdfPath = _formService.CreatePaymentPDF(fileName, formInDB);
 
-                // 傳到前端的檔名，避免中文亂碼
-                Response.AddHeader("file-name", Uri.EscapeDataString(Path.GetFileName(pdfPath)));
+                // 傳到前端的檔名
+                // Uri.EscapeDataString 防中文亂碼
+                Response.Headers.Add("file-name", Uri.EscapeDataString(Path.GetFileName(pdfPath)));
 
-                return File(pdfPath, "application/pdf", Path.GetFileName(pdfPath));
+                return File(pdfPath, System.Net.Mime.MediaTypeNames.Application.Octet, Path.GetFileName(pdfPath));
             }
             catch (Exception ex)
             {
