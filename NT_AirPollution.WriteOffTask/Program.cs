@@ -40,6 +40,12 @@ namespace NT_AirPollution.WriteOffTask
                 string[] fileEntries = Directory.GetFiles(_bankFile);
                 foreach (string file in fileEntries)
                 {
+                    string currentFileName = Path.GetFileNameWithoutExtension(file); // 取得檔名，不含副檔名
+                    string[] parts = currentFileName.Split('_'); // 用 "_" 分割
+                    string chineseToday = DateTime.Now.AddYears(-1911).ToString("yyyMMdd");
+                    if (parts.Length > 1)
+                        chineseToday = parts[1]; // 取得檔名後面的日期
+
                     string[] line = File.ReadAllLines(file);
                     for (int i = 0; i < line.Length - 1; i++)
                     {
@@ -73,7 +79,7 @@ namespace NT_AirPollution.WriteOffTask
                             form.IsMailCalcStatus = true;
                         }
 
-                        form.FIN_DATE = DateTime.Now.AddYears(-1911).ToString("yyyMMdd");
+                        form.FIN_DATE = chineseToday;
 
                         // 如果繳費金額=應繳金額才更新成繳費完成
                         if (payAmount == actualPayment.PayableAmount)
@@ -94,10 +100,10 @@ namespace NT_AirPollution.WriteOffTask
                         #region 更新ABUDF_1
                         var abudf_1 = new ABUDF_1
                         {
-                            F_DATE = DateTime.Now.AddYears(-1911).ToString("yyyMMdd"),
+                            F_DATE = chineseToday,
                             F_AMT = payAmount,
                             PM_DATE = payDate.AddYears(-1911).ToString("yyyMMdd"),
-                            A_DATE = DateTime.Now.AddYears(-1911).ToString("yyyMMdd"),
+                            A_DATE = chineseToday,
                             M_DATE = DateTime.Now,
                             FLNO = account
                         };
