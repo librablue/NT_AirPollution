@@ -1183,31 +1183,34 @@ namespace NT_AirPollution.Service
 
 
                 double sumPrice = Math.Round(res.CurrentPrice + res.Interest + res.Penalty, 0);
-                ABUDF_1 abudf_1 = _accessService.GetABUDF_1(form);
-                string transNo = ((abudf_1?.FLNO?.Length == 16) ? abudf_1?.FLNO?.Substring(10, 6) : "000000");
-                // 超過繳費期限要重新產生銷帳單號
-                if (abudf_1 == null || DateTime.Now.Date > res.PayEndDate.Date)
-                {
-                    abudf_1 = new ABUDF_1();
-                    abudf_1.C_NO = form.C_NO;
-                    abudf_1.SER_NO = form.SER_NO;
-                    abudf_1.P_TIME = string.IsNullOrEmpty(form.AP_DATE1) ? "01" : "02";
-                    abudf_1.P_DATE = pdate.AddYears(-1911).ToString("yyyMMdd");
-                    abudf_1.E_DATE = res.PayEndDate.AddYears(-1911).ToString("yyyMMdd");
+                ABUDF_1 abudf_1InDB = _accessService.GetABUDF_1(form);
+                string transNo = ((abudf_1InDB?.FLNO?.Length == 16) ? abudf_1InDB?.FLNO?.Substring(10, 6) : "000000");
 
+                #region 寫入ABUDF_1
+                ABUDF_1 abudf_1 = new ABUDF_1();
+                abudf_1.C_NO = form.C_NO;
+                abudf_1.SER_NO = form.SER_NO;
+                abudf_1.P_TIME = string.IsNullOrEmpty(form.AP_DATE1) ? "01" : "02";
+                abudf_1.P_DATE = pdate.AddYears(-1911).ToString("yyyMMdd");
+                abudf_1.E_DATE = res.PayEndDate.AddYears(-1911).ToString("yyyMMdd");
+
+                // ABUDF_1不存在或超過繳費期限，要重新產生銷帳單號
+                if (abudf_1InDB == null || DateTime.Now.Date > res.PayEndDate.Date)
+                {
                     // 取得聯單序號
                     if (transNo.Length < 16 || !transNo.StartsWith(base.botCode))
                         transNo = _accessService.GetFLNo(pdate.AddYears(-1911).ToString("yyyMMdd"));
-
-                    abudf_1.FLNO = BotHelper.GetPayNo(transNo, sumPrice.ToString(), abudf_1.E_DATE);
-                    abudf_1.F_AMT = sumPrice;
-                    abudf_1.B_AMT = 0;
-                    abudf_1.KEYIN = "EPB02";
-                    abudf_1.C_DATE = DateTime.Now;
-                    abudf_1.M_DATE = DateTime.Now;
-                    // 寫入 ABUDF_1
-                    _accessService.AddABUDF_1(abudf_1);
                 }
+
+                abudf_1.FLNO = BotHelper.GetPayNo(transNo, sumPrice.ToString(), abudf_1.E_DATE);
+                abudf_1.F_AMT = sumPrice;
+                abudf_1.B_AMT = 0;
+                abudf_1.KEYIN = "EPB02";
+                abudf_1.C_DATE = DateTime.Now;
+                abudf_1.M_DATE = DateTime.Now;
+                // 寫入 ABUDF_1
+                _accessService.AddABUDF_1(abudf_1);
+                #endregion
 
 
                 #region 寫入Payment
