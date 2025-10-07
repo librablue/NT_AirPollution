@@ -503,6 +503,58 @@ namespace NT_AirPollution.Web.Controllers
                 formInDB.VerifyStage2 = VerifyStage.送審中;
                 _formService.UpdateForm(formInDB);
 
+
+                // 停工天數
+                double downDays = form.StopWorks.Sum(o => (o.UP_DATE2 - o.DOWN_DATE2).TotalDays + 1);
+                // 計算實際施工天數（總天數扣除停工）
+                DateTime bdate = _formService.ChineseDateToWestDate(form.B_DATE);
+                DateTime edate = _formService.ChineseDateToWestDate(form.E_DATE);
+                double workDays = (edate - bdate).TotalDays + 1 - downDays;
+
+                var formB = new FormB
+                {
+                    FormID = formInDB.ID,
+                    C_NO = formInDB.C_NO,
+                    SER_NO = formInDB.SER_NO,
+                    AP_DATE1 = formInDB.AP_DATE1,
+                    B_STAT = "",
+                    B_CSTAT = "",
+                    KIND_NO = form.KIND_NO,
+                    KIND = form.KIND,
+                    YEAR = formInDB.YEAR,
+                    A_KIND = formInDB.A_KIND,
+                    MONEY = formInDB.MONEY,
+                    AREA = form.AREA,
+                    VOLUMEL = form.VOLUMEL,
+                    RATIOLB = form.RATIOLB,
+                    DENSITYL = form.DENSITYL,
+                    B_DATE = form.B_DATE,
+                    E_DATE = form.E_DATE,
+                    B_YEAR = _formService.ChineseDateToWestDate(form.B_DATE).Year,
+                    S_AMT = form.S_AMT,
+                    T_DAY = Convert.ToInt32(workDays),
+                    AREA_B = form.AREA_B,
+                    AREA_F = form.AREA_F,
+                    PERC_B = form.PERC_B,
+                    PRE_C_AMT = 0,
+                    PRE_C_AMT1 = 0,
+                    B_KIND1 = "無",
+                    B_KIND2 = "無",
+                    ID_DOC1 = "無",
+                    ID_DOC2 = "無",
+                    ID_DOC3 = "無",
+                    COMP_DOC1 = "無",
+                    COMP_DOC2 = "無",
+                    COMP_DOC3 = "無",
+                    BUD_DOC1 = "無",
+                    BUD_DOC2 = "無",
+                    BUD_DOC3 = "無",
+                    WRONG_AP = "否",
+                    KEYIN = "EPB02",
+                    C_DATE = DateTime.Now
+                };
+                _formService.AddFormB(formB);
+
                 return Json(new AjaxResult { Status = true });
             }
             catch (Exception ex)

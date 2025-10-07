@@ -806,7 +806,7 @@
 			sendFormStatus1() {
 				if (!confirm('是否確認提送審查?')) return false;
 				axios
-					.post(`/Apply/SendFormStatus1`, this.selectRow)
+					.post('/Apply/SendFormStatus1', this.selectRow)
 					.then(res => {
 						if (!res.data.Status) {
 							alert(res.data.Message);

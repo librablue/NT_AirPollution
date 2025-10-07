@@ -445,6 +445,28 @@ namespace NT_AirPollution.Service
             }
         }
 
+        /// <summary>
+        /// 新增結算紀錄表
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        public bool AddFormB(FormB form)
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                try
+                {
+                    cn.Insert(form);
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"AddFormB: {ex.StackTrace}|{ex.Message}");
+                    throw new Exception("系統發生未預期錯誤");
+                }
+            }
+        }
+
         public Payment GetPaymentByPaymentID(string paymentID)
         {
             using (var cn = new SqlConnection(connStr))
