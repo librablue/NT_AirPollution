@@ -138,7 +138,7 @@ namespace NT_AirPollution.Model.Domain
         public string BUD_OTH { get; set; }
 
         /// <summary>實際施工日數</summary>
-        public int? T_DAY { get; set; }
+        public double? T_DAY { get; set; }
 
         /// <summary>建築面積</summary>
         public double? AREA_B { get; set; }
@@ -150,10 +150,10 @@ namespace NT_AirPollution.Model.Domain
         public double? PERC_B { get; set; }
 
         /// <summary>尚須退費金額</summary>
-        public long PRE_C_AMT { get; set; }
+        public double? PRE_C_AMT { get; set; }
 
         /// <summary>尚須補繳金額</summary>
-        public long PRE_C_AMT1 { get; set; }
+        public double? PRE_C_AMT1 { get; set; }
 
         /// <summary>未退費原因</summary>
         public string REASON { get; set; }

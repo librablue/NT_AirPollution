@@ -224,8 +224,27 @@ namespace NT_AirPollution.Web.Controllers
         public JsonResult GetForms(FormFilter filter)
         {
             filter.ClientUserID = BaseService.CurrentUser.ID;
-            var result = _formService.GetFormsByUser(filter);
-            return Json(result);
+            var forms = _formService.GetFormsByUser(filter);
+
+            foreach (var form in forms)
+            {
+                if(form.FormStatus == FormStatus.已繳費完成)
+                {
+                    var formB = _formService.GetFormB(form.ID);
+                    form.MONEY = formB?.MONEY ?? 0;
+                    form.AREA_F = formB.AREA_F;
+                    form.AREA_B = formB.AREA_B;
+                    form.AREA = formB.AREA;
+                    form.VOLUMEL = formB.VOLUMEL;
+                    form.RATIOLB = formB.RATIOLB;
+                    form.DENSITYL = formB.DENSITYL;
+                    form.B_DATE = formB.B_DATE;
+                    form.E_DATE = formB.E_DATE;
+                    form.S_AMT = formB.S_AMT;
+                }
+            }
+
+            return Json(forms);
         }
 
         public JsonResult GetEmptyFormModel()
@@ -314,6 +333,33 @@ namespace NT_AirPollution.Web.Controllers
 
                 if (_formService.ChineseDateToWestDate(form.B_DATE) > _formService.ChineseDateToWestDate(form.E_DATE))
                     throw new Exception("施工期程起始日期不能大於結束日期");
+
+
+                // 如果已初次申報完成就只能存ABUDF_B
+                if(formInDB.FormStatus == FormStatus.已繳費完成 && (formInDB.CalcStatus == CalcStatus.未申請 || formInDB.CalcStatus == CalcStatus.待補件))
+                {
+                    // 停工天數
+                    double downDays = form.StopWorks.Sum(o => (o.UP_DATE2 - o.DOWN_DATE2).TotalDays + 1);
+                    // 計算結算金額
+                    var result = _formService.CalcTotalMoney(form, downDays);
+                    form.S_AMT2 = result.TotalMoney;
+
+                    // 不可修改的欄位
+                    form.ID = formInDB.ID;
+                    form.C_NO = formInDB.C_NO;
+                    form.SER_NO = formInDB.SER_NO;
+                    form.AP_DATE1 = formInDB.AP_DATE1;
+                    form.KIND_NO = formInDB.KIND_NO;
+                    form.KIND = formInDB.KIND;
+                    form.YEAR = formInDB.YEAR;
+                    form.A_KIND = formInDB.A_KIND;
+                    // 更新ABUDF_B
+                    _accessService.AddABUDF_B(form);
+                    // 更新FormB
+                    _formService.AddFormB(form);
+
+                    return Json(new AjaxResult { Status = true });
+                }
 
 
                 var allDists = _optionService.GetDistrict();
@@ -467,6 +513,7 @@ namespace NT_AirPollution.Web.Controllers
 
                 // 停工天數
                 double downDays = form.StopWorks.Sum(o => (o.UP_DATE2 - o.DOWN_DATE2).TotalDays + 1);
+                // 計算費用
                 var result = _formService.CalcTotalMoney(form, downDays);
                 formInDB.COMP_L = result.Level;
                 // 提送審查的時間當作申報日期(計算繳費期限用)
@@ -503,57 +550,18 @@ namespace NT_AirPollution.Web.Controllers
                 formInDB.VerifyStage2 = VerifyStage.送審中;
                 _formService.UpdateForm(formInDB);
 
-
-                // 停工天數
-                double downDays = form.StopWorks.Sum(o => (o.UP_DATE2 - o.DOWN_DATE2).TotalDays + 1);
-                // 計算實際施工天數（總天數扣除停工）
-                DateTime bdate = _formService.ChineseDateToWestDate(form.B_DATE);
-                DateTime edate = _formService.ChineseDateToWestDate(form.E_DATE);
-                double workDays = (edate - bdate).TotalDays + 1 - downDays;
-
-                var formB = new FormB
-                {
-                    FormID = formInDB.ID,
-                    C_NO = formInDB.C_NO,
-                    SER_NO = formInDB.SER_NO,
-                    AP_DATE1 = formInDB.AP_DATE1,
-                    B_STAT = "",
-                    B_CSTAT = "",
-                    KIND_NO = form.KIND_NO,
-                    KIND = form.KIND,
-                    YEAR = formInDB.YEAR,
-                    A_KIND = formInDB.A_KIND,
-                    MONEY = formInDB.MONEY,
-                    AREA = form.AREA,
-                    VOLUMEL = form.VOLUMEL,
-                    RATIOLB = form.RATIOLB,
-                    DENSITYL = form.DENSITYL,
-                    B_DATE = form.B_DATE,
-                    E_DATE = form.E_DATE,
-                    B_YEAR = _formService.ChineseDateToWestDate(form.B_DATE).Year,
-                    S_AMT = form.S_AMT,
-                    T_DAY = Convert.ToInt32(workDays),
-                    AREA_B = form.AREA_B,
-                    AREA_F = form.AREA_F,
-                    PERC_B = form.PERC_B,
-                    PRE_C_AMT = 0,
-                    PRE_C_AMT1 = 0,
-                    B_KIND1 = "無",
-                    B_KIND2 = "無",
-                    ID_DOC1 = "無",
-                    ID_DOC2 = "無",
-                    ID_DOC3 = "無",
-                    COMP_DOC1 = "無",
-                    COMP_DOC2 = "無",
-                    COMP_DOC3 = "無",
-                    BUD_DOC1 = "無",
-                    BUD_DOC2 = "無",
-                    BUD_DOC3 = "無",
-                    WRONG_AP = "否",
-                    KEYIN = "EPB02",
-                    C_DATE = DateTime.Now
-                };
-                _formService.AddFormB(formB);
+                #region 寫入 FormB
+                // 不可修改的欄位
+                form.ID = formInDB.ID;
+                form.C_NO = formInDB.C_NO;
+                form.SER_NO = formInDB.SER_NO;
+                form.AP_DATE1 = formInDB.AP_DATE1;
+                form.KIND_NO = formInDB.KIND_NO;
+                form.KIND = formInDB.KIND;
+                form.YEAR = formInDB.YEAR;
+                form.A_KIND = formInDB.A_KIND;
+                _formService.AddFormB(form);
+                #endregion
 
                 return Json(new AjaxResult { Status = true });
             }

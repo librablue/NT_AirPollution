@@ -169,7 +169,9 @@
 					RATIOLB: 1.31,
 					DENSITYL: 1.51,
 					D2: null,
-					E2: null
+					E2: null,
+                    LAT: null,
+                    LNG: null
 				},
 				banks: Object.freeze(banksAry),
 				dialogVisible: false,
@@ -301,9 +303,21 @@
 					return 0;
 				}
 			},
+            calcC_MONEYB() {
+				try {
+					if (!this.selectRow.FormB.MONEY) throw '';
+					return +((this.selectRow.FormB.MONEY * this.selectRow.FormB.PERCENT) / 100).toFixed(0);
+				} catch (err) {
+					return 0;
+				}
+			},
 			calcPERC_B() {
 				if (!this.selectRow.AREA_B || !this.selectRow.AREA_F) return 0;
 				return ((+this.selectRow.AREA_B / +this.selectRow.AREA_F) * 100).toFixed(2);
+			},
+			calcPERC_B2() {
+				if (!this.selectRow.FormB.AREA_B || !this.selectRow.FormB.AREA_F) return 0;
+				return ((+this.selectRow.FormB.AREA_B / +this.selectRow.FormB.AREA_F) * 100).toFixed(2);
 			}
 		},
 		methods: {
@@ -547,7 +561,7 @@
 			showModal(row) {
 				this.mode = 'Update';
 				this.activeTab = '1';
-				this.selectRow = JSON.parse(JSON.stringify(row));
+				this.selectRow = Object.assign({}, this.selectRow, JSON.parse(JSON.stringify(row)));
 				const point = this.selectRow.LATLNG.split(',');
 				this.selectRow.LAT = point[0] || null;
 				this.selectRow.LNG = point[1] || null;
@@ -800,7 +814,7 @@
 				}
 			},
 			showSelfCheckModal(row) {
-				this.selectRow = JSON.parse(JSON.stringify(row));
+				this.selectRow = Object.assign(this.selectRow, JSON.parse(JSON.stringify(row)));
 				this.selfCheckModalVisible = true;
 			},
 			sendFormStatus1() {
@@ -848,7 +862,7 @@
 			},
 			copyForm(row) {
 				this.mode = 'Add';
-				this.selectRow = JSON.parse(JSON.stringify(row));
+				this.selectRow = Object.assign(this.selectRow, JSON.parse(JSON.stringify(row)));
 				const point = this.selectRow.LATLNG.split(',');
 				this.selectRow.LAT = point[0] || null;
 				this.selectRow.LNG = point[1] || null;
@@ -1165,7 +1179,7 @@
 			//    });
 			//},
 			showBankAccountModal(row) {
-				this.selectRow = JSON.parse(JSON.stringify(row));
+				this.selectRow = Object.assign(this.selectRow, JSON.parse(JSON.stringify(row)));
 				this.selectRow.RefundBank = Object.assign({}, row.RefundBank, {
 					FormID: row.ID,
 					File: null

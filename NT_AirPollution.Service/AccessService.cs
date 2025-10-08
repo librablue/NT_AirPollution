@@ -500,6 +500,7 @@ namespace NT_AirPollution.Service
         using (var impersonation = new ImpersonationContext(domain, userName, password))
         {
 #endif
+                DateTime now = DateTime.Now;
                 double workDays = (base.ChineseDateToWestDate(form.E_DATE) - base.ChineseDateToWestDate(form.B_DATE)).TotalDays + 1;
                 double downDays = form.StopWorks.Sum(o => o.DOWN_DAY);
                 string B_STAT;
@@ -517,8 +518,8 @@ namespace NT_AirPollution.Service
                             new { C_NO = form.C_NO, SER_NO = form.SER_NO }, commandTimeout: 180);
 
                     cn.Execute(@"
-                        INSERT INTO ABUDF_B ([C_NO],[SER_NO],[AP_DATE1],[B_STAT],[KIND_NO],[KIND],[YEAR],[A_KIND],[MONEY],[AREA],[VOLUMEL],[B_DAY],[B_DATE],[E_DATE],[S_AMT],[T_DAY],[PRE_C_AMT],[PRE_C_AMT1],[KEYIN],[C_DATE],[M_DATE])
-                        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                        INSERT INTO ABUDF_B ([C_NO],[SER_NO],[AP_DATE1],[B_STAT],[KIND_NO],[KIND],[YEAR],[A_KIND],[MONEY],[AREA],[VOLUMEL],[B_DAY],[B_DATE],[E_DATE],[B_YEAR],[S_AMT],[T_DAY],[PRE_C_AMT],[PRE_C_AMT1],[KEYIN],[C_DATE],[M_DATE])
+                        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                         new
                         {
                             C_NO = form.C_NO,
@@ -535,13 +536,14 @@ namespace NT_AirPollution.Service
                             B_DAY = downDays,
                             B_DATE = form.B_DATE,
                             E_DATE = form.E_DATE,
+                            B_YEAR = Math.Round((workDays - downDays + 1) / 365, 2, MidpointRounding.AwayFromZero),
                             S_AMT = form.S_AMT,
                             T_DAY = workDays - downDays + 1,
                             PRE_C_AMT = form.S_AMT > form.S_AMT2 ? form.S_AMT - form.S_AMT2 : 0,
                             PRE_C_AMT1 = form.S_AMT2 > form.S_AMT ? form.S_AMT2 - form.S_AMT : 0,
                             KEYIN = "EPB02",
-                            C_DATE = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
-                            M_DATE = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
+                            C_DATE = now.ToString("yyyy-MM-dd HH:mm:ss"),
+                            M_DATE = now.ToString("yyyy-MM-dd HH:mm:ss")
                         }, commandTimeout: 180);
 
                     return true;

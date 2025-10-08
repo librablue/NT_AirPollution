@@ -266,10 +266,12 @@ namespace NT_AirPollution.Admin.Controllers
                     }
                 }
 
-                // 更新 Access
-                //_accessService.AddABUDF_B(form);
-                // 更新表單
+                // 更新 ABUDF_B
+                _accessService.AddABUDF_B(form);
+                // 更新Form
                 _formService.UpdateForm(form);
+                // 更新FormB
+                _formService.AddFormB(form);
                 // 寄送通知
                 _formService.SendStatusMail(form);
                 // 判斷如果是通過待繳費就產生繳費單(為了先新增ABUDF_1)
