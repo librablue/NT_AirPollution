@@ -113,10 +113,10 @@ namespace NT_AirPollution.Service
                         sub.UP_DATE2 = base.ChineseDateToWestDate(sub.UP_DATE);
                     }
 
-                    if (result.FormStatus == FormStatus.已繳費完成)
-                    {
-                        this.FormBMapper(result);
-                    }
+                    //if (result.FormStatus == FormStatus.已繳費完成)
+                    //{
+                    //    this.FormBMapper(result);
+                    //}
                 }
 
                 return result;
@@ -1774,16 +1774,19 @@ namespace NT_AirPollution.Service
         public void FormBMapper(FormView form)
         {
             var formB = this.GetFormB(form.ID);
-            form.MONEY = formB?.MONEY ?? 0;
-            form.AREA_F = formB.AREA_F;
-            form.AREA_B = formB.AREA_B;
-            form.AREA = formB.AREA;
-            form.VOLUMEL = formB.VOLUMEL;
-            form.RATIOLB = formB.RATIOLB;
-            form.DENSITYL = formB.DENSITYL;
-            form.B_DATE = formB.B_DATE;
-            form.E_DATE = formB.E_DATE;
-            form.S_AMT = formB.S_AMT;
+            if (formB != null)
+            {
+                form.MONEY = formB?.MONEY ?? 0;
+                form.AREA_F = formB.AREA_F;
+                form.AREA_B = formB.AREA_B;
+                form.AREA = formB.AREA;
+                form.VOLUMEL = formB.VOLUMEL;
+                form.RATIOLB = formB.RATIOLB;
+                form.DENSITYL = formB.DENSITYL;
+                form.B_DATE = formB.B_DATE;
+                form.E_DATE = formB.E_DATE;
+                form.S_AMT = formB.S_AMT;
+            }
         }
     }
 }
