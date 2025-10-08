@@ -314,7 +314,7 @@
                 </el-form>
             </el-tab-pane>
             <el-tab-pane label="經費資料" name="4" :disabled="selectRow.FormStatus <= 2">
-                <el-form ref="tab4Form" :rules="tab4Rules" :model="selectRow" label-width="auto" :disabled="selectRow.CalcStatus > 2">
+                <el-form ref="tab4Form" :rules="tab4Rules" :model="selectRow" label-width="auto" :disabled="selectRow.FormStatus > 2">
                     <div class="flex-row">
                         <el-form-item prop="MONEY" label="工程合約經費(元)">
                             <el-input type="number" v-model="selectRow.MONEY"></el-input>
@@ -344,18 +344,18 @@
                     <div v-if="selectRow.KIND_NO === 'B'" v-cloak>
                         <div style="margin-bottom:10px">鬆方體積換算表</div>
                         @*<div class="contact-group">
-                                <div class="flex-row" style="justify-content: flex-start; align-items: flex-end">
-                                    <el-form-item label="實方體積(立方公尺)">
-                                        <el-input type="number" v-model="selectRow.D2"></el-input>
-                                    </el-form-item>
-                                    <el-form-item label="鬆實方比值">
-                                        <el-input type="number" v-model="selectRow.RATIOLB"></el-input>
-                                    </el-form-item>
-                                    <el-form-item>
-                                        <el-button type="primary" round @@click="calcD2">換算</el-button>
-                                    </el-form-item>
-                                </div>
-                            </div>*@
+                            <div class="flex-row" style="justify-content: flex-start; align-items: flex-end">
+                                <el-form-item label="實方體積(立方公尺)">
+                                    <el-input type="number" v-model="selectRow.D2"></el-input>
+                                </el-form-item>
+                                <el-form-item label="鬆實方比值">
+                                    <el-input type="number" v-model="selectRow.RATIOLB"></el-input>
+                                </el-form-item>
+                                <el-form-item>
+                                    <el-button type="primary" round @@click="calcD2">換算</el-button>
+                                </el-form-item>
+                            </div>
+                        </div>*@
                         <div class="contact-group">
                             <div class="flex-row" style="justify-content: flex-start; align-items: flex-end">
                                 <el-form-item label="鬆方重量(公噸)">
@@ -377,15 +377,15 @@
                     <div class="flex-row">
                         <el-form-item prop="B_DATE" label="開始日期">
                             <div class="el-input">
-                                <input type="text" class="el-input__inner datepicker" data-key="B_DATE" v-model="selectRow.B_DATE" :disabled="selectRow.CalcStatus > 2" readonly />
+                                <input type="text" class="el-input__inner datepicker" data-key="B_DATE" v-model="selectRow.B_DATE" :disabled="selectRow.FormStatus > 2" readonly />
                             </div>
                         </el-form-item>
                         <el-form-item prop="E_DATE" label="結束日期">
                             <div class="el-input">
-                                <input type="text" class="el-input__inner datepicker" data-key="E_DATE" v-model="selectRow.E_DATE" :disabled="selectRow.CalcStatus > 2" readonly />
+                                <input type="text" class="el-input__inner datepicker" data-key="E_DATE" v-model="selectRow.E_DATE" :disabled="selectRow.FormStatus > 2" readonly />
                             </div>
                         </el-form-item>
-                        <el-form-item label="預計施工天數">{{totalDays}}</el-form-item>
+                        <el-form-item label="預計施工天數">{{totalDays(selectRow.B_DATE, selectRow.E_DATE)}}</el-form-item>
                     </div>
                     <el-form-item label="規定繳費方式">
                         <el-select v-model="selectRow.P_KIND" :disabled="selectRow.FormStatus >= 3">
@@ -399,6 +399,67 @@
                             <el-option label="無" value="無"></el-option>
                         </el-select>
                     </el-form-item>
+                </el-form>
+                <el-form v-if="selectRow.FormB" ref="tab4FormB" :rules="tab4Rules" :model="selectRow.FormB" label-width="auto" :disabled="selectRow.CalcStatus > 2">
+                    <div class="flex-row">
+                        <el-form-item prop="MONEY" label="工程合約經費(元)">
+                            <el-input type="number" v-model="selectRow.FormB.MONEY"></el-input>
+                        </el-form-item>
+                        <el-form-item prop="C_MONEY" label="工程環保經費(元)"><div style="min-width:120px">{{calcC_MONEYB | comma}}</div></el-form-item>
+                        <el-form-item prop="PERCENT" label="工程合約經費比例">{{selectRow.PERCENT}}%</el-form-item>
+                    </div>
+                    <div v-if="selectRow.FormB.KIND_NO === '1' || selectRow.FormB.KIND_NO === '2'" class="flex-row">
+                        <el-form-item prop="AREA_F" label="基地面積">
+                            <el-input type="number" style="width:120px" v-model="selectRow.AREA_F"></el-input> 平方公尺
+                        </el-form-item>
+                        <el-form-item prop="AREA_B" label="建築面積">
+                            <el-input type="number" style="width:120px" v-model="selectRow.AREA_B"></el-input> 平方公尺
+                        </el-form-item>
+                        <el-form-item prop="PERC_B" label="建蔽率">{{calcPERC_B2}}%</el-form-item>
+                    </div>
+                    <div v-else-if="selectRow.KIND_NO === '3'">
+                        <el-form-item prop="AREA2" label="總樓地板面積(平方公尺)">
+                            <el-input type="number" v-model="selectRow.AREA2" disabled></el-input>
+                        </el-form-item>
+                    </div>
+                    <div v-else>
+                        <el-form-item prop="AREA" label="工程面積">
+                            <el-input type="number" v-model="selectRow.FormB.AREA" style="width:120px"></el-input> 平方公尺
+                        </el-form-item>
+                    </div>
+                    <div v-if="selectRow.KIND_NO === 'B'" v-cloak>
+                        <div style="margin-bottom:10px">鬆方體積換算表</div>
+                        <div class="contact-group">
+                            <div class="flex-row" style="justify-content: flex-start; align-items: flex-end">
+                                <el-form-item label="鬆方重量(公噸)">
+                                    <el-input type="number" v-model="selectRow.E2" disabled></el-input>
+                                </el-form-item>
+                                <el-form-item label="密度">
+                                    <el-input type="number" v-model="selectRow.FormB.DENSITYL"></el-input>
+                                </el-form-item>
+                                <el-form-item>
+                                    <el-button type="primary" round @@click="calcE2_B">換算</el-button>
+                                </el-form-item>
+                            </div>
+                        </div>
+                        <div class="hint-message"><i class="el-icon-info"></i> 鬆方體積除以實方體積之比值以一‧三一計，鬆方之密度以一‧五一公噸/立方公尺計。營建業主如有現地取樣之實方與鬆方試驗相關數據，得報請地方主管機關同意後，依該數據採計。</div>
+                        <el-form-item prop="VOLUMEL" label="外運土石體積(立方公尺)">
+                            <el-input type="number" v-model="selectRow.FormB.VOLUMEL"></el-input>
+                        </el-form-item>
+                    </div>
+                    <div class="flex-row">
+                        <el-form-item prop="B_DATE" label="開始日期">
+                            <div class="el-input">
+                                <input type="text" class="el-input__inner datepicker" data-key="FormB.B_DATE" v-model="selectRow.FormB.B_DATE" :disabled="selectRow.CalcStatus > 2" readonly />
+                            </div>
+                        </el-form-item>
+                        <el-form-item prop="E_DATE" label="結束日期">
+                            <div class="el-input">
+                                <input type="text" class="el-input__inner datepicker" data-key="FormB.E_DATE" v-model="selectRow.FormB.E_DATE" :disabled="selectRow.CalcStatus > 2" readonly />
+                            </div>
+                        </el-form-item>
+                        <el-form-item label="預計施工天數">{{totalDays(selectRow.FormB.B_DATE, selectRow.FormB.E_DATE)}}</el-form-item>
+                    </div>
                 </el-form>
             </el-tab-pane>
             <el-tab-pane label="檢附資料" name="5" :disabled="selectRow.FormStatus <= 2">

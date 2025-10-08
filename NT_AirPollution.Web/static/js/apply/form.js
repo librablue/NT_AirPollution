@@ -96,7 +96,7 @@
 				if (isNaN(value)) {
 					callback(new Error('緯度格式錯誤'));
 				}
-                if (+value < -90 || +value > 90) {
+				if (+value < -90 || +value > 90) {
 					callback(new Error('緯度格式錯誤'));
 				}
 
@@ -110,11 +110,11 @@
 				if (isNaN(value)) {
 					callback(new Error('經度格式錯誤'));
 				}
-                if (+value < -180 || +value > 180) {
+				if (+value < -180 || +value > 180) {
 					callback(new Error('經度格式錯誤'));
 				}
 
-                const point = this.LatLon2UTM(this.selectRow.LAT, this.selectRow.LNG, 0, 0);
+				const point = this.LatLon2UTM(this.selectRow.LAT, this.selectRow.LNG, 0, 0);
 				if (!String(point[0]).startsWith('2') || !String(point[1]).startsWith('2')) {
 					callback(new Error('座標不在南投範圍內'));
 				}
@@ -170,8 +170,8 @@
 					DENSITYL: 1.51,
 					D2: null,
 					E2: null,
-                    LAT: null,
-                    LNG: null
+					LAT: null,
+					LNG: null
 				},
 				banks: Object.freeze(banksAry),
 				dialogVisible: false,
@@ -278,20 +278,6 @@
 				}
 				return rules;
 			},
-			totalDays() {
-				if (!this.selectRow.B_DATE || !this.selectRow.E_DATE) return '';
-				const startDate = `${+this.selectRow.B_DATE.substr(0, 3) + 1911}-${this.selectRow.B_DATE.substr(3, 2)}-${this.selectRow.B_DATE.substr(5, 2)}`;
-				const endDate = `${+this.selectRow.E_DATE.substr(0, 3) + 1911}-${this.selectRow.E_DATE.substr(3, 2)}-${this.selectRow.E_DATE.substr(5, 2)}`;
-				var date1 = new Date(startDate);
-				var date2 = new Date(endDate);
-
-				// 計算毫秒差異
-				var diff = Math.abs(date2 - date1 + 1000 * 60 * 60 * 24);
-				// 轉換為天數
-				var dayDiff = Math.ceil(diff / (1000 * 60 * 60 * 24));
-
-				return dayDiff;
-			},
 			filterAttachmentInfo() {
 				return this.attachmentInfo.filter(item => item.PUB_COMP === this.selectRow.PUB_COMP);
 			},
@@ -303,7 +289,7 @@
 					return 0;
 				}
 			},
-            calcC_MONEYB() {
+			calcC_MONEYB() {
 				try {
 					if (!this.selectRow.FormB.MONEY) throw '';
 					return +((this.selectRow.FormB.MONEY * this.selectRow.FormB.PERCENT) / 100).toFixed(0);
@@ -347,9 +333,18 @@
 							d: `${inst.selectedDay}`.padStart(2, '0')
 						};
 
-						var dateFormate = `${objDate.y}${objDate.m}${objDate.d}`;
+						const key = inst.input[0].dataset.key; // 例如 'FormB.S_DATE' 或 'S_DATE'
+						const dateFormate = `${objDate.y}${objDate.m}${objDate.d}`;
 						inst.input.val(dateFormate);
-						this.selectRow[inst.input[0].dataset.key] = dateFormate;
+                        // 根據 key 的值來決定要設值的位置
+						if (key.includes('.')) {
+							// 有階層結構，例如 'FormB.S_DATE'
+							const [parent, child] = key.split('.');
+							this.selectRow[parent][child] = dateFormate;
+						} else {
+							// 沒有階層，直接設值
+							this.selectRow[key] = dateFormate;
+						}
 					}
 				});
 			},
@@ -1280,6 +1275,23 @@
 			},
 			calcE2() {
 				this.selectRow.VOLUMEL = this.selectRow.E2 / this.selectRow.DENSITYL;
+			},
+			calcE2_B() {
+				this.selectRow.FormB.VOLUMEL = this.selectRow.E2 / this.selectRow.FormB.DENSITYL;
+			},
+			totalDays(sdate, edate) {
+				if (!sdate || !edate) return '';
+				const startDate = `${+sdate.substr(0, 3) + 1911}-${sdate.substr(3, 2)}-${sdate.substr(5, 2)}`;
+				const endDate = `${+edate.substr(0, 3) + 1911}-${edate.substr(3, 2)}-${edate.substr(5, 2)}`;
+				var date1 = new Date(startDate);
+				var date2 = new Date(endDate);
+
+				// 計算毫秒差異
+				var diff = Math.abs(date2 - date1 + 1000 * 60 * 60 * 24);
+				// 轉換為天數
+				var dayDiff = Math.ceil(diff / (1000 * 60 * 60 * 24));
+
+				return dayDiff;
 			}
 		},
 		watch: {

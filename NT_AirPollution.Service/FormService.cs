@@ -69,10 +69,9 @@ namespace NT_AirPollution.Service
                         sub.UP_DATE2 = base.ChineseDateToWestDate(sub.UP_DATE);
                     }
 
-                    if (item.FormStatus == FormStatus.已繳費完成)
-                    {
-                        this.FormBMapper(item);
-                    }
+                    item.FormB = cn.QueryFirstOrDefault<FormB>(@"
+                        SELECT * FROM FormB WHERE FormID=@FormID",
+                        new { FormID = item.ID });
                 }
 
                 return forms;
@@ -113,10 +112,9 @@ namespace NT_AirPollution.Service
                         sub.UP_DATE2 = base.ChineseDateToWestDate(sub.UP_DATE);
                     }
 
-                    //if (result.FormStatus == FormStatus.已繳費完成)
-                    //{
-                    //    this.FormBMapper(result);
-                    //}
+                    result.FormB = cn.QueryFirstOrDefault<FormB>(@"
+                        SELECT * FROM FormB WHERE FormID=@FormID",
+                        new { FormID = result.ID });
                 }
 
                 return result;
@@ -172,10 +170,9 @@ namespace NT_AirPollution.Service
                         sub.UP_DATE2 = base.ChineseDateToWestDate(sub.UP_DATE);
                     }
 
-                    if (item.FormStatus == FormStatus.已繳費完成)
-                    {
-                        this.FormBMapper(item);
-                    }
+                    item.FormB = cn.QueryFirstOrDefault<FormB>(@"
+                        SELECT * FROM FormB WHERE FormID=@FormID",
+                        new { FormID = item.ID });
                 }
 
                 return result;
@@ -225,10 +222,10 @@ namespace NT_AirPollution.Service
                         sub.UP_DATE2 = base.ChineseDateToWestDate(sub.UP_DATE);
                     }
 
-                    if (item.FormStatus == FormStatus.已繳費完成)
-                    {
-                        this.FormBMapper(item);
-                    }
+                    item.FormB = cn.QueryFirstOrDefault<FormB>(@"
+                        SELECT * FROM FormB WHERE FormID=@FormID",
+                        new { FormID = item.ID });
+
 
                     // 檢查今天是否在停復工日期範圍內
                     bool isPause = result.Any(o => o.StopWorks.Any(x => x.DOWN_DATE2 < now && now > x.UP_DATE2));
@@ -297,10 +294,9 @@ namespace NT_AirPollution.Service
                         sub.UP_DATE2 = base.ChineseDateToWestDate(sub.UP_DATE);
                     }
 
-                    if (item.FormStatus == FormStatus.已繳費完成)
-                    {
-                        this.FormBMapper(item);
-                    }
+                    item.FormB = cn.QueryFirstOrDefault<FormB>(@"
+                        SELECT * FROM FormB WHERE FormID=@FormID",
+                        new { FormID = item.ID });
                 }
 
                 return result;
@@ -342,10 +338,9 @@ namespace NT_AirPollution.Service
                         sub.UP_DATE2 = base.ChineseDateToWestDate(sub.UP_DATE);
                     }
 
-                    if (item.FormStatus == FormStatus.已繳費完成)
-                    {
-                        this.FormBMapper(item);
-                    }
+                    item.FormB = cn.QueryFirstOrDefault<FormB>(@"
+                        SELECT * FROM FormB WHERE FormID=@FormID",
+                        new { FormID = item.ID });
                 }
 
                 return result;
@@ -386,10 +381,9 @@ namespace NT_AirPollution.Service
                         sub.UP_DATE2 = base.ChineseDateToWestDate(sub.UP_DATE);
                     }
 
-                    if (form.FormStatus == FormStatus.已繳費完成)
-                    {
-                        this.FormBMapper(form);
-                    }
+                    form.FormB = cn.QueryFirstOrDefault<FormB>(@"
+                        SELECT * FROM FormB WHERE FormID=@FormID",
+                        new { FormID = form.ID });
                 }
 
                 return forms;
