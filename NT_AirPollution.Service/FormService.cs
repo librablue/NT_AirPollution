@@ -12,7 +12,6 @@ using System.Configuration;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
-using System.Web.Hosting;
 
 namespace NT_AirPollution.Service
 {
@@ -69,6 +68,11 @@ namespace NT_AirPollution.Service
                         sub.DOWN_DATE2 = base.ChineseDateToWestDate(sub.DOWN_DATE);
                         sub.UP_DATE2 = base.ChineseDateToWestDate(sub.UP_DATE);
                     }
+
+                    if (item.FormStatus == FormStatus.已繳費完成)
+                    {
+                        this.FormBMapper(item);
+                    }
                 }
 
                 return forms;
@@ -107,6 +111,11 @@ namespace NT_AirPollution.Service
                     {
                         sub.DOWN_DATE2 = base.ChineseDateToWestDate(sub.DOWN_DATE);
                         sub.UP_DATE2 = base.ChineseDateToWestDate(sub.UP_DATE);
+                    }
+
+                    if (result.FormStatus == FormStatus.已繳費完成)
+                    {
+                        this.FormBMapper(result);
                     }
                 }
 
@@ -162,6 +171,11 @@ namespace NT_AirPollution.Service
                         sub.DOWN_DATE2 = base.ChineseDateToWestDate(sub.DOWN_DATE);
                         sub.UP_DATE2 = base.ChineseDateToWestDate(sub.UP_DATE);
                     }
+
+                    if (item.FormStatus == FormStatus.已繳費完成)
+                    {
+                        this.FormBMapper(item);
+                    }
                 }
 
                 return result;
@@ -209,6 +223,11 @@ namespace NT_AirPollution.Service
                     {
                         sub.DOWN_DATE2 = base.ChineseDateToWestDate(sub.DOWN_DATE);
                         sub.UP_DATE2 = base.ChineseDateToWestDate(sub.UP_DATE);
+                    }
+
+                    if (item.FormStatus == FormStatus.已繳費完成)
+                    {
+                        this.FormBMapper(item);
                     }
 
                     // 檢查今天是否在停復工日期範圍內
@@ -277,6 +296,11 @@ namespace NT_AirPollution.Service
                         sub.DOWN_DATE2 = base.ChineseDateToWestDate(sub.DOWN_DATE);
                         sub.UP_DATE2 = base.ChineseDateToWestDate(sub.UP_DATE);
                     }
+
+                    if (item.FormStatus == FormStatus.已繳費完成)
+                    {
+                        this.FormBMapper(item);
+                    }
                 }
 
                 return result;
@@ -317,6 +341,11 @@ namespace NT_AirPollution.Service
                         sub.DOWN_DATE2 = base.ChineseDateToWestDate(sub.DOWN_DATE);
                         sub.UP_DATE2 = base.ChineseDateToWestDate(sub.UP_DATE);
                     }
+
+                    if (item.FormStatus == FormStatus.已繳費完成)
+                    {
+                        this.FormBMapper(item);
+                    }
                 }
 
                 return result;
@@ -355,6 +384,11 @@ namespace NT_AirPollution.Service
                     {
                         sub.DOWN_DATE2 = base.ChineseDateToWestDate(sub.DOWN_DATE);
                         sub.UP_DATE2 = base.ChineseDateToWestDate(sub.UP_DATE);
+                    }
+
+                    if (form.FormStatus == FormStatus.已繳費完成)
+                    {
+                        this.FormBMapper(form);
                     }
                 }
 
@@ -501,7 +535,7 @@ namespace NT_AirPollution.Service
                 B_DATE = form.B_DATE,
                 E_DATE = form.E_DATE,
                 B_YEAR = Math.Round((workDays - downDays + 1) / 365, 2, MidpointRounding.AwayFromZero),
-                S_AMT = form.S_AMT,
+                S_AMT = form.S_AMT2,
                 T_DAY = workDays - downDays + 1,
                 AREA_B = form.AREA_B,
                 AREA_F = form.AREA_F,
@@ -530,8 +564,12 @@ namespace NT_AirPollution.Service
                 {
                     try
                     {
+                        cn.Execute(@"UPDATE dbo.Form SET S_AMT2=@S_AMT2 WHERE ID=@ID",
+                            new { S_AMT2 = form.S_AMT2, ID = form.ID }, trans);
+
                         cn.Execute(@"DELETE FROM dbo.FormB WHERE FormID=@FormID",
                             new { FormID = form.ID }, trans);
+
                         cn.Insert(formB, trans);
 
                         trans.Commit();
@@ -1727,6 +1765,25 @@ namespace NT_AirPollution.Service
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// 初次申報繳費完成後，讀取Form資料的部分欄位改讀FormB
+        /// </summary>
+        /// <param name="form"></param>
+        public void FormBMapper(FormView form)
+        {
+            var formB = this.GetFormB(form.ID);
+            form.MONEY = formB?.MONEY ?? 0;
+            form.AREA_F = formB.AREA_F;
+            form.AREA_B = formB.AREA_B;
+            form.AREA = formB.AREA;
+            form.VOLUMEL = formB.VOLUMEL;
+            form.RATIOLB = formB.RATIOLB;
+            form.DENSITYL = formB.DENSITYL;
+            form.B_DATE = formB.B_DATE;
+            form.E_DATE = formB.E_DATE;
+            form.S_AMT = formB.S_AMT;
         }
     }
 }

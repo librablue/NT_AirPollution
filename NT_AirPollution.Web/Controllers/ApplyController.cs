@@ -224,27 +224,8 @@ namespace NT_AirPollution.Web.Controllers
         public JsonResult GetForms(FormFilter filter)
         {
             filter.ClientUserID = BaseService.CurrentUser.ID;
-            var forms = _formService.GetFormsByUser(filter);
-
-            foreach (var form in forms)
-            {
-                if(form.FormStatus == FormStatus.已繳費完成)
-                {
-                    var formB = _formService.GetFormB(form.ID);
-                    form.MONEY = formB?.MONEY ?? 0;
-                    form.AREA_F = formB.AREA_F;
-                    form.AREA_B = formB.AREA_B;
-                    form.AREA = formB.AREA;
-                    form.VOLUMEL = formB.VOLUMEL;
-                    form.RATIOLB = formB.RATIOLB;
-                    form.DENSITYL = formB.DENSITYL;
-                    form.B_DATE = formB.B_DATE;
-                    form.E_DATE = formB.E_DATE;
-                    form.S_AMT = formB.S_AMT;
-                }
-            }
-
-            return Json(forms);
+            var result = _formService.GetFormsByUser(filter);
+            return Json(result);
         }
 
         public JsonResult GetEmptyFormModel()

@@ -377,7 +377,7 @@
                     <div class="flex-row">
                         <el-form-item prop="B_DATE" label="開始日期">
                             <div class="el-input">
-                                <input type="text" class="el-input__inner datepicker" data-key="B_DATE" v-model="selectRow.B_DATE" :disabled="selectRow.FormStatus > 2" readonly />
+                                <input type="text" class="el-input__inner datepicker" data-key="B_DATE" v-model="selectRow.B_DATE" :disabled="selectRow.CalcStatus > 2" readonly />
                             </div>
                         </el-form-item>
                         <el-form-item prop="E_DATE" label="結束日期">

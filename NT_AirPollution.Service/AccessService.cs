@@ -537,7 +537,7 @@ namespace NT_AirPollution.Service
                             B_DATE = form.B_DATE,
                             E_DATE = form.E_DATE,
                             B_YEAR = Math.Round((workDays - downDays + 1) / 365, 2, MidpointRounding.AwayFromZero),
-                            S_AMT = form.S_AMT,
+                            S_AMT = form.S_AMT2,
                             T_DAY = workDays - downDays + 1,
                             PRE_C_AMT = form.S_AMT > form.S_AMT2 ? form.S_AMT - form.S_AMT2 : 0,
                             PRE_C_AMT1 = form.S_AMT2 > form.S_AMT ? form.S_AMT2 - form.S_AMT : 0,
