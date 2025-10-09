@@ -19,7 +19,7 @@ namespace NT_AirPollution.Model.View
         [Computed]
         public List<StopWork> StopWorks { get; set; } = new List<StopWork>();
         [Computed]
-        public FormB FormB { get; set; };
+        public FormB FormB { get; set; }
         [Computed]
         public string Captcha { get; set; }
         [Computed]

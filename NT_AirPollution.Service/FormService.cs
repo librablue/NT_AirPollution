@@ -173,6 +173,62 @@ namespace NT_AirPollution.Service
                     item.FormB = cn.QueryFirstOrDefault<FormB>(@"
                         SELECT * FROM FormB WHERE FormID=@FormID",
                         new { FormID = item.ID });
+
+                    if (item.FormB == null)
+                    {
+                        double workDays = (base.ChineseDateToWestDate(item.E_DATE) - base.ChineseDateToWestDate(item.B_DATE)).TotalDays + 1;
+                        double downDays = item.StopWorks.Sum(o => o.DOWN_DAY);
+
+                        string B_STAT;
+                        if (item.P_KIND == "一次全繳")
+                            B_STAT = "A一次繳清無結算";
+                        else
+                            B_STAT = "B分期繳交待結算";
+
+                        if (item.S_AMT <= 100)
+                            B_STAT = "Z已申報結算";
+
+                        item.FormB = new FormB
+                        {
+                            FormID = item.ID,
+                            C_NO = item.C_NO,
+                            SER_NO = item.SER_NO,
+                            AP_DATE1 = item.AP_DATE1,
+                            B_STAT = B_STAT,
+                            B_CSTAT = "",
+                            KIND_NO = item.KIND_NO,
+                            KIND = item.KIND,
+                            YEAR = item.YEAR,
+                            A_KIND = item.A_KIND,
+                            MONEY = item.MONEY,
+                            AREA = item.AREA,
+                            VOLUMEL = item.VOLUMEL,
+                            RATIOLB = item.RATIOLB,
+                            DENSITYL = item.DENSITYL,
+                            B_DATE = item.B_DATE,
+                            E_DATE = item.E_DATE,
+                            B_YEAR = Math.Round((workDays - downDays + 1) / 365, 2, MidpointRounding.AwayFromZero),
+                            S_AMT = item.S_AMT2,
+                            T_DAY = workDays - downDays + 1,
+                            AREA_B = item.AREA_B,
+                            AREA_F = item.AREA_F,
+                            PERC_B = item.PERC_B,
+                            PRE_C_AMT = item.S_AMT > item.S_AMT2 ? item.S_AMT - item.S_AMT2 : 0,
+                            PRE_C_AMT1 = item.S_AMT2 > item.S_AMT ? item.S_AMT2 - item.S_AMT : 0,
+                            B_KIND1 = "無",
+                            B_KIND2 = "無",
+                            ID_DOC1 = "無",
+                            ID_DOC2 = "無",
+                            ID_DOC3 = "無",
+                            COMP_DOC1 = "無",
+                            COMP_DOC2 = "無",
+                            COMP_DOC3 = "無",
+                            BUD_DOC1 = "無",
+                            BUD_DOC2 = "無",
+                            BUD_DOC3 = "無",
+                            WRONG_AP = "否"
+                        };
+                    }
                 }
 
                 return result;
@@ -497,7 +553,7 @@ namespace NT_AirPollution.Service
         /// <returns></returns>
         public bool AddFormB(FormView form)
         {
-            double workDays = (base.ChineseDateToWestDate(form.E_DATE) - base.ChineseDateToWestDate(form.B_DATE)).TotalDays + 1;
+            double workDays = (base.ChineseDateToWestDate(form.FormB.E_DATE) - base.ChineseDateToWestDate(form.FormB.B_DATE)).TotalDays + 1;
             double downDays = form.StopWorks.Sum(o => o.DOWN_DAY);
 
             string B_STAT;
@@ -509,48 +565,24 @@ namespace NT_AirPollution.Service
             if (form.S_AMT <= 100)
                 B_STAT = "Z已申報結算";
 
-            var formB = new FormB
-            {
-                FormID = form.ID,
-                C_NO = form.C_NO,
-                SER_NO = form.SER_NO,
-                AP_DATE1 = form.AP_DATE1,
-                B_STAT = B_STAT,
-                B_CSTAT = "",
-                KIND_NO = form.KIND_NO,
-                KIND = form.KIND,
-                YEAR = form.YEAR,
-                A_KIND = form.A_KIND,
-                MONEY = form.MONEY,
-                AREA = form.AREA,
-                VOLUMEL = form.VOLUMEL,
-                RATIOLB = form.RATIOLB,
-                DENSITYL = form.DENSITYL,
-                B_DATE = form.B_DATE,
-                E_DATE = form.E_DATE,
-                B_YEAR = Math.Round((workDays - downDays + 1) / 365, 2, MidpointRounding.AwayFromZero),
-                S_AMT = form.S_AMT2,
-                T_DAY = workDays - downDays + 1,
-                AREA_B = form.AREA_B,
-                AREA_F = form.AREA_F,
-                PERC_B = form.PERC_B,
-                PRE_C_AMT = form.S_AMT > form.S_AMT2 ? form.S_AMT - form.S_AMT2 : 0,
-                PRE_C_AMT1 = form.S_AMT2 > form.S_AMT ? form.S_AMT2 - form.S_AMT : 0,
-                B_KIND1 = "無",
-                B_KIND2 = "無",
-                ID_DOC1 = "無",
-                ID_DOC2 = "無",
-                ID_DOC3 = "無",
-                COMP_DOC1 = "無",
-                COMP_DOC2 = "無",
-                COMP_DOC3 = "無",
-                BUD_DOC1 = "無",
-                BUD_DOC2 = "無",
-                BUD_DOC3 = "無",
-                WRONG_AP = "否",
-                KEYIN = "EPB02",
-                C_DATE = DateTime.Now
-            };
+            var formB = form.FormB;
+            formB.FormID = form.ID;
+            formB.C_NO = form.C_NO;
+            formB.SER_NO = form.SER_NO;
+            formB.AP_DATE1 = form.AP_DATE1;
+            formB.B_STAT = B_STAT;
+            formB.KIND_NO = form.KIND_NO;
+            formB.KIND = form.KIND;
+            formB.YEAR = form.YEAR;
+            formB.A_KIND = form.A_KIND;
+            formB.B_YEAR = Math.Round((workDays - downDays + 1) / 365, 2, MidpointRounding.AwayFromZero);
+            formB.S_AMT = form.S_AMT2;
+            formB.T_DAY = workDays - downDays + 1;
+            formB.PRE_C_AMT = form.S_AMT > form.S_AMT2 ? form.S_AMT - form.S_AMT2 : 0;
+            formB.PRE_C_AMT1 = form.S_AMT2 > form.S_AMT ? form.S_AMT2 - form.S_AMT : 0;
+            formB.KEYIN = "EPB02";
+            formB.C_DATE = DateTime.Now;
+
             using (var cn = new SqlConnection(connStr))
             {
                 cn.Open();
@@ -558,8 +590,8 @@ namespace NT_AirPollution.Service
                 {
                     try
                     {
-                        cn.Execute(@"UPDATE dbo.Form SET S_AMT2=@S_AMT2 WHERE ID=@ID",
-                            new { S_AMT2 = form.S_AMT2, ID = form.ID }, trans);
+                        //cn.Execute(@"UPDATE dbo.Form SET S_AMT2=@S_AMT2 WHERE ID=@ID",
+                        //    new { S_AMT2 = form.S_AMT2, ID = form.ID }, trans);
 
                         cn.Execute(@"DELETE FROM dbo.FormB WHERE FormID=@FormID",
                             new { FormID = form.ID }, trans);
@@ -833,7 +865,7 @@ namespace NT_AirPollution.Service
         }
 
         /// <summary>
-        /// 計算總金額
+        /// 計算總金額(因為前台一開始就把Form資料複製給FormB，所以直接計算FormB即可)
         /// </summary>
         /// <param name="form"></param>
         /// <param name="downDays">停工天數</param>
@@ -842,9 +874,9 @@ namespace NT_AirPollution.Service
         {
             using (var cn = new SqlConnection(connStr))
             {
-                var diffDays = ((base.ChineseDateToWestDate(form.E_DATE) - base.ChineseDateToWestDate(form.B_DATE)).TotalDays + 1) - downDays;
+                var diffDays = ((base.ChineseDateToWestDate(form.FormB.E_DATE) - base.ChineseDateToWestDate(form.FormB.B_DATE)).TotalDays + 1) - downDays;
                 var projectCodes = cn.GetAll<ProjectCode>().ToList();
-                var projectCode = projectCodes.First(o => o.ID == form.KIND_NO);
+                var projectCode = projectCodes.First(o => o.ID == form.FormB.KIND_NO);
                 // 基數
                 double basicNum = 0;
                 // 級數
@@ -853,7 +885,7 @@ namespace NT_AirPollution.Service
                 string levelStr = "";
                 // 費率
                 double rate = 0;
-                switch (form.KIND_NO)
+                switch (form.FormB.KIND_NO)
                 {
                     case "1":
                     case "2":
@@ -864,16 +896,16 @@ namespace NT_AirPollution.Service
                     case "8":
                     case "9":
                     case "A":
-                        basicNum = form.AREA.Value * diffDays / 30;
+                        basicNum = form.FormB.AREA.Value * diffDays / 30;
                         break;
                     case "3":
                         basicNum = form.AREA2.Value;
                         break;
                     case "B":
-                        basicNum = form.VOLUMEL.Value;
+                        basicNum = form.FormB.VOLUMEL.Value;
                         break;
                     case "Z":
-                        basicNum = form.MONEY;
+                        basicNum = form.FormB.MONEY.Value;
                         break;
                 }
 
@@ -1759,28 +1791,6 @@ namespace NT_AirPollution.Service
             }
 
             return result;
-        }
-
-        /// <summary>
-        /// 初次申報繳費完成後，讀取Form資料的部分欄位改讀FormB
-        /// </summary>
-        /// <param name="form"></param>
-        public void FormBMapper(FormView form)
-        {
-            var formB = this.GetFormB(form.ID);
-            if (formB != null)
-            {
-                form.MONEY = formB?.MONEY ?? 0;
-                form.AREA_F = formB.AREA_F;
-                form.AREA_B = formB.AREA_B;
-                form.AREA = formB.AREA;
-                form.VOLUMEL = formB.VOLUMEL;
-                form.RATIOLB = formB.RATIOLB;
-                form.DENSITYL = formB.DENSITYL;
-                form.B_DATE = formB.B_DATE;
-                form.E_DATE = formB.E_DATE;
-                form.S_AMT = formB.S_AMT;
-            }
         }
     }
 }

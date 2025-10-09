@@ -316,35 +316,39 @@ namespace NT_AirPollution.Web.Controllers
                     throw new Exception("施工期程起始日期不能大於結束日期");
 
 
-                // 如果已初次申報完成就只能存ABUDF_B
-                if(formInDB.FormStatus == FormStatus.已繳費完成)
-                {
-                    // 停工天數
-                    double downDays = form.StopWorks.Sum(o => (o.UP_DATE2 - o.DOWN_DATE2).TotalDays + 1);
-                    // 計算結算金額
-                    var result = _formService.CalcTotalMoney(form, downDays);
-                    form.S_AMT2 = result.TotalMoney;
+                //// 如果已初次申報完成就只能存ABUDF_B
+                //if(formInDB.FormStatus == FormStatus.已繳費完成)
+                //{
+                //    // 停工天數
+                //    double downDays = form.StopWorks.Sum(o => (o.UP_DATE2 - o.DOWN_DATE2).TotalDays + 1);
+                //    // 計算結算金額
+                //    var result = _formService.CalcTotalMoney(form, downDays);
 
-                    // 不可修改的欄位
-                    form.ID = formInDB.ID;
-                    form.C_NO = formInDB.C_NO;
-                    form.SER_NO = formInDB.SER_NO;
-                    form.AP_DATE1 = formInDB.AP_DATE1;
-                    form.KIND_NO = formInDB.KIND_NO;
-                    form.KIND = formInDB.KIND;
-                    form.YEAR = formInDB.YEAR;
-                    form.A_KIND = formInDB.A_KIND;
-                    // 更新ABUDF_B
-                    _accessService.AddABUDF_B(form);
-                    // 更新FormB
-                    _formService.AddFormB(form);
+                //    // 不可修改的欄位
+                //    form.ID = formInDB.ID;
+                //    form.C_NO = formInDB.C_NO;
+                //    form.SER_NO = formInDB.SER_NO;
+                //    form.AP_DATE1 = formInDB.AP_DATE1;
+                //    form.KIND_NO = formInDB.KIND_NO;
+                //    form.KIND = formInDB.KIND;
+                //    form.YEAR = formInDB.YEAR;
+                //    form.A_KIND = formInDB.A_KIND;
+                //    // 更新ABUDF_B
+                //    _accessService.AddABUDF_B(form);
+                //    // 更新FormB
+                //    _formService.AddFormB(form);
 
-                    return Json(new AjaxResult { Status = true });
-                }
+                //    return Json(new AjaxResult { Status = true });
+                //}
 
 
                 var allDists = _optionService.GetDistrict();
                 var allProjectCode = _optionService.GetProjectCode();
+                // 停工天數
+                double downDays = form.StopWorks.Sum(o => (o.UP_DATE2 - o.DOWN_DATE2).TotalDays + 1);
+                // 計算結算金額
+                var result = _formService.CalcTotalMoney(form, downDays);
+
                 // 避免被修改的欄位
                 form.C_NO = formInDB.C_NO;
                 form.SER_NO = formInDB.SER_NO;
@@ -368,6 +372,7 @@ namespace NT_AirPollution.Web.Controllers
                 form.TOWN_NA = allDists.First(o => o.Code == form.TOWN_NO).Name;
                 form.KIND = allProjectCode.First(o => o.ID == form.KIND_NO).Name;
                 form.M_DATE = DateTime.Now;
+                form.S_AMT2 = result.TotalMoney;
 
                 if (form.KIND_NO == "1" || form.KIND_NO == "2")
                 {
@@ -393,9 +398,13 @@ namespace NT_AirPollution.Web.Controllers
                 if (!string.IsNullOrEmpty(form.C_NO))
                 {
                     _accessService.UpdateABUDF(form);
+                    // 更新ABUDF_B
+                    _accessService.AddABUDF_B(form);
                 }
 
                 _formService.UpdateForm(form);
+                // 更新FormB
+                _formService.AddFormB(form);
 
                 return Json(new AjaxResult { Status = true });
             }
@@ -529,12 +538,10 @@ namespace NT_AirPollution.Web.Controllers
                 formInDB.AP_DATE1 = DateTime.Now.AddYears(-1911).ToString("yyyMMdd");
                 formInDB.CalcStatus = CalcStatus.審理中;
                 formInDB.VerifyStage2 = VerifyStage.送審中;
-                // 更新Form
-                _formService.UpdateForm(formInDB);
-
-                _formService.FormBMapper(formInDB);
                 // 更新ABUDF_B
                 _accessService.AddABUDF_B(formInDB);
+                // 更新Form
+                _formService.UpdateForm(formInDB);
                 // 更新FormB
                 _formService.AddFormB(formInDB);
 
@@ -559,7 +566,6 @@ namespace NT_AirPollution.Web.Controllers
                 if (formInDB == null || (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email))
                     throw new Exception("申請單不存在");
 
-                _formService.FormBMapper(formInDB);
                 string fileName = $"繳款單{form.C_NO}-{form.SER_NO}({(form.P_KIND == "一次繳清" ? "一次繳清" : "第一期")})";
                 string pdfPath = _formService.CreatePaymentPDF(fileName, formInDB);
 
@@ -588,7 +594,6 @@ namespace NT_AirPollution.Web.Controllers
                 if (formInDB == null || (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email))
                     throw new Exception("申請單不存在");
 
-                _formService.FormBMapper(formInDB);
                 string fileName = $"繳款單{form.C_NO}-{form.SER_NO}(結算補繳)";
                 string pdfPath = _formService.CreatePaymentPDF(fileName, formInDB);
 
@@ -670,7 +675,6 @@ namespace NT_AirPollution.Web.Controllers
                 if (formInDB == null || (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email))
                     throw new Exception("申請單不存在");
 
-                _formService.FormBMapper(formInDB);
                 string pdfPath = _formService.CreateClearProofPDF(formInDB);
 
                 // 傳到前端的檔名

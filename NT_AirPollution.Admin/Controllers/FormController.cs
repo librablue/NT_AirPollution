@@ -134,22 +134,14 @@ namespace NT_AirPollution.Admin.Controllers
                 if (!string.IsNullOrEmpty(form.C_NO))
                 {
                     _accessService.UpdateABUDF(form);
-                }
-
-
-                // 如果已初次申報完成就只能存ABUDF_B
-                if (form.FormStatus == FormStatus.已繳費完成)
-                {
                     // 更新ABUDF_B
                     _accessService.AddABUDF_B(form);
-                    // 更新FormB
-                    _formService.AddFormB(form);
-                }
-                else
-                {
-                    _formService.UpdateForm(form);
                 }
 
+
+                _formService.UpdateForm(form);
+                // 更新FormB
+                _formService.AddFormB(form);
                 _formService.UpdateStopWork(form);
 
                 return true;

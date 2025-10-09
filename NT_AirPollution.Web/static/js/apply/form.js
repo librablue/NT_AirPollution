@@ -92,6 +92,22 @@
 				}
 				callback();
 			};
+            const checkE_DATE2 = (rule, value, callback) => {
+				if (!value) {
+					callback(new Error('請輸入結束日期'));
+				}
+
+				if (!this.selectRow.FormB.B_DATE) {
+					callback();
+				}
+
+				const startDate = `${+this.selectRow.FormB.B_DATE.substr(0, 3) + 1911}-${this.selectRow.FormB.B_DATE.substr(3, 2)}-${this.selectRow.FormB.B_DATE.substr(5, 2)}`;
+				const endDate = `${+this.selectRow.FormB.E_DATE.substr(0, 3) + 1911}-${this.selectRow.FormB.E_DATE.substr(3, 2)}-${this.selectRow.FormB.E_DATE.substr(5, 2)}`;
+				if (moment(startDate).isAfter(endDate)) {
+					callback(new Error('施工期程起始日期不能大於結束日期'));
+				}
+				callback();
+			};
 			const checkLAT = (rule, value, callback) => {
 				if (isNaN(value)) {
 					callback(new Error('緯度格式錯誤'));
@@ -238,6 +254,16 @@
 					VOLUMEL: [{ required: true, message: '請輸入外運土石體積', trigger: 'blur' }],
 					B_DATE: [{ required: true, message: '請輸入開始日期', trigger: 'blur' }],
 					E_DATE: [{ validator: checkE_DATE, trigger: 'blur' }]
+				}),
+                tab4BRules: Object.freeze({
+					MONEY: [{ required: true, message: '請輸入工程合約經費', trigger: 'blur' }],
+					AREA: [{ required: true, message: '請輸入工程面積', trigger: 'blur' }],
+					AREA2: [{ required: true, message: '請輸入總樓地板面積', trigger: 'blur' }],
+					AREA_F: [{ required: true, message: '請輸入基地面積', trigger: 'blur' }],
+					AREA_B: [{ required: true, message: '請輸入建築面積', trigger: 'blur' }],
+					VOLUMEL: [{ required: true, message: '請輸入外運土石體積', trigger: 'blur' }],
+					B_DATE: [{ required: true, message: '請輸入開始日期', trigger: 'blur' }],
+					E_DATE: [{ validator: checkE_DATE2, trigger: 'blur' }]
 				}),
 				rules2: Object.freeze({
 					Code: [{ required: true, message: '請選擇銀行代碼', trigger: 'change' }],
