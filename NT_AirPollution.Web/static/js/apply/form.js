@@ -305,7 +305,8 @@
 				return rules;
 			},
 			filterAttachmentInfo() {
-				return this.attachmentInfo.filter(item => item.PUB_COMP === this.selectRow.PUB_COMP);
+                const selectRow = JSON.parse(JSON.stringify(this.selectRow));
+				return this.attachmentInfo.filter(item => item.PUB_COMP === selectRow.PUB_COMP);
 			},
 			calcC_MONEY() {
 				try {
