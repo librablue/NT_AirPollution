@@ -488,15 +488,77 @@ namespace NT_AirPollution.Service
         {
             using (var cn = new SqlConnection(connStr))
             {
-                try
+                cn.Open();
+                using (var trans = cn.BeginTransaction())
                 {
-                    long id = cn.Insert(form);
-                    return id;
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error($"AddForm: {ex.StackTrace}|{ex.Message}");
-                    throw new Exception("系統發生未預期錯誤");
+                    try
+                    {
+                        long id = cn.Insert(form, trans);
+
+                        double workDays = (base.ChineseDateToWestDate(form.E_DATE) - base.ChineseDateToWestDate(form.B_DATE)).TotalDays + 1;
+                        double downDays = form.StopWorks.Sum(o => o.DOWN_DAY);
+
+                        string B_STAT;
+                        if (form.P_KIND == "一次全繳")
+                            B_STAT = "A一次繳清無結算";
+                        else
+                            B_STAT = "B分期繳交待結算";
+
+                        if (form.S_AMT <= 100)
+                            B_STAT = "Z已申報結算";
+
+                        form.FormB = new FormB
+                        {
+                            FormID = form.ID,
+                            C_NO = form.C_NO,
+                            SER_NO = form.SER_NO,
+                            AP_DATE1 = form.AP_DATE1,
+                            B_STAT = B_STAT,
+                            B_CSTAT = "",
+                            KIND_NO = form.KIND_NO,
+                            KIND = form.KIND,
+                            YEAR = form.YEAR,
+                            A_KIND = form.A_KIND,
+                            MONEY = form.MONEY,
+                            AREA = form.AREA,
+                            VOLUMEL = form.VOLUMEL,
+                            RATIOLB = form.RATIOLB,
+                            DENSITYL = form.DENSITYL,
+                            B_DATE = form.B_DATE,
+                            E_DATE = form.E_DATE,
+                            B_YEAR = Math.Round((workDays - downDays + 1) / 365, 2, MidpointRounding.AwayFromZero),
+                            S_AMT = form.S_AMT2,
+                            T_DAY = workDays - downDays + 1,
+                            AREA_B = form.AREA_B,
+                            AREA_F = form.AREA_F,
+                            PERC_B = form.PERC_B,
+                            PRE_C_AMT = form.S_AMT > form.S_AMT2 ? form.S_AMT - form.S_AMT2 : 0,
+                            PRE_C_AMT1 = form.S_AMT2 > form.S_AMT ? form.S_AMT2 - form.S_AMT : 0,
+                            B_KIND1 = "無",
+                            B_KIND2 = "無",
+                            ID_DOC1 = "無",
+                            ID_DOC2 = "無",
+                            ID_DOC3 = "無",
+                            COMP_DOC1 = "無",
+                            COMP_DOC2 = "無",
+                            COMP_DOC3 = "無",
+                            BUD_DOC1 = "無",
+                            BUD_DOC2 = "無",
+                            BUD_DOC3 = "無",
+                            WRONG_AP = "否"
+                        };
+
+                        cn.Insert(form.FormB, trans);
+
+                        trans.Commit();
+                        return id;
+                    }
+                    catch (Exception ex)
+                    {
+                        trans.Rollback();
+                        Logger.Error($"AddForm: {ex.StackTrace}|{ex.Message}");
+                        throw new Exception("系統發生未預期錯誤");
+                    }
                 }
             }
         }
