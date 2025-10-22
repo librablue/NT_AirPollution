@@ -487,6 +487,47 @@ namespace NT_AirPollution.Service
         }
 
         /// <summary>
+        /// 更新ABUDF單一欄位
+        /// </summary>
+        /// <param name="c_no"></param>
+        /// <param name="ser_no"></param>
+        /// <param name="key">欄位名稱</param>
+        /// <param name="value">值</param>
+        /// <returns></returns>
+        public bool UpdateABUDFByColumn(string c_no, int ser_no, string key, object value)
+        {
+            try
+            {
+#if !DEBUG
+        using (var impersonation = new ImpersonationContext(domain, userName, password))
+        {
+#endif
+                using (var cn = new OleDbConnection(accessConnStr))
+                {
+                    cn.Execute($@"UPDATE ABUDF
+                                SET [{key}]=@Value
+                                WHERE [C_NO]=@C_NO AND [SER_NO]=@SER_NO",
+                                new
+                                {
+                                    Value = value,
+                                    C_NO = c_no,
+                                    SER_NO = ser_no
+                                }, commandTimeout: 180);
+
+                    return true;
+                }
+#if !DEBUG
+        }
+#endif
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex.StackTrace);
+                throw ex;
+            }
+        }
+
+        /// <summary>
         /// 寫入ABUDF_B
         /// </summary>
         /// <param name="form"></param>
@@ -500,8 +541,9 @@ namespace NT_AirPollution.Service
         using (var impersonation = new ImpersonationContext(domain, userName, password))
         {
 #endif
+                var formB = form.FormB;
                 DateTime now = DateTime.Now;
-                double workDays = (base.ChineseDateToWestDate(form.E_DATE) - base.ChineseDateToWestDate(form.B_DATE)).TotalDays + 1;
+                double workDays = (base.ChineseDateToWestDate(formB.E_DATE) - base.ChineseDateToWestDate(formB.B_DATE)).TotalDays + 1;
                 double downDays = form.StopWorks.Sum(o => o.DOWN_DAY);
                 string B_STAT;
                 if (form.P_KIND == "一次全繳")
@@ -515,29 +557,29 @@ namespace NT_AirPollution.Service
                 using (var cn = new OleDbConnection(accessConnStr))
                 {
                     cn.Execute(@"DELETE FROM ABUDF_B WHERE [C_NO]=? AND [SER_NO]=?",
-                            new { C_NO = form.C_NO, SER_NO = form.SER_NO }, commandTimeout: 180);
+                            new { C_NO = formB.C_NO, SER_NO = formB.SER_NO }, commandTimeout: 180);
 
                     cn.Execute(@"
                         INSERT INTO ABUDF_B ([C_NO],[SER_NO],[AP_DATE1],[B_STAT],[KIND_NO],[KIND],[YEAR],[A_KIND],[MONEY],[AREA],[VOLUMEL],[B_DAY],[B_DATE],[E_DATE],[B_YEAR],[S_AMT],[T_DAY],[PRE_C_AMT],[PRE_C_AMT1],[KEYIN],[C_DATE],[M_DATE])
                         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                         new
                         {
-                            C_NO = form.C_NO,
-                            SER_NO = form.SER_NO,
-                            AP_DATE1 = form.AP_DATE1,
+                            C_NO = formB.C_NO,
+                            SER_NO = formB.SER_NO,
+                            AP_DATE1 = formB.AP_DATE1,
                             B_STAT = B_STAT,
-                            KIND_NO = form.KIND_NO,
-                            KIND = form.KIND,
-                            YEAR = form.YEAR,
-                            A_KIND = form.A_KIND,
-                            MONEY = form.MONEY,
-                            AREA = form.AREA,
-                            VOLUMEL = form.VOLUMEL,
+                            KIND_NO = formB.KIND_NO,
+                            KIND = formB.KIND,
+                            YEAR = formB.YEAR,
+                            A_KIND = formB.A_KIND,
+                            MONEY = formB.MONEY,
+                            AREA = formB.AREA,
+                            VOLUMEL = formB.VOLUMEL,
                             B_DAY = downDays,
-                            B_DATE = form.B_DATE,
-                            E_DATE = form.E_DATE,
+                            B_DATE = formB.B_DATE,
+                            E_DATE = formB.E_DATE,
                             B_YEAR = Math.Round((workDays - downDays + 1) / 365, 2, MidpointRounding.AwayFromZero),
-                            S_AMT = form.S_AMT2,
+                            S_AMT = formB.S_AMT,
                             T_DAY = workDays - downDays + 1,
                             PRE_C_AMT = form.S_AMT > form.S_AMT2 ? form.S_AMT - form.S_AMT2 : 0,
                             PRE_C_AMT1 = form.S_AMT2 > form.S_AMT ? form.S_AMT2 - form.S_AMT : 0,

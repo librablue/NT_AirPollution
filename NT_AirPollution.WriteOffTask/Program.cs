@@ -96,6 +96,9 @@ namespace NT_AirPollution.WriteOffTask
                         actualPayment.BankLog = line[i];
                         _formService.UpdatePayment(actualPayment);
 
+                        #region 更新ABUDF
+                        _accessService.UpdateABUDFByColumn(form.C_NO, form.SER_NO.Value, "FIN_DATE", chineseToday);
+                        #endregion
 
                         #region 更新ABUDF_1
                         var abudf_1 = new ABUDF_1

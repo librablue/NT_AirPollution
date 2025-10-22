@@ -249,6 +249,9 @@ namespace NT_AirPollution.Admin.Controllers
                             form.CalcStatus = CalcStatus.通過待退費小於4000;
                         else if (form.P_AMT - form.S_AMT2 >= 4000)
                             form.CalcStatus = CalcStatus.通過待退費大於4000;
+
+                        // 更新ABUDF FIN_COM(已完成完工查核日期)
+                        _accessService.UpdateABUDFByColumn(form.C_NO, form.SER_NO.Value, "FIN_COM", DateTime.Now.AddYears(-1911).ToString("yyyMMdd"));
                     }
 
                     switch (form.CalcStatus)
