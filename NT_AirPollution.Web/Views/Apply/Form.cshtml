@@ -401,6 +401,9 @@
                             <el-form-item prop="MONEY" label="工程合約經費(元)">
                                 <el-input type="number" v-model="selectRow.MONEY"></el-input>
                             </el-form-item>
+                            <el-form-item prop="TAX_MONEY" label="工程合約經費營業稅(元)">
+                                <el-input type="number" v-model="selectRow.TAX_MONEY"></el-input>
+                            </el-form-item>
                             <el-form-item prop="C_MONEY" label="工程環保經費(元)"><div style="min-width:120px">{{calcC_MONEY | comma}}</div></el-form-item>
                             <el-form-item prop="PERCENT" label="工程合約經費比例">{{selectRow.PERCENT}}%</el-form-item>
                         </div>

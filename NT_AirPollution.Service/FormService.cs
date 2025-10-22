@@ -967,7 +967,8 @@ namespace NT_AirPollution.Service
                         basicNum = form.FormB.VOLUMEL.Value;
                         break;
                     case "Z":
-                        basicNum = form.FormB.MONEY.Value;
+                        // 工程合約經費要-營業稅
+                        basicNum = form.FormB.MONEY.Value - form.TAX_MONEY;
                         break;
                 }
 

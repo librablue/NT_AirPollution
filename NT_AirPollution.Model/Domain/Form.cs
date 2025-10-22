@@ -236,9 +236,14 @@ namespace NT_AirPollution.Model.Domain
         public double? DENSITYL { get; set; }
 
         /// <summary>
-        /// 合約經費
+        /// 工程合約經費
         /// </summary>
         public double MONEY { get; set; }
+
+        /// <summary>
+        /// 工程合約經費營業稅
+        /// </summary>
+        public double TAX_MONEY { get; set; }
 
         /// <summary>
         /// 工程環保經費

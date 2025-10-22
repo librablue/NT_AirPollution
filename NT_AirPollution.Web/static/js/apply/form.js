@@ -246,6 +246,7 @@
 				}),
 				tab4Rules: Object.freeze({
 					MONEY: [{ required: true, message: '請輸入工程合約經費', trigger: 'blur' }],
+                    TAX_MONEY: [{ required: true, message: '請輸入工程合約經費營業稅', trigger: 'blur' }],
 					// C_MONEY: [{ required: true, message: '請輸入工程環保經費', trigger: 'blur' }],
 					AREA: [{ required: true, message: '請輸入工程面積', trigger: 'blur' }],
 					AREA2: [{ required: true, message: '請輸入總樓地板面積', trigger: 'blur' }],
