@@ -1,4 +1,5 @@
-﻿using NT_AirPollution.Admin.ActionFilter;
+﻿using ClosedXML.Excel;
+using NT_AirPollution.Admin.ActionFilter;
 using NT_AirPollution.Model.Enum;
 using NT_AirPollution.Model.View;
 using NT_AirPollution.Service;
@@ -10,6 +11,8 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Web.Hosting;
+using System.Web;
 using System.Web.Http;
 
 namespace NT_AirPollution.Admin.Controllers
@@ -300,6 +303,161 @@ namespace NT_AirPollution.Admin.Controllers
                 }
 
                 return true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 匯出結算退費審核表
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public HttpResponseMessage ExportRefundVerify1(FormView form)
+        {
+            try
+            {
+                ChineseMoneyConverter converter = new ChineseMoneyConverter();
+                using (var wb = new XLWorkbook(HttpContext.Current.Server.MapPath("~/App_Data/template/RefundVeirfy1Template.xlsx")))
+                {
+                    var ws = wb.Worksheet(1);
+                    ws.Cell("E2").SetValue(DateTime.Now.AddYears(-1911).ToString("yyy年MM月dd日"));
+                    ws.Cell("B3").SetValue(form.COMP_NAM);
+                    ws.Cell("E3").SetValue($"{form.C_NO}-{form.B_SERNO}");
+                    ws.Cell("B4").SetValue(form.R_ADDR3);
+                    ws.Cell("D4").SetValue(form.B_SERNO);
+                    ws.Cell("B5").SetValue(form.S_NAME);
+                    ws.Cell("B6").SetValue(form.S_ADDR2);
+                    ws.Cell("E6").SetValue(form.S_C_TEL);
+                    ws.Cell("B7").SetValue(converter.ToChineseUpper(form.MONEY - form.TAX_MONEY));
+                    ws.Cell("B8").SetValue(converter.ToChineseUpper(form.S_AMT.Value));
+                    ws.Cell("B9").SetValue(converter.ToChineseUpper(form.S_AMT2.Value));
+                    // 已繳空污費金額
+                    double totalPayAmount = form.Payments.Sum(o => o.PayAmount ?? 0);
+                    ws.Cell("B11").SetValue(converter.ToChineseUpper(totalPayAmount));
+                    // 溢收總金額
+                    ws.Cell("B12").SetValue(converter.ToChineseUpper(totalPayAmount - form.S_AMT.Value));
+
+
+                    string fileName = $"{form.C_NO}-{form.SER_NO} 結算退費審核表";
+                    string excelPath = HttpContext.Current.Server.MapPath($@"~/App_Data/download/{fileName}.xlsx");
+                    wb.SaveAs(excelPath);
+
+                    var stream = new FileStream(excelPath, FileMode.Open);
+                    HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
+                    response.Content = new StreamContent(stream);
+                    response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+                    response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
+                    {
+                        FileName = $"{fileName}.xlsx"
+                    };
+
+                    return response;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 匯出結算空污費金額異動原因明細
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public HttpResponseMessage ExportRefundVerify2(FormView form)
+        {
+            try
+            {
+                ChineseMoneyConverter converter = new ChineseMoneyConverter();
+                using (var wb = new XLWorkbook(HttpContext.Current.Server.MapPath("~/App_Data/template/RefundVeirfy2Template.xlsx")))
+                {
+                    var ws = wb.Worksheet(1);
+                    ws.Cell("B3").SetValue(form.S_AMT == form.FormB.S_AMT ? "無異動" : "有異動");
+                    ws.Cell("C3").SetValue(form.S_AMT);
+                    ws.Cell("D3").SetValue(form.FormB.S_AMT);
+
+                    ws.Cell("B4").SetValue(form.KIND == form.FormB.KIND ? "無異動" : "有異動");
+                    ws.Cell("C4").SetValue(form.KIND);
+                    ws.Cell("D4").SetValue(form.FormB.KIND);
+
+                    ws.Cell("B5").SetValue(form.YEAR == form.FormB.YEAR ? "無異動" : "有異動");
+                    ws.Cell("C5").SetValue(form.YEAR);
+                    ws.Cell("D5").SetValue(form.FormB.YEAR);
+
+                    ws.Cell("B6").SetValue(form.MONEY == form.FormB.MONEY ? "無異動" : "有異動");
+                    ws.Cell("C6").SetValue($"{form.MONEY}元");
+                    ws.Cell("D6").SetValue($"{form.FormB.MONEY}元");
+
+                    ws.Cell("B7").SetValue(form.AREA == form.FormB.AREA ? "無異動" : "有異動");
+                    ws.Cell("C7").SetValue($"{form.AREA}平方公尺");
+                    ws.Cell("D7").SetValue($"{form.FormB.AREA}平方公尺");
+
+                    string year = form.B_DATE.Substring(0, 3);
+                    string month = form.B_DATE.Substring(3, 2);
+                    string day = form.B_DATE.Substring(5, 2);
+                    string b_date1 = $"{year}年{month}月{day}日";
+                    year = form.FormB.B_DATE.Substring(0, 3);
+                    month = form.FormB.B_DATE.Substring(3, 2);
+                    day = form.FormB.B_DATE.Substring(5, 2);
+                    string b_date2 = $"{year}年{month}月{day}日";
+
+                    year = form.E_DATE.Substring(0, 3);
+                    month = form.E_DATE.Substring(3, 2);
+                    day = form.E_DATE.Substring(5, 2);
+                    string e_date1 = $"{year}年{month}月{day}日";
+                    year = form.FormB.E_DATE.Substring(0, 3);
+                    month = form.FormB.E_DATE.Substring(3, 2);
+                    day = form.FormB.E_DATE.Substring(5, 2);
+                    string e_date2 = $"{year}年{month}月{day}日";
+
+                    ws.Cell("B8").SetValue($"{b_date1} 至 {e_date1}" == $"{b_date2} 至 {e_date2}" ? "無異動" : "有異動");
+                    ws.Cell("C8").SetValue($"{b_date1} 至 {e_date1}");
+                    ws.Cell("D8").SetValue($"{b_date2} 至 {e_date2}");
+
+                    double downDays = form.StopWorks.Sum(o => o.DOWN_DAY);
+                    ws.Cell("B9").SetValue(0 == downDays ? "無異動" : "有異動");
+                    ws.Cell("C9").SetValue(0);
+                    ws.Cell("D9").SetValue(downDays);
+
+                    int rowIdx = 11;
+                    foreach (var item in form.StopWorks)
+                    {
+                        ws.Cell($"B{rowIdx}").SetValue(item.DOWN_DAY);
+
+                        year = item.DOWN_DATE.Substring(0, 3);
+                        month = item.DOWN_DATE.Substring(3, 2);
+                        day = item.DOWN_DATE.Substring(5, 2);
+                        ws.Cell($"C{rowIdx}").SetValue($"{year}年{month}月{day}日");
+
+                        year = item.UP_DATE.Substring(0, 3);
+                        month = item.UP_DATE.Substring(3, 2);
+                        day = item.UP_DATE.Substring(5, 2);
+                        ws.Cell($"D{rowIdx}").SetValue($"{year}年{month}月{day}日");
+
+                        rowIdx++;
+                    }
+
+                    string fileName = $"{form.C_NO}-{form.SER_NO} 結算空污費金額異動原因明細";
+                    string excelPath = HttpContext.Current.Server.MapPath($@"~/App_Data/download/{fileName}.xlsx");
+                    wb.SaveAs(excelPath);
+
+                    var stream = new FileStream(excelPath, FileMode.Open);
+                    HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
+                    response.Content = new StreamContent(stream);
+                    response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+                    response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
+                    {
+                        FileName = $"{fileName}.xlsx"
+                    };
+
+                    return response;
+                }
             }
             catch (Exception ex)
             {

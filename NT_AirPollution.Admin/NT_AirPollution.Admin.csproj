@@ -198,6 +198,8 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="connectionStrings.config" />
+    <Content Include="App_Data\Template\RefundVeirfy1Template.xlsx" />
+    <Content Include="App_Data\Template\RefundVeirfy2Template.xlsx" />
     <None Include="NLog.xsd">
       <SubType>Designer</SubType>
     </None>
