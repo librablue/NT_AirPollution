@@ -315,7 +315,6 @@ namespace NT_AirPollution.Admin.Controllers
         /// </summary>
         /// <param name="form"></param>
         /// <returns></returns>
-        [HttpGet]
         public HttpResponseMessage ExportRefundVerify1(FormView form)
         {
             try
@@ -326,7 +325,7 @@ namespace NT_AirPollution.Admin.Controllers
                     var ws = wb.Worksheet(1);
                     ws.Cell("E2").SetValue(DateTime.Now.AddYears(-1911).ToString("yyy年MM月dd日"));
                     ws.Cell("B3").SetValue(form.COMP_NAM);
-                    ws.Cell("E3").SetValue($"{form.C_NO}-{form.B_SERNO}");
+                    ws.Cell("E3").SetValue($"{form.C_NO}-{form.SER_NO}");
                     ws.Cell("B4").SetValue(form.R_ADDR3);
                     ws.Cell("D4").SetValue(form.B_SERNO);
                     ws.Cell("B5").SetValue(form.S_NAME);
@@ -339,7 +338,8 @@ namespace NT_AirPollution.Admin.Controllers
                     double totalPayAmount = form.Payments.Sum(o => o.PayAmount ?? 0);
                     ws.Cell("B11").SetValue(converter.ToChineseUpper(totalPayAmount));
                     // 溢收總金額
-                    ws.Cell("B12").SetValue(converter.ToChineseUpper(totalPayAmount - form.S_AMT.Value));
+                    double overPayAmount = form.S_AMT.Value > form.S_AMT2.Value ? form.S_AMT.Value - form.S_AMT2.Value : 0;
+                    ws.Cell("B12").SetValue(converter.ToChineseUpper(overPayAmount));
 
 
                     string fileName = $"{form.C_NO}-{form.SER_NO} 結算退費審核表";
@@ -349,11 +349,12 @@ namespace NT_AirPollution.Admin.Controllers
                     var stream = new FileStream(excelPath, FileMode.Open);
                     HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
                     response.Content = new StreamContent(stream);
-                    response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
-                    response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
-                    {
-                        FileName = $"{fileName}.xlsx"
-                    };
+                    response.Content.Headers.ContentType =
+                        new MediaTypeHeaderValue("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+
+                    // 傳到前端的檔名
+                    // Uri.EscapeDataString 防中文亂碼
+                    response.Content.Headers.Add("file-name", Uri.EscapeDataString($"{fileName}.xlsx"));
 
                     return response;
                 }
@@ -369,7 +370,6 @@ namespace NT_AirPollution.Admin.Controllers
         /// </summary>
         /// <param name="form"></param>
         /// <returns></returns>
-        [HttpGet]
         public HttpResponseMessage ExportRefundVerify2(FormView form)
         {
             try
@@ -416,12 +416,12 @@ namespace NT_AirPollution.Admin.Controllers
                     day = form.FormB.E_DATE.Substring(5, 2);
                     string e_date2 = $"{year}年{month}月{day}日";
 
-                    ws.Cell("B8").SetValue($"{b_date1} 至 {e_date1}" == $"{b_date2} 至 {e_date2}" ? "無異動" : "有異動");
-                    ws.Cell("C8").SetValue($"{b_date1} 至 {e_date1}");
-                    ws.Cell("D8").SetValue($"{b_date2} 至 {e_date2}");
+                    ws.Cell("B8").SetValue($"{b_date1}至{e_date1}" == $"{b_date2}至{e_date2}" ? "無異動" : "有異動");
+                    ws.Cell("C8").SetValue($"{b_date1}至{e_date1}");
+                    ws.Cell("D8").SetValue($"{b_date2}至{e_date2}");
 
                     double downDays = form.StopWorks.Sum(o => o.DOWN_DAY);
-                    ws.Cell("B9").SetValue(0 == downDays ? "無異動" : "有異動");
+                    ws.Cell("B9").SetValue(0 == downDays ? "無停工" : "有停工");
                     ws.Cell("C9").SetValue(0);
                     ws.Cell("D9").SetValue(downDays);
 
@@ -451,10 +451,9 @@ namespace NT_AirPollution.Admin.Controllers
                     HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
                     response.Content = new StreamContent(stream);
                     response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
-                    response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
-                    {
-                        FileName = $"{fileName}.xlsx"
-                    };
+                    // 傳到前端的檔名
+                    // Uri.EscapeDataString 防中文亂碼
+                    response.Content.Headers.Add("file-name", Uri.EscapeDataString($"{fileName}.xlsx"));
 
                     return response;
                 }

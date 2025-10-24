@@ -48,6 +48,7 @@ namespace NT_AirPollution.Service
 
             StringBuilder sb = new StringBuilder();
             int bigUnitIndex = 0;
+            bool needZero = false; // 是否需要補零
 
             while (number > 0)
             {
@@ -55,13 +56,21 @@ namespace NT_AirPollution.Service
                 if (section != 0)
                 {
                     string sectionChinese = ConvertSection(section);
+                    if (needZero)
+                    {
+                        sb.Insert(0, "零");
+                        needZero = false;
+                    }
+
                     if (bigUnitIndex > 0)
                         sectionChinese += BigUnits[bigUnitIndex];
+
                     sb.Insert(0, sectionChinese);
                 }
-                else if (sb.Length > 0 && !sb.ToString().StartsWith("零"))
+                else
                 {
-                    sb.Insert(0, "零");
+                    if (sb.Length > 0)
+                        needZero = true; // 下一段若有值就補零
                 }
 
                 number /= 10000;
@@ -75,27 +84,33 @@ namespace NT_AirPollution.Service
         {
             StringBuilder sb = new StringBuilder();
             bool zeroFlag = false;
+            bool hasValue = false; // 段中是否已有非零數字
 
             for (int i = 0; i < 4; i++)
             {
                 int digit = section % 10;
                 if (digit == 0)
                 {
-                    if (sb.Length > 0 && !zeroFlag)
+                    if (hasValue)
                     {
-                        sb.Insert(0, "零");
-                        zeroFlag = true;
+                        zeroFlag = true; // 只有在段中已有值時才考慮補零
                     }
                 }
                 else
                 {
+                    if (zeroFlag)
+                    {
+                        sb.Insert(0, "零");
+                        zeroFlag = false;
+                    }
                     sb.Insert(0, ChineseDigits[digit] + Units[i]);
-                    zeroFlag = false;
+                    hasValue = true;
                 }
                 section /= 10;
             }
 
-            return sb.ToString().TrimEnd('零');
+            return sb.ToString();
         }
+
     }
 }

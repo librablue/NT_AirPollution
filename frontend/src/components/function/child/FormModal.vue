@@ -274,7 +274,7 @@
 								<el-form-item prop="MONEY" label="工程合約經費(元)">
 									<el-input type="number" v-model="form.MONEY"></el-input>
 								</el-form-item>
-                                <el-form-item prop="TAX_MONEY" label="工程合約經費營業稅(元)">
+								<el-form-item prop="TAX_MONEY" label="工程合約經費營業稅(元)">
 									<el-input type="number" v-model="form.TAX_MONEY"></el-input>
 								</el-form-item>
 								<el-form-item prop="C_MONEY" label="工程環保經費(元)">
@@ -493,6 +493,12 @@
 					</div>
 				</el-tab-pane>
 				<el-tab-pane label="退款帳戶" name="7">
+					<el-form v-if="form.CalcStatus > 2 " inline>
+						<el-form-item>
+							<el-button type="primary" @click="exportRefundVerify1">結算退費審核表</el-button>
+							<el-button type="primary" @click="exportRefundVerify2">結算金額異動原因明細</el-button>
+						</el-form-item>
+					</el-form>
 					<el-form v-if="form.RefundBank.ID">
 						<el-form-item label="銀行代碼">{{form.RefundBank.Code}}</el-form-item>
 						<el-form-item label="銀行帳號">{{form.RefundBank.Account}}</el-form-item>
@@ -730,7 +736,7 @@ export default {
 			}),
 			tab4Rules: Object.freeze({
 				MONEY: [{ required: true, message: '請輸入工程合約經費', trigger: 'blur' }],
-                TAX_MONEY: [{ required: true, message: '請輸入工程合約經費營業稅', trigger: 'blur' }],
+				TAX_MONEY: [{ required: true, message: '請輸入工程合約經費營業稅', trigger: 'blur' }],
 				C_MONEY: [{ required: true, message: '請輸入工程環保經費', trigger: 'blur' }],
 				AREA: [{ validator: checkArea, trigger: 'blur' }],
 				AREA_F: [{ validator: checkAreaF, trigger: 'blur' }],
@@ -1149,6 +1155,52 @@ export default {
 			pt[0] = Lat;
 			pt[1] = Lon;
 			return pt;
+		},
+		exportRefundVerify1() {
+			const loading = this.$loading();
+			this.axios
+				.post('api/Form/ExportRefundVerify1', this.form, {
+					responseType: 'blob'
+				})
+				.then(res => {
+					loading.close();
+					const url = window.URL.createObjectURL(new Blob([res.data]));
+					const link = document.createElement('a');
+					link.href = url;
+					const fileName = decodeURI(res.headers['file-name']);
+					link.setAttribute('download', fileName);
+					document.body.appendChild(link);
+					link.click();
+					link.remove();
+				})
+				.catch(err => {
+					loading.close();
+					alert('系統發生未預期錯誤');
+					console.log(err);
+				});
+		},
+		exportRefundVerify2() {
+			const loading = this.$loading();
+			this.axios
+				.post('api/Form/ExportRefundVerify2', this.form, {
+					responseType: 'blob'
+				})
+				.then(res => {
+					loading.close();
+					const url = window.URL.createObjectURL(new Blob([res.data]));
+					const link = document.createElement('a');
+					link.href = url;
+					const fileName = decodeURI(res.headers['file-name']);
+					link.setAttribute('download', fileName);
+					document.body.appendChild(link);
+					link.click();
+					link.remove();
+				})
+				.catch(err => {
+					loading.close();
+					alert('系統發生未預期錯誤');
+					console.log(err);
+				});
 		}
 	},
 	watch: {
