@@ -335,8 +335,7 @@ namespace NT_AirPollution.Admin.Controllers
                     ws.Cell("B8").SetValue(converter.ToChineseUpper(form.S_AMT.Value));
                     ws.Cell("B9").SetValue(converter.ToChineseUpper(form.S_AMT2.Value));
                     // 已繳空污費金額
-                    double totalPayAmount = form.Payments.Sum(o => o.PayAmount ?? 0);
-                    ws.Cell("B11").SetValue(converter.ToChineseUpper(totalPayAmount));
+                    ws.Cell("B11").SetValue(converter.ToChineseUpper(form.S_AMT.Value));
                     // 溢收總金額
                     double overPayAmount = form.S_AMT.Value > form.S_AMT2.Value ? form.S_AMT.Value - form.S_AMT2.Value : 0;
                     ws.Cell("B12").SetValue(converter.ToChineseUpper(overPayAmount));
