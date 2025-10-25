@@ -339,7 +339,18 @@ namespace NT_AirPollution.Admin.Controllers
                     // 溢收總金額
                     double overPayAmount = form.S_AMT.Value > form.S_AMT2.Value ? form.S_AMT.Value - form.S_AMT2.Value : 0;
                     ws.Cell("B12").SetValue(converter.ToChineseUpper(overPayAmount));
+                    ws.Cell("B14").SetValue(converter.ToChineseUpper(overPayAmount));
 
+                    // 停工天數
+                    double downDays = form.StopWorks.Sum(o => (o.UP_DATE2 - o.DOWN_DATE2).TotalDays + 1);
+                    string text1 = overPayAmount > 0 ? "核退" : "核補";
+                    string text2 = overPayAmount > 0 ? $"{(form.S_AMT.Value - form.S_AMT2.Value).ToString("N0")}" : $"{(form.S_AMT2.Value - form.S_AMT.Value).ToString("N0")}";
+                    string text3 = form.S_AMT2.Value.ToString("N0");
+                    string text4 = _formService.GetApplyFormulaText(form, downDays);
+                    string text5 = form.S_AMT.Value.ToString("N0");
+                    string text6 = _formService.GetCalcFormulaText(form, downDays);
+                    string comment = $"一、審核應{text1}： {text2}元\r\n\r\n二、結算申報實際應繳金額：{text3} 元\r\n       計算式：{text4}\r\n\r\n三、未開工前申報應繳金額：{text5} 元\r\n       計算式：{text6}\r\n\r\n四、目前已繳金額(不含逾期利息)：{text5} 元\r\n\r\n五、減免金額：0 元\r\n\r\n六、應{text1}金額：{text2} 元";
+                    ws.Cell("B15").SetValue(comment);
 
                     string fileName = $"{form.C_NO}-{form.SER_NO} 結算退費審核表";
                     string excelPath = HttpContext.Current.Server.MapPath($@"~/App_Data/download/{fileName}.xlsx");

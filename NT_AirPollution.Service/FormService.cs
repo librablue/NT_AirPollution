@@ -1003,6 +1003,173 @@ namespace NT_AirPollution.Service
         }
 
         /// <summary>
+        /// 取得申報計算公式文字
+        /// </summary>
+        /// <param name="form"></param>
+        /// <param name="downDays"></param>
+        /// <returns></returns>
+        public string GetApplyFormulaText(FormView form, double downDays)
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                string formulaText = "";
+                var diffDays = ((base.ChineseDateToWestDate(form.E_DATE) - base.ChineseDateToWestDate(form.B_DATE)).TotalDays + 1) - downDays;
+                var projectCodes = cn.GetAll<ProjectCode>().ToList();
+                var projectCode = projectCodes.First(o => o.ID == form.KIND_NO);
+                // 基數
+                double basicNum = 0;
+                // 級數
+                int level = 0;
+                // 級數文字
+                string levelStr = "";
+                // 費率
+                double rate = 0;
+                string basicNumFomulaText = "";
+                switch (form.KIND_NO)
+                {
+                    case "1":
+                    case "2":
+                    case "4":
+                    case "5":
+                    case "6":
+                    case "7":
+                    case "8":
+                    case "9":
+                    case "A":
+                        basicNum = form.AREA.Value * diffDays / 30;
+                        basicNumFomulaText = $"{form.AREA.Value} ╳ {diffDays} / 30";
+                        break;
+                    case "3":
+                        basicNum = form.AREA2.Value;
+                        basicNumFomulaText = $"{form.AREA2.Value}";
+                        break;
+                    case "B":
+                        basicNum = form.VOLUMEL.Value;
+                        basicNumFomulaText = $"{form.VOLUMEL.Value}";
+                        break;
+                    case "Z":
+                        // 工程合約經費要-營業稅
+                        basicNum = form.MONEY - form.TAX_MONEY;
+                        basicNumFomulaText = $"{form.MONEY - form.TAX_MONEY}";
+                        break;
+                }
+
+                if (basicNum >= projectCode.Level1)
+                {
+                    level = 1;
+                    levelStr = "第一級";
+                    rate = projectCode.Rate1;
+                }
+                else if (basicNum * projectCode.Rate3 >= projectCode.Level2)
+                {
+                    level = 2;
+                    levelStr = "第二級";
+                    rate = projectCode.Rate2;
+                }
+                else
+                {
+                    level = 3;
+                    levelStr = "第三級";
+                    rate = projectCode.Rate3;
+                }
+
+                var result = new CalcMoneyResult
+                {
+                    Level = levelStr,
+                    Rate = rate,
+                    TotalMoney = Convert.ToDouble(Math.Round(basicNum * rate, 0, MidpointRounding.AwayFromZero))
+                };
+
+                formulaText = $"{result.TotalMoney} = {result.Rate} ╳ {basicNumFomulaText}";
+
+                return formulaText;
+            }
+        }
+
+        /// <sum結算計算公式文字
+        /// </summary>
+        /// <param name="form"></param>
+        /// <param name="downDays"></param>
+        /// <returns></returns>
+        public string GetCalcFormulaText(FormView form, double downDays)
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                string formulaText = "";
+                var diffDays = ((base.ChineseDateToWestDate(form.FormB.E_DATE) - base.ChineseDateToWestDate(form.FormB.B_DATE)).TotalDays + 1) - downDays;
+                var projectCodes = cn.GetAll<ProjectCode>().ToList();
+                var projectCode = projectCodes.First(o => o.ID == form.FormB.KIND_NO);
+                // 基數
+                double basicNum = 0;
+                // 級數
+                int level = 0;
+                // 級數文字
+                string levelStr = "";
+                // 費率
+                double rate = 0;
+                string basicNumFomulaText = "";
+                switch (form.KIND_NO)
+                {
+                    case "1":
+                    case "2":
+                    case "4":
+                    case "5":
+                    case "6":
+                    case "7":
+                    case "8":
+                    case "9":
+                    case "A":
+                        basicNum = form.FormB.AREA.Value * diffDays / 30;
+                        basicNumFomulaText = $"{form.FormB.AREA.Value} ╳ {diffDays} / 30";
+                        break;
+                    case "3":
+                        basicNum = form.AREA2.Value;
+                        basicNumFomulaText = $"{form.AREA2.Value}";
+                        break;
+                    case "B":
+                        basicNum = form.FormB.VOLUMEL.Value;
+                        basicNumFomulaText = $"{form.FormB.VOLUMEL.Value}";
+                        break;
+                    case "Z":
+                        // 工程合約經費要-營業稅
+                        basicNum = form.FormB.MONEY.Value - form.TAX_MONEY;
+                        basicNumFomulaText = $"{form.FormB.MONEY.Value - form.TAX_MONEY}";
+                        break;
+                }
+
+                if (basicNum >= projectCode.Level1)
+                {
+                    level = 1;
+                    levelStr = "第一級";
+                    rate = projectCode.Rate1;
+                }
+                else if (basicNum * projectCode.Rate3 >= projectCode.Level2)
+                {
+                    level = 2;
+                    levelStr = "第二級";
+                    rate = projectCode.Rate2;
+                }
+                else
+                {
+                    level = 3;
+                    levelStr = "第三級";
+                    rate = projectCode.Rate3;
+                }
+
+                var result = new CalcMoneyResult
+                {
+                    Level = levelStr,
+                    Rate = rate,
+                    TotalMoney = Convert.ToDouble(Math.Round(basicNum * rate, 0, MidpointRounding.AwayFromZero))
+                };
+
+                formulaText = $"{result.TotalMoney} = {result.Rate} ╳ {basicNumFomulaText}";
+
+                return formulaText;
+            }
+        }
+
+        /// <summary>
         /// 寄送郵件通知
         /// </summary>
         /// <param name="form"></param>
