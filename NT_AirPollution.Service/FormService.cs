@@ -1086,7 +1086,8 @@ namespace NT_AirPollution.Service
             }
         }
 
-        /// <sum結算計算公式文字
+        /// <summary>
+        /// 結算計算公式文字
         /// </summary>
         /// <param name="form"></param>
         /// <param name="downDays"></param>
