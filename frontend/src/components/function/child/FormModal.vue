@@ -461,52 +461,60 @@
 					</div>
 				</el-tab-pane>
 				<el-tab-pane label="停復工" name="6">
-					<el-button type="primary" icon="el-icon-plus" @click="addStopWork()">新 增</el-button>
-					<div class="table-responsive" style="max-width:500px; margin-top:10px">
-						<table class="table stopwork-table">
-							<thead>
-								<tr>
-									<th style="width:50px">刪除</th>
-									<th style="width:160px">停工日期</th>
-									<th style="width:160px">復工日期</th>
-									<th style="width:120px; white-space: nowrap">停工天數</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr v-if="form.StopWorks.length === 0">
-									<td colspan="4">暫無資料</td>
-								</tr>
-								<tr v-for="(item, idx) in form.StopWorks" :key="idx">
-									<td style="width: 50px">
-										<el-button type="danger" size="mini" icon="el-icon-delete" circle @click="deleteStopWork(idx)"></el-button>
-									</td>
-									<td>
-										<el-date-picker class="w100p" v-model="item.DOWN_DATE2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
-									</td>
-									<td>
-										<el-date-picker class="w100p" v-model="item.UP_DATE2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
-									</td>
-									<td>{{getStopDays(item)}}</td>
-								</tr>
-							</tbody>
-						</table>
+					<div class="stopwork-wrapper">
+						<div class="toolbar">
+							<el-button type="primary" icon="el-icon-plus" @click="addStopWork()">新 增</el-button>
+						</div>
+						<div class="table-wrapper">
+							<table class="table">
+								<thead>
+									<tr>
+										<th style="width:60px">刪除</th>
+										<th style="width:180px">停工日期</th>
+										<th style="width:180px">復工日期</th>
+										<th style="width:120px; white-space: nowrap">停工天數</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr v-if="form.StopWorks.length === 0">
+										<td colspan="4" class="no-data">暫無資料</td>
+									</tr>
+									<tr v-for="(item, idx) in form.StopWorks" :key="idx">
+										<td class="text-center">
+											<el-button type="danger" size="mini" icon="el-icon-delete" circle @click="deleteStopWork(idx)"></el-button>
+										</td>
+										<td>
+											<el-date-picker class="w100p" v-model="item.DOWN_DATE2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
+										</td>
+										<td>
+											<el-date-picker class="w100p" v-model="item.UP_DATE2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
+										</td>
+										<td class="days">{{ getStopDays(item) }}</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
 					</div>
 				</el-tab-pane>
 				<el-tab-pane label="退款帳戶" name="7">
-					<el-form v-if="form.CalcStatus > 2 " inline>
+					<el-form v-if="form.CalcStatus > 2" inline>
 						<el-form-item>
 							<el-button type="primary" @click="exportRefundVerify1">結算退費審核表</el-button>
 							<el-button type="primary" @click="exportRefundVerify2">結算金額異動原因明細</el-button>
 						</el-form-item>
 					</el-form>
-					<el-form v-if="form.RefundBank.ID">
-						<el-form-item label="銀行代碼">{{form.RefundBank.Code}}</el-form-item>
-						<el-form-item label="銀行帳號">{{form.RefundBank.Account}}</el-form-item>
-						<el-form-item label="存摺照片">
-							<img style="width:640px" :src="`api/Form/Download?f=${form.RefundBank.Photo}`" />
-						</el-form-item>
-					</el-form>
-					<div v-else>暫無資料</div>
+					<div class="refund-bank-section">
+						<el-form v-if="form.RefundBank.ID" label-width="100px" class="refund-bank-form">
+							<el-form-item label="銀行代碼">{{ form.RefundBank.Code }}</el-form-item>
+							<el-form-item label="銀行帳號">{{ form.RefundBank.Account }}</el-form-item>
+							<el-form-item label="存摺照片">
+								<div class="photo-card">
+									<img :src="`api/Form/Download?f=${form.RefundBank.Photo}`" alt="存摺照片" />
+								</div>
+							</el-form-item>
+						</el-form>
+						<div v-else class="no-data">暫無資料</div>
+					</div>
 				</el-tab-pane>
 				<!-- <el-tab-pane v-if="form.PaymentProof.ID" label="繳費證明" name="8">
 					<el-form-item label="繳費證明">
@@ -1250,30 +1258,121 @@ export default {
 	}
 }
 
-.table-responsive {
-	overflow-x: auto;
-}
-.table {
-	width: 100%;
-	margin-bottom: 20px;
-	border-collapse: collapse;
-	th {
-		font-weight: 700;
+.stopwork-wrapper {
+	max-width: 720px;
+	background: #fff;
+	border-radius: 10px;
+	padding: 20px 25px;
+	.toolbar {
+		display: flex;
+		justify-content: flex-end;
+		margin-bottom: 12px;
 	}
-	td,
-	th {
-		border: 1px solid #ddd;
-		padding: 8px;
-		vertical-align: middle;
-		line-height: 1.428571429;
+	.table-wrapper {
+		overflow-x: auto;
+	}
+	.table {
+		width: 100%;
+		border-collapse: separate;
+		border-spacing: 0;
+		border: 1px solid #ebeef5;
+		border-radius: 8px;
+		overflow: hidden;
+		font-size: 14px;
+		thead {
+			th {
+				background-color: #f9fafc;
+				color: #606266;
+				text-align: center;
+				padding: 10px;
+				border-bottom: 1px solid #ebeef5;
+				font-weight: 600;
+			}
+		}
+		tbody {
+			tr {
+				transition: background-color 0.2s ease;
+
+				&:hover {
+					background-color: #f5f7fa;
+				}
+
+				td {
+					padding: 8px 10px;
+					border-bottom: 1px solid #ebeef5;
+					vertical-align: middle;
+
+					&.text-center {
+						text-align: center;
+					}
+
+					&.days {
+						text-align: center;
+						color: #409eff;
+						font-weight: bold;
+					}
+
+					.w100p {
+						width: 100%;
+					}
+				}
+			}
+			.no-data {
+				text-align: center;
+				color: #999;
+				padding: 15px 0;
+				background: #fafafa;
+				font-style: italic;
+			}
+		}
 	}
 }
-.stopwork-table {
-	th,
-	td {
+
+.refund-bank-section {
+	max-width: 700px;
+	margin-top: 20px;
+	background: #fff;
+	border-radius: 10px;
+	padding: 20px 25px;
+	box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+
+	.refund-bank-form {
+		.el-form-item {
+			margin-bottom: 18px;
+
+			.el-form-item__content {
+				font-weight: 500;
+				color: #333;
+			}
+		}
+
+		.photo-card {
+			padding: 10px;
+			border: 1px solid #ebeef5;
+			border-radius: 8px;
+			display: inline-block;
+			max-width: 100%;
+			box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+
+			img {
+				width: 100%;
+				max-width: 640px;
+				display: block;
+				border-radius: 5px;
+			}
+		}
+	}
+
+	.no-data {
 		text-align: center;
+		color: #999;
+		padding: 20px;
+		font-style: italic;
+		background: #fafafa;
+		border-radius: 8px;
 	}
 }
+
 .modal-header {
 	margin: 10px 0;
 }

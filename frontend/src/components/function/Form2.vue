@@ -43,11 +43,11 @@
 			</vxe-table-column>
 			<vxe-table-column field="COMP_L" title="工程分級" width="100" align="center"></vxe-table-column>
 			<vxe-table-column field="S_C_NAM" title="業主聯絡人" width="120" align="center"></vxe-table-column>
-			<vxe-table-column field="S_C_TEL" title="業主聯絡電話" width="180" align="center"></vxe-table-column>
+			<vxe-table-column field="S_C_TEL" title="業主聯絡電話" width="120" align="center"></vxe-table-column>
 			<vxe-table-column field="COMP_NAM" title="工程名稱" width="180" align="center"></vxe-table-column>
 			<vxe-table-column field="TOWN_NA" title="鄉鎮名稱" width="100" align="center" sortable></vxe-table-column>
-			<vxe-table-column field="S_NAME" title="營建業主名稱" width="180" align="center"></vxe-table-column>
-			<vxe-table-column field="R_NAME" title="承造單位名稱" width="180" align="center"></vxe-table-column>
+			<vxe-table-column field="S_NAME" title="營建業主名稱" width="160" align="center"></vxe-table-column>
+			<vxe-table-column field="R_NAME" title="承造單位名稱" width="160" align="center"></vxe-table-column>
 			<vxe-table-column field="C_DATE" title="申報日期" width="140" align="center" sortable>
 				<template #default="{ row }">{{ row.C_DATE | datetime }}</template>
 			</vxe-table-column>

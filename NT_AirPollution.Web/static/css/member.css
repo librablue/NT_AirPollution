@@ -1057,6 +1057,62 @@ h3 {
   font-size: 16px;
 }
 
+.stopwork-wrapper {
+  max-width: 720px;
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px 25px;
+}
+.stopwork-wrapper .table-wrapper {
+  overflow-x: auto;
+}
+.stopwork-wrapper .table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid #ebeef5;
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: 14px;
+}
+.stopwork-wrapper .table thead th {
+  background-color: #f9fafc;
+  color: #606266;
+  text-align: center;
+  padding: 10px;
+  border-bottom: 1px solid #ebeef5;
+  font-weight: 600;
+}
+.stopwork-wrapper .table tbody tr {
+  transition: background-color 0.2s ease;
+}
+.stopwork-wrapper .table tbody tr:hover {
+  background-color: #f5f7fa;
+}
+.stopwork-wrapper .table tbody tr td {
+  padding: 8px 10px;
+  border-bottom: 1px solid #ebeef5;
+  vertical-align: middle;
+}
+.stopwork-wrapper .table tbody tr td.text-center {
+  text-align: center;
+}
+.stopwork-wrapper .table tbody tr td.days {
+  text-align: center;
+  color: #409eff;
+  font-weight: bold;
+}
+.stopwork-wrapper .table tbody tr td .w100p {
+  width: 100%;
+}
+.stopwork-wrapper .table tbody .no-data {
+  text-align: center;
+  color: #999;
+  padding: 15px 0;
+  background: #fafafa;
+  font-style: italic;
+}
+
 footer {
   background-color: #ebf5ff;
   padding: 20px 0 0;
