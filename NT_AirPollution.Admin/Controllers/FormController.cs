@@ -172,6 +172,7 @@ namespace NT_AirPollution.Admin.Controllers
                 _accessService.AddABUDF(form);
 
                 _formService.UpdateForm(form);
+                _formService.AddFormB(form);
                 return form.C_NO;
             }
             catch (Exception ex)
