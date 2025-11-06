@@ -199,6 +199,10 @@ namespace NT_AirPollution.Admin.Controllers
                             form.VerifyStage1 = VerifyStage.未申請;
                             break;
                         case FormStatus.通過待繳費:
+
+                            if (string.IsNullOrEmpty(form.C_NO))
+                                throw new Exception("尚未產生管制編號");
+
                             // 審核日期
                             form.VerifyDate1 = DateTime.Now;
                             form.VerifyStage1 = VerifyStage.初審通過;
