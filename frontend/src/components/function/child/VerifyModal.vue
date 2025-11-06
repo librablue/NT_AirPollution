@@ -2,6 +2,7 @@
 	<vxe-modal title="案件審核" v-model="visible" width="30%" :lock-scroll="false" esc-closable resize show-footer>
 		<template #default>
 			<el-form ref="form" :model="form" label-width="80px">
+				<el-form-item label="管制編號">{{C_NO}}</el-form-item>
 				<div v-if="$route.path === '/function/form1'">
 					<el-form-item prop="FormStatus" label="審核進度">
 						<el-select v-model="form.FormStatus" placeholder="請選擇">
@@ -11,9 +12,9 @@
 					<el-form-item v-if="form.FormStatus === 2" prop="FailReason1" label="退件原因">
 						<el-input type="textarea" :autosize="{ minRows: 3, maxRows: 6 }" v-model="form.FailReason1" />
 					</el-form-item>
-                    <!-- <el-form-item label="繳費期限">
+					<!-- <el-form-item label="繳費期限">
                         <el-date-picker v-model="form.PayEndDate1" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
-					</el-form-item> -->
+					</el-form-item>-->
 					<el-form-item>
 						<el-checkbox v-model="form.IsMailFormStatus" label="郵件通知" border></el-checkbox>
 					</el-form-item>
@@ -27,9 +28,9 @@
 					<el-form-item v-if="form.CalcStatus === 2" prop="FailReason2" label="退件原因">
 						<el-input type="textarea" :autosize="{ minRows: 3, maxRows: 6 }" v-model="form.FailReason2" />
 					</el-form-item>
-                    <!-- <el-form-item label="繳費期限">
+					<!-- <el-form-item label="繳費期限">
                         <el-date-picker v-model="form.PayEndDate2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
-					</el-form-item> -->
+					</el-form-item>-->
 					<el-form-item>
 						<el-checkbox v-model="form.IsMailCalcStatus" label="郵件通知" border></el-checkbox>
 					</el-form-item>
@@ -60,6 +61,10 @@ export default {
 	},
 	computed: {
 		...mapGetters(['currentUser']),
+        C_NO() {
+			if (!this.form.C_NO || !this.form.SER_NO) return '待取號';
+			return `${this.form.C_NO}-${this.form.SER_NO}`;
+		},
 		formStatusList() {
 			if (this.currentUser.RoleID === 1) {
 				return [
@@ -70,7 +75,7 @@ export default {
 			} else if (this.currentUser.RoleID === 2) {
 				return [
 					{ value: 2, label: '待補件' },
-					{ value: 3, label: '通過待繳費' },
+					{ value: 3, label: '通過待繳費' }
 					// { value: 4, label: '已繳費完成' },
 					// { value: 5, label: '免繳費' }
 				];
@@ -121,9 +126,9 @@ export default {
 			if (this.form.FormStatus > 2 && !this.form.C_NO) {
 				return alert('若要通過審核，請先產生管制編號');
 			}
-            if(this.form.FormStatus > 2 && !this.form.S_AMT){
-                return alert('若要通過審核，請先開啟案件瀏覽並儲存，才會產生繳費金額');
-            }
+			if (this.form.FormStatus > 2 && !this.form.S_AMT) {
+				return alert('若要通過審核，請先開啟案件瀏覽並儲存，才會產生繳費金額');
+			}
 
 			if (!confirm('是否確認繼續?')) return false;
 			const loading = this.$loading();
