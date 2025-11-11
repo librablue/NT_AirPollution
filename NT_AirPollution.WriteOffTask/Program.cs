@@ -77,16 +77,11 @@ namespace NT_AirPollution.WriteOffTask
                             form.CalcStatus = CalcStatus.繳退費完成;
                             form.VerifyStage2 = VerifyStage.複審通過;
                             form.IsMailCalcStatus = true;
+                            form.FIN_DATE = chineseToday;
                         }
 
-                        form.FIN_DATE = chineseToday;
-
-                        // 如果繳費金額=應繳金額才更新成繳費完成
-                        if (payAmount == actualPayment.PayableAmount)
-                        {
-                            // 更新申請單
-                            _formService.UpdateForm(form);
-                        }
+                        // 更新申請單
+                        _formService.UpdateForm(form);
 
                         // 寄信通知
                         _formService.SendStatusMail(form);
