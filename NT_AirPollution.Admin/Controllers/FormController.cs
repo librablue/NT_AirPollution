@@ -279,7 +279,10 @@ namespace NT_AirPollution.Admin.Controllers
                             if (form.CalcStatus == CalcStatus.通過待退費小於4000 ||
                                 form.CalcStatus == CalcStatus.通過待退費大於4000 ||
                                 form.CalcStatus == CalcStatus.繳退費完成)
+                            {
+                                form.FIN_COM = DateTime.Now.AddYears(-1911).ToString("yyyMMdd");
                                 form.FIN_DATE = DateTime.Now.AddYears(-1911).ToString("yyyMMdd");
+                            }
                             break;
                     }
                 }
