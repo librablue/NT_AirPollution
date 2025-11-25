@@ -260,6 +260,8 @@ namespace NT_AirPollution.Admin.Controllers
 
                         // 更新ABUDF FIN_COM(已完成完工查核日期)
                         _accessService.UpdateABUDFByColumn(form.C_NO, form.SER_NO.Value, "FIN_COM", DateTime.Now.AddYears(-1911).ToString("yyyMMdd"));
+                        // 更新ABUDF FIN_DATE(已完成結算繳費程序日期)
+                        _accessService.UpdateABUDFByColumn(form.C_NO, form.SER_NO.Value, "FIN_DATE", DateTime.Now.AddYears(-1911).ToString("yyyMMdd"));
                     }
 
                     switch (form.CalcStatus)
