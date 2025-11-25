@@ -295,22 +295,26 @@ namespace NT_AirPollution.Admin.Controllers
                 _formService.AddFormB(form);
                 // 寄送通知
                 _formService.SendStatusMail(form);
-                // 判斷如果是通過待繳費就產生繳費單(為了先新增ABUDF_1)
-                if ((form.VerifyStage1 == VerifyStage.複審通過 && form.FormStatus == FormStatus.通過待繳費) ||
-                    (form.VerifyStage2 == VerifyStage.複審通過 && form.CalcStatus == CalcStatus.通過待繳費))
-                {
-                    string fileName = "";
-                    if (form.VerifyStage1 == VerifyStage.複審通過 && form.FormStatus == FormStatus.通過待繳費)
-                    {
-                        fileName = $"繳款單{form.C_NO}-{form.SER_NO}({(form.P_KIND == "一次繳清" ? "一次繳清" : "第一期")})";
-                    }
-                    if (form.VerifyStage2 == VerifyStage.複審通過 && form.CalcStatus == CalcStatus.通過待繳費)
-                    {
-                        fileName = $"繳款單{form.C_NO}-{form.SER_NO}(結算補繳)";
-                    }
+                // 產生繳費單(為了先新增ABUDF_1)
+                _formService.CreatePaymentPDF("", form);
 
-                    _formService.CreatePaymentPDF(fileName, form);
-                }
+                // 判斷如果是通過待繳費就產生繳費單(為了先新增ABUDF_1)
+                //if ((form.VerifyStage1 == VerifyStage.複審通過 && form.FormStatus == FormStatus.通過待繳費) ||
+                //    (form.VerifyStage2 == VerifyStage.複審通過 && form.CalcStatus == CalcStatus.通過待繳費))
+                //{
+                //    string fileName = "";
+                //    if (form.VerifyStage1 == VerifyStage.複審通過 && form.FormStatus == FormStatus.通過待繳費)
+                //    {
+                //        fileName = $"繳款單{form.C_NO}-{form.SER_NO}({(form.P_KIND == "一次繳清" ? "一次繳清" : "第一期")})";
+                //    }
+                //    if (form.VerifyStage2 == VerifyStage.複審通過 && form.CalcStatus == CalcStatus.通過待繳費)
+                //    {
+                //        fileName = $"繳款單{form.C_NO}-{form.SER_NO}(結算補繳)";
+                //    }
+
+                //    _formService.CreatePaymentPDF(fileName, form);
+                //}
+
 
                 return true;
             }

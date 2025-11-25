@@ -1600,8 +1600,8 @@ namespace NT_AirPollution.Service
                 }
 
                 abudf_1.FLNO = BotHelper.GetPayNo(transNo, sumPrice.ToString(), abudf_1.E_DATE);
-                abudf_1.F_AMT = sumPrice;
-                abudf_1.B_AMT = 0;
+                abudf_1.F_AMT = sumPrice > 0 ? sumPrice : 0;
+                abudf_1.B_AMT = form.S_AMT > form.S_AMT2 ? form.S_AMT.Value - form.S_AMT2.Value : 0;
                 abudf_1.KEYIN = "EPB02";
                 abudf_1.C_DATE = DateTime.Now;
                 abudf_1.M_DATE = DateTime.Now;
@@ -1642,6 +1642,9 @@ namespace NT_AirPollution.Service
                 this.AddPayment(payment);
                 #endregion
 
+
+                // 如果沒傳入檔名就不做PDF轉檔
+                if (string.IsNullOrEmpty(fileName)) return "";
 
                 string barcodeMarketA = BotHelper.GetMarketNo(abudf_1.E_DATE);
                 string barcodeMarketB = abudf_1.FLNO;
