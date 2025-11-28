@@ -1,4 +1,5 @@
-﻿using Dapper.Contrib.Extensions;
+﻿using Dapper;
+using Dapper.Contrib.Extensions;
 using NT_AirPollution.Model.Domain;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,26 @@ namespace NT_AirPollution.AccessToSQLServer
 {
     public class SQLService : BaseService
     {
+        public IEnumerable<ClientUser> GetClientUser()
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                var result = cn.GetAll<ClientUser>();
+                return result;
+            }
+        }
+
+        public IEnumerable<TDMFORMA> GetTDMFORMA()
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                var result = cn.Query<TDMFORMA>(@"
+                    SELECT DSG_EUSR_NAME, C_NO, SER_NO FROM TDMFORMA
+                    WHERE C_NO<>'' AND SER_NO<>''");
+                return result;
+            }
+        }
+
         public long AddForm(Form form)
         {
             using (var cn = new SqlConnection(connStr))

@@ -17,6 +17,12 @@ namespace NT_AirPollution.AccessToSQLServer
 
         static void Main(string[] args)
         {
+            //OneToOne();
+            ManyToMany();
+        }
+
+        private static void OneToOne()
+        {
             string c_no = "M114MDZ109";
             int ser_no = 1;
 
@@ -64,6 +70,65 @@ namespace NT_AirPollution.AccessToSQLServer
                 };
 
                 _sqlService.AddPayment(payment);
+            }
+        }
+
+        private static void ManyToMany()
+        {
+            var allUser = _sqlService.GetClientUser().ToList();
+            var allABUDF = _accessService.GetABUDF().ToList();
+            var allABUDF_1 = _accessService.GetABUDF_1().ToList();
+            var allABUDF_I = _accessService.GetABUDF_I().ToList();
+            var allOldData = _sqlService.GetTDMFORMA().ToList();
+
+            foreach (var abudf in allABUDF)
+            {
+                // 1. 設定 AutoMapper 配置
+                var config = new MapperConfiguration(cfg => cfg.CreateMap<ABUDF, Form>());
+                var mapper = config.CreateMapper();
+                var form = mapper.Map<Form>(abudf);
+
+                var oldData = allOldData.FirstOrDefault(o => o.C_NO == abudf.C_NO && o.SER_NO == $"{abudf.SER_NO}");
+                var user = allUser.FirstOrDefault(u => u.Email == oldData.DSG_EUSR_NAME);
+
+                form.ClientUserID = user.ID;
+                form.CreateUserEmail = oldData.DSG_EUSR_NAME;
+                form.CreateUserName = oldData.DSG_EUSR_NAME;
+
+                form.FormStatus = FormStatus.已繳費完成;
+                form.VerifyDate1 = DateTime.Now;
+                form.VerifyStage1 = VerifyStage.複審通過;
+                form.PayEndDate1 = null;
+                form.CalcStatus = CalcStatus.未申請;
+                form.VerifyDate2 = null;
+                form.VerifyStage2 = VerifyStage.未申請;
+                long id = _sqlService.AddForm(form);
+
+                for (int i = 1; i <= 2; i++)
+                {
+                    var abudf_1 = allABUDF_1.FirstOrDefault(o => o.C_NO == abudf.C_NO && o.SER_NO == abudf.SER_NO && o.P_TIME == $"0{i}");
+                    var abudf_i = allABUDF_I.FirstOrDefault(o => o.C_NO == abudf.C_NO && o.SER_NO == abudf.SER_NO && o.P_TIME == $"0{i}");
+
+                    if (abudf_1 == null) continue;
+
+                    Payment payment = new Payment
+                    {
+                        FormID = id,
+                        Term = $"{i}",
+                        PayEndDate = ChineseDateToWestDate(abudf_1.E_DATE).Value,
+                        PaymentID = abudf_1?.FLNO,
+                        PayableAmount = abudf.P_AMT.Value,
+                        Penalty = abudf_i?.PEN_AMT,
+                        Interest = abudf_i?.I_AMT,
+                        Percent = abudf_i?.PERCENT ?? 1.725,
+                        PayAmount = abudf_1.F_AMT,
+                        PayDate = ChineseDateToWestDate(abudf_1.PM_DATE),
+                        CreateDate = abudf_1.C_DATE,
+                        ModifyDate = abudf_1.M_DATE
+                    };
+
+                    _sqlService.AddPayment(payment);
+                }
             }
         }
 

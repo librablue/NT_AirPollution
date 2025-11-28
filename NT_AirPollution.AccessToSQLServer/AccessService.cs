@@ -17,6 +17,26 @@ namespace NT_AirPollution.AccessToSQLServer
         private readonly string password = "Ciohe@2565!";
 
         /// <summary>
+        /// 取得全部ABUDF
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<ABUDF> GetABUDF()
+        {
+#if !DEBUG
+            using (var impersonation = new ImpersonationContext(domain, userName, password))
+            {
+#endif
+            using (var cn = new OleDbConnection(accessConnStr))
+            {
+                var result = cn.Query<ABUDF>("SELECT * FROM ABUDF");
+                return result;
+            }
+#if !DEBUG
+            }
+#endif
+        }
+
+        /// <summary>
         /// 取得單筆ABUDF
         /// </summary>
         /// <param name="c_no"></param>
@@ -36,6 +56,29 @@ namespace NT_AirPollution.AccessToSQLServer
 
                     return result;
                 }
+#if !DEBUG
+            }
+#endif
+        }
+
+        /// <summary>
+        /// 取得全部ABUDF_1
+        /// </summary>
+        /// <param name="c_no"></param>
+        /// <param name="ser_no"></param>
+        /// <param name="term"></param>
+        /// <returns></returns>
+        public IEnumerable<ABUDF_1> GetABUDF_1()
+        {
+#if !DEBUG
+            using (var impersonation = new ImpersonationContext(domain, userName, password))
+            {
+#endif
+            using (var cn = new OleDbConnection(accessConnStr))
+            {
+                var result = cn.Query<ABUDF_1>("SELECT * FROM ABUDF_1");
+                return result;
+            }
 #if !DEBUG
             }
 #endif
@@ -62,6 +105,26 @@ namespace NT_AirPollution.AccessToSQLServer
 
                     return result;
                 }
+#if !DEBUG
+            }
+#endif
+        }
+
+        /// <summary>
+        /// 取得全部ABUDF_I
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<ABUDF_I> GetABUDF_I()
+        {
+#if !DEBUG
+            using (var impersonation = new ImpersonationContext(domain, userName, password))
+            {
+#endif
+            using (var cn = new OleDbConnection(accessConnStr))
+            {
+                var result = cn.Query<ABUDF_I>("SELECT * FROM ABUDF_I");
+                return result;
+            }
 #if !DEBUG
             }
 #endif

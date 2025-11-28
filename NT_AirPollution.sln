@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.4.33205.214
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.11205.157 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NT_AirPollution.Web", "NT_AirPollution.Web\NT_AirPollution.Web.csproj", "{6E9AE764-652C-4207-8FD3-88C234B38F62}"
 EndProject
@@ -14,10 +14,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NT_AirPollution.MailTask", "NT_AirPollution.MailTask\NT_AirPollution.MailTask.csproj", "{50ABFC80-22A6-492E-BF46-2FEFADDD0F2D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NT_AirPollution.WriteOffTask", "NT_AirPollution.WriteOffTask\NT_AirPollution.WriteOffTask.csproj", "{83686F54-3AED-4F75-AC83-FC66D2ED4D63}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NT_AirPollution.PaymentTest", "NT_AirPollution.PaymentTest\NT_AirPollution.PaymentTest.csproj", "{49A914F8-1676-4A71-87E1-7C8F9466D14B}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NT_AirPollution.AccessWorker", "NT_AirPollution.AccessWorker\NT_AirPollution.AccessWorker.csproj", "{892BC498-9CAA-4B4E-AFB5-62F72423B9A4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NT_AirPollution.AccessToSQLServer", "NT_AirPollution.AccessToSQLServer\NT_AirPollution.AccessToSQLServer.csproj", "{4F46556E-F95C-44D9-A029-5D17A4A4C012}"
 EndProject
@@ -51,14 +47,6 @@ Global
 		{83686F54-3AED-4F75-AC83-FC66D2ED4D63}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{83686F54-3AED-4F75-AC83-FC66D2ED4D63}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{83686F54-3AED-4F75-AC83-FC66D2ED4D63}.Release|Any CPU.Build.0 = Release|Any CPU
-		{49A914F8-1676-4A71-87E1-7C8F9466D14B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{49A914F8-1676-4A71-87E1-7C8F9466D14B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{49A914F8-1676-4A71-87E1-7C8F9466D14B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{49A914F8-1676-4A71-87E1-7C8F9466D14B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{892BC498-9CAA-4B4E-AFB5-62F72423B9A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{892BC498-9CAA-4B4E-AFB5-62F72423B9A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{892BC498-9CAA-4B4E-AFB5-62F72423B9A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{892BC498-9CAA-4B4E-AFB5-62F72423B9A4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4F46556E-F95C-44D9-A029-5D17A4A4C012}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4F46556E-F95C-44D9-A029-5D17A4A4C012}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4F46556E-F95C-44D9-A029-5D17A4A4C012}.Release|Any CPU.ActiveCfg = Release|Any CPU
