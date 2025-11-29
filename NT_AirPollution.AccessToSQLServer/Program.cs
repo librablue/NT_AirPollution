@@ -75,11 +75,12 @@ namespace NT_AirPollution.AccessToSQLServer
 
         private static void ManyToMany()
         {
+            DateTime now = DateTime.Now;
             var allUser = _sqlService.GetClientUser().ToList();
             var allABUDF = _accessService.GetABUDF().ToList();
             var allABUDF_1 = _accessService.GetABUDF_1().ToList();
             var allABUDF_I = _accessService.GetABUDF_I().ToList();
-            var allOldData = _sqlService.GetTDMFORMA().ToList();
+            var allOldSQL = _sqlService.GetTDMFORMA().ToList();
 
             foreach (var abudf in allABUDF)
             {
@@ -88,15 +89,15 @@ namespace NT_AirPollution.AccessToSQLServer
                 var mapper = config.CreateMapper();
                 var form = mapper.Map<Form>(abudf);
 
-                var oldData = allOldData.FirstOrDefault(o => o.C_NO == abudf.C_NO && o.SER_NO == $"{abudf.SER_NO}");
-                var user = allUser.FirstOrDefault(u => u.Email == oldData.DSG_EUSR_NAME);
+                var oldSQL = allOldSQL.FirstOrDefault(o => o.C_NO == abudf.C_NO && o.SER_NO == $"{abudf.SER_NO}");
+                var user = allUser.FirstOrDefault(u => u.Email == oldSQL.DSG_EUSR_NAME);
 
                 form.ClientUserID = user.ID;
-                form.CreateUserEmail = oldData.DSG_EUSR_NAME;
-                form.CreateUserName = oldData.DSG_EUSR_NAME;
+                form.CreateUserEmail = oldSQL.DSG_EUSR_NAME;
+                form.CreateUserName = oldSQL.DSG_EUSR_NAME;
 
                 form.FormStatus = FormStatus.已繳費完成;
-                form.VerifyDate1 = DateTime.Now;
+                form.VerifyDate1 = now;
                 form.VerifyStage1 = VerifyStage.複審通過;
                 form.PayEndDate1 = null;
                 form.CalcStatus = CalcStatus.未申請;
