@@ -48,14 +48,14 @@ namespace NT_AirPollution.AccessToSQLServer
             using (var impersonation = new ImpersonationContext(domain, userName, password))
             {
 #endif
-                using (var cn = new OleDbConnection(accessConnStr))
-                {
-                    var result = cn.QueryFirstOrDefault<ABUDF>(@"
+            using (var cn = new OleDbConnection(accessConnStr))
+            {
+                var result = cn.QueryFirstOrDefault<ABUDF>(@"
                         SELECT * FROM ABUDF WHERE C_NO=@C_NO AND SER_NO=@SER_NO",
-                        new { C_NO = c_no, SER_NO = ser_no });
+                    new { C_NO = c_no, SER_NO = ser_no });
 
-                    return result;
-                }
+                return result;
+            }
 #if !DEBUG
             }
 #endif
@@ -97,14 +97,14 @@ namespace NT_AirPollution.AccessToSQLServer
             using (var impersonation = new ImpersonationContext(domain, userName, password))
             {
 #endif
-                using (var cn = new OleDbConnection(accessConnStr))
-                {
-                    var result = cn.QueryFirstOrDefault<ABUDF_1>(@"
+            using (var cn = new OleDbConnection(accessConnStr))
+            {
+                var result = cn.QueryFirstOrDefault<ABUDF_1>(@"
                         SELECT * FROM ABUDF_1 WHERE C_NO=@C_NO AND SER_NO=@SER_NO AND P_TIME=@P_TIME",
-                        new { C_NO = c_no, SER_NO = ser_no, P_TIME= term });
+                    new { C_NO = c_no, SER_NO = ser_no, P_TIME = term });
 
-                    return result;
-                }
+                return result;
+            }
 #if !DEBUG
             }
 #endif
@@ -143,14 +143,34 @@ namespace NT_AirPollution.AccessToSQLServer
             using (var impersonation = new ImpersonationContext(domain, userName, password))
             {
 #endif
-                using (var cn = new OleDbConnection(accessConnStr))
-                {
-                    var result = cn.QueryFirstOrDefault<ABUDF_I>(@"
+            using (var cn = new OleDbConnection(accessConnStr))
+            {
+                var result = cn.QueryFirstOrDefault<ABUDF_I>(@"
                         SELECT * FROM ABUDF_I WHERE C_NO=@C_NO AND SER_NO=@SER_NO AND P_TIME=@P_TIME",
-                        new { C_NO = c_no, SER_NO = ser_no, P_TIME = term });
+                    new { C_NO = c_no, SER_NO = ser_no, P_TIME = term });
 
-                    return result;
-                }
+                return result;
+            }
+#if !DEBUG
+            }
+#endif
+        }
+
+        /// <summary>
+        /// 取得全部ABUDF_B
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<ABUDF_B> GetABUDF_B()
+        {
+#if !DEBUG
+            using (var impersonation = new ImpersonationContext(domain, userName, password))
+            {
+#endif
+            using (var cn = new OleDbConnection(accessConnStr))
+            {
+                var result = cn.Query<ABUDF_B>(@"SELECT * FROM ABUDF_B");
+                return result;
+            }
 #if !DEBUG
             }
 #endif

@@ -59,7 +59,7 @@ namespace NT_AirPollution.AccessToSQLServer
                     Term = $"{i}",
                     PayEndDate = ChineseDateToWestDate(abudf_1.E_DATE).Value,
                     PaymentID = abudf_1?.FLNO,
-                    PayableAmount = abudf.P_AMT.Value,
+                    PayableAmount = abudf.P_AMT,
                     Penalty = abudf_i?.PEN_AMT,
                     Interest = abudf_i?.I_AMT,
                     Percent = abudf_i?.PERCENT ?? 1.725,
@@ -81,6 +81,7 @@ namespace NT_AirPollution.AccessToSQLServer
             var allABUDF_1 = _accessService.GetABUDF_1().ToList();
             var allABUDF_I = _accessService.GetABUDF_I().ToList();
             var allOldSQL = _sqlService.GetTDMFORMA().ToList();
+            var allABUDF_B = _accessService.GetABUDF_B().ToList();
 
             foreach (var abudf in allABUDF)
             {
@@ -90,19 +91,46 @@ namespace NT_AirPollution.AccessToSQLServer
                 var form = mapper.Map<Form>(abudf);
 
                 var oldSQL = allOldSQL.FirstOrDefault(o => o.C_NO == abudf.C_NO && o.SER_NO == $"{abudf.SER_NO}");
-                var user = allUser.FirstOrDefault(u => u.Email == oldSQL.DSG_EUSR_NAME);
+                var user = allUser.FirstOrDefault(u => u.Email == oldData.DSG_EUSR_NAME);
+                var abudf1 = allABUDF_1.FirstOrDefault(o => o.C_NO == abudf.C_NO && o.SER_NO == abudf.SER_NO && o.P_TIME == "01");
+                var abudf_b = allABUDF_B.FirstOrDefault(o => o.C_NO == abudf.C_NO && o.SER_NO == abudf.SER_NO);
 
                 form.ClientUserID = user.ID;
                 form.CreateUserEmail = oldSQL.DSG_EUSR_NAME;
                 form.CreateUserName = oldSQL.DSG_EUSR_NAME;
 
-                form.FormStatus = FormStatus.已繳費完成;
-                form.VerifyDate1 = now;
+                /* 申請狀態 */
+                form.VerifyDate1 = DateTime.Now;
                 form.VerifyStage1 = VerifyStage.複審通過;
                 form.PayEndDate1 = null;
+
+                if (abudf.S_AMT > 0 && string.IsNullOrEmpty(abudf.FIN_DATE))
+                    form.FormStatus = FormStatus.通過待繳費;
+                else if (abudf.S_AMT == 0 && string.IsNullOrEmpty(abudf.FIN_DATE))
+                    form.FormStatus = FormStatus.免繳費;
+                else if (abudf1 != null && !string.IsNullOrEmpty(abudf1.F_DATE))
+                    form.FormStatus = FormStatus.已繳費完成;
+
+
+                /* 結算狀態 */
+                form.PayEndDate2 = null;
                 form.CalcStatus = CalcStatus.未申請;
-                form.VerifyDate2 = null;
-                form.VerifyStage2 = VerifyStage.未申請;
+
+                if (!string.IsNullOrEmpty(abudf_b.AP_DATE1))
+                {
+                    form.CalcStatus = CalcStatus.通過待繳費;
+                    form.VerifyDate2 = ChineseDateToWestDate(abudf_b.AP_DATE1);
+                    form.VerifyStage2 = VerifyStage.複審通過;
+                }
+                
+                if (!string.IsNullOrEmpty(abudf_b.AP_DATE1) && abudf_b.PRE_C_AMT < 4000)
+                    form.CalcStatus = CalcStatus.通過待退費小於4000;
+                else if (!string.IsNullOrEmpty(abudf_b.AP_DATE1) && abudf_b.PRE_C_AMT >= 4000)
+                    form.CalcStatus = CalcStatus.通過待退費大於4000;
+                else if (!string.IsNullOrEmpty(abudf.FIN_DATE))
+                    form.CalcStatus = CalcStatus.繳退費完成;
+
+
                 long id = _sqlService.AddForm(form);
 
                 for (int i = 1; i <= 2; i++)
@@ -118,7 +146,7 @@ namespace NT_AirPollution.AccessToSQLServer
                         Term = $"{i}",
                         PayEndDate = ChineseDateToWestDate(abudf_1.E_DATE).Value,
                         PaymentID = abudf_1?.FLNO,
-                        PayableAmount = abudf.P_AMT.Value,
+                        PayableAmount = abudf.P_AMT,
                         Penalty = abudf_i?.PEN_AMT,
                         Interest = abudf_i?.I_AMT,
                         Percent = abudf_i?.PERCENT ?? 1.725,
