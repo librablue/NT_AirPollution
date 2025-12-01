@@ -560,10 +560,6 @@ namespace NT_AirPollution.Model.Domain
         /// </summary>
         public string FailReason1 { get; set; }
         /// <summary>
-        /// 申報繳費期限
-        /// </summary>
-        public DateTime? PayEndDate1 { get; set; }
-        /// <summary>
         /// 結算狀態
         /// </summary>
         public CalcStatus CalcStatus { get; set; }
@@ -579,10 +575,6 @@ namespace NT_AirPollution.Model.Domain
         /// 結算退件原因
         /// </summary>
         public string FailReason2 { get; set; }
-        /// <summary>
-        /// 結算繳費期限
-        /// </summary>
-        public DateTime? PayEndDate2 { get; set; }
         /// <summary>
         /// 初審附件原始檔名
         /// </summary>

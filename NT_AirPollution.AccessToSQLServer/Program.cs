@@ -40,7 +40,6 @@ namespace NT_AirPollution.AccessToSQLServer
             form.FormStatus = FormStatus.已繳費完成;
             form.VerifyDate1 = DateTime.Now;
             form.VerifyStage1 = VerifyStage.複審通過;
-            form.PayEndDate1 = null;
             form.CalcStatus = CalcStatus.未申請;
             form.VerifyDate2 = null;
             form.VerifyStage2 = VerifyStage.未申請;
@@ -91,7 +90,7 @@ namespace NT_AirPollution.AccessToSQLServer
                 var form = mapper.Map<Form>(abudf);
 
                 var oldSQL = allOldSQL.FirstOrDefault(o => o.C_NO == abudf.C_NO && o.SER_NO == $"{abudf.SER_NO}");
-                var user = allUser.FirstOrDefault(u => u.Email == oldData.DSG_EUSR_NAME);
+                var user = allUser.FirstOrDefault(u => u.Email == oldSQL.DSG_EUSR_NAME);
                 var abudf1 = allABUDF_1.FirstOrDefault(o => o.C_NO == abudf.C_NO && o.SER_NO == abudf.SER_NO && o.P_TIME == "01");
                 var abudf_b = allABUDF_B.FirstOrDefault(o => o.C_NO == abudf.C_NO && o.SER_NO == abudf.SER_NO);
 
@@ -100,9 +99,9 @@ namespace NT_AirPollution.AccessToSQLServer
                 form.CreateUserName = oldSQL.DSG_EUSR_NAME;
 
                 /* 申請狀態 */
-                form.VerifyDate1 = DateTime.Now;
+                // 現場作業是通過才會建資料
+                form.VerifyDate1 = abudf.C_DATE;
                 form.VerifyStage1 = VerifyStage.複審通過;
-                form.PayEndDate1 = null;
 
                 if (abudf.S_AMT > 0 && string.IsNullOrEmpty(abudf.FIN_DATE))
                     form.FormStatus = FormStatus.通過待繳費;
@@ -113,7 +112,6 @@ namespace NT_AirPollution.AccessToSQLServer
 
 
                 /* 結算狀態 */
-                form.PayEndDate2 = null;
                 form.CalcStatus = CalcStatus.未申請;
 
                 if (!string.IsNullOrEmpty(abudf_b.AP_DATE1))
