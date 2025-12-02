@@ -637,9 +637,9 @@ namespace NT_AirPollution.Service
             formB.KIND = form.KIND;
             formB.YEAR = form.YEAR;
             formB.A_KIND = form.A_KIND;
-            formB.B_YEAR = Math.Round((workDays - downDays + 1) / 365, 2, MidpointRounding.AwayFromZero);
+            formB.B_YEAR = Math.Round((workDays - downDays) / 365, 2, MidpointRounding.AwayFromZero);
             formB.S_AMT = form.S_AMT2;
-            formB.T_DAY = workDays - downDays + 1;
+            formB.T_DAY = workDays - downDays;
             formB.PRE_C_AMT = form.S_AMT > form.S_AMT2 ? form.S_AMT - form.S_AMT2 : 0;
             formB.PRE_C_AMT1 = form.S_AMT2 > form.S_AMT ? form.S_AMT2 - form.S_AMT : 0;
             formB.KEYIN = "EPB02";
@@ -1589,7 +1589,8 @@ namespace NT_AirPollution.Service
                 abudf_1.SER_NO = form.SER_NO;
                 abudf_1.P_TIME = string.IsNullOrEmpty(form.AP_DATE1) ? "01" : "02";
                 abudf_1.P_DATE = pdate.AddYears(-1911).ToString("yyyMMdd");
-                abudf_1.E_DATE = res.PayEndDate.AddYears(-1911).ToString("yyyMMdd");
+                // 退費不用填繳費期限
+                abudf_1.E_DATE = sumPrice > 0 ? res.PayEndDate.AddYears(-1911).ToString("yyyMMdd") : null;
 
                 // ABUDF_1不存在或超過繳費期限，要重新產生銷帳單號
                 if (abudf_1InDB == null || DateTime.Now.Date > res.PayEndDate.Date)
