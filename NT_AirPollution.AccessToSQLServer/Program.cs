@@ -17,13 +17,13 @@ namespace NT_AirPollution.AccessToSQLServer
 
         static void Main(string[] args)
         {
-            //OneToOne();
-            ManyToMany();
+            OneToOne();
+            //ManyToMany();
         }
 
         private static void OneToOne()
         {
-            string c_no = "M114MDZ109";
+            string c_no = "M114M21004";
             int ser_no = 1;
 
             ABUDF abudf = _accessService.GetABUDF(c_no, ser_no);
@@ -37,12 +37,42 @@ namespace NT_AirPollution.AccessToSQLServer
             form.ClientUserID = 5;
             form.CreateUserEmail = "han109ww@gmail.com";
             form.CreateUserName = "陳秋涵";
-            form.FormStatus = FormStatus.已繳費完成;
-            form.VerifyDate1 = DateTime.Now;
+            form.LATLNG = string.IsNullOrEmpty(abudf.LATLNG) ? "," : abudf.LATLNG;
+
+            var abudf1 = _accessService.GetABUDF_1(c_no, ser_no, "01");
+            var abudf_b = _accessService.GetABUDF_B(c_no, ser_no);
+
+            /* 申請狀態 */
+            // 現場作業是通過才會建資料
+            form.VerifyDate1 = abudf.C_DATE;
             form.VerifyStage1 = VerifyStage.複審通過;
+
+            if (abudf.S_AMT > 0 && string.IsNullOrEmpty(abudf.FIN_DATE))
+                form.FormStatus = FormStatus.通過待繳費;
+            else if (abudf.S_AMT == 0 && string.IsNullOrEmpty(abudf.FIN_DATE))
+                form.FormStatus = FormStatus.免繳費;
+            else if (abudf1 != null && !string.IsNullOrEmpty(abudf1.F_DATE))
+                form.FormStatus = FormStatus.已繳費完成;
+
+
+            /* 結算狀態 */
             form.CalcStatus = CalcStatus.未申請;
-            form.VerifyDate2 = null;
-            form.VerifyStage2 = VerifyStage.未申請;
+
+            if (!string.IsNullOrEmpty(abudf_b.AP_DATE1))
+            {
+                form.CalcStatus = CalcStatus.通過待繳費;
+                form.VerifyDate2 = ChineseDateToWestDate(abudf_b.AP_DATE1);
+                form.VerifyStage2 = VerifyStage.複審通過;
+            }
+
+            if (!string.IsNullOrEmpty(abudf_b.AP_DATE1) && abudf_b.PRE_C_AMT < 4000)
+                form.CalcStatus = CalcStatus.通過待退費小於4000;
+            else if (!string.IsNullOrEmpty(abudf_b.AP_DATE1) && abudf_b.PRE_C_AMT >= 4000)
+                form.CalcStatus = CalcStatus.通過待退費大於4000;
+            else if (!string.IsNullOrEmpty(abudf.FIN_DATE))
+                form.CalcStatus = CalcStatus.繳退費完成;
+
+
             long id = _sqlService.AddForm(form);
 
             for (int i = 1; i <= 2; i++)
@@ -97,6 +127,7 @@ namespace NT_AirPollution.AccessToSQLServer
                 form.ClientUserID = user.ID;
                 form.CreateUserEmail = oldSQL.DSG_EUSR_NAME;
                 form.CreateUserName = oldSQL.DSG_EUSR_NAME;
+                form.LATLNG = string.IsNullOrEmpty(abudf.LATLNG) ? "," : abudf.LATLNG;
 
                 /* 申請狀態 */
                 // 現場作業是通過才會建資料

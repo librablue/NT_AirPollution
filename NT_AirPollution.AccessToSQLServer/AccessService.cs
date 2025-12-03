@@ -175,5 +175,30 @@ namespace NT_AirPollution.AccessToSQLServer
             }
 #endif
         }
+
+        /// <summary>
+        /// 取得單筆ABUDF_B
+        /// </summary>
+        /// <param name="c_no"></param>
+        /// <param name="ser_no"></param>
+        /// <returns></returns>
+        public ABUDF_B GetABUDF_B(string c_no, int ser_no)
+        {
+#if !DEBUG
+            using (var impersonation = new ImpersonationContext(domain, userName, password))
+            {
+#endif
+            using (var cn = new OleDbConnection(accessConnStr))
+            {
+                var result = cn.QueryFirstOrDefault<ABUDF_B>(@"
+                        SELECT * FROM ABUDF_B WHERE C_NO=@C_NO AND SER_NO=@SER_NO",
+                    new { C_NO = c_no, SER_NO = ser_no });
+
+                return result;
+            }
+#if !DEBUG
+            }
+#endif
+        }
     }
 }
