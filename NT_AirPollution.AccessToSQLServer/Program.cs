@@ -27,12 +27,17 @@ namespace NT_AirPollution.AccessToSQLServer
             int ser_no = 1;
 
             ABUDF abudf = _accessService.GetABUDF(c_no, ser_no);
+            ABUDF_B abudf_b = _accessService.GetABUDF_B(c_no, ser_no);
 
 
             // 1. 設定 AutoMapper 配置
-            var config = new MapperConfiguration(cfg => cfg.CreateMap<ABUDF, Form>());
-            var mapper = config.CreateMapper();
-            var form = mapper.Map<Form>(abudf);
+            var config1 = new MapperConfiguration(cfg => cfg.CreateMap<ABUDF, Form>());
+            var mapper1 = config1.CreateMapper();
+            var form = mapper1.Map<Form>(abudf);
+
+            var config2 = new MapperConfiguration(cfg => cfg.CreateMap<ABUDF_B, FormB>());
+            var mapper2 = config2.CreateMapper();
+            var formB = mapper2.Map<FormB>(abudf_b);
 
             form.ClientUserID = 5;
             form.CreateUserEmail = "han109ww@gmail.com";
@@ -40,7 +45,6 @@ namespace NT_AirPollution.AccessToSQLServer
             form.LATLNG = string.IsNullOrEmpty(abudf.LATLNG) ? "," : abudf.LATLNG;
 
             var abudf1 = _accessService.GetABUDF_1(c_no, ser_no, "01");
-            var abudf_b = _accessService.GetABUDF_B(c_no, ser_no);
 
             /* 申請狀態 */
             // 現場作業是通過才會建資料
@@ -74,6 +78,8 @@ namespace NT_AirPollution.AccessToSQLServer
 
 
             long id = _sqlService.AddForm(form);
+            formB.FormID = id;
+            _sqlService.AddFormB(formB);
 
             for (int i = 1; i <= 2; i++)
             {
@@ -114,16 +120,22 @@ namespace NT_AirPollution.AccessToSQLServer
 
             foreach (var abudf in allABUDF)
             {
-                // 1. 設定 AutoMapper 配置
-                var config = new MapperConfiguration(cfg => cfg.CreateMap<ABUDF, Form>());
-                var mapper = config.CreateMapper();
-                var form = mapper.Map<Form>(abudf);
-
                 var oldSQL = allOldSQL.FirstOrDefault(o => o.C_NO == abudf.C_NO && o.SER_NO == $"{abudf.SER_NO}");
                 var user = allUser.FirstOrDefault(u => u.Email == oldSQL.DSG_EUSR_NAME);
                 var abudf1 = allABUDF_1.FirstOrDefault(o => o.C_NO == abudf.C_NO && o.SER_NO == abudf.SER_NO && o.P_TIME == "01");
                 var abudf_b = allABUDF_B.FirstOrDefault(o => o.C_NO == abudf.C_NO && o.SER_NO == abudf.SER_NO);
 
+
+                // 1. 設定 AutoMapper 配置
+                var config1 = new MapperConfiguration(cfg => cfg.CreateMap<ABUDF, Form>());
+                var mapper1 = config1.CreateMapper();
+                var form = mapper1.Map<Form>(abudf);
+
+                var config2 = new MapperConfiguration(cfg => cfg.CreateMap<ABUDF_B, FormB>());
+                var mapper2 = config2.CreateMapper();
+                var formB = mapper2.Map<FormB>(abudf_b);
+
+                
                 form.ClientUserID = user.ID;
                 form.CreateUserEmail = oldSQL.DSG_EUSR_NAME;
                 form.CreateUserName = oldSQL.DSG_EUSR_NAME;
@@ -161,6 +173,8 @@ namespace NT_AirPollution.AccessToSQLServer
 
 
                 long id = _sqlService.AddForm(form);
+                formB.FormID = id;
+                _sqlService.AddFormB(formB);
 
                 for (int i = 1; i <= 2; i++)
                 {

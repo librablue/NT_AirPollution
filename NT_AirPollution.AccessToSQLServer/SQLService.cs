@@ -48,6 +48,22 @@ namespace NT_AirPollution.AccessToSQLServer
             }
         }
 
+        public long AddFormB(FormB formB)
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                try
+                {
+                    long id = cn.Insert(formB);
+                    return id;
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+            }
+        }
+
         public long AddPayment(Payment payment)
         {
             using (var cn = new SqlConnection(connStr))
