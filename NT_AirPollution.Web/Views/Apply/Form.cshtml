@@ -506,16 +506,16 @@
                         </div>
                         <div v-if="selectRow.FormB.KIND_NO === '1' || selectRow.FormB.KIND_NO === '2'" class="flex-row">
                             <el-form-item prop="AREA_F" label="基地面積">
-                                <el-input type="number" style="width:120px" v-model="selectRow.AREA_F"></el-input> 平方公尺
+                                <el-input type="number" style="width:120px" v-model="selectRow.FormB.AREA_F"></el-input> 平方公尺
                             </el-form-item>
                             <el-form-item prop="AREA_B" label="建築面積">
-                                <el-input type="number" style="width:120px" v-model="selectRow.AREA_B"></el-input> 平方公尺
+                                <el-input type="number" style="width:120px" v-model="selectRow.FormB.AREA_B"></el-input> 平方公尺
                             </el-form-item>
                             <el-form-item prop="PERC_B" label="建蔽率">{{calcPERC_B2}}%</el-form-item>
                         </div>
-                        <div v-else-if="selectRow.KIND_NO === '3'">
+                        <div v-else-if="selectRow.FormB.KIND_NO === '3'">
                             <el-form-item prop="AREA2" label="總樓地板面積(平方公尺)">
-                                <el-input type="number" v-model="selectRow.AREA2" disabled></el-input>
+                                <el-input type="number" v-model="selectRow.FormB.AREA2" disabled></el-input>
                             </el-form-item>
                         </div>
                         <div v-else>
@@ -523,7 +523,7 @@
                                 <el-input type="number" v-model="selectRow.FormB.AREA" style="width:120px"></el-input> 平方公尺
                             </el-form-item>
                         </div>
-                        <div v-if="selectRow.KIND_NO === 'B'" v-cloak>
+                        <div v-if="selectRow.FormB.KIND_NO === 'B'" v-cloak>
                             <div style="margin-bottom:10px">鬆方體積換算表</div>
                             <div class="contact-group">
                                 <div class="flex-row" style="justify-content: flex-start; align-items: flex-end">
