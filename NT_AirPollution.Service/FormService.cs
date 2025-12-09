@@ -1568,11 +1568,12 @@ namespace NT_AirPollution.Service
 
                 // 計算繳費資訊
                 var res = CalcPayment(info);
-                // 結算沒有滯納金&利息
+                // 結算沒有滯納金&利息，繳費期限30天
                 if (!string.IsNullOrEmpty(form.AP_DATE1))
                 {
                     res.Interest = 0;
                     res.Penalty = 0;
+                    res.PayEndDate = DateTime.Now.AddDays(30);
                 }
 
                 // 填發日期(申報日)
