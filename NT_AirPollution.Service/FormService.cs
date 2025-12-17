@@ -1589,7 +1589,13 @@ namespace NT_AirPollution.Service
                 abudf_1.C_NO = form.C_NO;
                 abudf_1.SER_NO = form.SER_NO;
                 abudf_1.P_TIME = string.IsNullOrEmpty(form.AP_DATE1) ? "01" : "02";
-                abudf_1.P_DATE = pdate.AddYears(-1911).ToString("yyyMMdd");
+
+                // 結算的填發日要用審核結算通過的那天
+                if (string.IsNullOrEmpty(form.AP_DATE1))
+                    abudf_1.P_DATE = pdate.AddYears(-1911).ToString("yyyMMdd");
+                else
+                    abudf_1.P_DATE = form.FIN_DATE;
+
                 // 退費不用填繳費期限
                 abudf_1.E_DATE = sumPrice > 0 ? res.PayEndDate.AddYears(-1911).ToString("yyyMMdd") : null;
 
@@ -1603,7 +1609,7 @@ namespace NT_AirPollution.Service
 
                 abudf_1.FLNO = BotHelper.GetPayNo(transNo, sumPrice.ToString(), abudf_1.E_DATE);
                 abudf_1.F_AMT = sumPrice > 0 ? sumPrice : 0;
-                abudf_1.B_AMT = res.CurrentPrice > 0 ? res.CurrentPrice : 0;
+                abudf_1.B_AMT = sumPrice > 0 ? 0 : sumPrice;
                 abudf_1.KEYIN = "EPB02";
                 abudf_1.C_DATE = DateTime.Now;
                 abudf_1.M_DATE = DateTime.Now;
