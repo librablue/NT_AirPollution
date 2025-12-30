@@ -1,5 +1,6 @@
 ﻿using ClosedXML.Excel;
 using NT_AirPollution.Admin.ActionFilter;
+using NT_AirPollution.Model.Domain;
 using NT_AirPollution.Model.Enum;
 using NT_AirPollution.Model.View;
 using NT_AirPollution.Service;
@@ -11,8 +12,8 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Web.Hosting;
 using System.Web;
+using System.Web.Hosting;
 using System.Web.Http;
 
 namespace NT_AirPollution.Admin.Controllers
@@ -321,6 +322,24 @@ namespace NT_AirPollution.Admin.Controllers
             catch (Exception ex)
             {
                 throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 更新Form單一欄位
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        public bool UpdateFormColumn(FormColumnView form)
+        {
+            try
+            {
+                _formService.UpdateFormColumn(form);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw;
             }
         }
 

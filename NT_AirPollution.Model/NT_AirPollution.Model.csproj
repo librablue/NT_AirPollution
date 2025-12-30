@@ -93,6 +93,7 @@
     <Compile Include="View\CalcMoneyResult.cs" />
     <Compile Include="View\Downloads.cs" />
     <Compile Include="View\PaymentInfo.cs" />
+    <Compile Include="View\FormColumnView.cs" />
     <Compile Include="View\RoadFilter.cs" />
     <Compile Include="View\AirReport.cs" />
     <Compile Include="View\AirFilter.cs" />

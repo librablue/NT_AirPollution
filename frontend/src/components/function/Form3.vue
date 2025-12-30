@@ -10,10 +10,10 @@
 					<el-option v-for="item in formStatusList" :key="item.value" :label="item.label" :value="item.value"></el-option>
 				</el-select>
 			</el-form-item>
-            <el-form-item label="初/複審">
+			<el-form-item label="初/複審">
 				<el-select style="width: 140px" v-model="filter.VerifyStage1">
-                    <el-option label="全部" :value="-1"></el-option>
-                    <el-option label="送審中" :value="1"></el-option>
+					<el-option label="全部" :value="-1"></el-option>
+					<el-option label="送審中" :value="1"></el-option>
 					<el-option label="初審" :value="2"></el-option>
 					<el-option label="複審" :value="3"></el-option>
 				</el-select>
@@ -23,10 +23,10 @@
 					<el-option v-for="item in calcStatusList" :key="item.value" :label="item.label" :value="item.value"></el-option>
 				</el-select>
 			</el-form-item>
-            <el-form-item label="初/複審">
+			<el-form-item label="初/複審">
 				<el-select style="width: 140px" v-model="filter.VerifyStage2">
-                    <el-option label="全部" :value="-1"></el-option>
-                    <el-option label="送審中" :value="1"></el-option>
+					<el-option label="全部" :value="-1"></el-option>
+					<el-option label="送審中" :value="1"></el-option>
 					<el-option label="初審" :value="2"></el-option>
 					<el-option label="複審" :value="3"></el-option>
 				</el-select>
@@ -37,23 +37,47 @@
 				</el-button>
 			</el-form-item>
 		</el-form>
-		<vxe-table :data="forms" size="small" :loading="loading" max-height="640px" show-overflow border resizable auto-resize :sort-config="{ trigger: 'cell' }">
+		<vxe-table ref="table" :data="forms" size="small" :loading="loading" max-height="640px" show-overflow border resizable auto-resize keep-source :sort-config="{ trigger: 'cell' }" :edit-config="{ trigger: 'click', mode: 'cell' }" @edit-closed="editClosed">
 			<vxe-table-column title="功能" width="60" align="center" fixed="left">
 				<template v-slot="{ row }">
 					<el-button size="mini" icon="el-icon-search" circle title="查看內容" @click="showDetail(row)"></el-button>
 				</template>
 			</vxe-table-column>
-			<vxe-table-column field="FormStatus" title="審核進度" width="120" align="center" sortable fixed="left">
-				<template v-slot="{ row }">{{row.FormStatus | formStatus}}</template>
+			<vxe-table-column field="FormStatus" title="申報進度" width="120" align="center" sortable fixed="left" :edit-render="{ autofocus: '.grid-input' }">
+				<template #default="{ row }">{{row.FormStatus | formStatus}}</template>
+				<template #edit="{ row }">
+					<select class="grid-input" v-model="row.FormStatus">
+						<option v-for="item in formStatusList" :key="item.value" :label="item.label" :value="item.value"></option>
+					</select>
+				</template>
 			</vxe-table-column>
-            <vxe-table-column field="VerifyStage1" title="初/複審" width="120" align="center" sortable fixed="left">
-				<template v-slot="{ row }">{{row.VerifyStage1 | verifyStage}}</template>
+			<vxe-table-column field="VerifyStage1" title="初/複審" width="120" align="center" sortable fixed="left" :edit-render="{ autofocus: '.grid-input' }">
+				<template #default="{ row }">{{row.VerifyStage1 | verifyStage}}</template>
+				<template #edit="{ row }">
+					<select class="grid-input" v-model="row.VerifyStage1">
+						<option label="申請中" :value="1"></option>
+						<option label="初審通過" :value="2"></option>
+						<option label="複審通過" :value="3"></option>
+					</select>
+				</template>
 			</vxe-table-column>
-			<vxe-table-column field="CalcStatus" title="結算進度" width="120" align="center" sortable fixed="left">
-				<template v-slot="{ row }">{{row.CalcStatus | calcStatus}}</template>
+			<vxe-table-column field="CalcStatus" title="結算進度" width="120" align="center" sortable fixed="left" :edit-render="{ autofocus: '.grid-input' }">
+				<template #default="{ row }">{{row.CalcStatus | calcStatus}}</template>
+				<template #edit="{ row }">
+					<select class="grid-input" v-model="row.CalcStatus">
+						<option v-for="item in calcStatusList" :key="item.value" :label="item.label" :value="item.value"></option>
+					</select>
+				</template>
 			</vxe-table-column>
-            <vxe-table-column field="VerifyStage2" title="初/複審" width="120" align="center" sortable fixed="left">
-				<template v-slot="{ row }">{{row.VerifyStage2 | verifyStage}}</template>
+			<vxe-table-column field="VerifyStage2" title="初/複審" width="120" align="center" sortable fixed="left" :edit-render="{ autofocus: '.grid-input' }">
+				<template #default="{ row }">{{row.VerifyStage2 | verifyStage}}</template>
+				<template #edit="{ row }">
+					<select class="grid-input" v-model="row.VerifyStage2">
+						<option label="申請中" :value="1"></option>
+						<option label="初審通過" :value="2"></option>
+						<option label="複審通過" :value="3"></option>
+					</select>
+				</template>
 			</vxe-table-column>
 			<vxe-table-column field="C_NO" title="管制編號" width="140" align="center" sortable fixed="left">
 				<template #default="{ row }">
@@ -83,7 +107,6 @@
 			<vxe-table-column field="FailReason2" title="結算退件原因" width="240" align="center"></vxe-table-column>
 		</vxe-table>
 		<FormModal :show.sync="formModalVisible" :mode="mode" :data="selectRow" @on-updated="onUpdated" />
-		<VerifyModal :show.sync="verifyModalVisible" :data="selectRow" @on-updated="onUpdated" />
 	</div>
 </template>
 <script>
@@ -103,8 +126,8 @@ export default {
 				C_NO: '',
 				FormStatus: -1,
 				CalcStatus: -1,
-                VerifyStage1: -1,
-                VerifyStage2: -1,
+				VerifyStage1: -1,
+				VerifyStage2: -1
 			},
 			forms: [],
 			selectRow: {},
@@ -155,6 +178,31 @@ export default {
 		},
 		onUpdated() {
 			this.getForms();
+		},
+		async editClosed({ row, rowIndex, column, columnIndex }) {
+			const field = column.field;
+			const cellValue = row[field];
+
+			// 內部方法
+			const resetStatus = async (FormID, ColumnName, ColumnValue) => {
+				return this.axios.post('api/Form/UpdateFormColumn', {
+					FormID,
+					ColumnName,
+					ColumnValue
+				});
+			};
+
+			// 判斷單元格是否被修改
+			if (this.$refs.table.isUpdateByRow(row, field)) {
+				try {
+					await resetStatus(row.ID, field, cellValue);
+					this.$refs.table.reloadRow(row, null, field);
+                    this.$message.success('修改成功');
+				} catch (err) {
+					this.$refs.table.revertData();
+					this.$message.error(err.response.data.ExceptionMessage);
+				}
+			}
 		}
 	}
 };

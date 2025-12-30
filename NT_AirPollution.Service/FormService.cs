@@ -586,6 +586,32 @@ namespace NT_AirPollution.Service
         }
 
         /// <summary>
+        /// 更新Form單一欄位
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public bool UpdateFormColumn(FormColumnView form)
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                try
+                {
+                    cn.Execute($@"
+                        UPDATE dbo.Form
+                            SET {form.ColumnName}={form.ColumnValue}
+                        WHERE ID={form.FormID}");
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"UpdateFormColumn: {ex.StackTrace}|{ex.Message}");
+                    throw new Exception("系統發生未預期錯誤");
+                }
+            }
+        }
+
+        /// <summary>
         /// 刪除申請單
         /// </summary>
         /// <param name="form"></param>
