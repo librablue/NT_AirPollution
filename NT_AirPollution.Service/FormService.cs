@@ -1650,6 +1650,7 @@ namespace NT_AirPollution.Service
                 {
                     payment = new Payment
                     {
+                        ID = 0,
                         FormID = form.ID,
                         Term = abudf_1.P_TIME,
                         PayEndDate = res.PayEndDate,
@@ -2058,6 +2059,8 @@ namespace NT_AirPollution.Service
                 }
             }
 
+            // 繳費期限當天最後一秒
+            result.PayEndDate = result.PayEndDate.Date.AddDays(1).AddSeconds(-1);
             return result;
         }
     }
