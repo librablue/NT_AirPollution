@@ -17,8 +17,8 @@ namespace NT_AirPollution.AccessToSQLServer
 
         static void Main(string[] args)
         {
-            OneToOne();
-            //ManyToMany();
+            //OneToOne();
+            ManyToMany();
         }
 
         private static void OneToOne()
@@ -121,7 +121,7 @@ namespace NT_AirPollution.AccessToSQLServer
             foreach (var abudf in allABUDF)
             {
                 var oldSQL = allOldSQL.FirstOrDefault(o => o.C_NO == abudf.C_NO && o.SER_NO == $"{abudf.SER_NO}");
-                var user = allUser.FirstOrDefault(u => u.Email == oldSQL.DSG_EUSR_NAME);
+                var user = allUser.FirstOrDefault(u => u.Email == oldSQL.DSG_EUSR_EMAIL);
                 var abudf1 = allABUDF_1.FirstOrDefault(o => o.C_NO == abudf.C_NO && o.SER_NO == abudf.SER_NO && o.P_TIME == "01");
                 var abudf_b = allABUDF_B.FirstOrDefault(o => o.C_NO == abudf.C_NO && o.SER_NO == abudf.SER_NO);
 

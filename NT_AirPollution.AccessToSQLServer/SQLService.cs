@@ -26,7 +26,7 @@ namespace NT_AirPollution.AccessToSQLServer
             using (var cn = new SqlConnection(connStr))
             {
                 var result = cn.Query<TDMFORMA>(@"
-                    SELECT DSG_EUSR_NAME, C_NO, SER_NO FROM TDMFORMA
+                    SELECT DSG_EUSR_NAME, C_NO, SER_NO FROM CMETMS.dbo.TDMFORMA
                     WHERE C_NO<>'' AND SER_NO<>''");
                 return result;
             }
