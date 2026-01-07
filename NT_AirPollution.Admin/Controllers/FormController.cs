@@ -133,6 +133,7 @@ namespace NT_AirPollution.Admin.Controllers
                 form.COMP_L = result.Level;
                 form.TOWN_NA = allDists.First(o => o.Code == form.TOWN_NO).Name;
                 form.KIND = allProjectCode.First(o => o.ID == form.KIND_NO).Name;
+                form.A_KIND = allProjectCode.First(o => o.ID == form.KIND_NO).Kind;
 
                 // 有管制編號才更新Access
                 if (!string.IsNullOrEmpty(form.C_NO))

@@ -253,6 +253,7 @@ namespace NT_AirPollution.Web.Controllers
                 form.SER_NO = 1;
                 form.TOWN_NA = allDists.First(o => o.Code == form.TOWN_NO).Name;
                 form.KIND = allProjectCode.First(o => o.ID == form.KIND_NO).Name;
+                form.A_KIND = allProjectCode.First(o => o.ID == form.KIND_NO).Kind;
                 form.C_DATE = DateTime.Now;
                 form.M_DATE = DateTime.Now;
                 form.ClientUserID = BaseService.CurrentUser.ID;
@@ -371,6 +372,7 @@ namespace NT_AirPollution.Web.Controllers
                 // 可修改的欄位
                 form.TOWN_NA = allDists.First(o => o.Code == form.TOWN_NO).Name;
                 form.KIND = allProjectCode.First(o => o.ID == form.KIND_NO).Name;
+                form.A_KIND = allProjectCode.First(o => o.ID == form.KIND_NO).Kind;
                 form.M_DATE = DateTime.Now;
                 form.S_AMT2 = result.TotalMoney;
 

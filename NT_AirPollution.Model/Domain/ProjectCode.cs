@@ -12,6 +12,7 @@ namespace NT_AirPollution.Model.Domain
     {
         [ExplicitKey]
         public string ID { get; set; }
+        public string Kind { get; set; }
         public string Name { get; set; }
         public int Level1 { get; set; }
         public int Level2 { get; set; }
