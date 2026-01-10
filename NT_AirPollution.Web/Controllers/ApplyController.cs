@@ -745,6 +745,26 @@ namespace NT_AirPollution.Web.Controllers
             }
         }
 
+        /// <summary>
+        /// 結算申請
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult ImportData(FormView form)
+        {
+            try
+            {
+                
+
+                return Json(new AjaxResult { Status = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new AjaxResult { Status = false, Message = ex.Message });
+            }
+        }
+
         ///// <summary>
         ///// 上傳繳費證明
         ///// </summary>

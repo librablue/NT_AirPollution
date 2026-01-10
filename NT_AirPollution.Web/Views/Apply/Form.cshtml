@@ -44,7 +44,10 @@
                 <el-button type="primary" icon="el-icon-search" @@click="getForms">查 詢</el-button>
             </el-form-item>
             <el-form-item>
-                <el-button type="success" icon="el-icon-edit" @@click="addForm">我要申報</el-button>
+                <el-button type="success" icon="el-icon-edit" @@click="addForm">新申報</el-button>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="success" icon="el-icon-download" @@click="importModalVisible = true">舊資料匯入</el-button>
             </el-form-item>
         </el-form>
 
@@ -728,6 +731,18 @@
         <span slot="footer" class="dialog-footer">
             <el-button @@click="selfCheckModalVisible = false">取 消</el-button>
             <el-button type="primary" @@click="sendFormStatus1">確 定</el-button>
+        </span>
+    </el-dialog>
+
+    <el-dialog title="舊資料匯入" :visible.sync="importModalVisible" width="30%" v-cloak>
+        <el-form>
+            <el-form-item label="管制編號">
+                <el-input prop="C_NO" v-model="importData.C_NO"></el-input>
+            </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+            <el-button @@click="importModalVisible = false">取 消</el-button>
+            <el-button type="primary" @@click="importAccess">確 定</el-button>
         </span>
     </el-dialog>
 </div>

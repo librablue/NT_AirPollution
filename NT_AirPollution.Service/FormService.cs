@@ -1,4 +1,5 @@
 ﻿using Aspose.Cells;
+using AutoMapper;
 using ClosedXML.Excel;
 using Dapper;
 using Dapper.Contrib.Extensions;
@@ -12,6 +13,7 @@ using System.Configuration;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
+using System.Web.Management;
 
 namespace NT_AirPollution.Service
 {
@@ -2062,6 +2064,103 @@ namespace NT_AirPollution.Service
             // 繳費期限當天最後一秒
             result.PayEndDate = result.PayEndDate.Date.AddDays(1).AddSeconds(-1);
             return result;
+        }
+
+        public void ImportData(string c_no, string bdate)
+        {
+            ABUDF abudf = _accessService.GetABUDF(c_no, bdate);
+            ABUDF_B abudf_b = _accessService.GetABUDF_B(c_no, abudf.SER_NO);
+            List<ABUDF_1> abudf_1s = _accessService.GetABUDF_1(c_no, abudf.SER_NO);
+            List<ABUDF_I> abudf_is = _accessService.GetABUDF_I(c_no, abudf.SER_NO);
+
+            // 1. 設定 AutoMapper 配置
+            var config1 = new MapperConfiguration(cfg => cfg.CreateMap<ABUDF, Form>());
+            var mapper1 = config1.CreateMapper();
+            var form = mapper1.Map<Form>(abudf);
+
+            var config2 = new MapperConfiguration(cfg => cfg.CreateMap<ABUDF_B, FormB>());
+            var mapper2 = config2.CreateMapper();
+            var formB = mapper2.Map<FormB>(abudf_b);
+
+            form.ClientUserID = CurrentUser.ID;
+            form.CreateUserEmail = CurrentUser.Email;
+            form.CreateUserName = CurrentUser.UserName;
+            form.LATLNG = string.IsNullOrEmpty(abudf.LATLNG) ? "," : abudf.LATLNG;
+
+
+
+            var abudf1 = abudf_1s.FirstOrDefault(o => o.P_TIME == "01");
+
+            /* 申請狀態 */
+            // 現場作業是通過才會建資料
+            form.VerifyDate1 = abudf.C_DATE;
+            form.VerifyStage1 = VerifyStage.複審通過;
+
+            if (abudf.S_AMT > 0 && string.IsNullOrEmpty(abudf.FIN_DATE))
+                form.FormStatus = FormStatus.通過待繳費;
+            else if (abudf.S_AMT == 0 && string.IsNullOrEmpty(abudf.FIN_DATE))
+                form.FormStatus = FormStatus.免繳費;
+            else if (abudf1 != null && !string.IsNullOrEmpty(abudf1.F_DATE))
+                form.FormStatus = FormStatus.已繳費完成;
+
+
+            /* 結算狀態 */
+            form.CalcStatus = CalcStatus.未申請;
+
+            if (!string.IsNullOrEmpty(abudf_b.AP_DATE1))
+            {
+                form.CalcStatus = CalcStatus.通過待繳費;
+                form.VerifyDate2 = ChineseDateToWestDate(abudf_b.AP_DATE1);
+                form.VerifyStage2 = VerifyStage.複審通過;
+            }
+
+            if (!string.IsNullOrEmpty(abudf_b.AP_DATE1) && abudf_b.PRE_C_AMT < 4000)
+                form.CalcStatus = CalcStatus.通過待退費小於4000;
+            else if (!string.IsNullOrEmpty(abudf_b.AP_DATE1) && abudf_b.PRE_C_AMT >= 4000)
+                form.CalcStatus = CalcStatus.通過待退費大於4000;
+            else if (!string.IsNullOrEmpty(abudf.FIN_DATE))
+                form.CalcStatus = CalcStatus.繳退費完成;
+
+
+            using (var cn = new SqlConnection(connStr))
+            {
+                try
+                {
+                    long formID = cn.Insert(form);
+                    formB.FormID = formID;
+                    long formBID = cn.Insert(formB);
+
+                    for (int i = 1; i <= 2; i++)
+                    {
+                        var abudf_1 = abudf_1s.FirstOrDefault(o => o.P_TIME == $"0{i}");
+                        var abudf_i = abudf_is.FirstOrDefault(o => o.P_TIME == $"0{i}");
+
+                        if (abudf_1 == null) continue;
+
+                        Payment payment = new Payment
+                        {
+                            FormID = formBID,
+                            Term = $"{i}",
+                            PayEndDate = ChineseDateToWestDate(abudf_1.E_DATE),
+                            PaymentID = abudf_1?.FLNO,
+                            PayableAmount = abudf.P_AMT,
+                            Penalty = abudf_i?.PEN_AMT,
+                            Interest = abudf_i?.I_AMT,
+                            Percent = abudf_i?.PERCENT ?? 1.725,
+                            PayAmount = abudf_1.F_AMT,
+                            PayDate = ChineseDateToWestDate(abudf_1.PM_DATE),
+                            CreateDate = abudf_1.C_DATE,
+                            ModifyDate = abudf_1.M_DATE
+                        };
+
+                        cn.Insert(payment);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+            }
         }
     }
 }

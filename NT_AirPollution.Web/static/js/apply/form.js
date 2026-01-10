@@ -92,7 +92,7 @@
 				}
 				callback();
 			};
-            const checkE_DATE2 = (rule, value, callback) => {
+			const checkE_DATE2 = (rule, value, callback) => {
 				if (!value) {
 					callback(new Error('請輸入結束日期'));
 				}
@@ -196,7 +196,11 @@
 				bankAccountDialogVisible: false,
 				paymentProofModalVisible: false,
 				selfCheckModalVisible: false,
+				importModalVisible: false,
 				activeTab: '1',
+				importForm: {
+					C_NO: null
+				},
 				tab1Rules: Object.freeze({
 					PUB_COMP: [{ required: true, message: '請選擇案件類型', trigger: 'change' }],
 					TOWN_NO: [{ required: true, message: '請選擇鄉鎮分類', trigger: 'change' }],
@@ -246,7 +250,7 @@
 				}),
 				tab4Rules: Object.freeze({
 					MONEY: [{ required: true, message: '請輸入工程合約經費', trigger: 'blur' }],
-                    TAX_MONEY: [{ required: true, message: '請輸入工程合約經費營業稅', trigger: 'blur' }],
+					TAX_MONEY: [{ required: true, message: '請輸入工程合約經費營業稅', trigger: 'blur' }],
 					// C_MONEY: [{ required: true, message: '請輸入工程環保經費', trigger: 'blur' }],
 					AREA: [{ required: true, message: '請輸入工程面積', trigger: 'blur' }],
 					AREA2: [{ required: true, message: '請輸入總樓地板面積', trigger: 'blur' }],
@@ -256,7 +260,7 @@
 					B_DATE: [{ required: true, message: '請輸入開始日期', trigger: 'blur' }],
 					E_DATE: [{ validator: checkE_DATE, trigger: 'blur' }]
 				}),
-                tab4BRules: Object.freeze({
+				tab4BRules: Object.freeze({
 					MONEY: [{ required: true, message: '請輸入工程合約經費', trigger: 'blur' }],
 					AREA: [{ required: true, message: '請輸入工程面積', trigger: 'blur' }],
 					AREA2: [{ required: true, message: '請輸入總樓地板面積', trigger: 'blur' }],
@@ -306,7 +310,7 @@
 				return rules;
 			},
 			filterAttachmentInfo() {
-                const selectRow = JSON.parse(JSON.stringify(this.selectRow));
+				const selectRow = JSON.parse(JSON.stringify(this.selectRow));
 				return this.attachmentInfo.filter(item => item.PUB_COMP === selectRow.PUB_COMP);
 			},
 			calcC_MONEY() {
@@ -364,7 +368,7 @@
 						const key = inst.input[0].dataset.key; // 例如 'FormB.S_DATE' 或 'S_DATE'
 						const dateFormate = `${objDate.y}${objDate.m}${objDate.d}`;
 						inst.input.val(dateFormate);
-                        // 根據 key 的值來決定要設值的位置
+						// 根據 key 的值來決定要設值的位置
 						if (key.includes('.')) {
 							// 有階層結構，例如 'FormB.S_DATE'
 							const [parent, child] = key.split('.');
@@ -1320,6 +1324,25 @@
 				var dayDiff = Math.ceil(diff / (1000 * 60 * 60 * 24));
 
 				return dayDiff;
+			},
+			importData() {
+                const loading = this.$loading();
+				axios
+					.post('/Apply/ImportData', importForm)
+					.then(res => {
+						loading.close();
+						if (!res.data.Status) {
+							alert(res.data.Message);
+							return;
+						}
+
+						alert('舊資料已匯入，請依條件重新查詢');
+					})
+					.catch(err => {
+						loading.close();
+						alert('系統發生未預期錯誤');
+						console.log(err);
+					});
 			}
 		},
 		watch: {
