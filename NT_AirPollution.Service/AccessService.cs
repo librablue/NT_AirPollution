@@ -848,7 +848,7 @@ namespace NT_AirPollution.Service
             using (var cn = new OleDbConnection(accessConnStr))
             {
                 var result = cn.Query<ABUDF_1>(@"
-                    SELECT * FROM ABUDF_1 WHERE C_NO=@C_NO AND SER_NO=@SER_NO AND P_TIME=@P_TIME",
+                    SELECT * FROM ABUDF_1 WHERE C_NO=@C_NO AND SER_NO=@SER_NO",
                     new { C_NO = c_no, SER_NO = ser_no }).ToList();
 
                 return result;

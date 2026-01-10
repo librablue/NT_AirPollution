@@ -199,7 +199,8 @@
 				importModalVisible: false,
 				activeTab: '1',
 				importForm: {
-					C_NO: null
+					C_NO: null,
+					B_DATE: null
 				},
 				tab1Rules: Object.freeze({
 					PUB_COMP: [{ required: true, message: '請選擇案件類型', trigger: 'change' }],
@@ -257,7 +258,7 @@
 					AREA_F: [{ required: true, message: '請輸入基地面積', trigger: 'blur' }],
 					AREA_B: [{ required: true, message: '請輸入建築面積', trigger: 'blur' }],
 					VOLUMEL: [{ required: true, message: '請輸入外運土石體積', trigger: 'blur' }],
-					B_DATE: [{ required: true, message: '請輸入開始日期', trigger: 'blur' }],
+					B_DATE: [{ required: true, message: '請輸入開工日期', trigger: 'blur' }],
 					E_DATE: [{ validator: checkE_DATE, trigger: 'blur' }]
 				}),
 				tab4BRules: Object.freeze({
@@ -267,7 +268,7 @@
 					AREA_F: [{ required: true, message: '請輸入基地面積', trigger: 'blur' }],
 					AREA_B: [{ required: true, message: '請輸入建築面積', trigger: 'blur' }],
 					VOLUMEL: [{ required: true, message: '請輸入外運土石體積', trigger: 'blur' }],
-					B_DATE: [{ required: true, message: '請輸入開始日期', trigger: 'blur' }],
+					B_DATE: [{ required: true, message: '請輸入開工日期', trigger: 'blur' }],
 					E_DATE: [{ validator: checkE_DATE2, trigger: 'blur' }]
 				}),
 				rules2: Object.freeze({
@@ -277,6 +278,10 @@
 				}),
 				rules3: Object.freeze({
 					File: [{ required: true, message: '請上傳繳費證明' }]
+				}),
+				importDataRules: Object.freeze({
+					C_NO: [{ required: true, message: '請輸入管制編號', trigger: 'blur' }],
+					B_DATE: [{ required: true, message: '請選擇開工日期', trigger: 'blur' }]
 				})
 			};
 		},
@@ -366,16 +371,17 @@
 						};
 
 						const key = inst.input[0].dataset.key; // 例如 'FormB.S_DATE' 或 'S_DATE'
+						const model = inst.input[0].dataset.model;
 						const dateFormate = `${objDate.y}${objDate.m}${objDate.d}`;
 						inst.input.val(dateFormate);
 						// 根據 key 的值來決定要設值的位置
 						if (key.includes('.')) {
 							// 有階層結構，例如 'FormB.S_DATE'
 							const [parent, child] = key.split('.');
-							this.selectRow[parent][child] = dateFormate;
+							this[model][parent][child] = dateFormate;
 						} else {
 							// 沒有階層，直接設值
-							this.selectRow[key] = dateFormate;
+							this[model][key] = dateFormate;
 						}
 					}
 				});
@@ -1325,24 +1331,37 @@
 
 				return dayDiff;
 			},
-			importData() {
-                const loading = this.$loading();
-				axios
-					.post('/Apply/ImportData', importForm)
-					.then(res => {
-						loading.close();
-						if (!res.data.Status) {
-							alert(res.data.Message);
-							return;
-						}
+			showImportModal() {
+				this.importModalVisible = true;
+				this.$nextTick(() => {
+					this.initDatePicker();
+				});
+			},
+			importDataHandler() {
+				this.$refs.importForm.validate((valid, object) => {
+					if (!valid) {
+						alert('欄位驗證錯誤，請檢查修正後重新送出');
+						return false;
+					}
 
-						alert('舊資料已匯入，請依條件重新查詢');
-					})
-					.catch(err => {
-						loading.close();
-						alert('系統發生未預期錯誤');
-						console.log(err);
-					});
+					const loading = this.$loading();
+					axios
+						.post('/Apply/ImportData', this.importForm)
+						.then(res => {
+							loading.close();
+							if (!res.data.Status) {
+								alert(res.data.Message);
+								return;
+							}
+
+							alert('舊資料已匯入，請依條件重新查詢');
+						})
+						.catch(err => {
+							loading.close();
+							alert('系統發生未預期錯誤');
+							console.log(err);
+						});
+				});
 			}
 		},
 		watch: {

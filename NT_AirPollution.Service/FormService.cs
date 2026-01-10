@@ -2066,7 +2066,12 @@ namespace NT_AirPollution.Service
             return result;
         }
 
-        public void ImportData(string c_no, string bdate)
+        /// <summary>
+        /// 從Access匯入資料到SQL Server
+        /// </summary>
+        /// <param name="c_no">管制編號</param>
+        /// <param name="bdate">開工日期</param>
+        public bool ImportData(string c_no, string bdate)
         {
             ABUDF abudf = _accessService.GetABUDF(c_no, bdate);
             ABUDF_B abudf_b = _accessService.GetABUDF_B(c_no, abudf.SER_NO);
@@ -2141,23 +2146,26 @@ namespace NT_AirPollution.Service
                         {
                             FormID = formBID,
                             Term = $"{i}",
-                            PayEndDate = ChineseDateToWestDate(abudf_1.E_DATE),
+                            PayEndDate = string.IsNullOrEmpty(abudf_1.E_DATE) ? DateTime.Now : ChineseDateToWestDate(abudf_1.E_DATE),
                             PaymentID = abudf_1?.FLNO,
                             PayableAmount = abudf.P_AMT,
                             Penalty = abudf_i?.PEN_AMT,
                             Interest = abudf_i?.I_AMT,
                             Percent = abudf_i?.PERCENT ?? 1.725,
                             PayAmount = abudf_1.F_AMT,
-                            PayDate = ChineseDateToWestDate(abudf_1.PM_DATE),
+                            PayDate = string.IsNullOrEmpty(abudf_1.PM_DATE) ? (DateTime?)null : ChineseDateToWestDate(abudf_1.PM_DATE),
                             CreateDate = abudf_1.C_DATE,
                             ModifyDate = abudf_1.M_DATE
                         };
 
                         cn.Insert(payment);
                     }
+
+                    return true;
                 }
                 catch (Exception ex)
                 {
+                    Logger.Error($"ImportData: {ex.StackTrace}|{ex.Message}");
                     throw ex;
                 }
             }

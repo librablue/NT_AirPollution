@@ -755,8 +755,7 @@ namespace NT_AirPollution.Web.Controllers
         {
             try
             {
-                
-
+                _formService.ImportData(form.C_NO, form.B_DATE);
                 return Json(new AjaxResult { Status = true });
             }
             catch (Exception ex)

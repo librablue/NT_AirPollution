@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace NT_AirPollution.Model.Access
 {
+    /// <summary>
+    /// 繳費資料
+    /// </summary>
     public class ABUDF_1
     {
         /// <summary>

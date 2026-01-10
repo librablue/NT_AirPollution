@@ -9,6 +9,9 @@ using System.Xml.Linq;
 
 namespace NT_AirPollution.Model.Access
 {
+    /// <summary>
+    /// 申報資料
+    /// </summary>
     public class ABUDF
     {
         /// <summary>

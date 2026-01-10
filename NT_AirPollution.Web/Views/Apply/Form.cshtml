@@ -47,7 +47,7 @@
                 <el-button type="success" icon="el-icon-edit" @@click="addForm">新申報</el-button>
             </el-form-item>
             <el-form-item>
-                <el-button type="success" icon="el-icon-download" @@click="importModalVisible = true">舊資料匯入</el-button>
+                <el-button type="success" icon="el-icon-download" @@click="showImportModal">舊資料匯入</el-button>
             </el-form-item>
         </el-form>
 
@@ -245,7 +245,7 @@
                             <el-col :md="12" :sm="24">
                                 <el-form-item prop="S_B_BDATE" label="生日">
                                     <div class="el-input el-input--suffix">
-                                        <input type="text" class="el-input__inner datepicker" data-key="S_B_BDATE" v-model="selectRow.S_B_BDATE" :disabled="selectRow.FormStatus > 2" readonly />
+                                        <input type="text" class="el-input__inner datepicker" data-model="selectRow" data-key="S_B_BDATE" v-model="selectRow.S_B_BDATE" :disabled="selectRow.FormStatus > 2" readonly />
                                         <span v-if="selectRow.S_B_BDATE && selectRow.FormStatus <= 2" class="el-input__suffix datepicker-suffix" @@click="selectRow.S_B_BDATE = ''">
                                             <i class="fa fa-times-circle"></i>
                                         </span>
@@ -356,7 +356,7 @@
                             <el-col :md="12" :sm="24">
                                 <el-form-item prop="R_B_BDATE" label="生日">
                                     <div class="el-input el-input--suffix">
-                                        <input type="text" class="el-input__inner datepicker" data-key="R_B_BDATE" v-model="selectRow.R_B_BDATE" :disabled="selectRow.FormStatus > 2" readonly />
+                                        <input type="text" class="el-input__inner datepicker" data-model="selectRow" data-key="R_B_BDATE" v-model="selectRow.R_B_BDATE" :disabled="selectRow.FormStatus > 2" readonly />
                                         <span v-if="selectRow.R_B_BDATE && selectRow.FormStatus <= 2" class="el-input__suffix datepicker-suffix" @@click="selectRow.R_B_BDATE = ''">
                                             <i class="fa fa-times-circle"></i>
                                         </span>
@@ -465,7 +465,7 @@
                         <div class="flex-row">
                             <el-form-item prop="B_DATE" label="開始日期">
                                 <div class="el-input el-input--suffix">
-                                    <input type="text" class="el-input__inner datepicker" data-key="B_DATE" v-model="selectRow.B_DATE" :disabled="selectRow.FormStatus > 2" readonly />
+                                    <input type="text" class="el-input__inner datepicker" data-model="selectRow" data-key="B_DATE" v-model="selectRow.B_DATE" :disabled="selectRow.FormStatus > 2" readonly />
                                     <span v-if="selectRow.B_DATE && selectRow.FormStatus <= 2" class="el-input__suffix datepicker-suffix" @@click="selectRow.B_DATE = ''">
                                         <i class="fa fa-times-circle"></i>
                                     </span>
@@ -473,7 +473,7 @@
                             </el-form-item>
                             <el-form-item prop="E_DATE" label="結束日期">
                                 <div class="el-input el-input--suffix">
-                                    <input type="text" class="el-input__inner datepicker" data-key="E_DATE" v-model="selectRow.E_DATE" :disabled="selectRow.FormStatus > 2" readonly />
+                                    <input type="text" class="el-input__inner datepicker" data-model="selectRow" data-key="E_DATE" v-model="selectRow.E_DATE" :disabled="selectRow.FormStatus > 2" readonly />
                                     <span v-if="selectRow.E_DATE && selectRow.FormStatus <= 2" class="el-input__suffix datepicker-suffix" @@click="selectRow.E_DATE = ''">
                                         <i class="fa fa-times-circle"></i>
                                     </span>
@@ -549,7 +549,7 @@
                         <div class="flex-row">
                             <el-form-item prop="B_DATE" label="開始日期">
                                 <div class="el-input el-input--suffix">
-                                    <input type="text" class="el-input__inner datepicker" data-key="FormB.B_DATE" v-model="selectRow.FormB.B_DATE" :disabled="selectRow.CalcStatus > 2" readonly />
+                                    <input type="text" class="el-input__inner datepicker" data-model="selectRow" data-key="FormB.B_DATE" v-model="selectRow.FormB.B_DATE" :disabled="selectRow.CalcStatus > 2" readonly />
                                     <span v-if="selectRow.FormB.B_DATE && selectRow.CalcStatus <= 2" class="el-input__suffix datepicker-suffix" @@click="selectRow.FormB.B_DATE = ''">
                                         <i class="fa fa-times-circle"></i>
                                     </span>
@@ -557,7 +557,7 @@
                             </el-form-item>
                             <el-form-item prop="E_DATE" label="結束日期">
                                 <div class="el-input el-input--suffix">
-                                    <input type="text" class="el-input__inner datepicker" data-key="FormB.E_DATE" v-model="selectRow.FormB.E_DATE" :disabled="selectRow.CalcStatus > 2" readonly />
+                                    <input type="text" class="el-input__inner datepicker" data-model="selectRow" data-key="FormB.E_DATE" v-model="selectRow.FormB.E_DATE" :disabled="selectRow.CalcStatus > 2" readonly />
                                     <span v-if="selectRow.FormB.E_DATE && selectRow.CalcStatus <= 2" class="el-input__suffix datepicker-suffix" @@click="selectRow.FormB.E_DATE = ''">
                                         <i class="fa fa-times-circle"></i>
                                     </span>
@@ -735,14 +735,17 @@
     </el-dialog>
 
     <el-dialog title="舊資料匯入" :visible.sync="importModalVisible" width="30%" v-cloak>
-        <el-form>
-            <el-form-item label="管制編號">
-                <el-input prop="C_NO" v-model="importData.C_NO"></el-input>
+        <el-form ref="importForm" :rules="importDataRules" :model="importForm" label-width="auto">
+            <el-form-item prop="C_NO" label="管制編號">
+                <el-input v-model="importForm.C_NO"></el-input>
+            </el-form-item>
+            <el-form-item prop="B_DATE" label="開工日">
+                <input type="text" class="el-input__inner datepicker" data-model="importForm" data-key="B_DATE" v-model="importForm.B_DATE" />
             </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
             <el-button @@click="importModalVisible = false">取 消</el-button>
-            <el-button type="primary" @@click="importAccess">確 定</el-button>
+            <el-button type="primary" @@click="importDataHandler">確 定</el-button>
         </span>
     </el-dialog>
 </div>
