@@ -1604,13 +1604,12 @@ namespace NT_AirPollution.Service
                     res.PayEndDate = DateTime.Now.AddDays(30);
                 }
 
-                // 填發日期(申報日)
-                DateTime pdate = this.ChineseDateToWestDate(form.AP_DATE);
-
-
                 double sumPrice = Math.Round(res.CurrentPrice + res.Interest + res.Penalty, 0);
                 ABUDF_1 abudf_1InDB = _accessService.GetABUDF_1(form);
                 string transNo = ((abudf_1InDB?.FLNO?.Length == 16) ? abudf_1InDB?.FLNO?.Substring(10, 6) : "000000");
+
+                // 填發日期
+                DateTime pdate;
 
                 #region 寫入ABUDF_1
                 ABUDF_1 abudf_1 = new ABUDF_1();
@@ -1620,9 +1619,15 @@ namespace NT_AirPollution.Service
 
                 // 結算的填發日要用審核結算通過的那天
                 if (string.IsNullOrEmpty(form.AP_DATE1))
+                {
+                    pdate = this.ChineseDateToWestDate(form.AP_DATE);
                     abudf_1.P_DATE = pdate.AddYears(-1911).ToString("yyyMMdd");
+                }
                 else
+                {
+                    pdate = this.ChineseDateToWestDate(form.AP_DATE1);
                     abudf_1.P_DATE = form.FIN_DATE;
+                }
 
                 // 退費不用填繳費期限
                 abudf_1.E_DATE = sumPrice > 0 ? res.PayEndDate.AddYears(-1911).ToString("yyyMMdd") : null;
