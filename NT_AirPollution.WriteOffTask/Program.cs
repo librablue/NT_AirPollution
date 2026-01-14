@@ -145,8 +145,8 @@ namespace NT_AirPollution.WriteOffTask
                         #endregion
 
                         #region 寫入ABUDF_I
-                        // 申報才寫
-                        if (string.IsNullOrEmpty(form.AP_DATE1))
+                        // 申報且有滯納金才寫入
+                        if (string.IsNullOrEmpty(form.AP_DATE1) && (res.Interest > 0 || res.Penalty > 0))
                         {
                             ABUDF_I abudf_I = new ABUDF_I();
                             abudf_I.C_NO = form.C_NO;
