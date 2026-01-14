@@ -47,7 +47,7 @@ namespace NT_AirPollution.Model.Access
         /// <summary>
         /// 滯納金利率
         /// </summary>
-        public double PEN_RATE { get; set; }
+        public double? PEN_RATE { get; set; }
         /// <summary>
         /// 資料異動職工編號
         /// </summary>

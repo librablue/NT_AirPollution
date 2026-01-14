@@ -1036,7 +1036,7 @@ namespace NT_AirPollution.Service
                             F_AMT = abudf_I.F_AMT,
                             I_AMT = abudf_I.I_AMT,
                             PEN_AMT = abudf_I.PEN_AMT,
-                            PEN_RATE = abudf_I.F_AMT,
+                            PEN_RATE = abudf_I.PEN_RATE,
                             KEYIN = "EPB02",
                             C_DATE = abudf_I.C_DATE.ToString("yyyy-MM-dd HH:mm:ss"),
                             M_DATE = abudf_I.M_DATE.ToString("yyyy-MM-dd HH:mm:ss")

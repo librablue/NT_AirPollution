@@ -160,7 +160,7 @@ namespace NT_AirPollution.WriteOffTask
                             abudf_I.F_AMT = sumPrice;
                             abudf_I.I_AMT = res.Interest;
                             abudf_I.PEN_AMT = res.Penalty;
-                            abudf_I.PEN_RATE = 0.5;
+                            abudf_I.PEN_RATE = res.Penalty > 0 ? 0.5 : (double?)null;
                             abudf_I.KEYIN = "EPB02";
                             abudf_I.C_DATE = DateTime.Now;
                             abudf_I.M_DATE = DateTime.Now;
