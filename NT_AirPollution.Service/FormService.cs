@@ -1253,7 +1253,7 @@ namespace NT_AirPollution.Service
         /// <returns></returns>
         public bool SendFormStatus2(FormView form)
         {
-            string template = ($@"{AppDomain.CurrentDomain.BaseDirectory}\App_Data\Template\Status2.txt");
+            string template = $@"{AppDomain.CurrentDomain.BaseDirectory}App_Data\Template\Status2.txt";
             using (StreamReader sr = new StreamReader(template))
             {
                 string content = sr.ReadToEnd();
@@ -1291,7 +1291,7 @@ namespace NT_AirPollution.Service
         /// <returns></returns>
         public bool SendFormStatus3(FormView form)
         {
-            string template = ($@"{AppDomain.CurrentDomain.BaseDirectory}\App_Data\Template\FormStatus3.txt");
+            string template = $@"{AppDomain.CurrentDomain.BaseDirectory}App_Data\Template\FormStatus3.txt";
             using (StreamReader sr = new StreamReader(template))
             {
                 try
@@ -1328,7 +1328,7 @@ namespace NT_AirPollution.Service
         /// <returns></returns>
         public bool SendFormStatus4(FormView form)
         {
-            string template = ($@"{AppDomain.CurrentDomain.BaseDirectory}\App_Data\Template\FormStatus4.txt");
+            string template = $@"{AppDomain.CurrentDomain.BaseDirectory}App_Data\Template\FormStatus4.txt";
             using (StreamReader sr = new StreamReader(template))
             {
                 string content = sr.ReadToEnd();
@@ -1368,7 +1368,7 @@ namespace NT_AirPollution.Service
         {
             int status = 5;
             if (form.S_AMT > 0 && form.S_AMT <= 100) status = 6;
-            string template = ($@"{AppDomain.CurrentDomain.BaseDirectory}\App_Data\Template\FormStatus{status}.txt");
+            string template = $@"{AppDomain.CurrentDomain.BaseDirectory}App_Data\Template\FormStatus{status}.txt";
             using (StreamReader sr = new StreamReader(template))
             {
                 string content = sr.ReadToEnd();
@@ -1406,7 +1406,7 @@ namespace NT_AirPollution.Service
         /// <returns></returns>
         public bool SendCalcStatus2(FormView form)
         {
-            string template = ($@"{AppDomain.CurrentDomain.BaseDirectory}\App_Data\Template\Status2.txt");
+            string template = $@"{AppDomain.CurrentDomain.BaseDirectory}App_Data\Template\Status2.txt";
             using (StreamReader sr = new StreamReader(template))
             {
                 string content = sr.ReadToEnd();
@@ -1444,7 +1444,7 @@ namespace NT_AirPollution.Service
         /// <returns></returns>
         public bool SendCalcStatus3(FormView form)
         {
-            string template = ($@"{AppDomain.CurrentDomain.BaseDirectory}\App_Data\Template\CalcStatus3.txt");
+            string template = $@"{AppDomain.CurrentDomain.BaseDirectory}App_Data\Template\CalcStatus3.txt";
             using (StreamReader sr = new StreamReader(template))
             {
                 try
@@ -1481,7 +1481,7 @@ namespace NT_AirPollution.Service
         /// <returns></returns>
         public bool SendCalcStatus45(FormView form)
         {
-            string template = ($@"{AppDomain.CurrentDomain.BaseDirectory}\App_Data\Template\CalcStatus{(int)form.CalcStatus}.txt");
+            string template = $@"{AppDomain.CurrentDomain.BaseDirectory}App_Data\Template\CalcStatus{(int)form.CalcStatus}.txt";
             using (StreamReader sr = new StreamReader(template))
             {
                 try
@@ -1522,7 +1522,7 @@ namespace NT_AirPollution.Service
         /// <returns></returns>
         public bool SendCalcStatus6(FormView form)
         {
-            string template = ($@"{AppDomain.CurrentDomain.BaseDirectory}\App_Data\Template\CalcStatus6.txt");
+            string template = $@"{AppDomain.CurrentDomain.BaseDirectory}App_Data\Template\CalcStatus6.txt";
             using (StreamReader sr = new StreamReader(template))
             {
                 try
