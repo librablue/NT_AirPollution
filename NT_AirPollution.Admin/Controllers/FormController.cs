@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Drawing.Charts;
 using NT_AirPollution.Admin.ActionFilter;
 using NT_AirPollution.Model.Domain;
 using NT_AirPollution.Model.Enum;
@@ -375,6 +376,10 @@ namespace NT_AirPollution.Admin.Controllers
                     ws.Cell("B12").SetValue(converter.ToChineseUpper(overPayAmount));
                     ws.Cell("B14").SetValue(converter.ToChineseUpper(overPayAmount));
 
+                    // 申報天數
+                    double applyWorkDays = (_formService.ChineseDateToWestDate(form.E_DATE) - _formService.ChineseDateToWestDate(form.B_DATE)).TotalDays + 1;
+                    // 結算天數
+                    double calcWorkDays = (_formService.ChineseDateToWestDate(form.FormB.E_DATE) - _formService.ChineseDateToWestDate(form.FormB.B_DATE)).TotalDays + 1;
                     // 停工天數
                     double downDays = form.StopWorks.Sum(o => (o.UP_DATE2 - o.DOWN_DATE2).TotalDays + 1);
                     string text1 = overPayAmount > 0 ? "核退" : "核補";
@@ -383,7 +388,44 @@ namespace NT_AirPollution.Admin.Controllers
                     string text4 = _formService.GetCalcFormulaText(form, downDays);
                     string text5 = form.S_AMT.Value.ToString("N0");
                     string text6 = _formService.GetApplyFormulaText(form, downDays);
-                    string comment = $"一、審核應{text1}： {text2}元\r\n\r\n二、結算申報實際應繳金額：{text3} 元\r\n       計算式：{text4}\r\n\r\n三、未開工前申報應繳金額：{text5} 元\r\n       計算式：{text6}\r\n\r\n四、目前已繳金額(不含逾期利息)：{text5} 元\r\n\r\n五、減免金額：0 元\r\n\r\n六、應{text1}金額：{text2} 元";
+                    string text7 = "";
+
+                    #region 組裝text7
+                    // 1. 計算差額
+                    double diffDays = (calcWorkDays - downDays) - applyWorkDays; // 工期差
+                    double diffArea = (form.FormB.AREA ?? 0) - (form.AREA ?? 0);   // 面積差
+                    double diffMoney = (form.FormB.MONEY ?? 0) - form.MONEY; // 經費差
+
+                    // 2. 定義各別狀態
+                    string statusDays = diffDays > 0 ? $"延長{Math.Abs(diffDays)}天" : (diffDays < 0 ? $"縮短{Math.Abs(diffDays)}天" : "不變");
+                    string statusArea = diffArea > 0 ? $"增加{Math.Abs(diffArea)}平方公尺" : (diffArea < 0 ? $"減少{Math.Abs(diffArea)}平方公尺" : "不變");
+                    string statusMoney = diffMoney > 0 ? $"增加{Math.Abs(diffMoney).ToString("N0")}元" : (diffMoney < 0 ? $"減少{Math.Abs(diffMoney).ToString("N0")}元" : "不變");
+
+                    // 3. 根據「不變」的項目進行歸類組裝 (實作範本中：工期、面積不變 的邏輯)
+                    List<string> unchangedItems = new List<string>();
+                    List<string> changedItems = new List<string>();
+
+                    if (statusDays == "不變") unchangedItems.Add("工期"); else changedItems.Add($"工期{statusDays}");
+                    if (statusArea == "不變") unchangedItems.Add("面積"); else changedItems.Add($"面積{statusArea}");
+                    if (statusMoney == "不變") unchangedItems.Add("合約經費"); else changedItems.Add($"合約經費{statusMoney}");
+
+                    if (unchangedItems.Count == 3)
+                    {
+                        text7 = "工期、面積、合約經費不變。";
+                    }
+                    else
+                    {
+                        string unchangedPart = unchangedItems.Count > 0 ? string.Join("、", unchangedItems) + "不變" : "";
+                        string changedPart = string.Join("，", changedItems);
+
+                        if (!string.IsNullOrEmpty(unchangedPart) && !string.IsNullOrEmpty(changedPart))
+                            text7 = $"{changedPart}，{unchangedPart}。";
+                        else
+                            text7 = (changedPart + unchangedPart) + "。";
+                    }
+                    #endregion
+
+                    string comment = $"一、審核應{text1}： {text2}元\r\n\r\n二、結算申報實際應繳金額：{text3} 元\r\n       計算式：{text4}\r\n\r\n三、未開工前申報應繳金額：{text5} 元\r\n       計算式：{text6}\r\n\r\n四、目前已繳金額(不含逾期利息)：{text5} 元\r\n\r\n五、減免金額：0 元\r\n\r\n六、{text7}\r\n\r\n七、應{text1}金額：{text2} 元";
                     ws.Cell("B15").SetValue(comment);
 
                     string fileName = $"{form.C_NO}-{form.SER_NO} 結算退費審核表";
