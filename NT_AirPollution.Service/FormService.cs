@@ -3,7 +3,6 @@ using AutoMapper;
 using ClosedXML.Excel;
 using Dapper;
 using Dapper.Contrib.Extensions;
-using DocumentFormat.OpenXml.Spreadsheet;
 using NT_AirPollution.Model.Access;
 using NT_AirPollution.Model.Domain;
 using NT_AirPollution.Model.Enum;
@@ -14,7 +13,6 @@ using System.Configuration;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
-using System.Web.Management;
 
 namespace NT_AirPollution.Service
 {
