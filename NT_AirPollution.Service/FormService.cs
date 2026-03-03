@@ -3,6 +3,7 @@ using AutoMapper;
 using ClosedXML.Excel;
 using Dapper;
 using Dapper.Contrib.Extensions;
+using DocumentFormat.OpenXml.Spreadsheet;
 using NT_AirPollution.Model.Access;
 using NT_AirPollution.Model.Domain;
 using NT_AirPollution.Model.Enum;
@@ -1870,6 +1871,11 @@ namespace NT_AirPollution.Service
                     idx += 2;
                 }
 
+                // 自動調整列高
+                ws.Cell("B2").Style.Alignment.WrapText = true;
+                ws.Cell("B4").Style.Alignment.WrapText = true;
+                ws.Rows(2, 6).AdjustToContents();
+
                 string tempFile = $@"{_paymentPath}\Download\結清證明{form.C_NO}-{form.SER_NO}.xlsx";
                 wb.SaveAs(tempFile);
 
@@ -1926,6 +1932,11 @@ namespace NT_AirPollution.Service
                     ws.Cell("C9").SetValue("■");
                     ws.Cell("D10").SetValue("■");
                 }
+
+                // 自動調整列高
+                ws.Cell("C2").Style.Alignment.WrapText = true;
+                ws.Cell("C4").Style.Alignment.WrapText = true;
+                ws.Rows(2, 6).AdjustToContents();
 
                 string tempFile = $@"{_paymentPath}\Download\免徵證明{form.C_NO}-{form.SER_NO}.xlsx";
                 wb.SaveAs(tempFile);
