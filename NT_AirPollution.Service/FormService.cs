@@ -1808,8 +1808,8 @@ namespace NT_AirPollution.Service
 
                 var wb = new XLWorkbook(templateFile);
                 var ws = wb.Worksheet(1);
-                ws.Cell("B2").SetValue(form.COMP_NAM);
-                ws.Cell("B3").SetValue($"{form.C_NO}-{form.SER_NO}");
+                ws.Cell("C2").SetValue(form.COMP_NAM);
+                ws.Cell("C3").SetValue($"{form.C_NO}-{form.SER_NO}");
                 ws.Cell("C4").SetValue(form.ADDR);
                 ws.Cell("C5").SetValue(form.B_SERNO);
                 ws.Cell("C6").SetValue(form.S_NAME);
@@ -1869,11 +1869,6 @@ namespace NT_AirPollution.Service
                     idx += 2;
                 }
 
-                // 自動調整列高
-                ws.Cell("B2").Style.Alignment.WrapText = true;
-                ws.Cell("B4").Style.Alignment.WrapText = true;
-                ws.Rows(2, 6).AdjustToContents();
-
                 string tempFile = $@"{_paymentPath}\Download\結清證明{form.C_NO}-{form.SER_NO}.xlsx";
                 wb.SaveAs(tempFile);
 
@@ -1930,11 +1925,6 @@ namespace NT_AirPollution.Service
                     ws.Cell("C9").SetValue("■");
                     ws.Cell("D10").SetValue("■");
                 }
-
-                // 自動調整列高
-                ws.Cell("C2").Style.Alignment.WrapText = true;
-                ws.Cell("C4").Style.Alignment.WrapText = true;
-                ws.Rows(2, 6).AdjustToContents();
 
                 string tempFile = $@"{_paymentPath}\Download\免徵證明{form.C_NO}-{form.SER_NO}.xlsx";
                 wb.SaveAs(tempFile);
