@@ -610,6 +610,9 @@ namespace NT_AirPollution.Service
                         cn.Execute(@"DELETE FROM dbo.Payment WHERE FormID=@FormID",
                             new { FormID = form.ID }, trans);
 
+                        cn.Execute(@"DELETE FROM dbo.StopWork WHERE FormID=@FormID",
+                            new { FormID = form.ID }, trans);
+
                         trans.Commit();
                         return true;
                     }
@@ -644,29 +647,6 @@ namespace NT_AirPollution.Service
                 catch (Exception ex)
                 {
                     Logger.Error($"UpdateFormColumn: {ex.StackTrace}|{ex.Message}");
-                    throw new Exception("系統發生未預期錯誤");
-                }
-            }
-        }
-
-        /// <summary>
-        /// 刪除申請單
-        /// </summary>
-        /// <param name="form"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        public bool DeleteForm(FormView form)
-        {
-            using (var cn = new SqlConnection(connStr))
-            {
-                try
-                {
-                    cn.Delete(form);
-                    return true;
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error($"DeleteForm: {ex.StackTrace}|{ex.Message}");
                     throw new Exception("系統發生未預期錯誤");
                 }
             }

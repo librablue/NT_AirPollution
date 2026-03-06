@@ -1,7 +1,5 @@
 ﻿using ClosedXML.Excel;
-using DocumentFormat.OpenXml.Drawing.Charts;
 using NT_AirPollution.Admin.ActionFilter;
-using NT_AirPollution.Model.Domain;
 using NT_AirPollution.Model.Enum;
 using NT_AirPollution.Model.View;
 using NT_AirPollution.Service;
@@ -14,7 +12,6 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Web;
-using System.Web.Hosting;
 using System.Web.Http;
 
 namespace NT_AirPollution.Admin.Controllers
@@ -163,6 +160,10 @@ namespace NT_AirPollution.Admin.Controllers
         {
             try
             {
+                var abudf = _accessService.GetABUDF(form.C_NO, form.SER_NO.Value);
+                if (abudf != null)
+                    throw new Exception("此案件已寫入A2021，無法刪除。");
+
                 _formService.DeleteForm(form);
                 return true;
             }

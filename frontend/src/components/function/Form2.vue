@@ -22,7 +22,7 @@
 					<el-button size="mini" icon="el-icon-search" circle title="查看內容" @click="showDetail(row)"></el-button>
 					<el-button type="success" size="mini" icon="el-icon-copy-document" circle title="追加序號" @click="copyRow(row)"></el-button>
 					<el-button type="primary" size="mini" icon="el-icon-s-check" circle title="審核案件" @click="showVerifyModal(row)"></el-button>
-                    <el-button type="danger" size="mini" icon="el-icon-delete" circle title="刪除案件(初次申報送件後無法刪除)" :disabled="row.FormStatus > 0" @click="deleteForm(row)"></el-button>
+                    <el-button type="danger" size="mini" icon="el-icon-delete" circle title="刪除案件" @click="deleteForm(row)"></el-button>
 				</template>
 			</vxe-table-column>
 			<vxe-table-column field="FormStatus" title="審核進度" width="120" align="center" sortable fixed="left">
