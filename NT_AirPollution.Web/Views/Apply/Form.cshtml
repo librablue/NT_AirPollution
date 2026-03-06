@@ -46,9 +46,9 @@
             <el-form-item>
                 <el-button type="success" icon="el-icon-edit" @@click="addForm">新申報</el-button>
             </el-form-item>
-            <el-form-item>
+            @*<el-form-item>
                 <el-button type="success" icon="el-icon-download" @@click="showImportModal">舊資料匯入</el-button>
-            </el-form-item>
+            </el-form-item>*@
         </el-form>
 
         <div class="form-wrap">
@@ -504,6 +504,9 @@
                             <el-form-item prop="MONEY" label="工程合約經費(元)">
                                 <el-input type="number" v-model="selectRow.FormB.MONEY"></el-input>
                             </el-form-item>
+                            <el-form-item prop="TAX_MONEY" label="工程合約經費營業稅(元)">
+                                <el-input type="number" v-model="selectRow.FormB.TAX_MONEY"></el-input>
+                            </el-form-item>
                             <el-form-item prop="C_MONEY" label="工程環保經費(元)"><div style="min-width:120px">{{calcC_MONEYB | comma}}</div></el-form-item>
                             <el-form-item prop="PERCENT" label="工程合約經費比例">{{selectRow.PERCENT}}%</el-form-item>
                         </div>
@@ -734,7 +737,7 @@
         </span>
     </el-dialog>
 
-    <el-dialog title="舊資料匯入" :visible.sync="importModalVisible" width="30%" v-cloak>
+    @*<el-dialog title="舊資料匯入" :visible.sync="importModalVisible" width="30%" v-cloak>
         <el-form ref="importForm" :rules="importDataRules" :model="importForm" label-width="auto">
             <el-form-item prop="C_NO" label="管制編號">
                 <el-input v-model="importForm.C_NO"></el-input>
@@ -747,5 +750,5 @@
             <el-button @@click="importModalVisible = false">取 消</el-button>
             <el-button type="primary" @@click="importDataHandler">確 定</el-button>
         </span>
-    </el-dialog>
+    </el-dialog>*@
 </div>

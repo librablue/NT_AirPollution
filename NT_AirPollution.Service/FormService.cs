@@ -587,6 +587,43 @@ namespace NT_AirPollution.Service
         }
 
         /// <summary>
+        /// 刪除申請單
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public bool DeleteForm(FormView form)
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                cn.Open();
+                using (var trans = cn.BeginTransaction())
+                {
+                    try
+                    {
+                        cn.Execute("DELETE FROM dbo.Form WHERE ID=@ID",
+                            new { ID = form.ID }, trans);
+
+                        cn.Execute(@"DELETE FROM dbo.FormB WHERE FormID=@FormID",
+                            new { FormID = form.ID }, trans);
+
+                        cn.Execute(@"DELETE FROM dbo.Payment WHERE FormID=@FormID",
+                            new { FormID = form.ID }, trans);
+
+                        trans.Commit();
+                        return true;
+                    }
+                    catch (Exception ex)
+                    {
+                        trans.Rollback();
+                        Logger.Error($"DeleteForm: {ex.StackTrace}|{ex.Message}");
+                        throw new Exception("系統發生未預期錯誤");
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// 更新Form單一欄位
         /// </summary>
         /// <param name="form"></param>
@@ -995,7 +1032,7 @@ namespace NT_AirPollution.Service
                         break;
                     case "Z":
                         // 工程合約經費要-營業稅
-                        basicNum = form.FormB.MONEY.Value - form.TAX_MONEY;
+                        basicNum = (form.FormB.MONEY ?? 0) - (form.FormB.TAX_MONEY ?? 0);
                         break;
                 }
 
@@ -1160,8 +1197,8 @@ namespace NT_AirPollution.Service
                         break;
                     case "Z":
                         // 工程合約經費要-營業稅
-                        basicNum = form.FormB.MONEY.Value - form.TAX_MONEY;
-                        basicNumFomulaText = $"{form.FormB.MONEY.Value - form.TAX_MONEY}";
+                        basicNum = (form.FormB.MONEY ?? 0) - (form.FormB.TAX_MONEY ?? 0);
+                        basicNumFomulaText = $"{(form.FormB.MONEY ?? 0) - (form.FormB.TAX_MONEY ?? 0)}";
                         break;
                 }
 

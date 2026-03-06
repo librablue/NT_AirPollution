@@ -5,13 +5,10 @@ using NT_AirPollution.Model.Enum;
 using NT_AirPollution.Model.View;
 using NT_AirPollution.Service;
 using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NT_AirPollution.WriteOffTask
 {

@@ -41,6 +41,8 @@ namespace NT_AirPollution.Model.Domain
 
         /// <summary>合約經費</summary>
         public double? MONEY { get; set; }
+        /// <summary>工程合約經費營業稅</summary>
+        public double? TAX_MONEY { get; set; }
 
         /// <summary>工程面積</summary>
         public double? AREA { get; set; }

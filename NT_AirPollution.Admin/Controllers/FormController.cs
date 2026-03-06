@@ -158,6 +158,20 @@ namespace NT_AirPollution.Admin.Controllers
             }
         }
 
+        [HttpPost]
+        public bool DeleteForm(FormView form)
+        {
+            try
+            {
+                _formService.DeleteForm(form);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         /// <summary>
         /// 產生管制編號
         /// </summary>

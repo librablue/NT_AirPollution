@@ -17,23 +17,24 @@
 			</el-form-item>
 		</el-form>
 		<vxe-table :data="forms" size="small" :loading="loading" max-height="640px" show-overflow border resizable auto-resize :sort-config="{ trigger: 'cell' }">
-			<vxe-table-column title="功能" width="140" align="center" fixed="left">
+			<vxe-table-column title="功能" width="180" align="center" fixed="left">
 				<template v-slot="{ row }">
 					<el-button size="mini" icon="el-icon-search" circle title="查看內容" @click="showDetail(row)"></el-button>
 					<el-button type="success" size="mini" icon="el-icon-copy-document" circle title="追加序號" @click="copyRow(row)"></el-button>
 					<el-button type="primary" size="mini" icon="el-icon-s-check" circle title="審核案件" @click="showVerifyModal(row)"></el-button>
+                    <el-button type="danger" size="mini" icon="el-icon-delete" circle title="刪除案件(初次申報送件後無法刪除)" :disabled="row.FormStatus > 0" @click="deleteForm(row)"></el-button>
 				</template>
 			</vxe-table-column>
 			<vxe-table-column field="FormStatus" title="審核進度" width="120" align="center" sortable fixed="left">
 				<template v-slot="{ row }">{{row.FormStatus | formStatus}}</template>
 			</vxe-table-column>
-            <vxe-table-column field="VerifyStage1" title="初/複審" width="120" align="center" sortable fixed="left">
+			<vxe-table-column field="VerifyStage1" title="初/複審" width="120" align="center" sortable fixed="left">
 				<template v-slot="{ row }">{{row.VerifyStage1 | verifyStage}}</template>
 			</vxe-table-column>
 			<vxe-table-column field="CalcStatus" title="結算進度" width="120" align="center" sortable fixed="left">
 				<template v-slot="{ row }">{{row.CalcStatus | calcStatus}}</template>
 			</vxe-table-column>
-            <vxe-table-column field="VerifyStage2" title="初/複審" width="120" align="center" sortable fixed="left">
+			<vxe-table-column field="VerifyStage2" title="初/複審" width="120" align="center" sortable fixed="left">
 				<template v-slot="{ row }">{{row.VerifyStage2 | verifyStage}}</template>
 			</vxe-table-column>
 			<vxe-table-column field="C_NO" title="管制編號" width="140" align="center" sortable fixed="left">
@@ -85,8 +86,8 @@ export default {
 				C_NO: '',
 				FormStatus: -1,
 				CalcStatus: -1,
-                VerifyStage1: 3,
-                VerifyStage2: 1,
+				VerifyStage1: 3,
+				VerifyStage2: 1
 			},
 			forms: [],
 			selectRow: {},
@@ -95,21 +96,19 @@ export default {
 		};
 	},
 	mounted() {
-        if (this.currentUser.RoleID === 1) {
-            this.filter.CalcStatus = 1;
-            this.filter.VerifyStage1 = 3;
-            this.filter.VerifyStage2 = 1;
-        }
-        else if (this.currentUser.RoleID === 2) {
-            this.filter.CalcStatus = 3;
-            this.filter.VerifyStage1 = 3;
-            this.filter.VerifyStage2 = 2;
-        }
-        else if (this.currentUser.RoleID === 99) {
-            this.filter.CalcStatus = -1;
-        }
+		if (this.currentUser.RoleID === 1) {
+			this.filter.CalcStatus = 1;
+			this.filter.VerifyStage1 = 3;
+			this.filter.VerifyStage2 = 1;
+		} else if (this.currentUser.RoleID === 2) {
+			this.filter.CalcStatus = 3;
+			this.filter.VerifyStage1 = 3;
+			this.filter.VerifyStage2 = 2;
+		} else if (this.currentUser.RoleID === 99) {
+			this.filter.CalcStatus = -1;
+		}
 
-        this.getForms();
+		this.getForms();
 	},
 	computed: {
 		...mapGetters(['currentUser']),
@@ -118,12 +117,10 @@ export default {
 				return [
 					{ value: 1, label: '審理中' },
 					{ value: 2, label: '待補件' },
-                    { value: 3, label: '通過待繳費' }
-				];
-			} else if (this.currentUser.RoleID === 2) {
-				return [
 					{ value: 3, label: '通過待繳費' }
 				];
+			} else if (this.currentUser.RoleID === 2) {
+				return [{ value: 3, label: '通過待繳費' }];
 			} else if (this.currentUser.RoleID === 99) {
 				return [
 					{ value: -1, label: '全部' },
@@ -144,7 +141,7 @@ export default {
 		getForms() {
 			this.loading = true;
 			this.axios.post('api/Form/GetForms', this.filter).then(res => {
-                // 只有繳費完成或免繳費會顯示在form2
+				// 只有繳費完成或免繳費會顯示在form2
 				this.forms = res.data.filter(item => item.FormStatus > 3);
 				this.loading = false;
 			});
@@ -155,6 +152,7 @@ export default {
 			this.formModalVisible = true;
 		},
 		copyRow(row) {
+			if (!confirm('是否確認追加序號?')) return;
 			this.mode = 'Copy';
 			this.selectRow = JSON.parse(JSON.stringify(row));
 			this.selectRow.FormStatus = 0;
@@ -165,6 +163,20 @@ export default {
 				this.selectRow[key] = null;
 			}
 			this.formModalVisible = true;
+		},
+		deleteForm(row) {
+			if (!confirm('案件刪除後無法回復，是否確認繼續?')) return;
+			const loading = this.$loading();
+			this.axios
+				.post('api/Form/DeleteForm', row)
+				.then(res => {
+					this.$message.success('案件已刪除');
+					loading.close();
+				})
+				.catch(err => {
+					this.$message.error(err.response.data.ExceptionMessage);
+					loading.close();
+				});
 		},
 		onUpdated() {
 			this.getForms();
