@@ -31,9 +31,11 @@
                         return false;
                     }
 
+                    const loading = this.$loading();
                     axios
                         .post('/Member/Login', this.form)
                         .then(res => {
+                            loading.close();
                             if (!res.data.Status) {
                                 turnstile.reset();
                                 this.form.Captcha = '';
@@ -52,6 +54,7 @@
                             else location.href = `${document.baseURI.replace(/\/$/, '')}/Manage/Form`;
                         })
                         .catch(err => {
+                            loading.close();
                             console.log(err);
                             turnstile.reset();
                             this.form.Captcha = '';

@@ -89,9 +89,11 @@
                         return false;
                     }
 
+                    const loading = this.$loading();
                     axios
                         .post('/Member/SendRegistCode', this.form)
                         .then(res => {
+                            loading.close();
                             if (!res.data.Status) {
                                 alert(res.data.Message);
                                 return;
@@ -113,6 +115,7 @@
                             alert(res.data.Message);
                         })
                         .catch(err => {
+                            loading.close();
                             console.log(err.response.data.ExceptionMessage);
                             alert('系統發生未預期錯誤');
                         });
@@ -126,9 +129,11 @@
                     }
                     
                     if (!confirm('是否確認送出?')) return;
+                    const loading = this.$loading();
                     axios
                         .post('/Member/Regist', this.form)
                         .then(res => {
+                            loading.close();
                             if (!res.data.Status) {
                                 turnstile.reset();
                                 this.form.Captcha = '';
@@ -140,6 +145,7 @@
                             location.href = `${document.baseURI}/Member/Login`;
                         })
                         .catch(err => {
+                            loading.close();
                             console.log(err);
                             turnstile.reset();
                             this.form.Captcha = '';
