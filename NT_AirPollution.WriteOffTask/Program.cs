@@ -46,7 +46,11 @@ namespace NT_AirPollution.WriteOffTask
                     string[] line = File.ReadAllLines(file);
                     for (int i = 0; i < line.Length - 1; i++)
                     {
+                        // 銷帳編號
                         string account = line[i].Substring(8, 16);
+                        // 對帳日期(只有6碼，前面補1)
+                        string fdate = line[i].Substring(24, 6);
+                        // 繳費金額
                         int payAmount = Convert.ToInt32(line[i].Substring(100, 10));
                         DateTime payDate = Convert.ToDateTime($"{2011 + Convert.ToInt32(line[i].Substring(93, 2))}-{line[i].Substring(95, 2)}-{line[i].Substring(97, 2)}");
                         // 取得SQL付款資訊
@@ -74,7 +78,6 @@ namespace NT_AirPollution.WriteOffTask
                             form.CalcStatus = CalcStatus.繳退費完成;
                             form.VerifyStage2 = VerifyStage.複審通過;
                             form.IsMailCalcStatus = true;
-                            form.FIN_DATE = chineseToday;
                         }
 
                         // 更新申請單
@@ -95,7 +98,7 @@ namespace NT_AirPollution.WriteOffTask
                         #region 更新ABUDF_1
                         var abudf_1 = new ABUDF_1
                         {
-                            F_DATE = chineseToday,
+                            F_DATE = fdate,
                             F_AMT = payAmount,
                             PM_DATE = payDate.AddYears(-1911).ToString("yyyMMdd"),
                             A_DATE = chineseToday,
