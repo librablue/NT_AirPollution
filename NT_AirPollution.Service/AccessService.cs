@@ -650,17 +650,16 @@ namespace NT_AirPollution.Service
                 double downDays = form.StopWorks.Sum(o => o.DOWN_DAY);
                 // 結算狀態
                 string B_STAT;
-                if (form.P_KIND == "一次全繳")
+                if (!string.IsNullOrEmpty(form.AP_DATE1))
+                    B_STAT = "Z已申報結算";
+                else if (form.P_KIND == "一次全繳")
                     B_STAT = "A一次繳清無結算";
                 else
                     B_STAT = "B分期繳交待結算";
 
-                if (form.S_AMT <= 100)
-                    B_STAT = "Z已申報結算";
-
                 // 施工狀態
                 string B_CSTAT;
-                if(!string.IsNullOrEmpty(form.AP_DATE1))
+                if (!string.IsNullOrEmpty(form.AP_DATE1))
                     B_CSTAT = "D結算完工";
                 else if (base.ChineseDateToWestDate(form.AP_DATE) < base.ChineseDateToWestDate(form.B_DATE))
                     B_CSTAT = "A預計工期未施工";
@@ -678,6 +677,7 @@ namespace NT_AirPollution.Service
                             [SER_NO],
                             [AP_DATE1],
                             [B_STAT],
+                            [B_CSTAT],
                             [KIND_NO],
                             [KIND],
                             [YEAR],
@@ -704,6 +704,7 @@ namespace NT_AirPollution.Service
                             @SER_NO,
                             @AP_DATE1,
                             @B_STAT,
+                            @B_CSTAT,
                             @KIND_NO,
                             @KIND,
                             @YEAR,
@@ -731,6 +732,7 @@ namespace NT_AirPollution.Service
                             formB.SER_NO,
                             formB.AP_DATE1,
                             B_STAT,
+                            B_CSTAT,
                             formB.KIND_NO,
                             formB.KIND,
                             formB.YEAR,
