@@ -232,7 +232,7 @@ namespace NT_AirPollution.Admin.Controllers
                         case CalcStatus.待補件:
                             form.VerifyStage2 = VerifyStage.未申請;
                             break;
-                        case CalcStatus.通過待繳費:
+                        case CalcStatus.通過待繳費: 
                             form.VerifyDate2 = DateTime.Now;
                             form.VerifyStage2 = VerifyStage.初審通過;
                             break;
@@ -248,6 +248,8 @@ namespace NT_AirPollution.Admin.Controllers
                             form.VerifyStage1 = VerifyStage.未申請;
                             break;
                         case FormStatus.通過待繳費:
+                            form.FormB.B_KIND1 = "無";
+                            form.FormB.WRONG_AP = "無";
                             // 審核日期
                             form.VerifyDate1 = DateTime.Now;
                             form.VerifyStage1 = VerifyStage.複審通過;
@@ -266,6 +268,7 @@ namespace NT_AirPollution.Admin.Controllers
                         var result = _formService.CalcTotalMoney(form, downDays);
                         form.S_AMT2 = result.TotalMoney;
                         form.COMP_L = result.Level;
+                        form.FormB.AP_DATE1 = DateTime.Now.AddYears(-1911).ToString("yyyMMdd");
 
                         if (form.S_AMT2 > form.P_AMT)
                             form.CalcStatus = CalcStatus.通過待繳費;
@@ -558,6 +561,37 @@ namespace NT_AirPollution.Admin.Controllers
 
                     return response;
                 }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 下載結清證明
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public HttpResponseMessage ExportClearProof(FormView form)
+        {
+            try
+            {
+                var formInDB = _formService.GetFormByID(form.ID);
+                if (formInDB == null || (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email))
+                    throw new Exception("申請單不存在");
+
+                string pdfPath = _formService.CreateClearProofPDF(formInDB);
+
+                var stream = new FileStream(pdfPath, FileMode.Open);
+                HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
+                response.Content = new StreamContent(stream);
+                response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+                // 傳到前端的檔名
+                // Uri.EscapeDataString 防中文亂碼
+                response.Content.Headers.Add("file-name", Uri.EscapeDataString(Path.GetFileName(pdfPath)));
+
+                return response;
             }
             catch (Exception ex)
             {

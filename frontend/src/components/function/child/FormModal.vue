@@ -501,6 +501,7 @@
 						<el-form-item>
 							<el-button type="primary" @click="exportRefundVerify1">結算退費審核表</el-button>
 							<el-button type="primary" @click="exportRefundVerify2">結算金額異動原因明細</el-button>
+							<el-button type="primary" @click="exportClearProof">結清證明</el-button>
 						</el-form-item>
 					</el-form>
 					<div class="refund-bank-section">
@@ -1191,6 +1192,29 @@ export default {
 			const loading = this.$loading();
 			this.axios
 				.post('api/Form/ExportRefundVerify2', this.form, {
+					responseType: 'blob'
+				})
+				.then(res => {
+					loading.close();
+					const url = window.URL.createObjectURL(new Blob([res.data]));
+					const link = document.createElement('a');
+					link.href = url;
+					const fileName = decodeURI(res.headers['file-name']);
+					link.setAttribute('download', fileName);
+					document.body.appendChild(link);
+					link.click();
+					link.remove();
+				})
+				.catch(err => {
+					loading.close();
+					alert('系統發生未預期錯誤');
+					console.log(err);
+				});
+		},
+		exportClearProof() {
+			const loading = this.$loading();
+			this.axios
+				.post('api/Form/ExportClearProof', this.form, {
 					responseType: 'blob'
 				})
 				.then(res => {

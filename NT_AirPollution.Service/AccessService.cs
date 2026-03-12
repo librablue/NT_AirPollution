@@ -648,6 +648,7 @@ namespace NT_AirPollution.Service
                 DateTime now = DateTime.Now;
                 double workDays = (base.ChineseDateToWestDate(formB.E_DATE) - base.ChineseDateToWestDate(formB.B_DATE)).TotalDays + 1;
                 double downDays = form.StopWorks.Sum(o => o.DOWN_DAY);
+                // 結算狀態
                 string B_STAT;
                 if (form.P_KIND == "一次全繳")
                     B_STAT = "A一次繳清無結算";
@@ -656,6 +657,15 @@ namespace NT_AirPollution.Service
 
                 if (form.S_AMT <= 100)
                     B_STAT = "Z已申報結算";
+
+                // 施工狀態
+                string B_CSTAT;
+                if(!string.IsNullOrEmpty(form.AP_DATE1))
+                    B_CSTAT = "D結算完工";
+                else if (base.ChineseDateToWestDate(form.AP_DATE) < base.ChineseDateToWestDate(form.B_DATE))
+                    B_CSTAT = "A預計工期未施工";
+                else
+                    B_CSTAT = "B預計工期施工中";
 
                 using (var cn = new OleDbConnection(accessConnStr))
                 {
@@ -680,9 +690,11 @@ namespace NT_AirPollution.Service
                             [E_DATE],
                             [B_YEAR],
                             [S_AMT],
+                            [B_KIND1],
                             [T_DAY],
                             [PRE_C_AMT],
                             [PRE_C_AMT1],
+                            [WRONG_AP],
                             [KEYIN],
                             [C_DATE],
                             [M_DATE]
@@ -704,9 +716,11 @@ namespace NT_AirPollution.Service
                             @E_DATE,
                             @B_YEAR,
                             @S_AMT,
+                            @B_KIND1,
                             @T_DAY,
                             @PRE_C_AMT,
                             @PRE_C_AMT1,
+                            @WRONG_AP,
                             @KEYIN,
                             @C_DATE,
                             @M_DATE
@@ -729,9 +743,11 @@ namespace NT_AirPollution.Service
                             formB.E_DATE,
                             B_YEAR = Math.Round((workDays - downDays + 1) / 365, 2, MidpointRounding.AwayFromZero),
                             formB.S_AMT,
+                            formB.B_KIND1,
                             T_DAY = workDays - downDays + 1,
                             PRE_C_AMT = form.S_AMT > form.S_AMT2 ? form.S_AMT - form.S_AMT2 : 0,
                             PRE_C_AMT1 = form.S_AMT2 > form.S_AMT ? form.S_AMT2 - form.S_AMT : 0,
+                            WRONG_AP = formB.WRONG_AP,
                             KEYIN = "EPB02",
                             C_DATE = now.ToString("yyyy-MM-dd HH:mm:ss"),
                             M_DATE = now.ToString("yyyy-MM-dd HH:mm:ss")

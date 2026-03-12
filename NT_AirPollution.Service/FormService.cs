@@ -18,8 +18,6 @@ namespace NT_AirPollution.Service
 {
     public class FormService : BaseService
     {
-        private readonly string _configDomain = ConfigurationManager.AppSettings["Domain"]?.ToString();
-        private readonly string _uploadPath = ConfigurationManager.AppSettings["UploadPath"]?.ToString();
         private readonly string _paymentPath = ConfigurationManager.AppSettings["Payment"]?.ToString();
         private readonly OptionService _optionService = new OptionService();
         private readonly AccessService _accessService = new AccessService();
@@ -194,7 +192,7 @@ namespace NT_AirPollution.Service
                             FormID = item.ID,
                             C_NO = item.C_NO,
                             SER_NO = item.SER_NO,
-                            AP_DATE1 = item.AP_DATE1,
+                            AP_DATE1 = "",
                             B_STAT = B_STAT,
                             B_CSTAT = "",
                             KIND_NO = item.KIND_NO,
@@ -513,7 +511,7 @@ namespace NT_AirPollution.Service
                             FormID = form.ID,
                             C_NO = form.C_NO,
                             SER_NO = form.SER_NO,
-                            AP_DATE1 = form.AP_DATE1,
+                            AP_DATE1 = "",
                             B_STAT = B_STAT,
                             B_CSTAT = "",
                             KIND_NO = form.KIND_NO,
