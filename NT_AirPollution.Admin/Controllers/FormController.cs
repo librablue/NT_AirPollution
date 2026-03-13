@@ -577,11 +577,7 @@ namespace NT_AirPollution.Admin.Controllers
         {
             try
             {
-                var formInDB = _formService.GetFormByID(form.ID);
-                if (formInDB == null || (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email))
-                    throw new Exception("申請單不存在");
-
-                string pdfPath = _formService.CreateClearProofPDF(formInDB);
+                string pdfPath = _formService.CreateClearProofPDF(form);
 
                 var stream = new FileStream(pdfPath, FileMode.Open);
                 HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
