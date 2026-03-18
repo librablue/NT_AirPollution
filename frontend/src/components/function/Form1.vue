@@ -114,8 +114,7 @@ export default {
 		formStatusList() {
 			if (this.currentUser.RoleID === 1) {
 				return [
-					{ value: 1, label: '審理中' },
-					{ value: 2, label: '待補件' }
+					{ value: 1, label: '審理中' }
 				];
 			} else if (this.currentUser.RoleID === 2) {
 				return [{ value: 3, label: '通過待繳費' }];
