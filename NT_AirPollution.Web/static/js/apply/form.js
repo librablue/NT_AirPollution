@@ -906,7 +906,7 @@
                 this.selectRow.FileName2 = null;
                 this.selectRow.DisplayName2 = null;
                 this.selectRow.StopWorks.length = 0;
-                const clearAry = ['C_NO', 'SER_NO', 'AP_DATE', 'C_DATE'];
+                const clearAry = ['SER_NO', 'S_AMT', 'S_AMT2', 'AP_DATE', 'C_DATE'];
                 for (const key of clearAry) {
                     this.selectRow[key] = null;
                 }

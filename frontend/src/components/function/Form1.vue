@@ -157,7 +157,7 @@ export default {
 			this.selectRow.FormStatus = 0;
 			this.selectRow.calcStatus = 0;
 			this.selectRow.StopWorks.length = 0;
-			const clearAry = ['SER_NO', 'C_DATE', 'S_AMT', 'S_AMT2'];
+			const clearAry = ['SER_NO', 'S_AMT', 'S_AMT2', 'AP_DATE', 'C_DATE'];
 			for (const key of clearAry) {
 				this.selectRow[key] = null;
 			}
