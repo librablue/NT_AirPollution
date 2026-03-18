@@ -46,6 +46,8 @@ namespace NT_AirPollution.Model.Domain
 
         /// <summary>工程面積</summary>
         public double? AREA { get; set; }
+        /// <summary>總樓地板面積</summary>
+        public double? AREA2 { get; set; }
 
         /// <summary>外運土石鬆方</summary>
         public double? VOLUMEL { get; set; }
