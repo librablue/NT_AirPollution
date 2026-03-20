@@ -316,8 +316,9 @@ namespace NT_AirPollution.Admin.Controllers
                 _formService.AddFormB(form);
                 // 寄送通知
                 _formService.SendStatusMail(form);
-                // 產生繳費單(為了先新增ABUDF_1)
-                _formService.CreatePaymentPDF("", form);
+                // 產生繳費單(為了先新增ABUDF_1，審核通過才產生)
+                if ((int)form.FormStatus > 2)
+                    _formService.CreatePaymentPDF("", form);
 
                 // 判斷如果是通過待繳費就產生繳費單(為了先新增ABUDF_1)
                 //if ((form.VerifyStage1 == VerifyStage.複審通過 && form.FormStatus == FormStatus.通過待繳費) ||

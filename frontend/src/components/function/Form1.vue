@@ -189,9 +189,9 @@ export default {
 			this.axios
 				.post('api/Form/CreateC_NO', row)
 				.then(res => {
-					row.C_NO = res.data;
 					this.$message.success('管制編號已產生');
 					loading.close();
+					this.getForms();
 				})
 				.catch(err => {
 					this.$message.error(err.response.data.ExceptionMessage);
