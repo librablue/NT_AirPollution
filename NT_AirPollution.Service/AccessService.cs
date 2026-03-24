@@ -330,12 +330,12 @@ namespace NT_AirPollution.Service
             try
             {
 #if !DEBUG
-        using (var impersonation = new ImpersonationContext(domain, userName, password))
-        {
-#endif
-                using (var cn = new OleDbConnection(accessConnStr))
+                using (var impersonation = new ImpersonationContext(domain, userName, password))
                 {
-                    cn.Execute(@"
+#endif
+                    using (var cn = new OleDbConnection(accessConnStr))
+                    {
+                        cn.Execute(@"
                         UPDATE ABUDF SET
                             [TOWN_NO]=@TOWN_NO,
                             [TOWN_NA]=@TOWN_NA,
@@ -430,132 +430,109 @@ namespace NT_AirPollution.Service
                             [EIACOMMENTS]=@EIACOMMENTS,
                             [M_DATE]=@M_DATE
                         WHERE [C_NO]=@C_NO AND [SER_NO]=@SER_NO",
-                        new
-                        {
-                            form.TOWN_NO,
-                            form.TOWN_NA,
-                            form.KIND_NO,
-                            form.KIND,
-                            form.B_SERNO,
-                            form.PUB_COMP,
-                            form.S_NAME,
-                            form.S_G_NO,
-                            form.S_ADDR1,
-                            form.S_ADDR2,
-                            form.S_TEL,
-                            form.S_B_NAM,
-                            form.S_B_TIT,
-                            form.S_B_ID,
-                            form.S_B_BDATE,
-                            form.S_C_NAM,
-                            form.S_C_TIT,
-                            form.S_C_ID,
-                            form.S_C_ADDR,
-                            form.S_C_TEL,
-                            form.R_NAME,
-                            form.R_G_NO,
-                            form.R_ADDR1,
-                            form.R_ADDR2,
-                            form.R_TEL,
-                            form.R_B_NAM,
-                            form.R_B_TIT,
-                            form.R_B_ID,
-                            form.R_B_BDATE,
-                            form.R_ADDR3,
-                            form.R_TEL1,
-                            form.R_M_NAM,
-                            form.R_C_NAM,
-                            form.A_KIND,
-                            form.AREA,
-                            VOLUMEL = form.VOLUMEL ?? 0,
-                            form.RATIOLB,
-                            form.DENSITYL,
-                            MONEY = form.MONEY - form.TAX_MONEY,
-                            form.C_MONEY,
-                            form.PERCENT,
-                            form.YEAR,
-                            form.B_DATE,
-                            form.E_DATE,
-                            form.S_AMT,
-                            form.P_KIND,
-                            form.P_NUM,
-                            form.P_AMT,
-                            form.FIN_DATE,
-                            form.FIN_COM,
-                            form.STATE,
-                            form.ID_DOC1,
-                            form.ID_DOC2,
-                            form.ID_DOC3,
-                            form.COMP_DOC1,
-                            form.COMP_DOC2,
-                            form.COMP_DOC3,
-                            form.COMP_OTH,
-                            form.BUD_DOC1,
-                            form.BUD_DOC2,
-                            form.BUD_DOC3,
-                            form.BUD_OTH,
-                            form.REC_YN,
-                            form.AREA_B,
-                            form.AREA_F,
-                            form.PERC_B,
-                            form.COMP_NAM,
-                            form.ADDR,
-                            form.AP_TYPE,
-                            form.UTME,
-                            form.UTMN,
-                            form.LATLNG,
-                            form.AREA3,
-                            form.AREA2,
-                            form.O_C_Q,
-                            form.G_NAME,
-                            form.ADDR1,
-                            form.COMP_NAM1,
-                            form.ENG_STONE,
-                            ENG_WRAP = form.ENG_WRAP ?? 0,
-                            form.ENG_DES,
-                            form.ENG_DES_TEL,
-                            form.ENG_DES_ADDR,
-                            form.NOLEVY,
-                            form.COMP_L,
-                            form.RCAP_DATE,
-                            form.RC_DATE,
-                            form.RC_SERNO,
-                            form.RCE,
-                            form.COMMENT,
-                            form.EIACOMMENTS,
-                            M_DATE = form.M_DATE?.ToString("yyyy-MM-dd HH:mm:ss"),
-                            form.C_NO,
-                            form.SER_NO
-                        },
-                        commandTimeout: 180);
+                            new
+                            {
+                                TOWN_NO = form.TOWN_NO,
+                                TOWN_NA = form.TOWN_NA,
+                                KIND_NO = form.KIND_NO,
+                                KIND = form.KIND,
+                                B_SERNO = form.B_SERNO,
+                                PUB_COMP = form.PUB_COMP,
+                                S_NAME = form.S_NAME,
+                                S_G_NO = form.S_G_NO,
+                                S_ADDR1 = form.S_ADDR1,
+                                S_ADDR2 = form.S_ADDR2,
+                                S_TEL = form.S_TEL,
+                                S_B_NAM = form.S_B_NAM,
+                                S_B_TIT = form.S_B_TIT,
+                                S_B_ID = form.S_B_ID,
+                                S_B_BDATE = form.S_B_BDATE,
+                                S_C_NAM = form.S_C_NAM,
+                                S_C_TIT = form.S_C_TIT,
+                                S_C_ID = form.S_C_ID,
+                                S_C_ADDR = form.S_C_ADDR,
+                                S_C_TEL = form.S_C_TEL,
+                                R_NAME = form.R_NAME,
+                                R_G_NO = form.R_G_NO,
+                                R_ADDR1 = form.R_ADDR1,
+                                R_ADDR2 = form.R_ADDR2,
+                                R_TEL = form.R_TEL,
+                                R_B_NAM = form.R_B_NAM,
+                                R_B_TIT = form.R_B_TIT,
+                                R_B_ID = form.R_B_ID,
+                                R_B_BDATE = form.R_B_BDATE,
+                                R_ADDR3 = form.R_ADDR3,
+                                R_TEL1 = form.R_TEL1,
+                                R_M_NAM = form.R_M_NAM,
+                                R_C_NAM = form.R_C_NAM,
+                                A_KIND = form.A_KIND,
+                                AREA = form.AREA,
+                                VOLUMEL = form.VOLUMEL ?? 0,
+                                RATIOLB = form.RATIOLB,
+                                DENSITYL = form.DENSITYL,
+                                MONEY = form.MONEY - form.TAX_MONEY,
+                                C_MONEY = form.C_MONEY,
+                                PERCENT = form.PERCENT,
+                                YEAR = form.YEAR,
+                                B_DATE = form.B_DATE,
+                                E_DATE = form.E_DATE,
+                                S_AMT = form.S_AMT,
+                                P_KIND = form.P_KIND,
+                                P_NUM = form.P_NUM,
+                                P_AMT = form.P_AMT,
+                                FIN_DATE = form.FIN_DATE,
+                                FIN_COM = form.FIN_COM,
+                                STATE = form.STATE,
+                                ID_DOC1 = form.ID_DOC1,
+                                ID_DOC2 = form.ID_DOC2,
+                                ID_DOC3 = form.ID_DOC3,
+                                COMP_DOC1 = form.COMP_DOC1,
+                                COMP_DOC2 = form.COMP_DOC2,
+                                COMP_DOC3 = form.COMP_DOC3,
+                                COMP_OTH = form.COMP_OTH,
+                                BUD_DOC1 = form.BUD_DOC1,
+                                BUD_DOC2 = form.BUD_DOC2,
+                                BUD_DOC3 = form.BUD_DOC3,
+                                BUD_OTH = form.BUD_OTH,
+                                REC_YN = form.REC_YN,
+                                AREA_B = form.AREA_B,
+                                AREA_F = form.AREA_F,
+                                PERC_B = form.PERC_B,
+                                COMP_NAM = form.COMP_NAM,
+                                ADDR = form.ADDR,
+                                AP_TYPE = form.AP_TYPE,
+                                UTME = form.UTME,
+                                UTMN = form.UTMN,
+                                LATLNG = form.LATLNG,
+                                AREA3 = form.AREA3,
+                                AREA2 = form.AREA2,
+                                O_C_Q = form.O_C_Q,
+                                G_NAME = form.G_NAME,
+                                ADDR1 = form.ADDR1,
+                                COMP_NAM1 = form.COMP_NAM1,
+                                ENG_STONE = form.ENG_STONE,
+                                ENG_WRAP = form.ENG_WRAP ?? 0,
+                                ENG_DES = form.ENG_DES,
+                                ENG_DES_TEL = form.ENG_DES_TEL,
+                                ENG_DES_ADDR = form.ENG_DES_ADDR,
+                                NOLEVY = form.NOLEVY,
+                                COMP_L = form.COMP_L,
+                                RCAP_DATE = form.RCAP_DATE,
+                                RC_DATE = form.RC_DATE,
+                                RC_SERNO = form.RC_SERNO,
+                                RCE = form.RCE,
+                                COMMENT = form.COMMENT,
+                                EIACOMMENTS = form.EIACOMMENTS,
+                                M_DATE = form.M_DATE?.ToString("yyyy-MM-dd HH:mm:ss"),
+                                C_NO = form.C_NO,
+                                SER_NO = form.SER_NO
+                            },
+                            commandTimeout: 180);
 
-
-                    // 20240115說前台不用停復工
-                    //cn.Execute(@"DELETE FROM ABUDF_DAY WHERE [C_NO]=? AND [SER_NO]=?",
-                    //    new { C_NO = form.C_NO, SER_NO = form.SER_NO });
-
-                    //foreach (var item in form.StopWorks)
-                    //{
-                    //    cn.Execute(@"
-                    //        INSERT INTO ABUDF_DAY ([C_NO],[SER_NO],[DOWN_DATE],[UP_DATE],[DOWN_DAY],[KEYIN],[C_DATE],[M_DATE])
-                    //        VALUES (?,?,?,?,?,?,?,?)",
-                    //        new
-                    //        {
-                    //            C_NO = form.C_NO,
-                    //            SER_NO = form.SER_NO,
-                    //            DOWN_DATE = item.DOWN_DATE,
-                    //            UP_DATE = item.UP_DATE,
-                    //            DOWN_DAY = item.DOWN_DAY,
-                    //            KEYIN = "EPB02",
-                    //            C_DATE = item.C_DATE.Value.ToString("yyyy-MM-dd HH:mm:ss"),
-                    //            M_DATE = item.M_DATE.Value.ToString("yyyy-MM-dd HH:mm:ss")
-                    //        });
-                    //}
-
-                    return true;
-                }
+                        return true;
+                    }
 #if !DEBUG
-        }
+                }
 #endif
             }
             catch (Exception ex)
@@ -669,7 +646,7 @@ namespace NT_AirPollution.Service
 
                 using (var cn = new OleDbConnection(accessConnStr))
                 {
-                    cn.Execute(@"DELETE FROM ABUDF_B WHERE [C_NO]=? AND [SER_NO]=?",
+                    cn.Execute(@"DELETE FROM ABUDF_B WHERE [C_NO]=@C_NO AND [SER_NO]=@SER_NO",
                             new { C_NO = formB.C_NO, SER_NO = formB.SER_NO }, commandTimeout: 180);
 
                     cn.Execute(@"
@@ -729,24 +706,24 @@ namespace NT_AirPollution.Service
                         )",
                         new
                         {
-                            formB.C_NO,
-                            formB.SER_NO,
-                            formB.AP_DATE1,
-                            B_STAT,
-                            B_CSTAT,
-                            formB.KIND_NO,
-                            formB.KIND,
-                            formB.YEAR,
-                            formB.A_KIND,
+                            C_NO = formB.C_NO,
+                            SER_NO = formB.SER_NO,
+                            AP_DATE1 = formB.AP_DATE1,
+                            B_STAT = B_STAT,
+                            B_CSTAT = B_CSTAT,
+                            KIND_NO = formB.KIND_NO,
+                            KIND = formB.KIND,
+                            YEAR = formB.YEAR,
+                            A_KIND = formB.A_KIND,
                             MONEY = (formB.MONEY ?? 0) - (formB.TAX_MONEY ?? 0),
-                            formB.AREA,
-                            formB.VOLUMEL,
+                            AREA = formB.AREA,
+                            VOLUMEL = formB.VOLUMEL,
                             B_DAY = downDays,
-                            formB.B_DATE,
-                            formB.E_DATE,
+                            B_DATE = formB.B_DATE,
+                            E_DATE = formB.E_DATE,
                             B_YEAR = Math.Round((workDays - downDays + 1) / 365, 2, MidpointRounding.AwayFromZero),
-                            formB.S_AMT,
-                            formB.B_KIND1,
+                            S_AMT = formB.S_AMT,
+                            B_KIND1 = formB.B_KIND1,
                             T_DAY = workDays - downDays + 1,
                             PRE_C_AMT = form.S_AMT > form.S_AMT2 ? form.S_AMT - form.S_AMT2 : 0,
                             PRE_C_AMT1 = form.S_AMT2 > form.S_AMT ? form.S_AMT2 - form.S_AMT : 0,
@@ -965,14 +942,14 @@ namespace NT_AirPollution.Service
                         )",
                         new
                         {
-                            abudf_1.C_NO,
-                            abudf_1.SER_NO,
-                            abudf_1.P_TIME,
-                            abudf_1.P_DATE,
-                            abudf_1.E_DATE,
-                            abudf_1.FLNO,
-                            abudf_1.F_AMT,
-                            abudf_1.B_AMT,
+                            C_NO = abudf_1.C_NO,
+                            SER_NO = abudf_1.SER_NO,
+                            P_TIME = abudf_1.P_TIME,
+                            P_DATE = abudf_1.P_DATE,
+                            E_DATE = abudf_1.E_DATE,
+                            FLNO = abudf_1.FLNO,
+                            F_AMT = abudf_1.F_AMT,
+                            B_AMT = abudf_1.B_AMT,
                             KEYIN = "EPB02",
                             C_DATE = abudf_1.C_DATE.ToString("yyyy-MM-dd HH:mm:ss"),
                             M_DATE = abudf_1.M_DATE.ToString("yyyy-MM-dd HH:mm:ss")
@@ -1019,11 +996,11 @@ namespace NT_AirPollution.Service
                         WHERE [FLNO]=@lastFLNO",
                         new
                         {
-                            abudf_1.FLNO,
-                            abudf_1.F_DATE,
-                            abudf_1.F_AMT,
-                            abudf_1.PM_DATE,
-                            abudf_1.A_DATE,
+                            FLNO = abudf_1.FLNO,
+                            F_DATE = abudf_1.F_DATE,
+                            F_AMT = abudf_1.F_AMT,
+                            PM_DATE = abudf_1.PM_DATE,
+                            A_DATE = abudf_1.A_DATE,
                             M_DATE = abudf_1.M_DATE.ToString("yyyy-MM-dd HH:mm:ss"),
                             lastFLNO = lastFLNO
                         }, commandTimeout: 180);
@@ -1052,44 +1029,73 @@ namespace NT_AirPollution.Service
             try
             {
 #if !DEBUG
-        using (var impersonation = new ImpersonationContext(domain, userName, password))
-        {
-#endif
-                using (var cn = new OleDbConnection(accessConnStr))
+                using (var impersonation = new ImpersonationContext(domain, userName, password))
                 {
-                    cn.Execute(@"
-                        DELETE FROM ABUDF_I WHERE [C_NO]=? AND [SER_NO]=? AND [P_TIME]=?",
-                        new
-                        {
-                            C_NO = abudf_I.C_NO,
-                            SER_NO = abudf_I.SER_NO,
-                            P_TIME = abudf_I.P_TIME
-                        }, commandTimeout: 180);
+#endif
+                    using (var cn = new OleDbConnection(accessConnStr))
+                    {
+                        cn.Execute(@"
+                        DELETE FROM ABUDF_I 
+                        WHERE [C_NO]=@C_NO AND [SER_NO]=@SER_NO AND [P_TIME]=@P_TIME",
+                            new
+                            {
+                                C_NO = abudf_I.C_NO,
+                                SER_NO = abudf_I.SER_NO,
+                                P_TIME = abudf_I.P_TIME
+                            }, commandTimeout: 180);
 
-                    cn.Execute(@"
-                        INSERT INTO ABUDF_I ([C_NO],[SER_NO],[P_TIME],[S_DATE],[E_DATE],[PERCENT],[F_AMT],[I_AMT],[PEN_AMT],[PEN_RATE],[KEYIN],[C_DATE],[M_DATE])
-                        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
-                        new
-                        {
-                            C_NO = abudf_I.C_NO,
-                            SER_NO = abudf_I.SER_NO,
-                            P_TIME = abudf_I.P_TIME,
-                            S_DATE = abudf_I.S_DATE,
-                            E_DATE = abudf_I.E_DATE,
-                            PERCENT = abudf_I.PERCENT,
-                            F_AMT = abudf_I.F_AMT,
-                            I_AMT = abudf_I.I_AMT,
-                            PEN_AMT = abudf_I.PEN_AMT,
-                            PEN_RATE = abudf_I.PEN_RATE,
-                            KEYIN = "EPB02",
-                            C_DATE = abudf_I.C_DATE.ToString("yyyy-MM-dd HH:mm:ss"),
-                            M_DATE = abudf_I.M_DATE.ToString("yyyy-MM-dd HH:mm:ss")
-                        }, commandTimeout: 180);
+                        cn.Execute(@"
+                        INSERT INTO ABUDF_I (
+                            [C_NO],
+                            [SER_NO],
+                            [P_TIME],
+                            [S_DATE],
+                            [E_DATE],
+                            [PERCENT],
+                            [F_AMT],
+                            [I_AMT],
+                            [PEN_AMT],
+                            [PEN_RATE],
+                            [KEYIN],
+                            [C_DATE],
+                            [M_DATE]
+                        )
+                        VALUES (
+                            @C_NO,
+                            @SER_NO,
+                            @P_TIME,
+                            @S_DATE,
+                            @E_DATE,
+                            @PERCENT,
+                            @F_AMT,
+                            @I_AMT,
+                            @PEN_AMT,
+                            @PEN_RATE,
+                            @KEYIN,
+                            @C_DATE,
+                            @M_DATE
+                        )",
+                            new
+                            {
+                                C_NO = abudf_I.C_NO,
+                                SER_NO = abudf_I.SER_NO,
+                                P_TIME = abudf_I.P_TIME,
+                                S_DATE = abudf_I.S_DATE,
+                                E_DATE = abudf_I.E_DATE,
+                                PERCENT = abudf_I.PERCENT,
+                                F_AMT = abudf_I.F_AMT,
+                                I_AMT = abudf_I.I_AMT,
+                                PEN_AMT = abudf_I.PEN_AMT,
+                                PEN_RATE = abudf_I.PEN_RATE,
+                                KEYIN = "EPB02",
+                                C_DATE = abudf_I.C_DATE.ToString("yyyy-MM-dd HH:mm:ss"),
+                                M_DATE = abudf_I.M_DATE.ToString("yyyy-MM-dd HH:mm:ss")
+                            }, commandTimeout: 180);
 
-                    return true;
-                }
+                        return true;
+                    }
 #if !DEBUG
-        }
+                }
 #endif
             }
             catch (Exception ex)
