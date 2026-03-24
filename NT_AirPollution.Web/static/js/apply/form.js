@@ -893,35 +893,6 @@
                     }
                 });
             },
-            copyForm(row) {
-                if (!confirm('是否確認追加序號?')) return;
-                this.mode = 'Add';
-                this.selectRow = Object.assign(this.selectRow, JSON.parse(JSON.stringify(row)));
-                const point = this.selectRow.LATLNG.split(',');
-                this.selectRow.LAT = point[0] || null;
-                this.selectRow.LNG = point[1] || null;
-                this.selectRow.FormStatus = 0;
-                this.selectRow.FileName1 = null;
-                this.selectRow.DisplayName1 = null;
-                this.selectRow.FileName2 = null;
-                this.selectRow.DisplayName2 = null;
-                this.selectRow.StopWorks.length = 0;
-                const clearAry = ['SER_NO', 'S_AMT', 'S_AMT2', 'AP_DATE', 'C_DATE'];
-                for (const key of clearAry) {
-                    this.selectRow[key] = null;
-                }
-
-                this.dialogVisible = true;
-                this.$nextTick(() => {
-                    // 清空附件
-                    const files = document.querySelectorAll('[type="file"]');
-                    files.forEach(item => {
-                        item.value = '';
-                    });
-
-                    this.initDatePicker();
-                });
-            },
             deleteForm(row) {
                 if (!confirm('是否確認刪除?')) return;
                 const loading = this.$loading();

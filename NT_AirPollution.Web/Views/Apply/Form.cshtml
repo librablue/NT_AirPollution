@@ -103,7 +103,6 @@
                 </ul>
                 <div class="bottom-btn-row">
                     <el-button icon="el-icon-search" @@click="showModal(item)">檢視</el-button>
-                    <el-button type="success" icon="el-icon-copy-document" @@click="copyForm(item)">複製</el-button>
                     <el-button v-if="!item.C_NO" type="danger" class="btn-delete" icon="el-icon-delete" @@click="deleteForm(item)">刪除</el-button>
                 </div>
             </div>
