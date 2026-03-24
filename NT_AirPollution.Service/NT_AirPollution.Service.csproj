@@ -150,6 +150,7 @@
     <Compile Include="BotHelper.cs" />
     <Compile Include="ChineseMoneyConverter.cs" />
     <Compile Include="DownloadService.cs" />
+    <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="ImpersonationContext.cs" />
     <Compile Include="SoilService.cs" />
     <Compile Include="RoadService.cs" />

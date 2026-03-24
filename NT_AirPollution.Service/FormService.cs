@@ -7,6 +7,7 @@ using NT_AirPollution.Model.Access;
 using NT_AirPollution.Model.Domain;
 using NT_AirPollution.Model.Enum;
 using NT_AirPollution.Model.View;
+using NT_AirPollution.Service.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -64,8 +65,8 @@ namespace NT_AirPollution.Service
 
                     foreach (var sub in item.StopWorks)
                     {
-                        sub.DOWN_DATE2 = base.ChineseDateToWestDate(sub.DOWN_DATE);
-                        sub.UP_DATE2 = base.ChineseDateToWestDate(sub.UP_DATE);
+                        sub.DOWN_DATE2 = sub.DOWN_DATE.ToWestDate();
+                        sub.UP_DATE2 = sub.UP_DATE.ToWestDate();
                     }
 
                     item.FormB = cn.QueryFirstOrDefault<FormB>(@"
@@ -107,8 +108,8 @@ namespace NT_AirPollution.Service
 
                     foreach (var sub in result.StopWorks)
                     {
-                        sub.DOWN_DATE2 = base.ChineseDateToWestDate(sub.DOWN_DATE);
-                        sub.UP_DATE2 = base.ChineseDateToWestDate(sub.UP_DATE);
+                        sub.DOWN_DATE2 = sub.DOWN_DATE.ToWestDate();
+                        sub.UP_DATE2 = sub.UP_DATE.ToWestDate();
                     }
 
                     result.FormB = cn.QueryFirstOrDefault<FormB>(@"
@@ -165,8 +166,8 @@ namespace NT_AirPollution.Service
 
                     foreach (var sub in item.StopWorks)
                     {
-                        sub.DOWN_DATE2 = base.ChineseDateToWestDate(sub.DOWN_DATE);
-                        sub.UP_DATE2 = base.ChineseDateToWestDate(sub.UP_DATE);
+                        sub.DOWN_DATE2 = sub.DOWN_DATE.ToWestDate();
+                        sub.UP_DATE2 = sub.UP_DATE.ToWestDate();
                     }
 
                     item.FormB = cn.QueryFirstOrDefault<FormB>(@"
@@ -175,7 +176,7 @@ namespace NT_AirPollution.Service
 
                     if (item.FormB == null)
                     {
-                        double workDays = (base.ChineseDateToWestDate(item.E_DATE) - base.ChineseDateToWestDate(item.B_DATE)).TotalDays + 1;
+                        double workDays = (item.E_DATE.ToWestDate() - item.B_DATE.ToWestDate()).TotalDays + 1;
                         double downDays = item.StopWorks.Sum(o => o.DOWN_DAY);
 
                         string B_STAT;
@@ -274,8 +275,8 @@ namespace NT_AirPollution.Service
 
                     foreach (var sub in item.StopWorks)
                     {
-                        sub.DOWN_DATE2 = base.ChineseDateToWestDate(sub.DOWN_DATE);
-                        sub.UP_DATE2 = base.ChineseDateToWestDate(sub.UP_DATE);
+                        sub.DOWN_DATE2 = sub.DOWN_DATE.ToWestDate();
+                        sub.UP_DATE2 = sub.UP_DATE.ToWestDate();
                     }
 
                     item.FormB = cn.QueryFirstOrDefault<FormB>(@"
@@ -288,7 +289,7 @@ namespace NT_AirPollution.Service
 
                     if (isPause)
                         item.WorkStatus = WorkStatus.停工中;
-                    else if (now > base.ChineseDateToWestDate(item.E_DATE))
+                    else if (now > item.E_DATE.ToWestDate())
                         item.WorkStatus = WorkStatus.已完工;
                     else
                         item.WorkStatus = WorkStatus.施工中;
@@ -346,8 +347,8 @@ namespace NT_AirPollution.Service
 
                     foreach (var sub in item.StopWorks)
                     {
-                        sub.DOWN_DATE2 = base.ChineseDateToWestDate(sub.DOWN_DATE);
-                        sub.UP_DATE2 = base.ChineseDateToWestDate(sub.UP_DATE);
+                        sub.DOWN_DATE2 = sub.DOWN_DATE.ToWestDate();
+                        sub.UP_DATE2 = sub.UP_DATE.ToWestDate();
                     }
 
                     item.FormB = cn.QueryFirstOrDefault<FormB>(@"
@@ -390,8 +391,8 @@ namespace NT_AirPollution.Service
 
                     foreach (var sub in item.StopWorks)
                     {
-                        sub.DOWN_DATE2 = base.ChineseDateToWestDate(sub.DOWN_DATE);
-                        sub.UP_DATE2 = base.ChineseDateToWestDate(sub.UP_DATE);
+                        sub.DOWN_DATE2 = sub.DOWN_DATE.ToWestDate();
+                        sub.UP_DATE2 = sub.UP_DATE.ToWestDate();
                     }
 
                     item.FormB = cn.QueryFirstOrDefault<FormB>(@"
@@ -433,8 +434,8 @@ namespace NT_AirPollution.Service
 
                     foreach (var sub in form.StopWorks)
                     {
-                        sub.DOWN_DATE2 = base.ChineseDateToWestDate(sub.DOWN_DATE);
-                        sub.UP_DATE2 = base.ChineseDateToWestDate(sub.UP_DATE);
+                        sub.DOWN_DATE2 = sub.DOWN_DATE.ToWestDate();
+                        sub.UP_DATE2 = sub.UP_DATE.ToWestDate();
                     }
 
                     form.FormB = cn.QueryFirstOrDefault<FormB>(@"
@@ -495,7 +496,7 @@ namespace NT_AirPollution.Service
                     {
                         long id = cn.Insert(form, trans);
 
-                        double workDays = (base.ChineseDateToWestDate(form.E_DATE) - base.ChineseDateToWestDate(form.B_DATE)).TotalDays + 1;
+                        double workDays = (form.E_DATE.ToWestDate() - form.B_DATE.ToWestDate()).TotalDays + 1;
                         double downDays = form.StopWorks.Sum(o => o.DOWN_DAY);
 
                         string B_STAT;
@@ -658,7 +659,7 @@ namespace NT_AirPollution.Service
         /// <returns></returns>
         public bool AddFormB(FormView form)
         {
-            double workDays = (base.ChineseDateToWestDate(form.FormB.E_DATE) - base.ChineseDateToWestDate(form.FormB.B_DATE)).TotalDays + 1;
+            double workDays = (form.FormB.E_DATE.ToWestDate() - form.FormB.B_DATE.ToWestDate()).TotalDays + 1;
             double downDays = form.StopWorks.Sum(o => o.DOWN_DAY);
 
             string B_STAT;
@@ -989,7 +990,7 @@ namespace NT_AirPollution.Service
                 string bDate = isApDate1Empty ? form.B_DATE : form.FormB.B_DATE;
                 string eDate = isApDate1Empty ? form.E_DATE : form.FormB.E_DATE;
 
-                var diffDays = ((base.ChineseDateToWestDate(eDate) - base.ChineseDateToWestDate(bDate)).TotalDays + 1) - downDays;
+                var diffDays = ((eDate.ToWestDate() - bDate.ToWestDate()).TotalDays + 1) - downDays;
 
                 double basicNum = 0;
                 // 類別代號取值
@@ -1066,7 +1067,7 @@ namespace NT_AirPollution.Service
             using (var cn = new SqlConnection(connStr))
             {
                 string formulaText = "";
-                var diffDays = ((base.ChineseDateToWestDate(form.E_DATE) - base.ChineseDateToWestDate(form.B_DATE)).TotalDays + 1) - downDays;
+                var diffDays = ((form.E_DATE.ToWestDate() - form.B_DATE.ToWestDate()).TotalDays + 1) - downDays;
                 var projectCodes = cn.GetAll<ProjectCode>().ToList();
                 var projectCode = projectCodes.First(o => o.ID == form.KIND_NO);
                 // 基數
@@ -1150,7 +1151,7 @@ namespace NT_AirPollution.Service
             using (var cn = new SqlConnection(connStr))
             {
                 string formulaText = "";
-                var diffDays = ((base.ChineseDateToWestDate(form.FormB.E_DATE) - base.ChineseDateToWestDate(form.FormB.B_DATE)).TotalDays + 1) - downDays;
+                var diffDays = ((form.FormB.E_DATE.ToWestDate() - form.FormB.B_DATE.ToWestDate()).TotalDays + 1) - downDays;
                 var projectCodes = cn.GetAll<ProjectCode>().ToList();
                 var projectCode = projectCodes.First(o => o.ID == form.FormB.KIND_NO);
                 // 基數
@@ -1599,13 +1600,13 @@ namespace NT_AirPollution.Service
                 {
                     Today = DateTime.Now,
                     IsPublic = form.PUB_COMP,
-                    StartDate = this.ChineseDateToWestDate(form.B_DATE)
+                    StartDate = form.B_DATE.ToWestDate()
                 };
 
                 // 申報
                 if (string.IsNullOrEmpty(form.AP_DATE1))
                 {
-                    info.ApplyDate = this.ChineseDateToWestDate(form.AP_DATE);
+                    info.ApplyDate = form.AP_DATE.ToWestDate();
                     info.VerifyDate = form.VerifyDate1.Value;
                     info.TotalPrice = form.S_AMT.Value;
                     info.CurrentPrice = form.P_AMT.Value;
@@ -1613,7 +1614,7 @@ namespace NT_AirPollution.Service
                 // 結算
                 else
                 {
-                    info.ApplyDate = this.ChineseDateToWestDate(form.AP_DATE1);
+                    info.ApplyDate = form.AP_DATE1.ToWestDate();
                     info.VerifyDate = form.VerifyDate2.Value;
                     info.TotalPrice = form.S_AMT2.Value;
                     info.CurrentPrice = form.S_AMT2.Value - form.P_AMT.Value;
@@ -1650,12 +1651,12 @@ namespace NT_AirPollution.Service
                 // 結算的填發日要用審核結算通過的那天
                 if (string.IsNullOrEmpty(form.AP_DATE1))
                 {
-                    pdate = this.ChineseDateToWestDate(form.AP_DATE);
+                    pdate = form.AP_DATE.ToWestDate();
                     abudf_1.P_DATE = pdate.AddYears(-1911).ToString("yyyMMdd");
                 }
                 else
                 {
-                    pdate = this.ChineseDateToWestDate(form.AP_DATE1);
+                    pdate = form.AP_DATE1.ToWestDate();
                     abudf_1.P_DATE = form.FIN_DATE;
                 }
 
@@ -2150,7 +2151,7 @@ namespace NT_AirPollution.Service
             if (!string.IsNullOrEmpty(abudf_b.AP_DATE1))
             {
                 form.CalcStatus = CalcStatus.通過待繳費;
-                form.VerifyDate2 = ChineseDateToWestDate(abudf_b.AP_DATE1);
+                form.VerifyDate2 = abudf_b.AP_DATE1.ToWestDate();
                 form.VerifyStage2 = VerifyStage.複審通過;
             }
 
@@ -2181,14 +2182,14 @@ namespace NT_AirPollution.Service
                         {
                             FormID = formBID,
                             Term = $"{i}",
-                            PayEndDate = string.IsNullOrEmpty(abudf_1.E_DATE) ? DateTime.Now : ChineseDateToWestDate(abudf_1.E_DATE),
+                            PayEndDate = string.IsNullOrEmpty(abudf_1.E_DATE) ? DateTime.Now : abudf_1.E_DATE.ToWestDate(),
                             PaymentID = abudf_1?.FLNO,
                             PayableAmount = abudf.P_AMT,
                             Penalty = abudf_i?.PEN_AMT,
                             Interest = abudf_i?.I_AMT,
                             Percent = abudf_i?.PERCENT ?? 1.725,
                             PayAmount = abudf_1.F_AMT,
-                            PayDate = string.IsNullOrEmpty(abudf_1.PM_DATE) ? (DateTime?)null : ChineseDateToWestDate(abudf_1.PM_DATE),
+                            PayDate = string.IsNullOrEmpty(abudf_1.PM_DATE) ? (DateTime?)null : abudf_1.PM_DATE.ToWestDate(),
                             CreateDate = abudf_1.C_DATE,
                             ModifyDate = abudf_1.M_DATE
                         };

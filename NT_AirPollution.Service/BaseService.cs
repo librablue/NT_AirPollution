@@ -38,16 +38,6 @@ namespace NT_AirPollution.Service
         }
 
         /// <summary>
-        /// 民國年轉西元年
-        /// </summary>
-        /// <param name="dt"></param>
-        /// <returns></returns>
-        public DateTime ChineseDateToWestDate(string dt)
-        {
-            return Convert.ToDateTime($"{Convert.ToInt32(dt.Substring(0, 3)) + 1911}-{dt.Substring(3, 2)}-{dt.Substring(5, 2)}");
-        }
-
-        /// <summary>
         /// 物件深拷貝
         /// </summary>
         /// <typeparam name="T"></typeparam>

@@ -4,6 +4,7 @@ using NT_AirPollution.Model.Domain;
 using NT_AirPollution.Model.Enum;
 using NT_AirPollution.Model.View;
 using NT_AirPollution.Service;
+using NT_AirPollution.Service.Extensions;
 using System;
 using System.Configuration;
 using System.Data.SqlClient;
@@ -39,9 +40,9 @@ namespace NT_AirPollution.WriteOffTask
                 {
                     string currentFileName = Path.GetFileNameWithoutExtension(file); // 取得檔名，不含副檔名
                     string[] parts = currentFileName.Split('_'); // 用 "_" 分割
-                    string chineseToday = DateTime.Now.AddYears(-1911).ToString("yyyMMdd");
+                    string taiwanDate = DateTime.Now.ToTaiwanDate();
                     if (parts.Length > 1)
-                        chineseToday = parts[1]; // 取得檔名後面的日期
+                        taiwanDate = parts[1]; // 取得檔名後面的日期
 
                     string[] line = File.ReadAllLines(file);
                     for (int i = 0; i < line.Length - 1; i++)
@@ -92,7 +93,7 @@ namespace NT_AirPollution.WriteOffTask
                         _formService.UpdatePayment(actualPayment);
 
                         #region 更新ABUDF
-                        _accessService.UpdateABUDFByColumn(form.C_NO, form.SER_NO.Value, "FIN_DATE", chineseToday);
+                        _accessService.UpdateABUDFByColumn(form.C_NO, form.SER_NO.Value, "FIN_DATE", taiwanDate);
                         #endregion
 
                         #region 更新ABUDF_1
@@ -101,7 +102,7 @@ namespace NT_AirPollution.WriteOffTask
                             F_DATE = fdate,
                             F_AMT = payAmount,
                             PM_DATE = payDate.AddYears(-1911).ToString("yyyMMdd"),
-                            A_DATE = chineseToday,
+                            A_DATE = taiwanDate,
                             M_DATE = DateTime.Now,
                             FLNO = account
                         };
@@ -113,12 +114,12 @@ namespace NT_AirPollution.WriteOffTask
                         {
                             Today = payDate,
                             IsPublic = form.PUB_COMP,
-                            StartDate = _formService.ChineseDateToWestDate(form.B_DATE)
+                            StartDate = form.B_DATE.ToWestDate()
                         };
                         // 申報
                         if (string.IsNullOrEmpty(form.AP_DATE1))
                         {
-                            info.ApplyDate = _formService.ChineseDateToWestDate(form.AP_DATE);
+                            info.ApplyDate = form.AP_DATE.ToWestDate();
                             info.VerifyDate = form.VerifyDate1.Value;
                             info.TotalPrice = form.S_AMT.Value;
                             info.CurrentPrice = form.P_AMT.Value;
@@ -126,7 +127,7 @@ namespace NT_AirPollution.WriteOffTask
                         // 結算
                         else
                         {
-                            info.ApplyDate = _formService.ChineseDateToWestDate(form.AP_DATE1);
+                            info.ApplyDate = form.AP_DATE1.ToWestDate();
                             info.VerifyDate = form.VerifyDate2.Value;
                             info.TotalPrice = form.S_AMT2.Value;
                             info.CurrentPrice = form.S_AMT2.Value - form.P_AMT.Value;

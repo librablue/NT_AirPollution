@@ -2,6 +2,7 @@
 using NT_AirPollution.Model.Access;
 using NT_AirPollution.Model.Domain;
 using NT_AirPollution.Model.View;
+using NT_AirPollution.Service.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Data.OleDb;
@@ -646,7 +647,7 @@ namespace NT_AirPollution.Service
 #endif
                 var formB = form.FormB;
                 DateTime now = DateTime.Now;
-                double workDays = (base.ChineseDateToWestDate(formB.E_DATE) - base.ChineseDateToWestDate(formB.B_DATE)).TotalDays + 1;
+                double workDays = (formB.E_DATE.ToWestDate() - formB.B_DATE.ToWestDate()).TotalDays + 1;
                 double downDays = form.StopWorks.Sum(o => o.DOWN_DAY);
                 // 結算狀態
                 string B_STAT;
@@ -661,7 +662,7 @@ namespace NT_AirPollution.Service
                 string B_CSTAT;
                 if (!string.IsNullOrEmpty(form.AP_DATE1))
                     B_CSTAT = "D結算完工";
-                else if (base.ChineseDateToWestDate(form.AP_DATE) < base.ChineseDateToWestDate(form.B_DATE))
+                else if (form.AP_DATE.ToWestDate() < form.B_DATE.ToWestDate())
                     B_CSTAT = "A預計工期未施工";
                 else
                     B_CSTAT = "B預計工期施工中";

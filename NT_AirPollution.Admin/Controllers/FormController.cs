@@ -3,6 +3,7 @@ using NT_AirPollution.Admin.ActionFilter;
 using NT_AirPollution.Model.Enum;
 using NT_AirPollution.Model.View;
 using NT_AirPollution.Service;
+using NT_AirPollution.Service.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -47,7 +48,7 @@ namespace NT_AirPollution.Admin.Controllers
                     throw new Exception(firstError);
                 }
 
-                if (_formService.ChineseDateToWestDate(form.B_DATE) > _formService.ChineseDateToWestDate(form.E_DATE))
+                if (form.B_DATE.ToWestDate() > form.E_DATE.ToWestDate())
                     throw new Exception("施工期程起始日期不能大於結束日期");
 
                 form.C_DATE = DateTime.Now;
@@ -208,141 +209,136 @@ namespace NT_AirPollution.Admin.Controllers
         {
             try
             {
-                // 初審
-                if (BaseService.CurrentAdmin.RoleID == 1)
+                var admin = BaseService.CurrentAdmin;
+
+                // --- 1. 角色權限邏輯分流 ---
+                if (admin.RoleID == 1) // 初審
                 {
-                    switch (form.FormStatus)
-                    {
-                        case FormStatus.待補件:
-                            form.VerifyStage1 = VerifyStage.未申請;
-                            break;
-                        case FormStatus.通過待繳費:
-
-                            if (string.IsNullOrEmpty(form.C_NO))
-                                throw new Exception("尚未產生管制編號");
-
-                            // 審核日期
-                            form.VerifyDate1 = DateTime.Now;
-                            form.VerifyStage1 = VerifyStage.初審通過;
-                            break;
-                    }
-
-                    switch (form.CalcStatus)
-                    {
-                        case CalcStatus.待補件:
-                            form.VerifyStage2 = VerifyStage.未申請;
-                            break;
-                        case CalcStatus.通過待繳費: 
-                            form.VerifyDate2 = DateTime.Now;
-                            form.VerifyStage2 = VerifyStage.初審通過;
-                            break;
-                    }
+                    HandleFirstVerify(form);
+                }
+                else if (admin.RoleID == 2) // 複審
+                {
+                    HandleSecondVerify(form);
                 }
 
-                // 複審
-                if (BaseService.CurrentAdmin.RoleID == 2)
-                {
-                    switch (form.FormStatus)
-                    {
-                        case FormStatus.待補件:
-                            form.VerifyStage1 = VerifyStage.未申請;
-                            break;
-                        case FormStatus.通過待繳費:
-                            form.FormB.B_KIND1 = "無";
-                            form.FormB.WRONG_AP = "無";
-                            // 審核日期
-                            form.VerifyDate1 = DateTime.Now;
-                            form.VerifyStage1 = VerifyStage.複審通過;
-
-                            // 100元以下免繳
-                            if (form.S_AMT <= 100)
-                                form.FormStatus = FormStatus.免繳費;
-                            break;
-                    }
-
-                    // 3.4.5指令共用，用退費金額<4000判斷4，>=4000判斷5
-                    if (form.CalcStatus == CalcStatus.通過待繳費)
-                    {
-                        // 停工天數
-                        double downDays = form.StopWorks.Sum(o => (o.UP_DATE2 - o.DOWN_DATE2).TotalDays + 1);
-                        var result = _formService.CalcTotalMoney(form, downDays);
-                        form.S_AMT2 = result.TotalMoney;
-                        form.COMP_L = result.Level;
-                        form.FormB.AP_DATE1 = DateTime.Now.AddYears(-1911).ToString("yyyMMdd");
-
-                        if (form.S_AMT2 > form.P_AMT)
-                            form.CalcStatus = CalcStatus.通過待繳費;
-                        else if (form.S_AMT2 == form.P_AMT)
-                            form.CalcStatus = CalcStatus.繳退費完成;
-                        else if (form.P_AMT - form.S_AMT2 < 4000)
-                            form.CalcStatus = CalcStatus.通過待退費小於4000;
-                        else if (form.P_AMT - form.S_AMT2 >= 4000)
-                            form.CalcStatus = CalcStatus.通過待退費大於4000;
-
-                        // 更新ABUDF FIN_COM(已完成完工查核日期)
-                        _accessService.UpdateABUDFByColumn(form.C_NO, form.SER_NO.Value, "FIN_COM", DateTime.Now.AddYears(-1911).ToString("yyyMMdd"));
-                        // 更新ABUDF FIN_DATE(已完成結算繳費程序日期)
-                        _accessService.UpdateABUDFByColumn(form.C_NO, form.SER_NO.Value, "FIN_DATE", DateTime.Now.AddYears(-1911).ToString("yyyMMdd"));
-                    }
-
-                    switch (form.CalcStatus)
-                    {
-                        case CalcStatus.待補件:
-                            form.VerifyStage2 = VerifyStage.未申請;
-                            break;
-                        case CalcStatus.通過待繳費:
-                        case CalcStatus.通過待退費小於4000:
-                        case CalcStatus.通過待退費大於4000:
-                        case CalcStatus.繳退費完成:
-                            form.VerifyDate2 = DateTime.Now;
-                            form.VerifyStage2 = VerifyStage.複審通過;
-
-                            if (form.CalcStatus == CalcStatus.通過待退費小於4000 ||
-                                form.CalcStatus == CalcStatus.通過待退費大於4000 ||
-                                form.CalcStatus == CalcStatus.繳退費完成)
-                            {
-                                form.FIN_COM = DateTime.Now.AddYears(-1911).ToString("yyyMMdd");
-                                form.FIN_DATE = DateTime.Now.AddYears(-1911).ToString("yyyMMdd");
-                            }
-                            break;
-                    }
-                }
-
-                // 更新 ABUDF_B
+                // --- 2. 持久化與外部系統同步 ---
                 _accessService.AddABUDF_B(form);
-                // 更新Form
                 _formService.UpdateForm(form);
-                // 更新FormB
                 _formService.AddFormB(form);
-                // 寄送通知
                 _formService.SendStatusMail(form);
-                // 產生繳費單(為了先新增ABUDF_1，審核通過才產生)
+
+                // --- 3. 繳費單產生 ---
+                // 狀態大於待補件(2)則產生 PDF
                 if ((int)form.FormStatus > 2)
+                {
                     _formService.CreatePaymentPDF("", form);
-
-                // 判斷如果是通過待繳費就產生繳費單(為了先新增ABUDF_1)
-                //if ((form.VerifyStage1 == VerifyStage.複審通過 && form.FormStatus == FormStatus.通過待繳費) ||
-                //    (form.VerifyStage2 == VerifyStage.複審通過 && form.CalcStatus == CalcStatus.通過待繳費))
-                //{
-                //    string fileName = "";
-                //    if (form.VerifyStage1 == VerifyStage.複審通過 && form.FormStatus == FormStatus.通過待繳費)
-                //    {
-                //        fileName = $"繳款單{form.C_NO}-{form.SER_NO}({(form.P_KIND == "一次繳清" ? "一次繳清" : "第一期")})";
-                //    }
-                //    if (form.VerifyStage2 == VerifyStage.複審通過 && form.CalcStatus == CalcStatus.通過待繳費)
-                //    {
-                //        fileName = $"繳款單{form.C_NO}-{form.SER_NO}(結算補繳)";
-                //    }
-
-                //    _formService.CreatePaymentPDF(fileName, form);
-                //}
-
+                }
 
                 return true;
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 更新申請進度(初審)
+        /// </summary>
+        /// <param name="form"></param>
+        /// <exception cref="Exception"></exception>
+        private void HandleFirstVerify(FormView form)
+        {
+            // 系統時間
+            DateTime now = DateTime.Now;
+
+            // 處理申請狀態
+            if (form.FormStatus == FormStatus.待補件)
+            {
+                form.VerifyStage1 = VerifyStage.未申請;
+            }
+            else if (form.FormStatus == FormStatus.通過待繳費)
+            {
+                if (string.IsNullOrEmpty(form.C_NO)) throw new Exception("尚未產生管制編號");
+                form.VerifyDate1 = now;
+                form.VerifyStage1 = VerifyStage.初審通過;
+            }
+
+            // 處理結算狀態
+            if (form.CalcStatus == CalcStatus.待補件)
+            {
+                form.VerifyStage2 = VerifyStage.未申請;
+            }
+            else if (form.CalcStatus == CalcStatus.通過待繳費)
+            {
+                form.VerifyDate2 = now;
+                form.VerifyStage2 = VerifyStage.初審通過;
+            }
+        }
+
+        /// <summary>
+        /// 更新申請進度(複審)
+        /// </summary>
+        /// <param name="form"></param>
+        private void HandleSecondVerify(FormView form)
+        {
+            // 系統時間
+            DateTime now = DateTime.Now;
+            // 系統時間轉民國年
+            string taiwanDate = now.ToTaiwanDate();
+
+            // 1. 處理申請狀態複審
+            if (form.FormStatus == FormStatus.待補件)
+            {
+                form.VerifyStage1 = VerifyStage.未申請;
+            }
+            else if (form.FormStatus == FormStatus.通過待繳費)
+            {
+                form.FormB.B_KIND1 = "無";
+                form.FormB.WRONG_AP = "無";
+                form.VerifyDate1 = now;
+                form.VerifyStage1 = VerifyStage.複審通過;
+
+                if (form.S_AMT <= 100) form.FormStatus = FormStatus.免繳費;
+            }
+
+            // 2. 處理結算與金額計算
+            if (form.CalcStatus == CalcStatus.通過待繳費)
+            {
+                double downDays = form.StopWorks.Sum(o => (o.UP_DATE2 - o.DOWN_DATE2).TotalDays + 1);
+                var result = _formService.CalcTotalMoney(form, downDays);
+
+                form.S_AMT2 = result.TotalMoney;
+                form.COMP_L = result.Level;
+                form.FormB.AP_DATE1 = taiwanDate;
+
+                // 判定結算後的新狀態
+                var diff = form.P_AMT - form.S_AMT2;
+                if (form.S_AMT2 > form.P_AMT) form.CalcStatus = CalcStatus.通過待繳費;
+                else if (diff == 0) form.CalcStatus = CalcStatus.繳退費完成;
+                else form.CalcStatus = diff < 4000 ? CalcStatus.通過待退費小於4000 : CalcStatus.通過待退費大於4000;
+
+                // 同步外部資料庫
+                _accessService.UpdateABUDFByColumn(form.C_NO, form.SER_NO.Value, "FIN_COM", taiwanDate);
+                _accessService.UpdateABUDFByColumn(form.C_NO, form.SER_NO.Value, "FIN_DATE", taiwanDate);
+            }
+
+            // 3. 結算狀態複審日期標註
+            if (form.CalcStatus != CalcStatus.待補件)
+            {
+                form.VerifyDate2 = now;
+                form.VerifyStage2 = VerifyStage.複審通過;
+
+                // 如果是完款或退費階段，標記完成日期
+                if (form.CalcStatus != CalcStatus.通過待繳費)
+                {
+                    form.FIN_COM = taiwanDate;
+                    form.FIN_DATE = taiwanDate;
+                }
+            }
+            else
+            {
+                form.VerifyStage2 = VerifyStage.未申請;
             }
         }
 
@@ -396,9 +392,9 @@ namespace NT_AirPollution.Admin.Controllers
                     ws.Cell("B14").SetValue(converter.ToChineseUpper(overPayAmount));
 
                     // 申報天數
-                    double applyWorkDays = (_formService.ChineseDateToWestDate(form.E_DATE) - _formService.ChineseDateToWestDate(form.B_DATE)).TotalDays + 1;
+                    double applyWorkDays = (form.E_DATE.ToWestDate() - form.B_DATE.ToWestDate()).TotalDays + 1;
                     // 結算天數
-                    double calcWorkDays = (_formService.ChineseDateToWestDate(form.FormB.E_DATE) - _formService.ChineseDateToWestDate(form.FormB.B_DATE)).TotalDays + 1;
+                    double calcWorkDays = (form.FormB.E_DATE.ToWestDate() - form.FormB.B_DATE.ToWestDate()).TotalDays + 1;
                     // 停工天數
                     double downDays = form.StopWorks.Sum(o => (o.UP_DATE2 - o.DOWN_DATE2).TotalDays + 1);
                     string text1 = overPayAmount > 0 ? "核退" : "核補";

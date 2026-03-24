@@ -2,6 +2,7 @@
 using NT_AirPollution.Model.Enum;
 using NT_AirPollution.Model.View;
 using NT_AirPollution.Service;
+using NT_AirPollution.Service.Extensions;
 using NT_AirPollution.Web.ActionFilter;
 using System;
 using System.Collections.Generic;
@@ -245,7 +246,7 @@ namespace NT_AirPollution.Web.Controllers
                     throw new Exception(firstError);
                 }
 
-                if (_formService.ChineseDateToWestDate(form.B_DATE) > _formService.ChineseDateToWestDate(form.E_DATE))
+                if (form.B_DATE.ToWestDate() > form.E_DATE.ToWestDate())
                     throw new Exception("施工期程起始日期不能大於結束日期");
 
                 var allDists = _optionService.GetDistrict();
@@ -313,7 +314,7 @@ namespace NT_AirPollution.Web.Controllers
                 if (formInDB.ClientUserID != BaseService.CurrentUser.ID)
                     throw new Exception("無法修改他人申請單");
 
-                if (_formService.ChineseDateToWestDate(form.B_DATE) > _formService.ChineseDateToWestDate(form.E_DATE))
+                if (form.B_DATE.ToWestDate() > form.E_DATE.ToWestDate())
                     throw new Exception("施工期程起始日期不能大於結束日期");
 
 
@@ -509,7 +510,7 @@ namespace NT_AirPollution.Web.Controllers
                 var result = _formService.CalcTotalMoney(form, downDays);
                 formInDB.COMP_L = result.Level;
                 // 提送審查的時間當作申報日期(計算繳費期限用)
-                formInDB.AP_DATE = DateTime.Now.AddYears(-1911).ToString("yyyMMdd");
+                formInDB.AP_DATE = DateTime.Now.ToTaiwanDate();
                 formInDB.M_DATE = DateTime.Now;
                 formInDB.FormStatus = FormStatus.審理中;
                 formInDB.VerifyStage1 = VerifyStage.送審中;
@@ -537,7 +538,7 @@ namespace NT_AirPollution.Web.Controllers
                 if (formInDB == null || (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email))
                     throw new Exception("申請單不存在");
 
-                formInDB.AP_DATE1 = DateTime.Now.AddYears(-1911).ToString("yyyMMdd");
+                formInDB.AP_DATE1 = DateTime.Now.ToTaiwanDate();
                 formInDB.CalcStatus = CalcStatus.審理中;
                 formInDB.VerifyStage2 = VerifyStage.送審中;
                 // 更新ABUDF_B
