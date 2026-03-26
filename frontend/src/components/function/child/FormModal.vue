@@ -906,13 +906,16 @@ export default {
 		},
 		getStopDays(row) {
 			if (!row.DOWN_DATE2 || !row.UP_DATE2) return '';
+
 			var date1 = new Date(row.DOWN_DATE2);
 			var date2 = new Date(row.UP_DATE2);
 
-			// 計算毫秒差異
-			var diff = Math.abs(date2 - date1 + 1000 * 60 * 60 * 24);
-			// 轉換為天數
-			var dayDiff = Math.ceil(diff / (1000 * 60 * 60 * 24));
+			// 取得兩者毫秒差（絕對值）
+			var diff = Math.abs(date2 - date1);
+
+			// 轉換為天數：除以一天的毫秒數 (1000ms * 60s * 60m * 24h)
+			// 使用 Math.floor 取得完整的整數天數
+			var dayDiff = Math.floor(diff / (1000 * 60 * 60 * 24));
 
 			return dayDiff;
 		},
