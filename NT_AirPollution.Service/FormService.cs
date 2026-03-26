@@ -855,7 +855,7 @@ namespace NT_AirPollution.Service
                             item.FormID = form.ID;
                             item.DOWN_DATE = item.DOWN_DATE2.AddYears(-1911).ToString("yyyMMdd");
                             item.UP_DATE = item.UP_DATE2.AddYears(-1911).ToString("yyyMMdd");
-                            item.DOWN_DAY = (item.UP_DATE2 - item.DOWN_DATE2).TotalDays + 1;
+                            item.DOWN_DAY = (item.UP_DATE2 - item.DOWN_DATE2).TotalDays;
 
                             // ID=0表示新增
                             if (item.ID == 0)
