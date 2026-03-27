@@ -1067,7 +1067,7 @@ namespace NT_AirPollution.Service
             using (var cn = new SqlConnection(connStr))
             {
                 string formulaText = "";
-                var diffDays = ((form.E_DATE.ToWestDate() - form.B_DATE.ToWestDate()).TotalDays + 1) - downDays;
+                var diffDays = (form.E_DATE.ToWestDate() - form.B_DATE.ToWestDate()).TotalDays + 1;
                 var projectCodes = cn.GetAll<ProjectCode>().ToList();
                 var projectCode = projectCodes.First(o => o.ID == form.KIND_NO);
                 // 基數

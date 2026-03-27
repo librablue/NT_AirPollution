@@ -341,6 +341,11 @@
             calcPERC_B2() {
                 if (!this.selectRow.FormB.AREA_B || !this.selectRow.FormB.AREA_F) return 0;
                 return ((+this.selectRow.FormB.AREA_B / +this.selectRow.FormB.AREA_F) * 100).toFixed(2);
+            },
+            totalStopWorkDays() {
+                return this.selectRow.StopWorks.reduce((prev, current) => {
+                    return prev + current.DOWN_DAY;
+                }, 0);
             }
         },
         methods: {

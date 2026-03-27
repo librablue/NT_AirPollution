@@ -396,7 +396,7 @@ namespace NT_AirPollution.Admin.Controllers
                     // 結算天數
                     double calcWorkDays = (form.FormB.E_DATE.ToWestDate() - form.FormB.B_DATE.ToWestDate()).TotalDays + 1;
                     // 停工天數
-                    double downDays = form.StopWorks.Sum(o => (o.UP_DATE2 - o.DOWN_DATE2).TotalDays + 1);
+                    double downDays = form.StopWorks.Sum(o => o.DOWN_DAY);
                     string text1 = overPayAmount > 0 ? "核退" : "核補";
                     string text2 = overPayAmount > 0 ? $"{(form.S_AMT.Value - form.S_AMT2.Value).ToString("N0")}" : $"{(form.S_AMT2.Value - form.S_AMT.Value).ToString("N0")}";
                     string text3 = form.S_AMT2.Value.ToString("N0");

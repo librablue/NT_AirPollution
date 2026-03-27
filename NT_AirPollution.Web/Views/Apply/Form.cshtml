@@ -565,7 +565,7 @@
                                     </span>
                                 </div>
                             </el-form-item>
-                            <el-form-item label="預計施工天數">{{totalDays(selectRow.FormB.B_DATE, selectRow.FormB.E_DATE)}}</el-form-item>
+                            <el-form-item label="預計施工天數">{{totalDays(selectRow.FormB.B_DATE, selectRow.FormB.E_DATE) - totalStopWorkDays}}</el-form-item>
                         </div>
                     </el-form>
                 </el-card>

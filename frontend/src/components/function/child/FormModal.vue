@@ -367,6 +367,9 @@
 								<el-form-item prop="MONEY" label="工程合約經費(元)">
 									<el-input type="number" v-model="form.FormB.MONEY"></el-input>
 								</el-form-item>
+								<el-form-item prop="TAX_MONEY" label="工程合約經費營業稅(元)">
+									<el-input type="number" v-model="form.FormB.TAX_MONEY"></el-input>
+								</el-form-item>
 								<el-form-item prop="C_MONEY" label="工程環保經費(元)">
 									<div style="min-width:120px">{{calcC_MONEYB | comma}}</div>
 								</el-form-item>
@@ -430,7 +433,7 @@
 										</span>
 									</div>
 								</el-form-item>
-								<el-form-item label="預計施工天數">{{totalDays(form.FormB.B_DATE, form.FormB.E_DATE)}}</el-form-item>
+								<el-form-item label="預計施工天數">{{totalDays(form.FormB.B_DATE, form.FormB.E_DATE) - totalStopWorkDays}}</el-form-item>
 							</div>
 						</el-form>
 					</el-card>
@@ -831,6 +834,11 @@ export default {
 		calcPERC_B2() {
 			if (!this.form.FormB.AREA_B || !this.form.FormB.AREA_F) return 0;
 			return ((+this.form.FormB.AREA_B / +this.form.FormB.AREA_F) * 100).toFixed(2);
+		},
+		totalStopWorkDays() {
+			return this.form.StopWorks.reduce((prev, current) => {
+				return prev + current.DOWN_DAY;
+			}, 0);
 		}
 	},
 	methods: {
