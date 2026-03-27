@@ -381,7 +381,7 @@ namespace NT_AirPollution.Admin.Controllers
                     ws.Cell("B5").SetValue(form.S_NAME);
                     ws.Cell("B6").SetValue(form.S_ADDR2);
                     ws.Cell("E6").SetValue(form.S_C_TEL);
-                    ws.Cell("B7").SetValue(converter.ToChineseUpper(form.MONEY - form.TAX_MONEY));
+                    ws.Cell("B7").SetValue(converter.ToChineseUpper(form.FormB.MONEY.Value));
                     ws.Cell("B8").SetValue(converter.ToChineseUpper(form.S_AMT.Value));
                     ws.Cell("B9").SetValue(converter.ToChineseUpper(form.S_AMT2.Value));
                     // 已繳空污費金額
