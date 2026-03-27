@@ -696,9 +696,6 @@ namespace NT_AirPollution.Service
                 {
                     try
                     {
-                        //cn.Execute(@"UPDATE dbo.Form SET S_AMT2=@S_AMT2 WHERE ID=@ID",
-                        //    new { S_AMT2 = form.S_AMT2, ID = form.ID }, trans);
-
                         cn.Execute(@"DELETE FROM dbo.FormB WHERE FormID=@FormID",
                             new { FormID = form.ID }, trans);
 

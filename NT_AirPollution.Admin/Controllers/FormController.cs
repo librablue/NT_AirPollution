@@ -96,7 +96,7 @@ namespace NT_AirPollution.Admin.Controllers
                 }
 
                 // 停工天數
-                double downDays = form.StopWorks.Sum(o => (o.UP_DATE2 - o.DOWN_DATE2).TotalDays + 1);
+                double downDays = form.StopWorks.Sum(o => (o.UP_DATE2 - o.DOWN_DATE2).TotalDays);
                 var result = _formService.CalcTotalMoney(form, downDays);
 
                 // 申報
@@ -146,7 +146,9 @@ namespace NT_AirPollution.Admin.Controllers
                 _formService.UpdateForm(form);
                 // 更新FormB
                 _formService.AddFormB(form);
+                // 更新停工天數
                 _formService.UpdateStopWork(form);
+                _accessService.AddABUDFDay(form);
 
                 return true;
             }
@@ -305,7 +307,7 @@ namespace NT_AirPollution.Admin.Controllers
             // 2. 處理結算與金額計算
             if (form.CalcStatus == CalcStatus.通過待繳費)
             {
-                double downDays = form.StopWorks.Sum(o => (o.UP_DATE2 - o.DOWN_DATE2).TotalDays + 1);
+                double downDays = form.StopWorks.Sum(o => (o.UP_DATE2 - o.DOWN_DATE2).TotalDays);
                 var result = _formService.CalcTotalMoney(form, downDays);
 
                 form.S_AMT2 = result.TotalMoney;

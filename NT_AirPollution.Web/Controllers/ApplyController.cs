@@ -318,36 +318,10 @@ namespace NT_AirPollution.Web.Controllers
                     throw new Exception("施工期程起始日期不能大於結束日期");
 
 
-                //// 如果已初次申報完成就只能存ABUDF_B
-                //if(formInDB.FormStatus == FormStatus.已繳費完成)
-                //{
-                //    // 停工天數
-                //    double downDays = form.StopWorks.Sum(o => (o.UP_DATE2 - o.DOWN_DATE2).TotalDays + 1);
-                //    // 計算結算金額
-                //    var result = _formService.CalcTotalMoney(form, downDays);
-
-                //    // 不可修改的欄位
-                //    form.ID = formInDB.ID;
-                //    form.C_NO = formInDB.C_NO;
-                //    form.SER_NO = formInDB.SER_NO;
-                //    form.AP_DATE1 = formInDB.AP_DATE1;
-                //    form.KIND_NO = formInDB.KIND_NO;
-                //    form.KIND = formInDB.KIND;
-                //    form.YEAR = formInDB.YEAR;
-                //    form.A_KIND = formInDB.A_KIND;
-                //    // 更新ABUDF_B
-                //    _accessService.AddABUDF_B(form);
-                //    // 更新FormB
-                //    _formService.AddFormB(form);
-
-                //    return Json(new AjaxResult { Status = true });
-                //}
-
-
                 var allDists = _optionService.GetDistrict();
                 var allProjectCode = _optionService.GetProjectCode();
                 // 停工天數
-                double downDays = form.StopWorks.Sum(o => (o.UP_DATE2 - o.DOWN_DATE2).TotalDays + 1);
+                double downDays = form.StopWorks.Sum(o => (o.UP_DATE2 - o.DOWN_DATE2).TotalDays);
                 // 計算結算金額
                 var result = _formService.CalcTotalMoney(form, downDays);
 
@@ -505,7 +479,7 @@ namespace NT_AirPollution.Web.Controllers
                     throw new Exception("無法修改他人申請單");
 
                 // 停工天數
-                double downDays = form.StopWorks.Sum(o => (o.UP_DATE2 - o.DOWN_DATE2).TotalDays + 1);
+                double downDays = form.StopWorks.Sum(o => (o.UP_DATE2 - o.DOWN_DATE2).TotalDays);
                 // 計算費用
                 var result = _formService.CalcTotalMoney(form, downDays);
                 formInDB.COMP_L = result.Level;
