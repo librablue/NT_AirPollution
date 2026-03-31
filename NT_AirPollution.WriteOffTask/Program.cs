@@ -33,157 +33,165 @@ namespace NT_AirPollution.WriteOffTask
         /// </summary>
         private static void LoadBankFile()
         {
+            // 先取得檔案列表，若目錄不存在則由外層 try 捕捉
+            string[] fileEntries;
             try
             {
-                string[] fileEntries = Directory.GetFiles(_bankFile);
-                foreach (string file in fileEntries)
-                {
-                    string currentFileName = Path.GetFileNameWithoutExtension(file); // 取得檔名，不含副檔名
-                    string[] parts = currentFileName.Split('_'); // 用 "_" 分割
-                    string taiwanDate = DateTime.Now.ToTaiwanDate();
-                    if (parts.Length > 1)
-                        taiwanDate = parts[1]; // 取得檔名後面的日期
-
-                    string[] line = File.ReadAllLines(file);
-                    for (int i = 0; i < line.Length - 1; i++)
-                    {
-                        // 銷帳編號
-                        string account = line[i].Substring(8, 16);
-                        // 對帳日期(只有6碼，前面補1)
-                        string fdate = line[i].Substring(24, 6);
-                        // 繳費金額
-                        int payAmount = Convert.ToInt32(line[i].Substring(100, 10));
-                        DateTime payDate = Convert.ToDateTime($"{2011 + Convert.ToInt32(line[i].Substring(93, 2))}-{line[i].Substring(95, 2)}-{line[i].Substring(97, 2)}");
-                        // 取得SQL付款資訊
-                        var paymentsInDB = _formService.GetAllPaymentByPaymentID(account);
-                        // 查無付款資訊跳過
-                        if (paymentsInDB.Count() == 0)
-                            continue;
-
-                        // 真實繳費單號
-                        var actualPayment = paymentsInDB.FirstOrDefault(o => o.PaymentID == account);
-                        // 最新繳費單號
-                        var lastPayment = paymentsInDB.OrderByDescending(o => o.CreateDate).FirstOrDefault();
-
-                        // 取得申請單
-                        var form = _formService.GetFormByID(actualPayment.FormID);
-                        // 依期數判斷更新哪種狀態
-                        if (actualPayment.Term == "01")
-                        {
-                            form.FormStatus = FormStatus.已繳費完成;
-                            form.VerifyStage1 = VerifyStage.複審通過;
-                            form.IsMailFormStatus = true;
-                        }
-                        if (actualPayment.Term == "02")
-                        {
-                            form.CalcStatus = CalcStatus.繳退費完成;
-                            form.VerifyStage2 = VerifyStage.複審通過;
-                            form.IsMailCalcStatus = true;
-                        }
-
-                        // 更新申請單
-                        _formService.UpdateForm(form);
-
-                        // 寄信通知
-                        _formService.SendStatusMail(form);
-                        // 更新付款資訊
-                        actualPayment.PayAmount = payAmount;
-                        actualPayment.PayDate = payDate;
-                        actualPayment.BankLog = line[i];
-                        _formService.UpdatePayment(actualPayment);
-
-                        #region 更新ABUDF
-                        _accessService.UpdateABUDFByColumn(form.C_NO, form.SER_NO.Value, "FIN_DATE", taiwanDate);
-                        #endregion
-
-                        #region 更新ABUDF_1
-                        var abudf_1 = new ABUDF_1
-                        {
-                            F_DATE = fdate,
-                            F_AMT = payAmount,
-                            PM_DATE = payDate.AddYears(-1911).ToString("yyyMMdd"),
-                            A_DATE = taiwanDate,
-                            M_DATE = DateTime.Now,
-                            FLNO = account
-                        };
-                        _accessService.UpdateABUDF_1(abudf_1, lastPayment.PaymentID);
-                        #endregion
-
-                        #region 計算繳費資訊
-                        PaymentInfo info = new PaymentInfo
-                        {
-                            Today = payDate,
-                            IsPublic = form.PUB_COMP,
-                            StartDate = form.B_DATE.ToWestDate()
-                        };
-                        // 申報
-                        if (string.IsNullOrEmpty(form.AP_DATE1))
-                        {
-                            info.ApplyDate = form.AP_DATE.ToWestDate();
-                            info.VerifyDate = form.VerifyDate1.Value;
-                            info.TotalPrice = form.S_AMT.Value;
-                            info.CurrentPrice = form.P_AMT.Value;
-                        }
-                        // 結算
-                        else
-                        {
-                            info.ApplyDate = form.AP_DATE1.ToWestDate();
-                            info.VerifyDate = form.VerifyDate2.Value;
-                            info.TotalPrice = form.S_AMT2.Value;
-                            info.CurrentPrice = form.S_AMT2.Value - form.P_AMT.Value;
-                        }
-
-                        // 計算繳費資訊
-                        var res = _formService.CalcPayment(info);
-                        // 結算沒有滯納金&利息
-                        if (!string.IsNullOrEmpty(form.AP_DATE1))
-                        {
-                            res.Interest = 0;
-                            res.Penalty = 0;
-                        }
-
-                        double sumPrice = Math.Round(res.CurrentPrice + res.Interest + res.Penalty, 0);
-                        #endregion
-
-                        #region 寫入ABUDF_I
-                        // 申報且有滯納金才寫入
-                        if (string.IsNullOrEmpty(form.AP_DATE1) && (res.Interest > 0 || res.Penalty > 0))
-                        {
-                            ABUDF_I abudf_I = new ABUDF_I();
-                            abudf_I.C_NO = form.C_NO;
-                            abudf_I.SER_NO = form.SER_NO;
-                            abudf_I.P_TIME = string.IsNullOrEmpty(form.AP_DATE1) ? "01" : "02";
-                            // 逾期起始日(逾期:開工日隔天 沒逾期:開工日)
-                            abudf_I.S_DATE = res.StartDate.AddDays(res.ApplyDate <= res.StartDate ? 0 : 1).AddYears(-1911).ToString("yyyMMdd");
-                            // 逾期結束日是繳費日當天
-                            abudf_I.E_DATE = payDate.AddYears(-1911).ToString("yyyMMdd");
-                            abudf_I.PERCENT = res.Rate;
-                            abudf_I.F_AMT = sumPrice;
-                            abudf_I.I_AMT = res.Interest;
-                            abudf_I.PEN_AMT = res.Penalty;
-                            abudf_I.PEN_RATE = res.Penalty > 0 ? 0.5 : (double?)null;
-                            abudf_I.KEYIN = "EPB02";
-                            abudf_I.C_DATE = DateTime.Now;
-                            abudf_I.M_DATE = DateTime.Now;
-                            _accessService.AddABUDF_I(abudf_I);
-                        }
-                        #endregion
-                    }
-
-                    string fileName = Path.GetFileName(file);
-                    if (File.Exists($@"{_bankFileHistory}\{fileName}"))
-                        File.Delete($@"{_bankFileHistory}\{fileName}");
-
-                    // 移到歷史資料夾
-                    File.Move(file, $@"{_bankFileHistory}\{fileName}");
-                    // 寄給環保局人員
-                    Send2GovUser($@"{_bankFileHistory}\{fileName}");
-                }
+                fileEntries = Directory.GetFiles(_bankFile);
             }
             catch (Exception ex)
             {
-                Logger.Error($"{ex.Message} / {ex.StackTrace}");
+                Logger.Error($"讀取目錄失敗: {ex.Message}");
                 return;
+            }
+
+            foreach (string file in fileEntries)
+            {
+                try
+                {
+                    string currentFileName = Path.GetFileNameWithoutExtension(file);
+                    string[] parts = currentFileName.Split('_');
+                    string taiwanDate = DateTime.Now.ToTaiwanDate();
+                    if (parts.Length > 1)
+                        taiwanDate = parts[1];
+
+                    string[] line = File.ReadAllLines(file);
+
+                    for (int i = 0; i < line.Length - 1; i++)
+                    {
+                        try
+                        {
+                            // 1. 解析資料
+                            string account = line[i].Substring(8, 16);
+                            string fdate = line[i].Substring(24, 6);
+                            int payAmount = Convert.ToInt32(line[i].Substring(100, 10));
+                            DateTime payDate = Convert.ToDateTime($"{2011 + Convert.ToInt32(line[i].Substring(93, 2))}-{line[i].Substring(95, 2)}-{line[i].Substring(97, 2)}");
+
+                            // 2. 取得 SQL 付款資訊
+                            var paymentsInDB = _formService.GetAllPaymentByPaymentID(account);
+                            if (paymentsInDB == null || !paymentsInDB.Any())
+                                continue; // 查無資訊，跳過本行
+
+                            var actualPayment = paymentsInDB.FirstOrDefault(o => o.PaymentID == account);
+                            if (actualPayment == null) continue;
+
+                            var lastPayment = paymentsInDB.OrderByDescending(o => o.CreateDate).FirstOrDefault();
+
+                            // 3. 更新申請單狀態
+                            var form = _formService.GetFormByID(actualPayment.FormID);
+                            if (form == null) continue;
+
+                            if (actualPayment.Term == "01")
+                            {
+                                form.FormStatus = FormStatus.已繳費完成;
+                                form.VerifyStage1 = VerifyStage.複審通過;
+                                form.IsMailFormStatus = true;
+                            }
+                            else if (actualPayment.Term == "02")
+                            {
+                                form.CalcStatus = CalcStatus.繳退費完成;
+                                form.VerifyStage2 = VerifyStage.複審通過;
+                                form.IsMailCalcStatus = true;
+                            }
+
+                            _formService.UpdateForm(form);
+                            _formService.SendStatusMail(form);
+
+                            // 4. 更新付款資訊
+                            actualPayment.PayAmount = payAmount;
+                            actualPayment.PayDate = payDate;
+                            actualPayment.BankLog = line[i];
+                            _formService.UpdatePayment(actualPayment);
+
+                            // 5. 更新 ABUDF
+                            _accessService.UpdateABUDFByColumn(form.C_NO, form.SER_NO.Value, "FIN_DATE", taiwanDate);
+
+                            // 6. 更新 ABUDF_1
+                            var abudf_1 = new ABUDF_1
+                            {
+                                F_DATE = fdate,
+                                F_AMT = payAmount,
+                                PM_DATE = payDate.AddYears(-1911).ToString("yyyMMdd"),
+                                A_DATE = taiwanDate,
+                                M_DATE = DateTime.Now,
+                                FLNO = account
+                            };
+                            _accessService.UpdateABUDF_1(abudf_1, lastPayment.PaymentID);
+
+                            // 7. 計算繳費資訊與寫入 ABUDF_I
+                            PaymentInfo info = new PaymentInfo
+                            {
+                                Today = payDate,
+                                IsPublic = form.PUB_COMP,
+                                StartDate = form.B_DATE.ToWestDate()
+                            };
+
+                            if (string.IsNullOrEmpty(form.AP_DATE1))
+                            {
+                                info.ApplyDate = form.AP_DATE.ToWestDate();
+                                info.VerifyDate = form.VerifyDate1.Value;
+                                info.TotalPrice = form.S_AMT.Value;
+                                info.CurrentPrice = form.P_AMT.Value;
+                            }
+                            else
+                            {
+                                info.ApplyDate = form.AP_DATE1.ToWestDate();
+                                info.VerifyDate = form.VerifyDate2.Value;
+                                info.TotalPrice = form.S_AMT2.Value;
+                                info.CurrentPrice = form.S_AMT2.Value - form.P_AMT.Value;
+                            }
+
+                            var res = _formService.CalcPayment(info);
+                            if (!string.IsNullOrEmpty(form.AP_DATE1))
+                            {
+                                res.Interest = 0;
+                                res.Penalty = 0;
+                            }
+
+                            double sumPrice = Math.Round(res.CurrentPrice + res.Interest + res.Penalty, 0);
+
+                            if (string.IsNullOrEmpty(form.AP_DATE1) && (res.Interest > 0 || res.Penalty > 0))
+                            {
+                                ABUDF_I abudf_I = new ABUDF_I
+                                {
+                                    C_NO = form.C_NO,
+                                    SER_NO = form.SER_NO,
+                                    P_TIME = string.IsNullOrEmpty(form.AP_DATE1) ? "01" : "02",
+                                    S_DATE = res.StartDate.AddDays(res.ApplyDate <= res.StartDate ? 0 : 1).AddYears(-1911).ToString("yyyMMdd"),
+                                    E_DATE = payDate.AddYears(-1911).ToString("yyyMMdd"),
+                                    PERCENT = res.Rate,
+                                    F_AMT = sumPrice,
+                                    I_AMT = res.Interest,
+                                    PEN_AMT = res.Penalty,
+                                    PEN_RATE = res.Penalty > 0 ? 0.5 : (double?)null,
+                                    KEYIN = "EPB02",
+                                    C_DATE = DateTime.Now,
+                                    M_DATE = DateTime.Now
+                                };
+                                _accessService.AddABUDF_I(abudf_I);
+                            }
+                        }
+                        catch (Exception lineEx)
+                        {
+                            // 記錄單行錯誤資訊，繼續處理下一行
+                            Logger.Error($"檔案 {file} 第 {i + 1} 行處理失敗。錯誤: {lineEx.Message}");
+                        }
+                    } // end for line
+
+                    // --- 檔案處理完後的搬移動作 ---
+                    string fileName = Path.GetFileName(file);
+                    string destFile = Path.Combine(_bankFileHistory, fileName);
+
+                    if (File.Exists(destFile))
+                        File.Delete(destFile);
+
+                    File.Move(file, destFile);
+                    Send2GovUser(destFile);
+                }
+                catch (Exception fileEx)
+                {
+                    Logger.Error($"處理檔案 {file} 時發生嚴重錯誤: {fileEx.Message}");
+                }
             }
         }
 
