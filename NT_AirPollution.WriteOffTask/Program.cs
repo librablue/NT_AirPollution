@@ -33,7 +33,7 @@ namespace NT_AirPollution.WriteOffTask
         /// </summary>
         private static void LoadBankFile()
         {
-            // 先取得檔案列表，若目錄不存在則由外層 try 捕捉
+            // 1. 取得檔案列表
             string[] fileEntries;
             try
             {
@@ -47,6 +47,9 @@ namespace NT_AirPollution.WriteOffTask
 
             foreach (string file in fileEntries)
             {
+                // 用來存放該檔案內所有行的錯誤摘要
+                var errorSummary = new System.Text.StringBuilder();
+
                 try
                 {
                     string currentFileName = Path.GetFileNameWithoutExtension(file);
@@ -55,31 +58,37 @@ namespace NT_AirPollution.WriteOffTask
                     if (parts.Length > 1)
                         taiwanDate = parts[1];
 
-                    string[] line = File.ReadAllLines(file);
+                    string[] lines = File.ReadAllLines(file);
 
-                    for (int i = 0; i < line.Length - 1; i++)
+                    // 逐行處理資料
+                    for (int i = 0; i < lines.Length - 1; i++)
                     {
                         try
                         {
-                            // 1. 解析資料
-                            string account = line[i].Substring(8, 16);
-                            string fdate = line[i].Substring(24, 6);
-                            int payAmount = Convert.ToInt32(line[i].Substring(100, 10));
-                            DateTime payDate = Convert.ToDateTime($"{2011 + Convert.ToInt32(line[i].Substring(93, 2))}-{line[i].Substring(95, 2)}-{line[i].Substring(97, 2)}");
+                            // --- 解析資料 ---
+                            string account = lines[i].Substring(8, 16);
+                            string fdate = lines[i].Substring(24, 6);
+                            int payAmount = Convert.ToInt32(lines[i].Substring(100, 10));
+                            DateTime payDate = Convert.ToDateTime($"{2011 + Convert.ToInt32(lines[i].Substring(93, 2))}-{lines[i].Substring(95, 2)}-{lines[i].Substring(97, 2)}");
 
-                            // 2. 取得 SQL 付款資訊
+                            // --- 取得 SQL 付款資訊 ---
                             var paymentsInDB = _formService.GetAllPaymentByPaymentID(account);
                             if (paymentsInDB == null || !paymentsInDB.Any())
-                                continue; // 查無資訊，跳過本行
+                            {
+                                throw new Exception($"虛擬帳號 {account} 在資料庫中不存在。");
+                            }
 
                             var actualPayment = paymentsInDB.FirstOrDefault(o => o.PaymentID == account);
                             if (actualPayment == null) continue;
 
                             var lastPayment = paymentsInDB.OrderByDescending(o => o.CreateDate).FirstOrDefault();
 
-                            // 3. 更新申請單狀態
+                            // --- 更新申請單狀態 ---
                             var form = _formService.GetFormByID(actualPayment.FormID);
-                            if (form == null) continue;
+                            if (form == null)
+                            {
+                                throw new Exception($"找不到對應的申請單 (FormID: {actualPayment.FormID})。");
+                            }
 
                             if (actualPayment.Term == "01")
                             {
@@ -97,16 +106,16 @@ namespace NT_AirPollution.WriteOffTask
                             _formService.UpdateForm(form);
                             _formService.SendStatusMail(form);
 
-                            // 4. 更新付款資訊
+                            // --- 更新付款資訊 ---
                             actualPayment.PayAmount = payAmount;
                             actualPayment.PayDate = payDate;
-                            actualPayment.BankLog = line[i];
+                            actualPayment.BankLog = lines[i];
                             _formService.UpdatePayment(actualPayment);
 
-                            // 5. 更新 ABUDF
+                            // --- 更新 ABUDF ---
                             _accessService.UpdateABUDFByColumn(form.C_NO, form.SER_NO.Value, "FIN_DATE", taiwanDate);
 
-                            // 6. 更新 ABUDF_1
+                            // --- 更新 ABUDF_1 ---
                             var abudf_1 = new ABUDF_1
                             {
                                 F_DATE = fdate,
@@ -118,7 +127,7 @@ namespace NT_AirPollution.WriteOffTask
                             };
                             _accessService.UpdateABUDF_1(abudf_1, lastPayment.PaymentID);
 
-                            // 7. 計算繳費資訊與寫入 ABUDF_I
+                            // --- 計算繳費資訊與寫入 ABUDF_I ---
                             PaymentInfo info = new PaymentInfo
                             {
                                 Today = payDate,
@@ -173,10 +182,12 @@ namespace NT_AirPollution.WriteOffTask
                         }
                         catch (Exception lineEx)
                         {
-                            // 記錄單行錯誤資訊，繼續處理下一行
-                            Logger.Error($"檔案 {file} 第 {i + 1} 行處理失敗。錯誤: {lineEx.Message}");
+                            // 收集錯誤訊息
+                            string msg = $"第 {i + 1} 行處理異常: {lineEx.Message}";
+                            Logger.Error($"檔案 {file} {msg}");
+                            errorSummary.AppendLine(msg);
                         }
-                    } // end for line
+                    } // end for
 
                     // --- 檔案處理完後的搬移動作 ---
                     string fileName = Path.GetFileName(file);
@@ -186,11 +197,17 @@ namespace NT_AirPollution.WriteOffTask
                         File.Delete(destFile);
 
                     File.Move(file, destFile);
-                    Send2GovUser(destFile);
+
+                    // --- 呼叫政府端方法並傳入錯誤訊息 ---
+                    // 如果 errorSummary 為空，代表全部成功
+                    string finalErrorMsg = errorSummary.Length > 0 ? errorSummary.ToString() : "OK";
+                    Send2GovUser(destFile, finalErrorMsg);
                 }
                 catch (Exception fileEx)
                 {
                     Logger.Error($"處理檔案 {file} 時發生嚴重錯誤: {fileEx.Message}");
+                    // 如果需要，也可以針對整個檔案讀取失敗發送通知
+                    // Send2GovUser(file, $"檔案讀取失敗: {fileEx.Message}");
                 }
             }
         }
@@ -199,17 +216,24 @@ namespace NT_AirPollution.WriteOffTask
         /// 寄送銷帳檔給環保局人員
         /// </summary>
         /// <param name="file"></param>
-        private static void Send2GovUser(string file)
+        /// <param name="errorMsg"></param>
+        private static void Send2GovUser(string file, string errorMsg)
         {
             string fileName = Path.GetFileName(file);
+
+            // 組合成更友善的郵件內文
+            string mailBody = (errorMsg == "OK")
+                ? $"檔案 {fileName} 已於 {DateTime.Now:yyyy-MM-dd HH:mm:ss} 處理完成，無異常。"
+                : $"檔案 {fileName} 處理過程中發生以下異常：{Environment.NewLine}{errorMsg}";
+
             using (var cn = new SqlConnection(connStr))
             {
-                // 寄件夾
+                // 寫入寄件匣資料表
                 cn.Insert(new SendBox
                 {
                     Address = notifyMail,
-                    Subject = $"銷帳檔通知 {fileName}",
-                    Body = "",
+                    Subject = $"銷帳檔通知 - {fileName} " + (errorMsg == "OK" ? "(成功)" : "(有異常)"),
+                    Body = mailBody, // 放入處理後的錯誤訊息或成功資訊
                     Attachment = file,
                     FailTimes = 0,
                     CreateDate = DateTime.Now
