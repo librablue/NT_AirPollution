@@ -30,7 +30,7 @@ namespace NT_AirPollution.MailTask
                         {
                             Subject = box.Subject,
                             Body = box.Body,
-                            To = new List<string> { box.Address },
+                            To = box.Address.Split(',').ToList(),
                             Attachment = box.Attachment?.Split(';').ToList()
                         };
                         mailHelper.SendMail(mail);
