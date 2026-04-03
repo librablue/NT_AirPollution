@@ -26,8 +26,8 @@ namespace NT_AirPollution.Service
             try
             {
 #if !DEBUG
-        using (var impersonation = new ImpersonationContext(domain, userName, password))
-        {
+                using (var impersonation = new ImpersonationContext(domain, userName, password))
+                {
 #endif
                 string chineseYear = form.C_DATE.Value.AddYears(-1911).ToString("yyy");
                 using (var cn = new OleDbConnection(accessConnStr))
@@ -51,7 +51,7 @@ namespace NT_AirPollution.Service
                     return $"M{chineseYear}{form.TOWN_NO}{form.KIND_NO}{SerialNo.ToString().PadLeft(3, '0')}";
                 }
 #if !DEBUG
-        }
+                }
 #endif
             }
             catch (Exception ex)
@@ -71,8 +71,8 @@ namespace NT_AirPollution.Service
             try
             {
 #if !DEBUG
-        using (var impersonation = new ImpersonationContext(domain, userName, password))
-        {
+                using (var impersonation = new ImpersonationContext(domain, userName, password))
+                {
 #endif
                 using (var cn = new OleDbConnection(accessConnStr))
                 {
@@ -85,7 +85,7 @@ namespace NT_AirPollution.Service
                     return result?.SER_NO ?? 1;
                 }
 #if !DEBUG
-        }
+                }
 #endif
             }
             catch (Exception ex)
@@ -106,8 +106,8 @@ namespace NT_AirPollution.Service
             try
             {
 #if !DEBUG
-        using (var impersonation = new ImpersonationContext(domain, userName, password))
-        {
+                using (var impersonation = new ImpersonationContext(domain, userName, password))
+                {
 #endif
                 using (var cn = new OleDbConnection(accessConnStr))
                 {
@@ -246,7 +246,7 @@ namespace NT_AirPollution.Service
                     return true;
                 }
 #if !DEBUG
-        }
+                }
 #endif
             }
             catch (Exception ex)
@@ -536,8 +536,8 @@ namespace NT_AirPollution.Service
             try
             {
 #if !DEBUG
-        using (var impersonation = new ImpersonationContext(domain, userName, password))
-        {
+                using (var impersonation = new ImpersonationContext(domain, userName, password))
+                {
 #endif
                 using (var cn = new OleDbConnection(accessConnStr))
                 {
@@ -554,7 +554,7 @@ namespace NT_AirPollution.Service
                     return true;
                 }
 #if !DEBUG
-        }
+                }
 #endif
             }
             catch (Exception ex)
@@ -600,12 +600,13 @@ namespace NT_AirPollution.Service
             try
             {
 #if !DEBUG
-        using (var impersonation = new ImpersonationContext(domain, userName, password))
-        {
+                using (var impersonation = new ImpersonationContext(domain, userName, password))
+                {
 #endif
                 var formB = form.FormB;
                 DateTime now = DateTime.Now;
-                double workDays = (formB.E_DATE.ToWestDate() - formB.B_DATE.ToWestDate()).TotalDays + 1;
+                double applyWorkDays = (formB.E_DATE.ToWestDate() - formB.B_DATE.ToWestDate()).TotalDays + 1;
+                double calcWorkDays = (form.FormB.E_DATE.ToWestDate() - form.FormB.B_DATE.ToWestDate()).TotalDays + 1;
                 double downDays = form.StopWorks.Sum(o => o.DOWN_DAY);
                 // 結算狀態
                 string B_STAT;
@@ -624,6 +625,34 @@ namespace NT_AirPollution.Service
                     B_CSTAT = "A預計工期未施工";
                 else
                     B_CSTAT = "B預計工期施工中";
+
+                // 計算各項差異
+                double diffDays = (calcWorkDays - downDays) - applyWorkDays; // 工期差
+                double diffArea = (form.FormB.AREA ?? 0) - (form.AREA ?? 0);   // 面積差
+                double diffMoney = (form.FormB.MONEY ?? 0) - (form.MONEY);     // 經費差
+                double diffVOLUMEL = (form.FormB.VOLUMEL ?? 0) - (form.VOLUMEL ?? 0); // 土石外運差
+
+                // 更新異動欄位並收集異動字串
+                List<string> changes = new List<string>();
+
+                // 工期異動
+                form.FormB.CHG_DATE = diffDays > 0 ? "工期延長" : (diffDays < 0 ? "工期縮短" : null);
+                if (!string.IsNullOrEmpty(form.FormB.CHG_DATE)) changes.Add(form.FormB.CHG_DATE);
+
+                // 面積異動
+                form.FormB.CHG_AREA = diffArea > 0 ? "工程面積增加" : (diffArea < 0 ? "工程面積減少" : null);
+                if (!string.IsNullOrEmpty(form.FormB.CHG_AREA)) changes.Add(form.FormB.CHG_AREA);
+
+                // 經費異動
+                form.FormB.CHG_MONEY = diffMoney > 0 ? "合約經費增加" : (diffMoney < 0 ? "合約經費減少" : null);
+                if (!string.IsNullOrEmpty(form.FormB.CHG_MONEY)) changes.Add(form.FormB.CHG_MONEY);
+
+                // 土石外運異動
+                form.FormB.CHG_VOLUMEL = diffVOLUMEL > 0 ? "土石外運增加" : (diffVOLUMEL < 0 ? "土石外運減少" : null);
+                if (!string.IsNullOrEmpty(form.FormB.CHG_VOLUMEL)) changes.Add(form.FormB.CHG_VOLUMEL);
+
+                // 用 "_" 組合所有異動項目存入 CHG_COMM
+                form.FormB.CHG_COMM = changes.Any() ? string.Join("_", changes) : null;
 
                 using (var cn = new OleDbConnection(accessConnStr))
                 {
@@ -649,10 +678,16 @@ namespace NT_AirPollution.Service
                             [E_DATE],
                             [B_YEAR],
                             [S_AMT],
+                            [CHG_MONEY],
+                            [CHG_AREA],
+                            [CHG_VOLUMEL],
+                            [CHG_DATE],
+                            [CHG_COMM],
                             [B_KIND1],
                             [T_DAY],
                             [PRE_C_AMT],
                             [PRE_C_AMT1],
+                            [OPINION],
                             [WRONG_AP],
                             [KEYIN],
                             [C_DATE],
@@ -676,10 +711,16 @@ namespace NT_AirPollution.Service
                             @E_DATE,
                             @B_YEAR,
                             @S_AMT,
+                            @CHG_MONEY,
+                            @CHG_AREA,
+                            @CHG_VOLUMEL,
+                            @CHG_DATE,
+                            @CHG_COMM,
                             @B_KIND1,
                             @T_DAY,
                             @PRE_C_AMT,
                             @PRE_C_AMT1,
+                            @OPINION,
                             @WRONG_AP,
                             @KEYIN,
                             @C_DATE,
@@ -702,12 +743,18 @@ namespace NT_AirPollution.Service
                             B_DAY = downDays,
                             B_DATE = formB.B_DATE,
                             E_DATE = formB.E_DATE,
-                            B_YEAR = Math.Round((workDays - downDays + 1) / 365, 2, MidpointRounding.AwayFromZero),
+                            B_YEAR = Math.Round((applyWorkDays - downDays + 1) / 365, 2, MidpointRounding.AwayFromZero),
                             S_AMT = formB.S_AMT,
+                            CHG_MONEY = formB.CHG_MONEY,
+                            CHG_AREA = formB.CHG_AREA,
+                            CHG_VOLUMEL = formB.CHG_VOLUMEL,
+                            CHG_DATE = formB.CHG_DATE,
+                            CHG_COMM = formB.CHG_COMM,
                             B_KIND1 = formB.B_KIND1,
-                            T_DAY = workDays - downDays + 1,
+                            T_DAY = applyWorkDays - downDays + 1,
                             PRE_C_AMT = form.S_AMT > form.S_AMT2 ? form.S_AMT - form.S_AMT2 : 0,
                             PRE_C_AMT1 = form.S_AMT2 > form.S_AMT ? form.S_AMT2 - form.S_AMT : 0,
+                            OPINION = formB.OPINION,
                             WRONG_AP = formB.WRONG_AP,
                             KEYIN = "EPB02",
                             C_DATE = now.ToString("yyyy-MM-dd HH:mm:ss"),
@@ -718,7 +765,7 @@ namespace NT_AirPollution.Service
                     return true;
                 }
 #if !DEBUG
-        }
+                }
 #endif
             }
             catch (Exception ex)
@@ -738,8 +785,8 @@ namespace NT_AirPollution.Service
             try
             {
 #if !DEBUG
-        using (var impersonation = new ImpersonationContext(domain, userName, password))
-        {
+                using (var impersonation = new ImpersonationContext(domain, userName, password))
+                {
 #endif
                 int no = 1;
                 using (var cn = new OleDbConnection(accessConnStr))
@@ -762,7 +809,7 @@ namespace NT_AirPollution.Service
                     return pdate.Substring(2, 3) + no.ToString().PadLeft(3, '0');
                 }
 #if !DEBUG
-        }
+                }
 #endif
             }
             catch (Exception ex)
@@ -807,8 +854,8 @@ namespace NT_AirPollution.Service
             try
             {
 #if !DEBUG
-        using (var impersonation = new ImpersonationContext(domain, userName, password))
-        {
+                using (var impersonation = new ImpersonationContext(domain, userName, password))
+                {
 #endif
                 using (var cn = new OleDbConnection(accessConnStr))
                 {
@@ -825,7 +872,7 @@ namespace NT_AirPollution.Service
                     return result;
                 }
 #if !DEBUG
-        }
+                }
 #endif
             }
             catch (Exception ex)
@@ -871,8 +918,8 @@ namespace NT_AirPollution.Service
             try
             {
 #if !DEBUG
-        using (var impersonation = new ImpersonationContext(domain, userName, password))
-        {
+                using (var impersonation = new ImpersonationContext(domain, userName, password))
+                {
 #endif
                 using (var cn = new OleDbConnection(accessConnStr))
                 {
@@ -940,7 +987,7 @@ namespace NT_AirPollution.Service
                     return true;
                 }
 #if !DEBUG
-        }
+                }
 #endif
             }
             catch (Exception ex)
@@ -961,8 +1008,8 @@ namespace NT_AirPollution.Service
             try
             {
 #if !DEBUG
-        using (var impersonation = new ImpersonationContext(domain, userName, password))
-        {
+                using (var impersonation = new ImpersonationContext(domain, userName, password))
+                {
 #endif
                 using (var cn = new OleDbConnection(accessConnStr))
                 {
@@ -989,7 +1036,7 @@ namespace NT_AirPollution.Service
                     return true;
                 }
 #if !DEBUG
-        }
+                }
 #endif
             }
             catch (Exception ex)

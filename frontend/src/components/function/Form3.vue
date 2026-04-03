@@ -172,7 +172,7 @@ export default {
 			});
 		},
 		showDetail(row) {
-			this.mode = 'Read';
+			this.mode = 'Update';
 			this.selectRow = row;
 			this.formModalVisible = true;
 		},

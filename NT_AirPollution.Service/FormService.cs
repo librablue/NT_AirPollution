@@ -14,6 +14,7 @@ using System.Configuration;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace NT_AirPollution.Service
 {
@@ -2097,6 +2098,86 @@ namespace NT_AirPollution.Service
             // 繳費期限當天最後一秒
             result.PayEndDate = result.PayEndDate.Date.AddDays(1).AddSeconds(-1);
             return result;
+        }
+
+        /// <summary>
+        /// 產生結算退費審核表的說明文字
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        public string GenerateRefundComment(FormView form)
+        {
+            // 溢收總金額與停工天數計算
+            double overPayAmount = form.S_AMT.Value > form.S_AMT2.Value ? form.S_AMT.Value - form.S_AMT2.Value : 0;
+            double downDays = form.StopWorks.Sum(o => o.DOWN_DAY);
+
+            // 1. 基本參數準備
+            string text1 = overPayAmount > 0 ? "核退" : "核補";
+            string text2 = Math.Abs(form.S_AMT.Value - form.S_AMT2.Value).ToString("N0");
+            string text3 = form.S_AMT2.Value.ToString("N0");
+            string text4 = this.GetCalcFormulaText(form, downDays);
+            string text5 = form.S_AMT.Value.ToString("N0");
+            string text6 = this.GetApplyFormulaText(form, downDays);
+
+            // 2. 計算各項差異 (text7 邏輯)
+            double applyWorkDays = (form.E_DATE.ToWestDate() - form.B_DATE.ToWestDate()).TotalDays + 1;
+            double calcWorkDays = (form.FormB.E_DATE.ToWestDate() - form.FormB.B_DATE.ToWestDate()).TotalDays + 1;
+
+            double diffDays = (calcWorkDays - downDays) - applyWorkDays; // 工期差
+            double diffArea = (form.FormB.AREA ?? 0) - (form.AREA ?? 0);   // 面積差
+            double diffMoney = (form.FormB.MONEY ?? 0) - (form.MONEY);     // 經費差
+            double diffVOLUMEL = (form.FormB.VOLUMEL ?? 0) - (form.VOLUMEL ?? 0); // 土石外運差
+
+            string statusDays = diffDays > 0 ? $"延長{Math.Abs(diffDays)}天" : (diffDays < 0 ? $"縮短{Math.Abs(diffDays)}天" : "不變");
+            string statusArea = diffArea > 0 ? $"增加{Math.Abs(diffArea)}平方公尺" : (diffArea < 0 ? $"減少{Math.Abs(diffArea)}平方公尺" : "不變");
+            string statusMoney = diffMoney > 0 ? $"增加{Math.Abs(diffMoney).ToString("N0")}元" : (diffMoney < 0 ? $"減少{Math.Abs(diffMoney).ToString("N0")}元" : "不變");
+            string statusVOLUMEL = diffVOLUMEL > 0 ? $"增加{Math.Abs(diffVOLUMEL)}方" : (diffVOLUMEL < 0 ? $"減少{Math.Abs(diffVOLUMEL)}方" : "不變");
+
+            // 3. 組裝 text7
+            string text7 = "";
+            List<string> unchangedItems = new List<string>();
+            List<string> changedItems = new List<string>();
+
+            if (statusDays == "不變") unchangedItems.Add("工期"); else changedItems.Add($"工期{statusDays}");
+            if (statusArea == "不變") unchangedItems.Add("面積"); else changedItems.Add($"面積{statusArea}");
+            if (statusMoney == "不變") unchangedItems.Add("合約經費"); else changedItems.Add($"合約經費{statusMoney}");
+            if (statusVOLUMEL == "不變") unchangedItems.Add("土石外運"); else changedItems.Add($"土石外運{statusVOLUMEL}");
+
+
+            if (unchangedItems.Count == 4)
+            {
+                text7 = "工期、面積、合約經費、土石外運不變。";
+            }
+            else
+            {
+                string unchangedPart = unchangedItems.Count > 0 ? string.Join("、", unchangedItems) + "不變" : "";
+                string changedPart = string.Join("，", changedItems);
+
+                if (!string.IsNullOrEmpty(unchangedPart) && !string.IsNullOrEmpty(changedPart))
+                    text7 = $"{changedPart}，{unchangedPart}。";
+                else
+                    text7 = (changedPart + unchangedPart) + "。";
+            }
+
+            // 4. 最終字串組裝
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine($"一、審核應{text1}： {text2}元");
+            sb.AppendLine("");
+            sb.AppendLine($"二、結算申報實際應繳金額：{text3} 元");
+            sb.AppendLine($"    計算式：{text4}");
+            sb.AppendLine("");
+            sb.AppendLine($"三、未開工前申報應繳金額：{text5} 元");
+            sb.AppendLine($"    計算式：{text6}");
+            sb.AppendLine("");
+            sb.AppendLine($"四、目前已繳金額(不含逾期利息)：{text5} 元");
+            sb.AppendLine("");
+            sb.AppendLine("五、減免金額：0 元");
+            sb.AppendLine("");
+            sb.AppendLine($"六、{text7}");
+            sb.AppendLine("");
+            sb.Append($"七、應{text1}金額：{text2} 元");
+
+            return sb.ToString();
         }
 
         /// <summary>
