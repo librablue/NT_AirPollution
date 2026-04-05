@@ -5,7 +5,7 @@
 				<el-form-item label="管制編號">{{C_NO}}</el-form-item>
 				<el-form-item label="申報應繳金額">{{(form.S_AMT === null ? '未結算' : form.S_AMT) | comma}}</el-form-item>
 				<el-form-item label="結算應繳金額">{{(form.S_AMT2 === null ? '未結算' : form.S_AMT2) | comma}}</el-form-item>
-                <el-form-item label="是否短漏報">
+                <el-form-item v-if="form.FormB" label="是否短漏報">
                     <el-switch active-value="是" inactive-value="否" v-model="form.FormB.WRONG_AP"></el-switch>
                 </el-form-item>
 			</el-form>
