@@ -329,7 +329,7 @@ namespace NT_AirPollution.Admin.Controllers
             }
 
             // 3. 結算狀態複審日期標註
-            if (form.CalcStatus != CalcStatus.待補件)
+            if (form.CalcStatus > CalcStatus.待補件)
             {
                 form.VerifyDate2 = now;
                 form.VerifyStage2 = VerifyStage.複審通過;
