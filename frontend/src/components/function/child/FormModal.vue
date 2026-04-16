@@ -69,7 +69,7 @@
 					</el-form>
 				</el-tab-pane>
 				<el-tab-pane label="營建業主基本資料" name="2">
-					<el-form ref="tab2Form" :rules="tab2Rules" :model="form" label-width="auto" :disabled="form.FormStatus >= 3" class="beauty-form">
+					<el-form ref="tab2Form" :rules="tab2Rules" :model="form" label-width="auto" class="beauty-form">
 						<!-- 營建業主資料 -->
 						<div class="contact-group">
 							<h3 class="group-title">營建業主資料</h3>
@@ -125,7 +125,7 @@
 								<el-col :md="12" :sm="24">
 									<el-form-item prop="S_B_BDATE" label="生日">
 										<div class="el-input el-input--suffix">
-											<input type="text" class="el-input__inner datepicker" data-key="S_B_BDATE" v-model="form.S_B_BDATE" :disabled="form.FormStatus > 2" readonly />
+											<input type="text" class="el-input__inner datepicker" data-key="S_B_BDATE" v-model="form.S_B_BDATE" readonly />
 											<span v-if="form.S_B_BDATE && form.FormStatus <= 2" class="el-input__suffix datepicker-suffix" @click="form.S_B_BDATE = ''">
 												<i class="fa fa-times-circle"></i>
 											</span>
@@ -171,7 +171,7 @@
 					</el-form>
 				</el-tab-pane>
 				<el-tab-pane label="承(包)造單位基本資料" name="3">
-					<el-form ref="tab3Form" :rules="tab3Rules" :model="form" label-width="auto" :disabled="form.FormStatus >= 3" class="beauty-form">
+					<el-form ref="tab3Form" :rules="tab3Rules" :model="form" label-width="auto" class="beauty-form">
 						<!-- 承造單位資料 -->
 						<div class="contact-group">
 							<h3 class="group-title">承造單位資料</h3>
@@ -227,7 +227,7 @@
 								<el-col :md="12" :sm="24">
 									<el-form-item prop="R_B_BDATE" label="生日">
 										<div class="el-input el-input--suffix">
-											<input type="text" class="el-input__inner datepicker" data-key="R_B_BDATE" v-model="form.R_B_BDATE" :disabled="form.FormStatus > 2" readonly />
+											<input type="text" class="el-input__inner datepicker" data-key="R_B_BDATE" v-model="form.R_B_BDATE" readonly />
 											<span v-if="form.R_B_BDATE && form.FormStatus <= 2" class="el-input__suffix datepicker-suffix" @click="form.R_B_BDATE = ''">
 												<i class="fa fa-times-circle"></i>
 											</span>
@@ -352,7 +352,7 @@
 								</el-select>
 							</el-form-item>
 							<el-form-item label="空汙防制措施計畫書">
-								<el-select v-model="form.REC_YN" :disabled="form.FormStatus >= 3">
+								<el-select v-model="form.REC_YN">
 									<el-option label="有" value="有"></el-option>
 									<el-option label="無" value="無"></el-option>
 								</el-select>
