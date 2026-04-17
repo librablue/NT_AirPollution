@@ -67,7 +67,8 @@ namespace NT_AirPollution.WriteOffTask
                         {
                             // --- 解析資料 ---
                             string account = lines[i].Substring(8, 16);
-                            string fdate = lines[i].Substring(24, 6);
+                            // 對帳日期(格式為 "yyMMdd"，只有六碼，所以前面要補"1")
+                            string fdate = $"1{lines[i].Substring(24, 6)}";
                             int payAmount = Convert.ToInt32(lines[i].Substring(100, 10));
                             DateTime payDate = Convert.ToDateTime($"{2011 + Convert.ToInt32(lines[i].Substring(93, 2))}-{lines[i].Substring(95, 2)}-{lines[i].Substring(97, 2)}");
 
