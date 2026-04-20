@@ -255,6 +255,7 @@ namespace NT_AirPollution.Web.Controllers
                 form.TOWN_NA = allDists.First(o => o.Code == form.TOWN_NO).Name;
                 form.KIND = allProjectCode.First(o => o.ID == form.KIND_NO).Name;
                 form.A_KIND = allProjectCode.First(o => o.ID == form.KIND_NO).Kind;
+                form.AP_TYPE = "一般申報";
                 form.C_DATE = DateTime.Now;
                 form.M_DATE = DateTime.Now;
                 form.ClientUserID = BaseService.CurrentUser.ID;
@@ -281,13 +282,6 @@ namespace NT_AirPollution.Web.Controllers
                     form.AREA_B = null;
                     form.PERC_B = null;
                 }
-
-                //// 20240516 改審核後才產生單號
-                //string c_no = _accessService.GetC_NO(form);
-                //form.C_NO = c_no;
-
-                //// 寫入 Access
-                //_accessService.AddABUDF(form);
 
                 _formService.AddForm(form);
 

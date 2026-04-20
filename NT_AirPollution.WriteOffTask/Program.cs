@@ -158,7 +158,6 @@ namespace NT_AirPollution.WriteOffTask
                                 res.Penalty = 0;
                             }
 
-                            double sumPrice = Math.Round(res.CurrentPrice + res.Interest + res.Penalty, 0);
 
                             if (string.IsNullOrEmpty(form.AP_DATE1) && (res.Interest > 0 || res.Penalty > 0))
                             {
@@ -170,8 +169,8 @@ namespace NT_AirPollution.WriteOffTask
                                     S_DATE = res.StartDate.AddDays(res.ApplyDate <= res.StartDate ? 0 : 1).AddYears(-1911).ToString("yyyMMdd"),
                                     E_DATE = payDate.AddYears(-1911).ToString("yyyMMdd"),
                                     PERCENT = res.Rate,
-                                    F_AMT = sumPrice,
-                                    I_AMT = res.Interest,
+                                    F_AMT = res.CurrentPrice,
+                                    I_AMT = res.Interest + res.Penalty,
                                     PEN_AMT = res.Penalty,
                                     PEN_RATE = res.Penalty > 0 ? 0.5 : (double?)null,
                                     KEYIN = "EPB02",

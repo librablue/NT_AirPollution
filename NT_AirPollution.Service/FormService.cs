@@ -209,9 +209,9 @@ namespace NT_AirPollution.Service
                             DENSITYL = item.DENSITYL,
                             B_DATE = item.B_DATE,
                             E_DATE = item.E_DATE,
-                            B_YEAR = Math.Round((workDays - downDays + 1) / 365, 2, MidpointRounding.AwayFromZero),
+                            B_YEAR = Math.Round((workDays - downDays) / 365, 2, MidpointRounding.AwayFromZero),
                             S_AMT = item.S_AMT2,
-                            T_DAY = workDays - downDays + 1,
+                            T_DAY = workDays - downDays,
                             AREA_B = item.AREA_B,
                             AREA_F = item.AREA_F,
                             PERC_B = item.PERC_B,
@@ -528,9 +528,9 @@ namespace NT_AirPollution.Service
                             DENSITYL = form.DENSITYL,
                             B_DATE = form.B_DATE,
                             E_DATE = form.E_DATE,
-                            B_YEAR = Math.Round((workDays - downDays + 1) / 365, 2, MidpointRounding.AwayFromZero),
+                            B_YEAR = Math.Round((workDays - downDays) / 365, 2, MidpointRounding.AwayFromZero),
                             S_AMT = form.S_AMT2,
-                            T_DAY = workDays - downDays + 1,
+                            T_DAY = workDays - downDays,
                             AREA_B = form.AREA_B,
                             AREA_F = form.AREA_F,
                             PERC_B = form.PERC_B,
@@ -1671,7 +1671,7 @@ namespace NT_AirPollution.Service
 
                 abudf_1.FLNO = BotHelper.GetPayNo(transNo, sumPrice.ToString(), abudf_1.E_DATE);
                 abudf_1.F_AMT = sumPrice > 0 ? sumPrice : 0;
-                abudf_1.B_AMT = sumPrice > 0 ? 0 : sumPrice;
+                abudf_1.B_AMT = sumPrice > 0 ? 0 : Math.Abs(sumPrice);
                 abudf_1.KEYIN = "EPB02";
                 abudf_1.C_DATE = DateTime.Now;
                 abudf_1.M_DATE = DateTime.Now;
