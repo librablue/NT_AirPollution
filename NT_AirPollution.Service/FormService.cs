@@ -979,10 +979,13 @@ namespace NT_AirPollution.Service
             using (var cn = new SqlConnection(connStr))
             {
                 var projectCodes = cn.GetAll<ProjectCode>().ToList();
-                var projectCode = projectCodes.First(o => o.ID == form.FormB.KIND_NO);
 
                 // 判斷邏輯：若 AP_DATE1 為空則讀取 form，否則讀取 form.FormB
                 bool isApDate1Empty = string.IsNullOrEmpty(form.AP_DATE1);
+
+                // 工程類別取值
+                string kindNo = isApDate1Empty ? form.KIND_NO : form.FormB.KIND_NO;
+                var projectCode = projectCodes.First(o => o.ID == kindNo);
 
                 // 日期取值
                 string bDate = isApDate1Empty ? form.B_DATE : form.FormB.B_DATE;
@@ -991,8 +994,6 @@ namespace NT_AirPollution.Service
                 var diffDays = ((eDate.ToWestDate() - bDate.ToWestDate()).TotalDays + 1) - downDays;
 
                 double basicNum = 0;
-                // 類別代號取值
-                string kindNo = isApDate1Empty ? form.KIND_NO : form.FormB.KIND_NO;
 
                 switch (kindNo)
                 {
