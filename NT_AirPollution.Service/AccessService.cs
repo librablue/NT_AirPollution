@@ -212,7 +212,7 @@ namespace NT_AirPollution.Service
                             PERC_B = form.PERC_B,
                             COMP_NAM = form.COMP_NAM,
                             ADDR = form.ADDR,
-                            AP_TYPE = form.AP_TYPE,
+                            AP_TYPE = "一般申報",
                             UTME = Math.Round(form.UTME ?? 0, 0),
                             UTMN = Math.Round(form.UTMN ?? 0, 0),
                             LATLNG = form.LATLNG,
