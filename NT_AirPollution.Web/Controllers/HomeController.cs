@@ -36,6 +36,8 @@ namespace NT_AirPollution.Web.Controllers
         {
             ViewBag.UserCount = _clientUserService.GetUserCount();
             ViewBag.FormCount = _formService.GetFormsCount();
+            ViewBag.PaymentCount = _formService.GetPaymentCount();
+            ViewBag.Carbon = _formService.GetCarbon();
             return View();
         }
 

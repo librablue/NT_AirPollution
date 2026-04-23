@@ -20,7 +20,7 @@
 }
 
 <div class="main-wrap">
-    <h2 class="headline">從113年7月成立開始至 @DateTime.Now.Year 年 @DateTime.Now.Month 月 @DateTime.Now.Day 日止</h2>
+    <h2 class="headline">從115年4月成立開始至 @DateTime.Now.Year 年 @DateTime.Now.Month 月 @DateTime.Now.Day 日止</h2>
     <div class="count-row">
         <div class="count-item">
             <div class="counter">
@@ -38,17 +38,23 @@
         </div>
         <div class="count-item">
             <div class="counter">
-                <span class="num">0</span>
+                <span class="num">@ViewBag.PaymentCount.ToString("N0")</span>
                 <span class="unit">位</span>
             </div>
             <div class="count-text">線上繳費筆數<br />在家就能繳</div>
         </div>
         <div class="count-item">
             <div class="counter">
-                <span class="num">0</span>
-                <span class="unit">公噸</span>
+                <span class="num">@ViewBag.Carbon.ToString("N2")</span>
+                <span class="unit">公斤</span>
             </div>
-            <div class="count-text">碳排放量減少了公噸/CO<sub>2</sub>e</div>
+            <div class="count-text">
+                碳排放量減少了公斤 CO<sub>2</sub>e<br>
+                <div style="font-size:12px">
+                    (碳排放量使用:平均行駛距離(KM) * 0.173KG<br>
+                    CO<sub>2</sub>e/KM(燃油小客車)計算)
+                </div>
+            </div>
         </div>
     </div>
 </div>

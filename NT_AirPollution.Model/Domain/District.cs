@@ -14,5 +14,6 @@ namespace NT_AirPollution.Model.Domain
         public long ID { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
+        public double Carbon { get; set; }
     }
 }

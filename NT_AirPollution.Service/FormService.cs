@@ -474,10 +474,44 @@ namespace NT_AirPollution.Service
         {
             using (var cn = new SqlConnection(connStr))
             {
-                var counter = cn.QuerySingle<long>(@"
-                        SELECT COUNT(*) FROM Form");
+                var result = cn.QuerySingle<long>(@"
+                    SELECT COUNT(*) FROM Form");
 
-                return counter;
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// 取得繳費人數
+        /// </summary>
+        /// <returns></returns>
+        public long GetPaymentCount()
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                var result = cn.QuerySingle<long>(@"
+                    SELECT COUNT(*) FROM Payment
+                    WHERE BankLog IS NOT NULL");
+
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// 取得減碳量
+        /// </summary>
+        /// <returns></returns>
+        public double GetCarbon()
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                // 首期減碳1次，結算減碳1次
+                var result = cn.QuerySingle<double>(@"
+                    SELECT SUM(a2.Carbon*(1 + (CASE WHEN AP_DATE1 IS NOT NULL THEN 1 ELSE 0 END)))
+                    FROM Form AS a1
+                    INNER JOIN District AS a2 ON a1.TOWN_NO=a2.Code");
+
+                return result;
             }
         }
 
@@ -952,20 +986,47 @@ namespace NT_AirPollution.Service
         /// <returns></returns>
         private string GetChineseMoney(string inputNum)
         {
-            string[] intArr = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", };
-            string[] strArr = { "零", "壹", "貳", "參", "肆", "伍", "陸", "柒", "捌", "玖", };
-            //string[] Chinese = { "", "拾", "佰", "仟", "萬", "拾", "佰", "仟", "億" };
-            //金額
-            string[] Chinese = { "元", "拾", "佰", "仟", "萬", "拾", "佰", "仟", "億" };
-            char[] tmpArr = inputNum.ToString().ToArray();
-            string tmpVal = "";
-            for (int i = 0; i < tmpArr.Length; i++)
+            string[] strArr = { "零", "壹", "貳", "參", "肆", "伍", "陸", "柒", "捌", "玖" };
+            string[] unitArr = { "元", "拾", "佰", "仟", "萬", "拾", "佰", "仟", "億" };
+
+            char[] tmpArr = inputNum.ToCharArray();
+            string result = "";
+            int len = tmpArr.Length;
+
+            for (int i = 0; i < len; i++)
             {
-                tmpVal += strArr[tmpArr[i] - 48];//ASCII編碼 0為48
-                tmpVal += Chinese[tmpArr.Length - 1 - i];//根據對應的位數插入對應的單位
+                int num = tmpArr[i] - '0'; // 取得當前數字
+                int unitIndex = len - 1 - i; // 對應的單位索引
+
+                if (num != 0)
+                {
+                    result += strArr[num] + unitArr[unitIndex];
+                }
+                else
+                {
+                    // 處理「零」的邏輯
+                    // 1. 如果不是最後一位，且下一位不是零，則加上「零」
+                    // 2. 「萬」與「元」這類大單位通常需要保留（視需求而定，此處以基礎修正為主）
+                    if (unitIndex == 4) // 萬位
+                    {
+                        result += unitArr[unitIndex];
+                    }
+                    else if (unitIndex == 0) // 個位（元）
+                    {
+                        if (!result.EndsWith(unitArr[0])) result += unitArr[0];
+                    }
+                    else if (i < len - 1 && tmpArr[i + 1] != '0')
+                    {
+                        result += strArr[0];
+                    }
+                }
             }
 
-            return tmpVal;
+            // 最後修飾：處理連續出現「零元」或「零萬」的細節
+            result = result.Replace("零萬", "萬").Replace("零元", "元");
+            if (result.EndsWith("元")) result += "整";
+
+            return result;
         }
 
         /// <summary>
