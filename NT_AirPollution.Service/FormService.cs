@@ -1914,24 +1914,26 @@ namespace NT_AirPollution.Service
 
                 idx = 0;
                 // 已繳金額
-                //double paidAmount = form.Payments.Sum(o => o.PayAmount.GetValueOrDefault());
                 foreach (char item in form.P_AMT.ToString().Reverse())
                 {
                     ws.Row(10).Cell(16 - idx).SetValue(item.ToString());
                     idx += 2;
                 }
 
-                idx = 0;
                 // 應退金額
                 double returnMoney = form.S_AMT2.GetValueOrDefault() - form.P_AMT.GetValueOrDefault();
                 if (returnMoney > 0)
                     returnMoney = 0;
 
-                // 避免顯示負號
                 returnMoney = Math.Abs(returnMoney);
+
+                ws.Cell("B11").SetValue($"含滯納金及利息共：{returnMoney}元");
+
+                idx = 0;
+                // 避免顯示負號
                 foreach (char item in returnMoney.ToString().Reverse())
                 {
-                    ws.Row(11).Cell(16 - idx).SetValue(item.ToString());
+                    ws.Row(12).Cell(16 - idx).SetValue(item.ToString());
                     idx += 2;
                 }
 
@@ -1943,7 +1945,7 @@ namespace NT_AirPollution.Service
 
                 foreach (char item in appendMoney.ToString().Reverse())
                 {
-                    ws.Row(12).Cell(16 - idx).SetValue(item.ToString());
+                    ws.Row(13).Cell(16 - idx).SetValue(item.ToString());
                     idx += 2;
                 }
 
@@ -1952,7 +1954,7 @@ namespace NT_AirPollution.Service
                 double totalMoney = form.P_AMT.GetValueOrDefault() - returnMoney + appendMoney;
                 foreach (char item in totalMoney.ToString().Reverse())
                 {
-                    ws.Row(14).Cell(16 - idx).SetValue(item.ToString());
+                    ws.Row(15).Cell(16 - idx).SetValue(item.ToString());
                     idx += 2;
                 }
 
