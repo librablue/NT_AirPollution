@@ -19,6 +19,8 @@ namespace NT_AirPollution.Admin.Controllers
     public class AdminController : ApiController
     {
         private readonly AdminService _adminService = new AdminService();
+        private readonly ClientUserService _clientService = new ClientUserService();
+
         public AjaxResult Login(AdminUser user)
         {
             try
@@ -158,14 +160,22 @@ namespace NT_AirPollution.Admin.Controllers
 
         [CustomAuthorize]
         [HttpPost]
-        public List<AdminUser> GetUsers(AdminUserFilterView filter)
+        public List<AdminUser> GetAdminUsers(UserFilterView filter)
         {
             var result = _adminService.GetUsers(filter);
             return result;
         }
 
         [CustomAuthorize]
-        public AjaxResult AddUser(AdminUser user)
+        [HttpPost]
+        public IEnumerable<ClientUser> GetClientUsers(UserFilterView filter)
+        {
+            var result = _clientService.GetClientUsers(filter);
+            return result;
+        }
+
+        [CustomAuthorize]
+        public AjaxResult AddAdminUser(AdminUser user)
         {
             try
             {
@@ -179,11 +189,44 @@ namespace NT_AirPollution.Admin.Controllers
         }
 
         [CustomAuthorize]
-        public AjaxResult UpdateUser(AdminUser user)
+        public AjaxResult AddClientUser(ClientUser user)
+        {
+            try
+            {
+                _clientService.AddUser(user);
+                return new AjaxResult { Status = true };
+            }
+            catch (Exception ex)
+            {
+                return new AjaxResult { Status = false, Message = ex.Message };
+            }
+        }
+
+        [CustomAuthorize]
+        public AjaxResult UpdateAdminUser(AdminUser user)
         {
             try
             {
                 _adminService.UpdateUser(user);
+                return new AjaxResult { Status = true };
+            }
+            catch (Exception ex)
+            {
+                return new AjaxResult { Status = false, Message = ex.Message };
+            }
+        }
+
+        [CustomAuthorize]
+        public AjaxResult UpdateClientUser(ClientUser user)
+        {
+            try
+            {
+                if (!user.Enabled)
+                    user.DeleteDate = DateTime.Now;
+                else
+                    user.DeleteDate = null;
+
+                _clientService.UpdateUser(user);
                 return new AjaxResult { Status = true };
             }
             catch (Exception ex)

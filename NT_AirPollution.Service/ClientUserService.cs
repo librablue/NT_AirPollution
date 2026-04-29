@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Dapper.Contrib.Extensions;
 using NT_AirPollution.Model.Domain;
+using NT_AirPollution.Model.View;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -12,6 +13,34 @@ namespace NT_AirPollution.Service
 {
     public class ClientUserService : BaseService
     {
+        /// <summary>
+        /// 取得前台使用者
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<ClientUser> GetClientUsers(UserFilterView filter)
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                var result = cn.Query<ClientUser>(@"
+					SELECT *
+					FROM dbo.ClientUser
+					WHERE (@Email='' OR Email LIKE '%' + @Email + '%')
+					    AND (@UserName='' OR UserName LIKE '%' + @UserName + '%')",
+                        new
+                        {
+                            Email = filter.Email ?? "",
+                            UserName = filter.UserName ?? ""
+                        });
+
+                foreach (var item in result)
+                {
+                    item.Enabled = item.DeleteDate == null;
+                }
+
+                return result;
+            }
+        }
+
         /// <summary>
         /// 檢查Email帳號是否存在
         /// </summary>
@@ -107,7 +136,7 @@ namespace NT_AirPollution.Service
         /// <param name="user"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public bool UpdateClientUser(ClientUser user)
+        public bool UpdateUser(ClientUser user)
         {
             using (var cn = new SqlConnection(connStr))
             {

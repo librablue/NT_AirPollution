@@ -1,7 +1,7 @@
 <template>
 	<vxe-modal class="edit-modal" title="建立使用者" v-model="visible" width="33%" :lock-scroll="false" esc-closable resize show-footer>
 		<template #default>
-			<el-form ref="form" :model="user" :rules="rules" label-position="top">
+			<el-form ref="form" size="small" :model="user" :rules="rules" label-position="top">
 				<el-row type="flex">
 					<el-col :span="12">
 						<el-form-item prop="Account" label="帳號">
@@ -39,7 +39,7 @@
 			<el-button @click="visible = false">
 				<i class="fa fa-ban"></i> 取 消
 			</el-button>
-			<el-button type="primary" @click="save()">
+			<el-button type="primary" @click="saveUser">
 				<i class="fa fa-floppy-o"></i> 儲 存
 			</el-button>
 		</template>
@@ -47,7 +47,7 @@
 </template>
 <script>
 export default {
-	name: 'UserModal',
+	name: 'AdminUserModal',
 	props: ['show', 'data', 'roles'],
 	data() {
 		return {
@@ -64,7 +64,7 @@ export default {
 		};
 	},
 	methods: {
-		save() {
+		saveUser() {
 			this.$refs.form.validate(valid => {
 				if (!valid) {
 					this.$message.error('呃，欄位驗證錯誤');
@@ -72,7 +72,7 @@ export default {
 				}
 
 				// 用有無ID判斷新增or修改
-				const url = `api/Admin/${this.user.ID ? 'UpdateUser' : 'AddUser'}`;
+				const url = `api/Admin/${this.user.ID ? 'UpdateAdminUser' : 'AddAdminUser'}`;
 				this.axios
 					.post(url, this.user)
 					.then(res => {

@@ -56,9 +56,14 @@ export default new Router({
 					component: (resolve) => require(['@/components/function/Download'], resolve)
 				},
                 {
-					path: '/manage/user',
-					name: 'manage_user',
-					component: (resolve) => require(['@/components/manage/User'], resolve)
+					path: '/manage/clientuser',
+					name: 'manage_clientuser',
+					component: (resolve) => require(['@/components/manage/ClientUser'], resolve)
+				},
+                {
+					path: '/manage/adminuser',
+					name: 'manage_adminuser',
+					component: (resolve) => require(['@/components/manage/AdminUser'], resolve)
 				}
 			]
 		}

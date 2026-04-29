@@ -17,7 +17,11 @@
 					<el-menu-item index="function_road" route="/function/road">道路認養回報</el-menu-item>
 					<el-menu-item index="function_rate" route="/function/rate">郵局利率管理</el-menu-item>
 					<el-menu-item index="function_download" route="/function/download">下載專區</el-menu-item>
-					<el-menu-item index="manage_user" route="/manage/user">使用者管理</el-menu-item>
+					<el-submenu index="manage_user">
+						<template slot="title">使用者管理</template>
+						<el-menu-item index="manage_clientuser" route="/manage/clientuser">前台使用者</el-menu-item>
+						<el-menu-item index="manage_adminuser" route="/manage/adminuser">後台使用者</el-menu-item>
+					</el-submenu>
 				</el-menu>
 			</div>
 			<div>

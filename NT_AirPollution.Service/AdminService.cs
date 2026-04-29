@@ -73,7 +73,7 @@ namespace NT_AirPollution.Service
         /// </summary>
         /// <param name="filter"></param>
         /// <returns></returns>
-        public List<AdminUser> GetUsers(AdminUserFilterView filter)
+        public List<AdminUser> GetUsers(UserFilterView filter)
         {
             using (var cn = new SqlConnection(connStr))
             {

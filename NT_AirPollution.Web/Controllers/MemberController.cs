@@ -327,7 +327,7 @@ namespace NT_AirPollution.Web.Controllers
                     throw new Exception("查無此 Email 帳號。");
 
                 userInDB.Password = user.Password;
-                _clientUserService.UpdateClientUser(userInDB);
+                _clientUserService.UpdateUser(userInDB);
 
                 return Json(new AjaxResult { Status = true });
             }
@@ -345,7 +345,7 @@ namespace NT_AirPollution.Web.Controllers
             {
                 var userInDB = _clientUserService.GetUserByID(BaseService.CurrentUser.ID);
                 userInDB.UserName = user.UserName;
-                _clientUserService.UpdateClientUser(userInDB);
+                _clientUserService.UpdateUser(userInDB);
                 return Json(new AjaxResult { Status = true });
             }
             catch (Exception ex)
@@ -371,7 +371,7 @@ namespace NT_AirPollution.Web.Controllers
                 }
 
                 userInDB.Password = user.Password;
-                _clientUserService.UpdateClientUser(userInDB);
+                _clientUserService.UpdateUser(userInDB);
                 return Json(new AjaxResult { Status = true });
             }
             catch (Exception ex)

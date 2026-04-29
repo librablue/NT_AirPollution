@@ -89,7 +89,7 @@
     <Compile Include="Enum\UserType.cs" />
     <Compile Include="Enum\FormStatus.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="View\AdminUserFilterView.cs" />
+    <Compile Include="View\UserFilterView.cs" />
     <Compile Include="View\CalcMoneyResult.cs" />
     <Compile Include="View\Downloads.cs" />
     <Compile Include="View\PaymentInfo.cs" />
