@@ -113,9 +113,6 @@ namespace NT_AirPollution.WriteOffTask
                             actualPayment.BankLog = lines[i];
                             _formService.UpdatePayment(actualPayment);
 
-                            // --- 更新 ABUDF ---
-                            _accessService.UpdateABUDFByColumn(form.C_NO, form.SER_NO.Value, "FIN_DATE", taiwanDate);
-
                             // --- 更新 ABUDF_1 ---
                             var abudf_1 = new ABUDF_1
                             {
