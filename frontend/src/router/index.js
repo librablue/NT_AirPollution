@@ -36,16 +36,6 @@ export default new Router({
 					component: (resolve) => require(['@/components/function/News'], resolve)
 				},
                 {
-					path: '/function/air',
-					name: 'function_air',
-					component: (resolve) => require(['@/components/function/Air'], resolve)
-				},
-                {
-					path: '/function/road',
-					name: 'function_road',
-					component: (resolve) => require(['@/components/function/Road'], resolve)
-				},
-                {
 					path: '/function/rate',
 					name: 'function_rate',
 					component: (resolve) => require(['@/components/function/Rate'], resolve)
