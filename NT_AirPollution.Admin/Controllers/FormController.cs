@@ -323,10 +323,6 @@ namespace NT_AirPollution.Admin.Controllers
                 if (form.S_AMT2 > form.P_AMT) form.CalcStatus = CalcStatus.通過待繳費;
                 else if (diff == 0) form.CalcStatus = CalcStatus.繳退費完成;
                 else form.CalcStatus = diff < 4000 ? CalcStatus.通過待退費小於4000 : CalcStatus.通過待退費大於4000;
-
-                // 同步外部資料庫
-                _accessService.UpdateABUDFByColumn(form.C_NO, form.SER_NO.Value, "FIN_COM", taiwanDate);
-                _accessService.UpdateABUDFByColumn(form.C_NO, form.SER_NO.Value, "FIN_DATE", taiwanDate);
             }
 
             // 3. 結算狀態複審日期標註
@@ -335,12 +331,11 @@ namespace NT_AirPollution.Admin.Controllers
                 form.VerifyDate2 = now;
                 form.VerifyStage2 = VerifyStage.複審通過;
 
-                // 如果是完款或退費階段，標記完成日期
-                if (form.CalcStatus != CalcStatus.通過待繳費)
-                {
-                    form.FIN_COM = taiwanDate;
-                    form.FIN_DATE = taiwanDate;
-                }
+                form.FIN_COM = taiwanDate;
+                form.FIN_DATE = taiwanDate;
+                // 同步外部資料庫
+                _accessService.UpdateABUDFByColumn(form.C_NO, form.SER_NO.Value, "FIN_COM", taiwanDate);
+                _accessService.UpdateABUDFByColumn(form.C_NO, form.SER_NO.Value, "FIN_DATE", taiwanDate);
             }
             else
             {
