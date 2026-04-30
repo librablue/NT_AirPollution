@@ -232,7 +232,7 @@ namespace NT_AirPollution.Admin.Controllers
 
                 // --- 3. 繳費單產生 ---
                 // 狀態大於待補件(2)則產生 PDF
-                if ((int)form.FormStatus > 2)
+                if (form.FormStatus > FormStatus.待補件)
                 {
                     _formService.CreatePaymentPDF("", form);
                 }
