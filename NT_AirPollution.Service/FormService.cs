@@ -1900,9 +1900,9 @@ namespace NT_AirPollution.Service
                 ws.Cell("C4").SetValue(form.ADDR);
                 ws.Cell("C5").SetValue(form.B_SERNO);
                 ws.Cell("C6").SetValue(form.S_NAME);
-                ws.Cell("E28").SetValue(DateTime.Now.AddYears(-1911).ToString("yyy"));
-                ws.Cell("I28").SetValue(DateTime.Now.ToString("MM"));
-                ws.Cell("M28").SetValue(DateTime.Now.ToString("dd"));
+                ws.Cell("E29").SetValue(DateTime.Now.AddYears(-1911).ToString("yyy"));
+                ws.Cell("I29").SetValue(DateTime.Now.ToString("MM"));
+                ws.Cell("M29").SetValue(DateTime.Now.ToString("dd"));
 
                 int idx = 0;
                 // 應繳金額
