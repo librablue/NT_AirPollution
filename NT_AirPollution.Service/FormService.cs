@@ -1914,24 +1914,27 @@ namespace NT_AirPollution.Service
 
                 idx = 0;
                 // 已繳金額
-                foreach (char item in form.P_AMT.ToString().Reverse())
+                var payment = form.Payments.FirstOrDefault(o => o.Term == "01");
+                foreach (char item in (payment?.PayableAmount ?? 0).ToString().Reverse())
                 {
                     ws.Row(10).Cell(16 - idx).SetValue(item.ToString());
                     idx += 2;
                 }
 
                 // 應退金額
-                double returnMoney = form.S_AMT2.GetValueOrDefault() - form.P_AMT.GetValueOrDefault();
-                if (returnMoney > 0)
-                    returnMoney = 0;
-
-                returnMoney = Math.Abs(returnMoney);
+                double returnMoney = (payment?.PayableAmount ?? 0) - form.S_AMT2.GetValueOrDefault();
 
                 ws.Cell("B11").SetValue($"含滯納金及利息共：{returnMoney}元");
 
+
+                // 如果已繳>應繳，應退金額顯示0
+                if (returnMoney > 0)
+                    returnMoney = 0;
+                
+
                 idx = 0;
                 // 避免顯示負號
-                foreach (char item in returnMoney.ToString().Reverse())
+                foreach (char item in Math.Abs(returnMoney).ToString().Reverse())
                 {
                     ws.Row(12).Cell(16 - idx).SetValue(item.ToString());
                     idx += 2;
