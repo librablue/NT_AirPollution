@@ -194,7 +194,7 @@ namespace NT_AirPollution.Service
                             FormID = item.ID,
                             C_NO = item.C_NO,
                             SER_NO = item.SER_NO,
-                            AP_DATE1 = "",
+                            AP_DATE1 = null,
                             B_STAT = B_STAT,
                             B_CSTAT = "",
                             KIND_NO = item.KIND_NO,
@@ -1906,7 +1906,7 @@ namespace NT_AirPollution.Service
 
                 int idx = 0;
                 // 應繳金額
-                foreach (char item in form.S_AMT2.ToString().Reverse())
+                foreach (char item in form.S_AMT.ToString().Reverse())
                 {
                     ws.Row(9).Cell(16 - idx).SetValue(item.ToString());
                     idx += 2;
@@ -1922,7 +1922,7 @@ namespace NT_AirPollution.Service
                 }
 
                 // 應退金額
-                double returnMoney = (payment?.PayableAmount ?? 0) - form.S_AMT2.GetValueOrDefault();
+                double returnMoney = (payment?.PayableAmount ?? 0) - form.S_AMT.GetValueOrDefault();
 
                 ws.Cell("B11").SetValue($"含滯納金及利息共：{returnMoney}元");
 
