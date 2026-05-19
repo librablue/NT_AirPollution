@@ -773,7 +773,8 @@ namespace NT_AirPollution.Service
             {
                 // 找出銷帳檔的那筆銷帳單號
                 var actualPayment = cn.QueryFirstOrDefault<Payment>(@"
-                    SELECT * FROM dbo.Payment WHERE PaymentID=@PaymentID",
+                    SELECT * FROM dbo.Payment
+                    WHERE PaymentID=@PaymentID OR PostPaymentID=@PaymentID",
                     new { PaymentID = paymentID });
 
                 if (actualPayment == null) return new List<Payment>();
@@ -1742,6 +1743,15 @@ namespace NT_AirPollution.Service
                 #endregion
 
 
+                // 產生條碼
+                string barcodeMarketA = BotHelper.GetMarketNo(abudf_1.E_DATE);
+                string barcodeMarketB = abudf_1.FLNO;
+                string barcodeMarketC = BotHelper.GetMarketAmt("0032", sumPrice.ToString(), abudf_1.FLNO, abudf_1.E_DATE);
+                string barcodePostA = "19834251";
+                string barcodePostB = BotHelper.GetPostNo(transNo, abudf_1.F_AMT.ToString(), abudf_1.E_DATE);
+                string barcodePostC = BotHelper.GetPostAmt(abudf_1.F_AMT.ToString());
+
+
                 #region 寫入Payment
                 var payment = this.GetPaymentByPaymentID(abudf_1.FLNO);
                 if (payment == null)
@@ -1752,7 +1762,8 @@ namespace NT_AirPollution.Service
                         FormID = form.ID,
                         Term = abudf_1.P_TIME,
                         PayEndDate = res.PayEndDate,
-                        PaymentID = abudf_1.FLNO,
+                        PaymentID = barcodeMarketB,
+                        PostPaymentID = barcodePostB,
                         PayableAmount = sumPrice,
                         Penalty = res.Penalty,
                         Interest = res.Interest,
@@ -1779,12 +1790,6 @@ namespace NT_AirPollution.Service
                 // 如果沒傳入檔名就不做PDF轉檔
                 if (string.IsNullOrEmpty(fileName)) return "";
 
-                string barcodeMarketA = BotHelper.GetMarketNo(abudf_1.E_DATE);
-                string barcodeMarketB = abudf_1.FLNO;
-                string barcodeMarketC = BotHelper.GetMarketAmt("0032", sumPrice.ToString(), abudf_1.FLNO, abudf_1.E_DATE);
-                string barcodePostA = "19834251";
-                string barcodePostB = BotHelper.GetPostNo(transNo, abudf_1.F_AMT.ToString(), abudf_1.E_DATE);
-                string barcodePostC = BotHelper.GetPostAmt(abudf_1.F_AMT.ToString());
 
                 var wb = new XLWorkbook(templateFile);
                 var ws = wb.Worksheet(1);

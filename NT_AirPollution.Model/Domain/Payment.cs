@@ -22,9 +22,13 @@ namespace NT_AirPollution.Model.Domain
         /// </summary>
         public DateTime PayEndDate { get; set; }
         /// <summary>
-        /// 帳號
+        /// 超商繳費帳號
         /// </summary>
         public string PaymentID { get; set; }
+        /// <summary>
+        /// 郵局繳費帳號
+        /// </summary>
+        public string PostPaymentID { get; set; }
         /// <summary>
         /// 應繳金額(含滯納金&利息)
         /// </summary>
