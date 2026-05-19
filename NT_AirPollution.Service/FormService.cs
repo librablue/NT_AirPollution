@@ -749,42 +749,22 @@ namespace NT_AirPollution.Service
             }
         }
 
+        /// <summary>
+        /// 取得申請單所有銷帳單號
+        /// </summary>
+        /// <param name="paymentID"></param>
+        /// <returns></returns>
         public Payment GetPaymentByPaymentID(string paymentID)
         {
             using (var cn = new SqlConnection(connStr))
             {
                 // 找出銷帳檔的那筆銷帳單號
                 var payment = cn.QueryFirstOrDefault<Payment>(@"
-                    SELECT * FROM dbo.Payment WHERE PaymentID=@PaymentID",
-                    new { PaymentID = paymentID });
-
-                return payment;
-            }
-        }
-
-        /// <summary>
-        /// 取得申請單所有銷帳單號
-        /// </summary>
-        /// <param name="paymentID"></param>
-        /// <returns></returns>
-        public List<Payment> GetAllPaymentByPaymentID(string paymentID)
-        {
-            using (var cn = new SqlConnection(connStr))
-            {
-                // 找出銷帳檔的那筆銷帳單號
-                var actualPayment = cn.QueryFirstOrDefault<Payment>(@"
                     SELECT * FROM dbo.Payment
                     WHERE PaymentID=@PaymentID OR PostPaymentID=@PaymentID",
                     new { PaymentID = paymentID });
 
-                if (actualPayment == null) return new List<Payment>();
-
-                // 找出相同FormID的所有銷帳單號
-                var allPayment = cn.Query<Payment>(@"
-                    SELECT * FROM dbo.Payment WHERE FormID=@FormID",
-                    new { FormID = actualPayment?.FormID }).ToList();
-
-                return allPayment;
+                return payment;
             }
         }
 
@@ -824,46 +804,30 @@ namespace NT_AirPollution.Service
         {
             using (var cn = new SqlConnection(connStr))
             {
-                cn.Open();
-                using (var trans = cn.BeginTransaction())
+                try
                 {
-                    try
-                    {
-                        // 因每次下載繳費單都會新增一筆銷帳編號紀錄，因此沖帳時刪除多餘的銷帳編號
-                        cn.Execute(@"
-                            DELETE FROM dbo.Payment WHERE FormID=@FormID AND PaymentID<>@PaymentID",
-                            new
-                            {
-                                FormID = payment.FormID,
-                                PaymentID = payment.PaymentID
-                            }, trans);
+                    // 更新繳款資訊
+                    cn.Execute(@"
+                        UPDATE dbo.Payment
+                            SET PayAmount=@PayAmount,
+                            PayDate=@PayDate,
+                            ModifyDate=GETDATE(),
+                            BankLog=@BankLog
+                        WHERE FormID=@FormID",
+                        new
+                        {
+                            PayAmount = payment.PayAmount,
+                            PayDate = payment.PayDate,
+                            BankLog = payment.BankLog,
+                            FormID = payment.FormID
+                        });
 
-
-                        // 更新繳款資訊
-                        cn.Execute(@"
-                            UPDATE dbo.Payment
-                                SET PayAmount=@PayAmount,
-                                PayDate=@PayDate,
-                                ModifyDate=GETDATE(),
-                                BankLog=@BankLog
-                            WHERE FormID=@FormID",
-                            new
-                            {
-                                PayAmount = payment.PayAmount,
-                                PayDate = payment.PayDate,
-                                BankLog = payment.BankLog,
-                                FormID = payment.FormID
-                            }, trans);
-
-                        trans.Commit();
-                        return true;
-                    }
-                    catch (Exception ex)
-                    {
-                        trans.Rollback();
-                        Logger.Error($"UpdatePayment: {ex.StackTrace}|{ex.Message}");
-                        return false;
-                    }
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"UpdatePayment: {ex.StackTrace}|{ex.Message}");
+                    return false;
                 }
             }
         }

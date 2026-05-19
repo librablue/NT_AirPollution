@@ -1001,9 +1001,9 @@ namespace NT_AirPollution.Service
         /// 更新ABUDF_1
         /// </summary>
         /// <param name="abudf_1"></param>
-        /// <param name="lastFLNO">最新的銷帳編號</param>
+        /// <param name="userSelectFLNO">user選擇的銷帳編號</param>
         /// <returns></returns>
-        public bool UpdateABUDF_1(ABUDF_1 abudf_1, string lastFLNO)
+        public bool UpdateABUDF_1(ABUDF_1 abudf_1, string userSelectFLNO)
         {
             try
             {
@@ -1015,22 +1015,22 @@ namespace NT_AirPollution.Service
                 {
                     cn.Execute(@"
                         UPDATE ABUDF_1
-                            SET [FLNO]=@FLNO,
+                            SET [FLNO]=@userSelectFLNO,
                                 [F_DATE]=@F_DATE,
                                 [F_AMT]=@F_AMT,
                                 [PM_DATE]=@PM_DATE,
                                 [A_DATE]=@A_DATE,
                                 [M_DATE]=@M_DATE
-                        WHERE [FLNO]=@lastFLNO",
+                        WHERE [FLNO]=@FLNO",
                         new
                         {
-                            FLNO = abudf_1.FLNO,
+                            userSelectFLNO = userSelectFLNO,
                             F_DATE = abudf_1.F_DATE,
                             F_AMT = abudf_1.F_AMT,
                             PM_DATE = abudf_1.PM_DATE,
                             A_DATE = abudf_1.A_DATE,
                             M_DATE = abudf_1.M_DATE.ToString("yyyy-MM-dd HH:mm:ss"),
-                            lastFLNO = lastFLNO
+                            FLNO = abudf_1.FLNO,
                         }, commandTimeout: 180);
 
                     return true;
