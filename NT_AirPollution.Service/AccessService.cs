@@ -1021,7 +1021,7 @@ namespace NT_AirPollution.Service
                                 [PM_DATE]=@PM_DATE,
                                 [A_DATE]=@A_DATE,
                                 [M_DATE]=@M_DATE
-                        WHERE [FLNO]=@FLNO",
+                        WHERE [FLNO]=@FLNO AND [C_NO]=@C_NO",
                         new
                         {
                             userSelectFLNO = userSelectFLNO,
@@ -1031,6 +1031,7 @@ namespace NT_AirPollution.Service
                             A_DATE = abudf_1.A_DATE,
                             M_DATE = abudf_1.M_DATE.ToString("yyyy-MM-dd HH:mm:ss"),
                             FLNO = abudf_1.FLNO,
+                            C_NO = abudf_1.C_NO
                         }, commandTimeout: 180);
 
                     return true;

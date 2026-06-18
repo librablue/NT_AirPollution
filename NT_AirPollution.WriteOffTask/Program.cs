@@ -113,7 +113,8 @@ namespace NT_AirPollution.WriteOffTask
                                 PM_DATE = payDate.AddYears(-1911).ToString("yyyMMdd"),
                                 A_DATE = taiwanDate,
                                 M_DATE = DateTime.Now,
-                                FLNO = paymentsInDB.PaymentID
+                                FLNO = paymentsInDB.PaymentID,
+                                C_NO = form.C_NO
                             };
                             _accessService.UpdateABUDF_1(abudf_1, account);
 
