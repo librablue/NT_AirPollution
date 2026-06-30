@@ -5,9 +5,9 @@
 				<el-form-item label="管制編號">{{C_NO}}</el-form-item>
 				<el-form-item label="申報應繳金額">{{(form.S_AMT === null ? '未結算' : form.S_AMT) | comma}}</el-form-item>
 				<el-form-item label="結算應繳金額">{{(form.S_AMT2 === null ? '未結算' : form.S_AMT2) | comma}}</el-form-item>
-                <el-form-item v-if="form.FormB" label="是否短漏報">
-                    <el-switch active-value="是" inactive-value="否" v-model="form.FormB.WRONG_AP"></el-switch>
-                </el-form-item>
+				<el-form-item v-if="form.FormB" label="是否短漏報">
+					<el-switch active-value="是" inactive-value="否" v-model="form.FormB.WRONG_AP"></el-switch>
+				</el-form-item>
 			</el-form>
 			<el-tabs v-model="activeTab">
 				<el-tab-pane label="工地基本資料" name="1">
@@ -81,7 +81,7 @@
 								</el-col>
 								<el-col :md="8" :sm="24">
 									<el-form-item prop="S_G_NO" label="營利事業統一編號">
-										<el-input v-model="form.S_G_NO" maxlength="8"></el-input>
+										<el-input type="number" v-model="form.S_G_NO" maxlength="8"></el-input>
 									</el-form-item>
 								</el-col>
 								<el-col :md="8" :sm="24">
@@ -183,7 +183,7 @@
 								</el-col>
 								<el-col :md="8" :sm="24">
 									<el-form-item prop="R_G_NO" label="營利事業統一編號">
-										<el-input v-model="form.R_G_NO" maxlength="8"></el-input>
+										<el-input type="number" v-model="form.R_G_NO" maxlength="8"></el-input>
 									</el-form-item>
 								</el-col>
 								<el-col :md="8" :sm="24">
@@ -706,12 +706,27 @@ export default {
 			tab1Rules: Object.freeze({
 				PUB_COMP: [{ required: true, message: '請選擇案件類型', trigger: 'change' }],
 				TOWN_NO: [{ required: true, message: '請選擇鄉鎮分類', trigger: 'change' }],
-				CreateUserName: [{ required: true, message: '請輸入申請人姓名', trigger: 'blur' }],
-				CreateUserEmail: [{ required: true, message: '請輸入申請人電子信箱', trigger: 'blur' }],
-				COMP_NAM: [{ required: true, message: '請輸入工程名稱', trigger: 'blur' }],
+				CreateUserName: [
+					{ required: true, message: '請輸入申請人姓名', trigger: 'blur' },
+					{ pattern: /[^\s]/, message: '請輸入申請人姓名', trigger: 'blur' }
+				],
+				CreateUserEmail: [
+					{ required: true, message: '請輸入申請人電子信箱', trigger: 'blur' },
+					{ pattern: /[^\s]/, message: '請輸入申請人電子信箱', trigger: 'blur' }
+				],
+				COMP_NAM: [
+					{ required: true, message: '請輸入工程名稱', trigger: 'blur' },
+					{ pattern: /[^\s]/, message: '請輸入工程名稱', trigger: 'blur' }
+				],
 				KIND_NO: [{ required: true, message: '請選擇工程類別', trigger: 'change' }],
-				ADDR: [{ required: true, message: '請輸入工地地址或地號', trigger: 'blur' }],
-				B_SERNO: [{ required: true, message: '請輸入建照字號或合約編號', trigger: 'blur' }],
+				ADDR: [
+					{ required: true, message: '請輸入工地地址或地號', trigger: 'blur' },
+					{ pattern: /[^\s]/, message: '請輸入工地地址或地號', trigger: 'blur' }
+				],
+				B_SERNO: [
+					{ required: true, message: '請輸入建照字號或合約編號', trigger: 'blur' },
+					{ pattern: /[^\s]/, message: '請輸入建照字號或合約編號', trigger: 'blur' }
+				],
 				LAT: [
 					{ required: true, message: '請輸入座標(緯度)', trigger: 'blur' },
 					{ validator: checkLATLNG, trigger: 'blur' }
@@ -720,34 +735,101 @@ export default {
 					{ required: true, message: '請輸入座標(經度)', trigger: 'blur' },
 					{ validator: checkLATLNG, trigger: 'blur' }
 				],
-				STATE: [{ required: true, message: '請輸入工程內容概述', trigger: 'blur' }]
+				STATE: [
+					{ required: true, message: '請輸入工程內容概述', trigger: 'blur' },
+					{ pattern: /[^\s]/, message: '請輸入工程內容概述', trigger: 'blur' }
+				]
 			}),
 			tab2Rules: Object.freeze({
-				S_NAME: [{ required: true, message: '請輸入營建業主名稱', trigger: 'blur' }],
-				S_ADDR1: [{ required: true, message: '請輸入營利事業營業地址', trigger: 'blur' }],
-				S_ADDR2: [{ required: true, message: '請輸入營利事業聯絡地址', trigger: 'blur' }],
-				S_TEL: [{ required: true, message: '請輸入營利事業主連絡電話', trigger: 'blur' }],
-				S_B_NAM: [{ required: true, message: '請輸入營利事業負責人姓名', trigger: 'blur' }],
-				S_B_TIT: [{ required: true, message: '請輸入營利事業負責人職稱', trigger: 'blur' }],
+				S_NAME: [
+					{ required: true, message: '請輸入營建業主名稱', trigger: 'blur' },
+					{ pattern: /[^\s]/, message: '請輸入營建業主名稱', trigger: 'blur' }
+				],
+				S_G_NO: [
+					{ required: true, message: '請輸入營利事業統一編號', trigger: 'blur' },
+					{ pattern: /[^\s]/, message: '請輸入營利事業統一編號', trigger: 'blur' }
+				],
+				S_ADDR1: [
+					{ required: true, message: '請輸入營利事業營業地址', trigger: 'blur' },
+					{ pattern: /[^\s]/, message: '請輸入營利事業營業地址', trigger: 'blur' }
+				],
+				S_ADDR2: [
+					{ required: true, message: '請輸入營利事業聯絡地址', trigger: 'blur' },
+					{ pattern: /[^\s]/, message: '請輸入營利事業聯絡地址', trigger: 'blur' }
+				],
+				S_TEL: [
+					{ required: true, message: '請輸入營利事業主連絡電話', trigger: 'blur' },
+					{ pattern: /[^\s]/, message: '請輸入營利事業主連絡電話', trigger: 'blur' }
+				],
+				S_B_NAM: [
+					{ required: true, message: '請輸入營利事業負責人姓名', trigger: 'blur' },
+					{ pattern: /[^\s]/, message: '請輸入營利事業負責人姓名', trigger: 'blur' }
+				],
+				S_B_TIT: [
+					{ required: true, message: '請輸入營利事業負責人職稱', trigger: 'blur' },
+					{ pattern: /[^\s]/, message: '請輸入營利事業負責人職稱', trigger: 'blur' }
+				],
 				// S_B_ID: [{ validator: checkS_B_ID, trigger: 'blur' }],
-				S_C_NAM: [{ required: true, message: '請輸入營利事業聯絡人姓名', trigger: 'blur' }],
-				S_C_TIT: [{ required: true, message: '請輸入營利事業聯絡人職稱', trigger: 'blur' }],
+				S_C_NAM: [
+					{ required: true, message: '請輸入營利事業聯絡人姓名', trigger: 'blur' },
+					{ pattern: /[^\s]/, message: '請輸入營利事業聯絡人姓名', trigger: 'blur' }
+				],
+				S_C_TIT: [
+					{ required: true, message: '請輸入營利事業聯絡人職稱', trigger: 'blur' },
+					{ pattern: /[^\s]/, message: '請輸入營利事業聯絡人職稱', trigger: 'blur' }
+				],
 				// S_C_ID: [{ validator: checkS_C_ID, trigger: 'blur' }],
-				S_C_ADDR: [{ required: true, message: '請輸入營利事業聯絡人地址', trigger: 'blur' }],
-				S_C_TEL: [{ required: true, message: '請輸入營利事業聯絡人電話', trigger: 'blur' }]
+				S_C_ADDR: [
+					{ required: true, message: '請輸入營利事業聯絡人地址', trigger: 'blur' },
+					{ pattern: /[^\s]/, message: '請輸入營利事業聯絡人地址', trigger: 'blur' }
+				],
+				S_C_TEL: [
+					{ required: true, message: '請輸入營利事業聯絡人電話', trigger: 'blur' },
+					{ pattern: /[^\s]/, message: '請輸入營利事業聯絡人電話', trigger: 'blur' }
+				]
 			}),
 			tab3Rules: Object.freeze({
-				R_NAME: [{ required: true, message: '請輸入承造單位名稱', trigger: 'blur' }],
-				R_ADDR1: [{ required: true, message: '請輸入承造營業地址', trigger: 'blur' }],
-				R_ADDR2: [{ required: true, message: '請輸入承造聯絡地址', trigger: 'blur' }],
-				R_TEL: [{ required: true, message: '請輸入承造連絡電話', trigger: 'blur' }],
-				R_B_NAM: [{ required: true, message: '請輸入承造負責人姓名', trigger: 'blur' }],
-				R_B_TIT: [{ required: true, message: '請輸入承造負責人職稱', trigger: 'blur' }],
+				R_NAME: [
+					{ required: true, message: '請輸入承造單位名稱', trigger: 'blur' },
+					{ pattern: /[^\s]/, message: '請輸入承造單位名稱', trigger: 'blur' }
+				],
+				R_ADDR1: [
+					{ required: true, message: '請輸入承造營業地址', trigger: 'blur' },
+					{ pattern: /[^\s]/, message: '請輸入承造營業地址', trigger: 'blur' }
+				],
+				R_ADDR2: [
+					{ required: true, message: '請輸入承造聯絡地址', trigger: 'blur' },
+					{ pattern: /[^\s]/, message: '請輸入承造聯絡地址', trigger: 'blur' }
+				],
+				R_TEL: [
+					{ required: true, message: '請輸入承造連絡電話', trigger: 'blur' },
+					{ pattern: /[^\s]/, message: '請輸入承造連絡電話', trigger: 'blur' }
+				],
+				R_B_NAM: [
+					{ required: true, message: '請輸入承造負責人姓名', trigger: 'blur' },
+					{ pattern: /[^\s]/, message: '請輸入承造負責人姓名', trigger: 'blur' }
+				],
+				R_B_TIT: [
+					{ required: true, message: '請輸入承造負責人職稱', trigger: 'blur' },
+					{ pattern: /[^\s]/, message: '請輸入承造負責人職稱', trigger: 'blur' }
+				],
 				// R_B_ID: [{ validator: checkR_B_ID, trigger: 'blur' }],
-				R_ADDR3: [{ required: true, message: '請輸入工務所地址', trigger: 'blur' }],
-				R_M_NAM: [{ required: true, message: '請輸入工地主任姓名', trigger: 'blur' }],
-				R_C_NAM: [{ required: true, message: '請輸入工地環保負責人姓名', trigger: 'blur' }],
-				R_TEL1: [{ required: true, message: '請輸入工務所電話', trigger: 'blur' }]
+				R_ADDR3: [
+					{ required: true, message: '請輸入工務所地址', trigger: 'blur' },
+					{ pattern: /[^\s]/, message: '請輸入工務所地址', trigger: 'blur' }
+				],
+				R_M_NAM: [
+					{ required: true, message: '請輸入工地主任姓名', trigger: 'blur' },
+					{ pattern: /[^\s]/, message: '請輸入工地主任姓名', trigger: 'blur' }
+				],
+				R_C_NAM: [
+					{ required: true, message: '請輸入工地環保負責人姓名', trigger: 'blur' },
+					{ pattern: /[^\s]/, message: '請輸入工地環保負責人姓名', trigger: 'blur' }
+				],
+				R_TEL1: [
+					{ required: true, message: '請輸入工務所電話', trigger: 'blur' },
+					{ pattern: /[^\s]/, message: '請輸入工務所電話', trigger: 'blur' }
+				]
 			}),
 			tab4Rules: Object.freeze({
 				MONEY: [{ required: true, message: '請輸入工程合約經費', trigger: 'blur' }],
@@ -771,7 +853,10 @@ export default {
 			}),
 			rules2: Object.freeze({
 				Code: [{ required: true, message: '請選擇銀行代碼', trigger: 'change' }],
-				Account: [{ required: true, message: '請輸入銀行帳號', trigger: 'blur' }],
+				Account: [
+					{ required: true, message: '請輸入銀行帳號', trigger: 'blur' },
+					{ pattern: /[^\s]/, message: '請輸入銀行帳號', trigger: 'blur' }
+				],
 				File: [{ required: true, message: '請上傳存摺照片' }]
 			}),
 			rules3: Object.freeze({
