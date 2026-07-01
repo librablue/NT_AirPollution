@@ -794,7 +794,7 @@ namespace NT_AirPollution.Service
                     var result = cn.QueryFirstOrDefault(@"
                         SELECT TOP 1 * FROM ABUDF_1
                         WHERE P_DATE=@P_DATE AND LEFT(FLNO,4)=@BotCode
-                        ORDER BY C_DATE DESC, M_DATE DESC",
+                        ORDER BY FLNO DESC",
                         new { P_DATE = pdate, BotCode = base.botCode }, commandTimeout: 180);
 
                     if (result == null || result.FLNO == "" || !int.TryParse(result.FLNO, out int flno))
