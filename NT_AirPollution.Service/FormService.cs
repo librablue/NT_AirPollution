@@ -1688,12 +1688,11 @@ namespace NT_AirPollution.Service
                 // 退費不用填繳費期限
                 abudf_1.E_DATE = sumPrice > 0 ? res.PayEndDate.AddYears(-1911).ToString("yyyMMdd") : null;
 
-                // ABUDF_1不存在或超過繳費期限，要重新產生銷帳單號
-                if (abudf_1InDB == null || DateTime.Now.Date > res.PayEndDate.Date)
+                // transNo為預設值或超過繳費期限，要重新產生銷帳單號
+                if (transNo == "000000" || DateTime.Now.Date > res.PayEndDate.Date)
                 {
-                    // 取得聯單序號
-                    if (transNo.Length < 16 || !transNo.StartsWith(base.botCode))
-                        transNo = _accessService.GetFLNo(pdate.AddYears(-1911).ToString("yyyMMdd"));
+                    // 產生新的聯單序號
+                    transNo = _accessService.GetFLNo(pdate.AddYears(-1911).ToString("yyyMMdd"));
                 }
 
                 abudf_1.FLNO = BotHelper.GetPayNo(transNo, sumPrice.ToString(), abudf_1.E_DATE);
@@ -1899,7 +1898,7 @@ namespace NT_AirPollution.Service
                 // 如果已繳>應繳，應退金額顯示0
                 if (returnMoney > 0)
                     returnMoney = 0;
-                
+
 
                 idx = 0;
                 // 避免顯示負號
