@@ -102,6 +102,8 @@ namespace NT_AirPollution.Admin.Controllers
                 // 申報
                 if (string.IsNullOrEmpty(form.AP_DATE1))
                 {
+                    // 避免空白無法同步ABUDF_B
+                    form.FormB.AP_DATE1 = form.AP_DATE1 = null;
                     form.S_AMT = result.TotalMoney;
                     // 10000以上才能分期
                     if (form.S_AMT < 10000)
