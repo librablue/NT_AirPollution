@@ -283,6 +283,12 @@ namespace NT_AirPollution.Web.Controllers
                     form.PERC_B = null;
                 }
 
+                // 外運土石體積沒填寫的，強制預設為0
+                if (!form.VOLUMEL.HasValue)
+                {
+                    form.VOLUMEL = 0;
+                }
+
                 _formService.AddForm(form);
 
                 return Json(new AjaxResult { Status = true });
@@ -362,6 +368,16 @@ namespace NT_AirPollution.Web.Controllers
                     form.AREA_F = null;
                     form.AREA_B = null;
                     form.PERC_B = null;
+                }
+
+                // 外運土石體積沒填寫的，強制預設為0
+                if (!form.VOLUMEL.HasValue)
+                {
+                    form.VOLUMEL = 0;
+                }
+                if (!form.FormB.VOLUMEL.HasValue)
+                {
+                    form.FormB.VOLUMEL = 0;
                 }
 
 
