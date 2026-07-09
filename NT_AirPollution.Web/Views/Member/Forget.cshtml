@@ -22,7 +22,7 @@
                     <el-input type="email" v-model="form.Email">
                         <el-button slot="append" type="primary" class="btn-append" @@click="sendCode" :disabled="btnSendCodeDisabled">{{btnSendCodeText}}</el-button>
                     </el-input>
-                    <small class="prompt-text">請至您的電子郵件信箱查看信箱驗證碼</small>
+                    <small class="prompt-text">請至您的電子郵件信箱查看信箱驗證碼<br>(小提醒：若收件匣沒看到，可能被分類到垃圾信件區囉！)</small>
                 </el-form-item>
                 <el-form-item prop="ActiveCode" label="信箱驗證碼">
                     <el-input type="text" inputmode="numeric" v-model="form.ActiveCode"></el-input>

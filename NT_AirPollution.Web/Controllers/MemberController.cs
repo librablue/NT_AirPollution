@@ -167,7 +167,7 @@ namespace NT_AirPollution.Web.Controllers
                 verify.CreateDate = DateTime.Now;
                 _verifyService.AddVerifyLog(verify);
 
-                return Json(new AjaxResult { Status = true, Message = "已發送驗證碼到您申請的信箱，請在5分鐘內收取驗證碼進行驗證。" });
+                return Json(new AjaxResult { Status = true, Message = "已發送驗證碼到您申請的信箱，請在5分鐘內收取驗證碼進行驗證。如遲未收到，請留意垃圾信件匣。" });
             }
             catch (Exception ex)
             {
@@ -275,7 +275,7 @@ namespace NT_AirPollution.Web.Controllers
                 verify.CreateDate = DateTime.Now;
                 _verifyService.AddVerifyLog(verify);
 
-                return Json(new AjaxResult { Status = true, Message = "已發送驗證碼到您申請的信箱，請在5分鐘內收取驗證碼進行驗證。" });
+                return Json(new AjaxResult { Status = true, Message = "已發送驗證碼到您申請的信箱，請在5分鐘內收取驗證碼進行驗證。如遲未收到，請留意垃圾信件匣。" });
             }
             catch (Exception ex)
             {
