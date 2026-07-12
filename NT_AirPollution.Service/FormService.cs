@@ -1857,90 +1857,43 @@ namespace NT_AirPollution.Service
             try
             {
                 // 範本檔
-                string templateFile = $@"{_paymentPath}\Template\結清證明.xlsx";
+                string templateFile = $@"{_paymentPath}\Template\結清證明.docx";
                 // 結果檔
                 string resultFile = $@"{_paymentPath}\Download\{form.C_NO}-{form.SER_NO}結清證明.pdf";
 
-                var wb = new XLWorkbook(templateFile);
-                var ws = wb.Worksheet(1);
-                ws.Cell("C2").SetValue(form.COMP_NAM);
-                ws.Cell("C3").SetValue($"{form.C_NO}-{form.SER_NO}");
-                ws.Cell("C4").SetValue(form.ADDR);
-                ws.Cell("C5").SetValue(form.B_SERNO);
-                ws.Cell("C6").SetValue(form.S_NAME);
-                ws.Cell("E29").SetValue(DateTime.Now.AddYears(-1911).ToString("yyy"));
-                ws.Cell("I29").SetValue(DateTime.Now.ToString("MM"));
-                ws.Cell("M29").SetValue(DateTime.Now.ToString("dd"));
-
-                int idx = 0;
-                // 應繳金額
-                foreach (char item in form.S_AMT.ToString().Reverse())
-                {
-                    ws.Row(9).Cell(16 - idx).SetValue(item.ToString());
-                    idx += 2;
-                }
-
-                idx = 0;
-                // 已繳金額
-                var payment = form.Payments.FirstOrDefault(o => o.Term == "01");
-                foreach (char item in (payment?.PayableAmount ?? 0).ToString().Reverse())
-                {
-                    ws.Row(10).Cell(16 - idx).SetValue(item.ToString());
-                    idx += 2;
-                }
-
-                // 應退金額
-                double returnMoney = (payment?.PayableAmount ?? 0) - form.S_AMT.GetValueOrDefault();
-
-                ws.Cell("B11").SetValue($"含滯納金及利息共：{returnMoney}元");
-
-
-                // 如果已繳>應繳，應退金額顯示0
-                if (returnMoney > 0)
-                    returnMoney = 0;
-
-
-                idx = 0;
-                // 避免顯示負號
-                foreach (char item in Math.Abs(returnMoney).ToString().Reverse())
-                {
-                    ws.Row(12).Cell(16 - idx).SetValue(item.ToString());
-                    idx += 2;
-                }
-
-                idx = 0;
-                // 補繳金額
-                double appendMoney = form.S_AMT2.GetValueOrDefault() - form.P_AMT.GetValueOrDefault();
-                if (appendMoney < 0)
-                    appendMoney = 0;
-
-                foreach (char item in appendMoney.ToString().Reverse())
-                {
-                    ws.Row(13).Cell(16 - idx).SetValue(item.ToString());
-                    idx += 2;
-                }
-
-                idx = 0;
-                // 實際繳費 = 已繳-應退+補繳
-                double totalMoney = form.P_AMT.GetValueOrDefault() - returnMoney + appendMoney;
-                foreach (char item in totalMoney.ToString().Reverse())
-                {
-                    ws.Row(15).Cell(16 - idx).SetValue(item.ToString());
-                    idx += 2;
-                }
-
-                string tempFile = $@"{_paymentPath}\Download\結清證明{form.C_NO}-{form.SER_NO}.xlsx";
-                wb.SaveAs(tempFile);
-
-                // 轉PDF
-                Aspose.Cells.License license = new Aspose.Cells.License();
+                Aspose.Words.License license = new Aspose.Words.License();
                 license.SetLicense($@"{AppDomain.CurrentDomain.BaseDirectory}/license/Aspose.total.lic");
-                var workbook = new Aspose.Cells.Workbook(tempFile);
-                foreach (Aspose.Cells.Worksheet worksheet in workbook.Worksheets)
+
+                Aspose.Words.Document doc = new Aspose.Words.Document(templateFile);
+
+
+                doc.Range.Replace("@COMP_NAM", form.COMP_NAM);
+                doc.Range.Replace("@C_NO", $"{form.C_NO}-{form.SER_NO}");
+                doc.Range.Replace("@ADDR", form.ADDR);
+                doc.Range.Replace("@B_SERNO", form.B_SERNO);
+                doc.Range.Replace("@S_NAME", form.S_NAME);
+                doc.Range.Replace("@S_AMT", form.S_AMT.GetValueOrDefault().ToString("N0"));
+                doc.Range.Replace("@S_AMT2", form.S_AMT2.GetValueOrDefault().ToString("N0"));
+
+                if(form.S_AMT2.GetValueOrDefault() > form.S_AMT.GetValueOrDefault())
                 {
-                    worksheet.PageSetup.FitToPagesWide = 1;
+                    doc.Range.Replace("@DiffStr", "結算應補繳交空污費");
                 }
-                workbook.Save(resultFile);
+                else
+                {
+                    doc.Range.Replace("@DiffStr", "結算應退已缴空污費");
+                }
+
+                doc.Range.Replace("@DiffAmt", Math.Abs(form.S_AMT.GetValueOrDefault() - form.S_AMT2.GetValueOrDefault()).ToString("N0"));
+
+                var payment = form.Payments.FirstOrDefault(o => o.Term == "01");
+                doc.Range.Replace("@Penalty", (payment.Penalty.GetValueOrDefault() + payment.Interest.GetValueOrDefault()).ToString("N0"));
+
+                doc.Range.Replace("@Year", DateTime.Now.AddYears(-1911).ToString("yyy"));
+                doc.Range.Replace("@Month", DateTime.Now.ToString("MM"));
+                doc.Range.Replace("@Date", DateTime.Now.ToString("dd"));
+                
+                doc.Save(resultFile);
 
                 return resultFile;
             }
