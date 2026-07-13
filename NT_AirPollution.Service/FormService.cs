@@ -1867,32 +1867,32 @@ namespace NT_AirPollution.Service
                 Aspose.Words.Document doc = new Aspose.Words.Document(templateFile);
 
 
-                doc.Range.Replace("@COMP_NAM", form.COMP_NAM);
-                doc.Range.Replace("@C_NO", $"{form.C_NO}-{form.SER_NO}");
-                doc.Range.Replace("@ADDR", form.ADDR);
-                doc.Range.Replace("@B_SERNO", form.B_SERNO);
-                doc.Range.Replace("@S_NAME", form.S_NAME);
-                doc.Range.Replace("@S_AMT", form.S_AMT.GetValueOrDefault().ToString("N0"));
-                doc.Range.Replace("@S_AMT2", form.S_AMT2.GetValueOrDefault().ToString("N0"));
+                doc.Range.Replace("#COMP_NAM#", form.COMP_NAM);
+                doc.Range.Replace("#C_NO#", $"{form.C_NO}-{form.SER_NO}");
+                doc.Range.Replace("#ADDR#", form.ADDR);
+                doc.Range.Replace("#B_SERNO#", form.B_SERNO);
+                doc.Range.Replace("#S_NAME#", form.S_NAME);
+                doc.Range.Replace("#S_AMT#", form.S_AMT.GetValueOrDefault().ToString("N0"));
+                doc.Range.Replace("#S_AMT2#", form.S_AMT2.GetValueOrDefault().ToString("N0"));
 
                 if(form.S_AMT2.GetValueOrDefault() > form.S_AMT.GetValueOrDefault())
                 {
-                    doc.Range.Replace("@DiffStr", "結算應補繳交空污費");
+                    doc.Range.Replace("#DiffStr#", "結算應補繳交空污費");
                 }
                 else
                 {
-                    doc.Range.Replace("@DiffStr", "結算應退已缴空污費");
+                    doc.Range.Replace("#DiffStr#", "結算應退已缴空污費");
                 }
 
-                doc.Range.Replace("@DiffAmt", Math.Abs(form.S_AMT.GetValueOrDefault() - form.S_AMT2.GetValueOrDefault()).ToString("N0"));
+                doc.Range.Replace("#DiffAmt#", Math.Abs(form.S_AMT.GetValueOrDefault() - form.S_AMT2.GetValueOrDefault()).ToString("N0"));
 
                 var payment = form.Payments.FirstOrDefault(o => o.Term == "01");
-                doc.Range.Replace("@Penalty", (payment.Penalty.GetValueOrDefault() + payment.Interest.GetValueOrDefault()).ToString("N0"));
+                doc.Range.Replace("#Penalty#", (payment.Penalty.GetValueOrDefault() + payment.Interest.GetValueOrDefault()).ToString("N0"));
 
-                doc.Range.Replace("@Year", DateTime.Now.AddYears(-1911).ToString("yyy"));
-                doc.Range.Replace("@Month", DateTime.Now.ToString("MM"));
-                doc.Range.Replace("@Date", DateTime.Now.ToString("dd"));
-                
+                doc.Range.Replace("#Year#", DateTime.Now.AddYears(-1911).ToString("yyy"));
+                doc.Range.Replace("#Month#", DateTime.Now.ToString("MM"));
+                doc.Range.Replace("#Date#", DateTime.Now.ToString("dd"));
+
                 doc.Save(resultFile);
 
                 return resultFile;
