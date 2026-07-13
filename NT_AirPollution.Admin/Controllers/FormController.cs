@@ -227,15 +227,16 @@ namespace NT_AirPollution.Admin.Controllers
                 }
 
                 // --- 2. 持久化與外部系統同步 ---
-                _accessService.AddABUDF_B(form);
                 _formService.UpdateForm(form);
-                _formService.AddFormB(form);
                 _formService.SendStatusMail(form);
 
                 // --- 3. 繳費單產生 ---
-                // 狀態大於待補件(2)則產生 PDF
+                // 狀態大於待補件(2)則新增ABUDF_B，並產生 PDF
                 if (form.FormStatus > FormStatus.待補件)
                 {
+                    _accessService.AddABUDF_B(form);
+                    _formService.AddFormB(form);
+
                     _formService.CreatePaymentPDF("", form);
                 }
 
