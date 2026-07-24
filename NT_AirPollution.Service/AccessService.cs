@@ -793,7 +793,7 @@ namespace NT_AirPollution.Service
                 {
                     var result = cn.QueryFirstOrDefault(@"
                         SELECT TOP 1 FLNO FROM ABUDF_1
-                        WHERE P_DATE=@P_DATE ANDLEFT(FLNO,4)=@BotCode
+                        WHERE P_DATE=@P_DATE AND LEFT(FLNO,4)=@BotCode
                         ORDER BY C_DATE DESC, M_DATE DESC",
                         new { P_DATE = pdate, BotCode = base.botCode }, commandTimeout: 180);
 
