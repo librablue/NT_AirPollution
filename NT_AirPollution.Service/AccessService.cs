@@ -793,7 +793,7 @@ namespace NT_AirPollution.Service
                 {
                     var result = cn.QueryFirstOrDefault(@"
                         SELECT TOP 1 FLNO FROM ABUDF_1
-                        WHERE LEFT(FLNO,4)=@BotCode
+                        WHERE P_DATE=@P_DATE ANDLEFT(FLNO,4)=@BotCode
                         ORDER BY C_DATE DESC, M_DATE DESC",
                         new { P_DATE = pdate, BotCode = base.botCode }, commandTimeout: 180);
 
@@ -1027,7 +1027,7 @@ namespace NT_AirPollution.Service
                                 [PM_DATE]=@PM_DATE,
                                 [A_DATE]=@A_DATE,
                                 [M_DATE]=@M_DATE
-                        WHERE [FLNO]=@FLNO AND [C_NO]=@C_NO",
+                        WHERE [C_NO]=@C_NO AND [FLNO]=@FLNO AND [F_AMT]=@F_AMT2",
                         new
                         {
                             userSelectFLNO = userSelectFLNO,
@@ -1036,8 +1036,9 @@ namespace NT_AirPollution.Service
                             PM_DATE = abudf_1.PM_DATE,
                             A_DATE = abudf_1.A_DATE,
                             M_DATE = abudf_1.M_DATE.ToString("yyyy-MM-dd HH:mm:ss"),
+                            C_NO = abudf_1.C_NO,
                             FLNO = abudf_1.FLNO,
-                            C_NO = abudf_1.C_NO
+                            F_AMT2 = abudf_1.F_AMT
                         }, commandTimeout: 180);
 
                     return true;
