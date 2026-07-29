@@ -784,6 +784,33 @@ namespace NT_AirPollution.Web.Controllers
         }
 
         /// <summary>
+        /// 下載結算申報表
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult DownloadForm2(FormView form)
+        {
+            try
+            {
+                var formInDB = _formService.GetFormByID(form.ID);
+                if (formInDB == null || (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email))
+                    throw new Exception("申請單不存在");
+
+                string pdfPath = _formService.CreateFormPDF2(formInDB);
+
+                // 傳到前端的檔名
+                // Uri.EscapeDataString 防中文亂碼
+                Response.Headers.Add("file-name", Uri.EscapeDataString(Path.GetFileName(pdfPath)));
+
+                return File(pdfPath, System.Net.Mime.MediaTypeNames.Application.Octet, Path.GetFileName(pdfPath));
+            }
+            catch (Exception ex)
+            {
+                return Json(new { Status = false, Message = "首期申報表產生失敗，請稍後再試" });
+            }
+        }
+
+        /// <summary>
         /// 結算申請
         /// </summary>
         /// <param name="form"></param>

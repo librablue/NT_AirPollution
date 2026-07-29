@@ -1027,10 +1027,10 @@
 
 				return dayDiff;
 			},
-			downloadForm1(row) {
+			downloadForm(type, row) {
 				const loading = this.$loading();
 				axios
-					.post('/Apply/DownloadForm1', row, {
+					.post(`/Apply/DownloadForm${type}`, row, {
 						responseType: 'blob'
 					})
 					.then(res => {
