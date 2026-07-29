@@ -52,7 +52,7 @@
                 btnSendCodeText: '寄送驗證碼',
                 btnSendCodeDisabled: false,
                 form: {
-                    UserType: null,
+                    UserType: 1,
                     Email: '',
                     ActiveCode: '',
                     Password: '',
@@ -62,7 +62,6 @@
                 pwd1Mode: true,
                 pwd2Mode: true,
                 rules: Object.freeze({
-                    UserType: [{ required: true, message: '請選擇會員類型' }],
                     Email: [{ validator: checkEmail }],
                     ActiveCode: [{ validator: checkActiveCode }],
                     Password: [{ validator: checkPassword }],

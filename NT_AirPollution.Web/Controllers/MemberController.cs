@@ -217,6 +217,7 @@ namespace NT_AirPollution.Web.Controllers
                 verifyLog.ActiveDate = DateTime.Now;
                 _verifyService.UpdateVerifyLog(verifyLog);
 
+                user.UserType = UserType.營建空污費申報;
                 user.CreateDate = DateTime.Now;
                 _clientUserService.AddUser(user);
 

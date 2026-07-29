@@ -255,6 +255,7 @@ namespace NT_AirPollution.Web.Controllers
                 form.TOWN_NA = allDists.First(o => o.Code == form.TOWN_NO).Name;
                 form.KIND = allProjectCode.First(o => o.ID == form.KIND_NO).Name;
                 form.A_KIND = allProjectCode.First(o => o.ID == form.KIND_NO).Kind;
+                form.P_NUM = form.P_KIND == "一次全繳" ? 1 : 2;
                 form.AP_TYPE = "一般申報";
                 form.C_DATE = DateTime.Now;
                 form.M_DATE = DateTime.Now;
@@ -350,6 +351,7 @@ namespace NT_AirPollution.Web.Controllers
                 form.A_KIND = allProjectCode.First(o => o.ID == form.KIND_NO).Kind;
                 form.M_DATE = DateTime.Now;
                 form.S_AMT2 = result.TotalMoney;
+                form.P_NUM = form.P_KIND == "一次全繳" ? 1 : 2;
 
                 if (form.KIND_NO == "1" || form.KIND_NO == "2")
                 {
@@ -433,12 +435,22 @@ namespace NT_AirPollution.Web.Controllers
         /// <summary>
         /// 上傳附件
         /// </summary>
+        /// <param name="file"></param>
+        /// <param name="id">FormID</param>
+        /// <param name="type">1.申報 2.結算</param>
+        /// <returns></returns>
         [HttpPost]
-        public JsonResult UploadFile(HttpPostedFileBase file)
+        public JsonResult UploadFile(HttpPostedFileBase file, long id, int type)
         {
             try
             {
                 if (file == null) throw new Exception("請選擇檔案");
+
+                var formInDB = _formService.GetFormByID(id);
+                if (formInDB.ClientUserID != BaseService.CurrentUser.ID)
+                    throw new Exception("無法修改他人申請單");
+
+                
                 // 設定資料夾
                 string absoluteDirPath = $"{_uploadPath}";
                 if (!Directory.Exists(absoluteDirPath))
@@ -459,6 +471,20 @@ namespace NT_AirPollution.Web.Controllers
                 absoluteFilePath = absoluteDirPath + $@"\{fileName}";
                 // 儲存檔案
                 file.SaveAs(absoluteFilePath);
+
+                // 更新附件
+                if(type == 1)
+                {
+                    formInDB.FileName1 = fileName;
+                    formInDB.DisplayName1 = file.FileName;
+                }
+                else
+                {
+                    formInDB.FileName2 = fileName;
+                    formInDB.DisplayName2 = file.FileName;
+                }
+
+                _formService.UpdateForm(formInDB);
 
                 return Json(new AjaxResult { Status = true, Message = fileName });
             }
@@ -727,6 +753,33 @@ namespace NT_AirPollution.Web.Controllers
             catch (Exception ex)
             {
                 return Json(new { Status = false, Message = "繳費證明產生失敗，請稍後再試" });
+            }
+        }
+
+        /// <summary>
+        /// 下載首期申報表
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult DownloadForm1(FormView form)
+        {
+            try
+            {
+                var formInDB = _formService.GetFormByID(form.ID);
+                if (formInDB == null || (formInDB.ClientUserID != BaseService.CurrentUser.ID && formInDB.CreateUserEmail != BaseService.CurrentUser.Email))
+                    throw new Exception("申請單不存在");
+
+                string pdfPath = _formService.CreateFormPDF1(formInDB);
+
+                // 傳到前端的檔名
+                // Uri.EscapeDataString 防中文亂碼
+                Response.Headers.Add("file-name", Uri.EscapeDataString(Path.GetFileName(pdfPath)));
+
+                return File(pdfPath, System.Net.Mime.MediaTypeNames.Application.Octet, Path.GetFileName(pdfPath));
+            }
+            catch (Exception ex)
+            {
+                return Json(new { Status = false, Message = "首期申報表產生失敗，請稍後再試" });
             }
         }
 

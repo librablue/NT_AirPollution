@@ -47,17 +47,21 @@
                 <el-button type="success" icon="el-icon-edit" @@click="addForm">新申報</el-button>
             </el-form-item>
             @*<el-form-item>
-                <el-button type="success" icon="el-icon-download" @@click="showImportModal">舊資料匯入</el-button>
-            </el-form-item>*@
+                    <el-button type="success" icon="el-icon-download" @@click="showImportModal">舊資料匯入</el-button>
+                </el-form-item>*@
         </el-form>
 
         <div class="form-wrap">
             <div v-if="forms.length === 0" class="empty" v-cloak>
-                <img src="@Url.Content("~/static/image/illu-empty.png")" />
+                <img src="@Url.Content("~/static/image/illu-empty.png")" alt="無資料" />
                 <div class="empty-text">查無任何申報資料</div>
             </div>
+
             <div class="form-item" v-for="(item, idx) in forms" :key="idx" v-cloak>
+                <!-- Top Status Tag -->
                 <div class="status">案件類型: {{item.PUB_COMP ? '公共工程' : '私人工程'}}</div>
+
+                <!-- Info List -->
                 <ul class="info-list">
                     <li>
                         <div class="title">管制編號：</div>
@@ -75,41 +79,52 @@
                         <div class="title">工程名稱：</div>
                         <div class="content" :title="item.COMP_NAM">{{item.COMP_NAM}}</div>
                     </li>
-                    <li style="border-bottom: 1px dashed #FF9C73;">
-                        <div class="title">申報進度：</div>
-                        <div class="content">{{getFormStatus(item)}}</div>
-                        <div class="link-row">
-                            <el-button size="mini" type="info" round v-if="item.FormStatus === 0 || item.FormStatus === 2" @@click="showSelfCheckModal(item)">提送審查</el-button>
+
+                    <!-- Initial Declaration Progress -->
+                    <li class="status-row">
+                        <div class="status-info">
+                            <span class="title">申報進度：</span>
+                            <span class="status-badge">{{getFormStatus(item)}}</span>
+                        </div>
+                        <div class="action-buttons">
+                            <el-button size="mini" type="primary" plain round v-if="item.FormStatus === 0 || item.FormStatus === 2" @@click="showSelfCheckModal(item)">提送審查</el-button>
+                            <el-button size="mini" type="primary" plain round v-if="item.FormStatus > 0" @@click="downloadForm1(item)">下載申報表</el-button>
                             <template v-if="item.VerifyStage1 === 3">
-                                <el-button v-if="item.FormStatus === 3" type="info" size="mini" round @@click="downloadPayment(item)">下載繳費單</el-button>
-                                <el-button v-if="item.FormStatus === 4" type="info" size="mini" round @@click="downloadPaymentProof(item)">下載繳費證明</el-button>
-                                <el-button v-if="item.FormStatus === 5" type="info" size="mini" round @@click="downloadFreeProof(item)">下載免徵證明</el-button>
+                                <el-button v-if="item.FormStatus === 3" type="info" size="mini" plain round @@click="downloadPayment(item)">下載繳費單</el-button>
+                                <el-button v-if="item.FormStatus === 4" type="info" size="mini" plain round @@click="downloadPaymentProof(item)">下載繳費證明</el-button>
+                                <el-button v-if="item.FormStatus === 5" type="info" size="mini" plain round @@click="downloadFreeProof(item)">下載免徵證明</el-button>
                             </template>
                         </div>
                     </li>
-                    <li style="border-bottom: 1px dashed #FF9C73;">
-                        <div class="title">結算進度：</div>
-                        <div class="content">{{getCalcStatus(item)}}</div>
-                        <div class="link-row">
-                            <el-button size="mini" type="info" round v-if="item.FormStatus === 4 && (item.CalcStatus === 0 || item.CalcStatus === 2)" @@click="SendCalcStatus1(item)">提送審查</el-button>
+
+                    <!-- Settlement Progress -->
+                    <li class="status-row">
+                        <div class="status-info">
+                            <span class="title">結算進度：</span>
+                            <span class="status-badge">{{getCalcStatus(item)}}</span>
+                        </div>
+                        <div class="action-buttons">
+                            <el-button size="mini" type="primary" plain round v-if="item.FormStatus === 4 && (item.CalcStatus === 0 || item.CalcStatus === 2)" @@click="SendCalcStatus1(item)">提送審查</el-button>
                             <template v-if="item.VerifyStage2 === 3">
-                                <el-button v-if="item.CalcStatus === 3" type="info" size="mini" round @@click="downloadRePayment(item)">下載繳費單</el-button>
-                                @*<el-button v-if="item.CalcStatus === 3" type="info" size="mini" round @@click="showPaymentProofModal(item)">上傳繳費證明</el-button>*@
-                                <el-button v-if="item.CalcStatus === 5" type="info" size="mini" round @@click="showBankAccountModal(item)">退費帳戶</el-button>
-                                <el-button v-if="item.CalcStatus > 3" type="info" size="mini" round @@click="downloadClearProof(item)">下載結清證明</el-button>
+                                <el-button v-if="item.CalcStatus === 3" type="info" size="mini" plain round @@click="downloadRePayment(item)">下載繳費單</el-button>
+                                <el-button v-if="item.CalcStatus === 5" type="info" size="mini" plain round @@click="showBankAccountModal(item)">退費帳戶</el-button>
+                                <el-button v-if="item.CalcStatus > 3" type="info" size="mini" plain round @@click="downloadClearProof(item)">下載結清證明</el-button>
                             </template>
                         </div>
                     </li>
                 </ul>
+
                 <div class="bottom-btn-row">
-                    <el-button icon="el-icon-search" @@click="showModal(item)">檢視</el-button>
-                    <el-button v-if="!item.C_NO" type="danger" class="btn-delete" icon="el-icon-delete" @@click="deleteForm(item)">刪除</el-button>
+                    <el-button size="small" type="primary" icon="el-icon-search" @@click="showModal(item)">檢視</el-button>
+                    <el-button size="small" type="warning" icon="el-icon-paperclip" @@click="openAttachDialog(item)">附件</el-button>
+                    <el-button size="small" type="success" icon="el-icon-date" @@click="openStopWorkDialog(item)">停復工</el-button>
+                    <el-button size="small" v-if="!item.C_NO" type="danger" icon="el-icon-delete" @@click="deleteForm(item)">刪除</el-button>
                 </div>
             </div>
         </div>
     </div>
 
-    <el-dialog :title="mode === 'Add' ? '空污費申報' : selectRow.COMP_NAM" :visible.sync="dialogVisible" width="90%" :close-on-click-modal="false" @@close="dialogClose" v-cloak>
+    <el-dialog :title="mode === 'Add' ? '空污費申報' : selectRow.COMP_NAM" :visible.sync="dialogVisible" width="90%" :close-on-click-modal="false" custom-class="custom-dialog" v-cloak>
         <el-tabs v-model="activeTab">
             <el-tab-pane label="工地基本資料" name="1" :disabled="selectRow.FormStatus <= 2">
                 <el-form ref="tab1Form" :rules="tab1Rules" :model="selectRow" label-width="auto" :disabled="selectRow.FormStatus >= 3">
@@ -153,10 +168,10 @@
                     </el-form-item>
                     <div class="flex-row">
                         <el-form-item prop="LAT" label="緯度座標(WGS84)">
-                            <el-input type="number" v-model="selectRow.LAT" maxlength="20"></el-input>
+                            <el-input type="number" v-model="selectRow.LAT" maxlength="20" placeholder="例: 23.90"></el-input>
                         </el-form-item>
                         <el-form-item prop="LNG" label="經度座標(WGS84)">
-                            <el-input type="number" v-model="selectRow.LNG" maxlength="20"></el-input>
+                            <el-input type="number" v-model="selectRow.LNG" maxlength="20" placeholder="例: 120.69"></el-input>
                         </el-form-item>
                     </div>
                     <el-form-item prop="B_SERNO" label="建照字號或合約編號">
@@ -570,107 +585,195 @@
                     </el-form>
                 </el-card>
             </el-tab-pane>
-            <el-tab-pane label="檢附資料" name="5" :disabled="selectRow.FormStatus <= 2">
-                <!-- 附件上傳區 -->
-                <el-card class="form-section upload-section" shadow="hover">
-                    <div slot="header" class="clearfix">
-                        <span class="form-title"><i class="el-icon-paperclip"></i> 附件上傳說明</span>
-                    </div>
-
-                    <!-- 提示區 -->
-                    <ul class="attach-tip-list">
-                        <li><i class="el-icon-info"></i> 如果尚未製作檔案，請先按 <b>存檔稍後繼續</b>，待製作完成後再上傳。</li>
-                        <li><i class="el-icon-warning-outline"></i> 每次上傳將覆蓋原有檔案。</li>
-                        <li><i class="el-icon-document"></i> 附件為 <b>彙整所有文件的 PDF 檔</b>，為審查依據。</li>
-                        <li><i class="el-icon-document-checked"></i> 檔案格式：PDF，大小需小於 <b>100MB</b>。</li>
-                    </ul>
-
-                    <!-- 上傳區 -->
-                    <div class="attach-row">
-                        <!-- 首期申報附件 -->
-                        <el-card shadow="never" class="upload-box">
-                            <div class="title primary-title"><i class="el-icon-upload"></i> 首期申報附件</div>
-                            <template v-if="selectRow.FormStatus <= 2">
-                                <el-upload ref="upload1" drag action="@Url.Content("~/Apply/UploadFile")" :show-file-list="false" accept=".pdf" :on-progress="onUploading" :on-success="uploadSuccess1">
-                                    <i class="el-icon-upload"></i>
-                                    <div class="el-upload__text">將文件拖曳到此處，或 <em>點擊上傳</em></div>
-                                    <div class="el-upload__tip" slot="tip">只能上傳 PDF 文件</div>
-                                </el-upload>
-                            </template>
-                            <a v-if="selectRow.FileName1" :href="`@Url.Content("~/Option/Download")?f=${selectRow.FileName1}&n=${selectRow.DisplayName1}`" class="link-download" :title="selectRow.DisplayName1">
-                                <i class="el-icon-download"></i> {{ selectRow.DisplayName1 }}
-                            </a>
-                        </el-card>
-
-                        <!-- 結算申報附件 -->
-                        <el-card shadow="never" class="upload-box">
-                            <div class="title secondary-title"><i class="el-icon-finished"></i> 結算申報附件</div>
-                            <template v-if="selectRow.FormStatus > 2 && selectRow.CalcStatus <= 2">
-                                <el-upload ref="upload2" drag action="@Url.Content("~/Apply/UploadFile")" :show-file-list="false" accept=".pdf" :on-progress="onUploading" :on-success="uploadSuccess2">
-                                    <i class="el-icon-upload"></i>
-                                    <div class="el-upload__text">將文件拖曳到此處，或 <em>點擊上傳</em></div>
-                                    <div class="el-upload__tip" slot="tip">只能上傳 PDF 文件</div>
-                                </el-upload>
-                            </template>
-                            <a v-if="selectRow.FileName2" :href="`@Url.Content("~/Option/Download")?f=${selectRow.FileName2}&n=${selectRow.DisplayName2}`" class="link-download" :title="selectRow.DisplayName2">
-                                <i class="el-icon-download"></i> {{ selectRow.DisplayName2 }}
-                            </a>
-                        </el-card>
-                    </div>
-                </el-card>
-            </el-tab-pane>
-            <el-tab-pane label="停復工" name="6" :disabled="selectRow.FormStatus <= 2">
-                <div class="stopwork-wrapper">
-                    <div class="table-wrapper" style="margin-top:10px">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th style="width:160px">停工日期</th>
-                                    <th style="width:160px">復工日期</th>
-                                    <th style="width: 140px; white-space: nowrap">停工天數</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-if="selectRow.StopWorks.length === 0">
-                                    <td colspan="3" class="text-center">暫無資料</td>
-                                </tr>
-                                <tr v-for="(item, idx) in selectRow.StopWorks" :key="idx">
-                                    <td>{{item.DOWN_DATE2 | date}}</td>
-                                    <td>{{item.UP_DATE2 | date}}</td>
-                                    <td>{{getStopDays(item)}}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </el-tab-pane>
         </el-tabs>
 
         <span slot="footer" class="dialog-footer">
-            @*新增/初審通過前/初審通過後且結算通過前*@
             <template v-if="mode === 'Add' || selectRow.FormStatus <= 2 || (selectRow.FormStatus > 2 && selectRow.CalcStatus <= 2)">
                 <el-button icon="el-icon-close" @@click="dialogVisible = false">取 消</el-button>
-                <el-button type="primary" icon="el-icon-arrow-left" :disabled="activeTab === '1'" @@click="goPrevTab">上一步</el-button>
-                <el-button type="primary" @@click="goNextTab">{{activeTab === '6' ? '儲存' : '下一步'}} <i class="el-icon-arrow-right el-icon--right"></i></el-button>
+                <el-button type="primary" plain icon="el-icon-arrow-left" :disabled="activeTab === '1'" @@click="goPrevTab">上一步</el-button>
+
+                <!-- 在 Tab 1~3 顯示「下一步」，Tab 4 顯示「儲存暫存」 -->
+                <el-button v-if="activeTab !== '4'" type="primary" @@click="goNextTab">
+                    下一步 <i class="el-icon-arrow-right el-icon--right"></i>
+                </el-button>
+                <el-button v-else type="success" icon="el-icon-document" @@click="goNextTab">
+                    暫存案件
+                </el-button>
             </template>
         </span>
     </el-dialog>
 
-    <el-dialog title="退件原因" :visible.sync="failReason1DialogVisible" width="30%" v-cloak>
+    <!-- 獨立彈窗 1：附件上傳 -->
+    <el-dialog title="檢附資料上傳"
+               :visible.sync="attachDialogVisible"
+               width="750px"
+               :close-on-click-modal="false"
+               custom-class="custom-dialog attach-dialog"
+               v-cloak>
+
+        <div class="attach-dialog-wrapper">
+            <!-- 提示說明區塊 -->
+            <div class="attach-tip-box">
+                <div class="tip-title"><i class="el-icon-warning-outline"></i> 上傳注意事項</div>
+                <ul class="attach-tip-list">
+                    <li>每次上傳新檔案將會<b>覆蓋原有檔案</b>。</li>
+                    <li>附件請提供<b>彙整所有文件的 PDF 檔</b>，作為審查依據。</li>
+                    <li>檔案格式限定為 <b>PDF</b>，單一檔案大小需小於 <b>100MB</b>。</li>
+                </ul>
+            </div>
+
+            <!-- 雙欄上傳區塊 (使用 Grid / Flex 排版) -->
+            <el-row :gutter="20" class="attach-row">
+                <!-- 首期申報附件 -->
+                <el-col :sm="12" :xs="24">
+                    <div class="upload-card primary-card">
+                        <div class="card-header">
+                            <i class="el-icon-upload"></i> 首期申報附件
+                        </div>
+                        <div class="card-body">
+                            <template v-if="selectRow.FormStatus <= 2">
+                                <el-upload ref="upload1"
+                                           drag
+                                           action="@Url.Content("~/Apply/UploadFile")"
+                                           :data="{id: selectRow.ID, type: 1}"
+                                           :show-file-list="false"
+                                           accept=".pdf"
+                                           :on-progress="onUploading"
+                                           :on-success="uploadSuccess1">
+                                    <i class="el-icon-upload"></i>
+                                    <div class="el-upload__text">將文件拖曳至此，或 <em>點擊上傳</em></div>
+                                </el-upload>
+                            </template>
+
+                            <!-- 已上傳檔案下載區塊 -->
+                            <div v-if="selectRow.FileName1" class="download-box">
+                                <div class="file-info">
+                                    <i class="el-icon-document text-pdf"></i>
+                                    <span class="file-name" :title="selectRow.DisplayName1">{{ selectRow.DisplayName1 }}</span>
+                                </div>
+                                <a :href="`@Url.Content("~/Option/Download")?f=${selectRow.FileName1}&n=${selectRow.DisplayName1}`" class="download-btn">
+                                    <i class="el-icon-download"></i> 下載
+                                </a>
+                            </div>
+                            <div v-else-if="selectRow.FormStatus > 2" class="empty-file-tip">
+                                未上傳首期附件
+                            </div>
+                        </div>
+                    </div>
+                </el-col>
+
+                <!-- 結算申報附件 -->
+                <el-col :sm="12" :xs="24">
+                    <div class="upload-card success-card">
+                        <div class="card-header">
+                            <i class="el-icon-finished"></i> 結算申報附件
+                        </div>
+                        <div class="card-body">
+                            <template v-if="selectRow.FormStatus > 2 && selectRow.CalcStatus <= 2">
+                                <el-upload ref="upload2"
+                                           drag
+                                           action="@Url.Content("~/Apply/UploadFile")"
+                                           :data="{id: selectRow.ID, type: 2}"
+                                           :show-file-list="false"
+                                           accept=".pdf"
+                                           :on-progress="onUploading"
+                                           :on-success="uploadSuccess2">
+                                    <i class="el-icon-upload"></i>
+                                    <div class="el-upload__text">將文件拖曳至此，或 <em>點擊上傳</em></div>
+                                </el-upload>
+                            </template>
+
+                            <!-- 已上傳檔案下載區塊 -->
+                            <div v-if="selectRow.FileName2" class="download-box">
+                                <div class="file-info">
+                                    <i class="el-icon-document text-pdf"></i>
+                                    <span class="file-name" :title="selectRow.DisplayName2">{{ selectRow.DisplayName2 }}</span>
+                                </div>
+                                <a :href="`@Url.Content("~/Option/Download")?f=${selectRow.FileName2}&n=${selectRow.DisplayName2}`" class="download-btn">
+                                    <i class="el-icon-download"></i> 下載
+                                </a>
+                            </div>
+                            <div v-else-if="selectRow.FormStatus <= 2 || selectRow.CalcStatus > 2" class="empty-file-tip">
+                                {{ selectRow.FormStatus <= 2 ? '請先完成首期申報' : '未上傳結算附件' }}
+                            </div>
+                        </div>
+                    </div>
+                </el-col>
+            </el-row>
+        </div>
+
+        <span slot="footer" class="dialog-footer">
+            <el-button icon="el-icon-close" @@click="attachDialogVisible = false">關 閉</el-button>
+        </span>
+    </el-dialog>
+
+    <!-- 獨立彈窗 2：停復工紀錄 -->
+    <el-dialog title="停復工紀錄" :visible.sync="stopWorkDialogVisible" width="650px" :close-on-click-modal="false" custom-class="custom-dialog stopwork-dialog" v-cloak>
+        <div class="stopwork-wrapper">
+            <!-- 頂部總計天數卡片 (增加視覺焦點) -->
+            <div class="total-days-card" v-if="selectRow.StopWorks && selectRow.StopWorks.length > 0">
+                <div class="card-label">
+                    <i class="el-icon-date"></i> 累計停工總天數
+                </div>
+                <div class="card-value">
+                    <span>{{ totalStopWorkDays }}</span> 天
+                </div>
+            </div>
+
+            <!-- 使用 Element UI 原生表格替換舊有原生 table -->
+            <el-table :data="selectRow.StopWorks || []"
+                      stripe
+                      border
+                      header-cell-class-name="table-header-custom"
+                      style="width: 100%"
+                      empty-text="暫無停復工紀錄">
+
+                <el-table-column label="序號" type="index" width="60" align="center"></el-table-column>
+
+                <el-table-column label="停工日期" min-width="150" align="center">
+                    <template slot-scope="scope">
+                        <i class="el-icon-time text-muted"></i>
+                        <span>{{ scope.row.DOWN_DATE2 | date }}</span>
+                    </template>
+                </el-table-column>
+
+                <el-table-column label="復工日期" min-width="150" align="center">
+                    <template slot-scope="scope">
+                        <i class="el-icon-time text-muted"></i>
+                        <span>{{ scope.row.UP_DATE2 | date }}</span>
+                    </template>
+                </el-table-column>
+
+                <el-table-column label="停工天數" width="130" align="center">
+                    <template slot-scope="scope">
+                        <el-tag type="danger" effect="plain" size="medium" class="day-tag">
+                            {{ getStopDays(scope.row) }} 天
+                        </el-tag>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+
+        <span slot="footer" class="dialog-footer">
+            <el-button icon="el-icon-close" @@click="stopWorkDialogVisible = false">關 閉</el-button>
+        </span>
+    </el-dialog>
+
+    <el-dialog title="退件原因" :visible.sync="failReason1DialogVisible" width="30%" custom-class="custom-dialog" v-cloak>
         <div v-html="selectRow.FailReason1"></div>
         <span slot="footer" class="dialog-footer">
             <el-button type="primary" @@click="failReason1DialogVisible = false">確 定</el-button>
         </span>
     </el-dialog>
 
-    <el-dialog title="退件原因" :visible.sync="failReason2DialogVisible" width="30%" v-cloak>
+    <el-dialog title="退件原因" :visible.sync="failReason2DialogVisible" width="30%" custom-class="custom-dialog" v-cloak>
         <div v-html="selectRow.FailReason2"></div>
         <span slot="footer" class="dialog-footer">
             <el-button type="primary" @@click="failReason2DialogVisible = false">確 定</el-button>
         </span>
     </el-dialog>
 
-    <el-dialog title="退款帳戶" :visible.sync="bankAccountDialogVisible" width="30%" v-cloak>
+    <el-dialog title="退款帳戶" :visible.sync="bankAccountDialogVisible" width="30%" custom-class="custom-dialog" v-cloak>
         <el-form ref="form2" :rules="rules2" :model="selectRow.RefundBank" label-position="top">
             <el-form-item prop="Code" label="銀行代碼">
                 <el-select class="w100p" v-model="selectRow.RefundBank.Code" filterable>
@@ -721,7 +824,7 @@
             </span>
         </el-dialog>*@
 
-    <el-dialog title="請勾選已上傳附件" :visible.sync="selfCheckModalVisible" width="30%" v-cloak>
+    <el-dialog title="請勾選已上傳附件" :visible.sync="selfCheckModalVisible" width="30%" custom-class="custom-dialog" v-cloak>
         <ul class="selfcheck-list">
             <li v-for="(item, idx) in filterAttachmentInfo" :key="idx">
                 <div class="checkbox-group">
@@ -737,17 +840,17 @@
     </el-dialog>
 
     @*<el-dialog title="舊資料匯入" :visible.sync="importModalVisible" width="30%" v-cloak>
-        <el-form ref="importForm" :rules="importDataRules" :model="importForm" label-width="auto">
-            <el-form-item prop="C_NO" label="管制編號">
-                <el-input v-model="importForm.C_NO"></el-input>
-            </el-form-item>
-            <el-form-item prop="B_DATE" label="開工日">
-                <input type="text" class="el-input__inner datepicker" data-model="importForm" data-key="B_DATE" v-model="importForm.B_DATE" />
-            </el-form-item>
-        </el-form>
-        <span slot="footer" class="dialog-footer">
-            <el-button @@click="importModalVisible = false">取 消</el-button>
-            <el-button type="primary" @@click="importDataHandler">確 定</el-button>
-        </span>
-    </el-dialog>*@
+            <el-form ref="importForm" :rules="importDataRules" :model="importForm" label-width="auto">
+                <el-form-item prop="C_NO" label="管制編號">
+                    <el-input v-model="importForm.C_NO"></el-input>
+                </el-form-item>
+                <el-form-item prop="B_DATE" label="開工日">
+                    <input type="text" class="el-input__inner datepicker" data-model="importForm" data-key="B_DATE" v-model="importForm.B_DATE" />
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button @@click="importModalVisible = false">取 消</el-button>
+                <el-button type="primary" @@click="importDataHandler">確 定</el-button>
+            </span>
+        </el-dialog>*@
 </div>

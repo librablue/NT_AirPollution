@@ -109,6 +109,10 @@
 				callback();
 			};
 			const checkLAT = (rule, value, callback) => {
+				// 如果不是在執行表單提交/validate 期間，直接放行不校驗
+				if (!this.isSubmitting) {
+					return callback();
+				}
 				if (isNaN(value)) {
 					callback(new Error('緯度格式錯誤'));
 				}
@@ -123,6 +127,10 @@
 				callback();
 			};
 			const checkLNG = (rule, value, callback) => {
+				// 如果不是在執行表單提交/validate 期間，直接放行不校驗
+				if (!this.isSubmitting) {
+					return callback();
+				}
 				if (isNaN(value)) {
 					callback(new Error('經度格式錯誤'));
 				}
@@ -190,7 +198,9 @@
 					LNG: null
 				},
 				banks: Object.freeze(banksAry),
-				dialogVisible: false,
+				dialogVisible: false, // 控制基本資料 Dialog
+				attachDialogVisible: false, // 控制附件 Dialog
+				stopWorkDialogVisible: false, // 控制停復工 Dialog
 				failReason1DialogVisible: false,
 				failReason2DialogVisible: false,
 				bankAccountDialogVisible: false,
@@ -202,6 +212,7 @@
 					C_NO: null,
 					B_DATE: null
 				},
+				isSubmitting: false,
 				tab1Rules: Object.freeze({
 					PUB_COMP: [{ required: true, message: '請選擇案件類型', trigger: 'change' }],
 					TOWN_NO: [{ required: true, message: '請選擇鄉鎮分類', trigger: 'change' }],
@@ -226,14 +237,8 @@
 						{ required: true, message: '請輸入建照字號或合約編號', trigger: 'blur' },
 						{ pattern: /[^\s]/, message: '請輸入建照字號或合約編號', trigger: 'blur' }
 					],
-					LAT: [
-						{ required: true, message: '請輸入座標(緯度)', trigger: 'blur' },
-						{ validator: checkLAT, trigger: 'blur' }
-					],
-					LNG: [
-						{ required: true, message: '請輸入座標(經度)', trigger: 'blur' },
-						{ validator: checkLNG, trigger: 'blur' }
-					],
+					LAT: [{ required: true, message: '請輸入座標(緯度)' }, { validator: checkLAT }],
+					LNG: [{ required: true, message: '請輸入座標(經度)' }, { validator: checkLNG }],
 					STATE: [
 						{ required: true, message: '請輸入工程內容概述', trigger: 'blur' },
 						{ pattern: /[^\s]/, message: '請輸入工程內容概述', trigger: 'blur' }
@@ -867,73 +872,79 @@
 				}
 			},
 			goNextTab() {
-				// 自動設定公共工程4%、私人工程3%
+				// 1. 特殊邏輯計算
 				if (this.activeTab === '2') {
-					if (this.selectRow.PUB_COMP) {
-						this.selectRow.PERCENT = 4;
-					} else {
-						this.selectRow.PERCENT = 3;
-					}
+					this.selectRow.PERCENT = this.selectRow.PUB_COMP ? 4 : 3;
 				}
 
-				switch (this.activeTab) {
-					case '1':
-					case '2':
-					case '3':
-					case '4': {
-						this.$refs[`tab${this.activeTab}Form`].validate((valid, obj) => {
-							if (!valid) {
-								const firstKey = Object.keys(obj)[0];
-								alert(obj[firstKey][0].message);
-								return false;
-							}
+				const currentFormRef = `tab${this.activeTab}Form`;
 
+				// 2. 當頁 Form 驗證
+				if (this.$refs[currentFormRef]) {
+					this.$refs[currentFormRef].validate((valid, obj) => {
+						if (!valid) {
+							const firstKey = Object.keys(obj)[0];
+							alert(obj[firstKey][0].message);
+							return false;
+						}
+
+						// 若在 Tab 1~3，驗證通過後直接切換至下一頁
+						if (this.activeTab !== '4') {
 							this.activeTab = (+this.activeTab + 1).toString();
-						});
-
-						break;
-					}
-					case '5': {
-						this.activeTab = (+this.activeTab + 1).toString();
-						break;
-					}
-					case '6': {
-						if (!confirm('是否確認繼續?')) return false;
-						const point = this.LatLon2UTM(this.selectRow.LAT, this.selectRow.LNG, 0, 0);
-						this.selectRow.UTME = point[0];
-						this.selectRow.UTMN = point[1];
-						this.selectRow.LATLNG = `${this.selectRow.LAT},${this.selectRow.LNG}`;
-						this.selectRow.C_MONEY = this.calcC_MONEY;
-						// 1、2類工程面積=建築面積
-						if (this.selectRow.KIND_NO === '1' || this.selectRow.KIND_NO === '2') {
-							this.selectRow.AREA = this.selectRow.AREA_B;
 						}
-						// 3類工程面積=總樓地板面積
-						else if (this.selectRow.KIND_NO === '3') {
-							this.selectRow.AREA = this.selectRow.AREA2;
+						// 若已完成 Tab 4 (經費資料)，執行暫存
+						else {
+							this.saveData();
 						}
-						const loading = this.$loading();
-						axios
-							.post(`/Apply/${this.mode}Form`, this.selectRow)
-							.then(res => {
-								loading.close();
-								if (!res.data.Status) {
-									alert(res.data.Message);
-									return;
-								}
-
-								alert('申請資料已儲存。');
-								this.getForms();
-								this.dialogVisible = false;
-							})
-							.catch(err => {
-								loading.close();
-								alert('系統發生未預期錯誤');
-								console.log(err);
-							});
-						break;
-					}
+					});
 				}
+			},
+			// 執行後端儲存 / 暫存邏輯
+			saveData() {
+				const point = this.LatLon2UTM(this.selectRow.LAT, this.selectRow.LNG, 0, 0);
+				this.selectRow.UTME = point[0];
+				this.selectRow.UTMN = point[1];
+				this.selectRow.LATLNG = `${this.selectRow.LAT},${this.selectRow.LNG}`;
+				this.selectRow.C_MONEY = this.calcC_MONEY;
+
+				// 1、2類工程面積 = 建築面積
+				if (this.selectRow.KIND_NO === '1' || this.selectRow.KIND_NO === '2') {
+					this.selectRow.AREA = this.selectRow.AREA_B;
+				}
+				// 3類工程面積 = 總樓地板面積
+				else if (this.selectRow.KIND_NO === '3') {
+					this.selectRow.AREA = this.selectRow.AREA2;
+				}
+
+				const loading = this.$loading({ text: '申請資料暫存中...' });
+				axios
+					.post(`/Apply/${this.mode}Form`, this.selectRow)
+					.then(res => {
+						loading.close();
+						if (!res.data.Status) {
+							alert(res.data.Message);
+							return;
+						}
+
+						alert('申請資料已成功暫存。');
+						this.getForms();
+						this.dialogVisible = false;
+					})
+					.catch(err => {
+						loading.close();
+						alert('系統發生未預期錯誤');
+						console.error(err);
+					});
+			},
+			// 開啟附件彈窗 (提供列表或按鈕呼叫)
+			openAttachDialog(row) {
+				this.selectRow = row;
+				this.attachDialogVisible = true;
+			},
+			// 開啟停復工彈窗 (提供列表或按鈕呼叫)
+			openStopWorkDialog(row) {
+				this.selectRow = row;
+				this.stopWorkDialogVisible = true;
 			},
 			showSelfCheckModal(row) {
 				this.selectRow = Object.assign(this.selectRow, JSON.parse(JSON.stringify(row)));
@@ -1016,12 +1027,49 @@
 
 				return dayDiff;
 			},
-			dialogClose() {
-				// 清空附件
-				// for (let i = 0; i < this.filterAttachmentInfo.length; i++) {
-				//     const file = document.querySelector(`#file${i}`);
-				//     if (file) file.value = '';
-				// }
+			downloadForm1(row) {
+				const loading = this.$loading();
+				axios
+					.post('/Apply/DownloadForm1', row, {
+						responseType: 'blob'
+					})
+					.then(res => {
+						loading.close();
+
+						const contentType = res.headers['content-type'];
+						const fileName = decodeURI(res.headers['file-name'] || '');
+
+						// 判斷是否為錯誤 JSON（不是 application/pdf）
+						if (contentType && contentType.includes('application/json')) {
+							const reader = new FileReader();
+							reader.onload = () => {
+								try {
+									const json = JSON.parse(reader.result);
+									alert(json.Message || '下載失敗');
+								} catch (e) {
+									alert('發生未知錯誤');
+								}
+							};
+							reader.readAsText(res.data);
+							return;
+						}
+
+						// 成功下載檔案
+						const blob = new Blob([res.data], { type: 'application/pdf' });
+						const url = window.URL.createObjectURL(blob);
+						const link = document.createElement('a');
+						link.href = url;
+						link.setAttribute('download', fileName || 'download.pdf');
+						document.body.appendChild(link);
+						link.click();
+						link.remove();
+						window.URL.revokeObjectURL(url);
+					})
+					.catch(err => {
+						loading.close();
+						alert('系統發生未預期錯誤');
+						console.error(err);
+					});
 			},
 			downloadPayment(row) {
 				const loading = this.$loading();

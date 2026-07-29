@@ -23,14 +23,14 @@
         <div class="side-form">
             <h1>註冊帳號</h1>
             <el-form class="round" :rules="rules" ref="form" :model="form" label-position="top">
-                <el-form-item prop="UserType" label="會員類型">
-                    <el-select class="w100p" v-model="form.UserType">
+                @*<el-form-item prop="UserType" label="會員類型">
+                    <el-select class="w100p" v-model="form.UserType" disabled>
                         <el-option label="營建空污費申報" :value="1"></el-option>
-                        @* <el-option label="營建自主管理" :value="2"></el-option> *@
+                        <el-option label="營建自主管理" :value="2"></el-option>
                     </el-select>
-                </el-form-item>
+                </el-form-item>*@
                 <el-form-item prop="Email" label="Email">
-                    <el-input type="email" v-model="form.Email" maxlength="50">
+                    <el-input type="email" v-model="form.Email" maxlength="50" placeholder="例: abc123@gmail.com">
                         <el-button slot="append" type="primary" class="btn-append" @@click="sendCode" :disabled="btnSendCodeDisabled">{{btnSendCodeText}}</el-button>
                     </el-input>
                     <small class="prompt-text">請至您的電子郵件信箱查看信箱驗證碼<br>(小提醒：若收件匣沒看到，可能被分類到垃圾信件區囉！)</small>

@@ -612,70 +612,6 @@ h3 {
   border: 1px solid #e1f3d8;
 }
 
-/* === 附件上傳區 === */
-.upload-section {
-  background: #fcfcfc;
-  border: 1px solid #ebeef5;
-}
-.upload-section .attach-tip-list {
-  background: #f8f9fa;
-  border-left: 4px solid #409eff;
-  padding: 12px 16px;
-  margin-bottom: 20px;
-  border-radius: 8px;
-  list-style: none;
-}
-.upload-section .attach-tip-list li {
-  line-height: 1.8;
-  font-size: 14px;
-  color: #606266;
-  display: flex;
-  align-items: flex-start;
-}
-.upload-section .attach-tip-list li i {
-  color: #409eff;
-  margin-right: 8px;
-  margin-top: 3px;
-}
-.upload-section .attach-row {
-  display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
-}
-.upload-section .upload-box {
-  flex: 1;
-  min-width: 320px;
-  border: 1px dashed #dcdfe6;
-  padding: 16px;
-  border-radius: 10px;
-  background-color: #fff;
-  transition: all 0.3s;
-}
-.upload-section .upload-box:hover {
-  border-color: #409eff;
-  box-shadow: 0 2px 8px rgba(64, 158, 255, 0.15);
-}
-.upload-section .upload-box .title {
-  font-weight: bold;
-  margin-bottom: 12px;
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-}
-.upload-section .upload-box .title i {
-  margin-right: 6px;
-}
-.upload-section .link-download {
-  display: inline-block;
-  margin-top: 10px;
-  color: #409eff;
-  text-decoration: none;
-  transition: color 0.2s;
-}
-.upload-section .link-download:hover {
-  color: #66b1ff;
-}
-
 /* === 表單細節 === */
 .flex-row {
   display: flex;
@@ -868,12 +804,14 @@ h3 {
   border: 2px dashed #ccc;
   padding: 40px 15px;
   margin: 0 auto;
+  background-color: #fff;
+  border-radius: 8px;
 }
 .form-wrap .empty img {
   display: block;
   width: 100%;
-  max-width: 360px;
-  margin: 0 auto;
+  max-width: 320px;
+  margin: 0 auto 15px;
 }
 .form-wrap .empty .empty-text {
   color: #40a0f4;
@@ -884,11 +822,19 @@ h3 {
 .form-wrap .form-item {
   position: relative;
   width: calc(100% - 24px);
-  background-color: #f9f9f9;
-  padding: 40px 15px 0;
-  margin: 10px 12px;
-  border-radius: 6px;
-  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  background-color: #ffffff;
+  padding: 40px 16px 16px;
+  margin: 12px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.form-wrap .form-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
 }
 .form-wrap .form-item .status {
   position: absolute;
@@ -896,54 +842,97 @@ h3 {
   left: 0;
   color: #fff;
   background-color: #22577e;
-  padding: 2px 10px;
-  border-top-left-radius: 6px;
+  padding: 4px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  border-top-left-radius: 8px;
+  border-bottom-right-radius: 8px;
 }
 .form-wrap .form-item .info-list {
   list-style-type: none;
-  font-size: 16px;
+  font-size: 15px;
+  padding: 0;
+  margin: 0 0 12px 0;
 }
 .form-wrap .form-item .info-list li {
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
+  border-bottom: 1px dashed #e2e8f0;
+  padding: 8px 0;
+  line-height: 24px;
+}
+.form-wrap .form-item .info-list li.status-row {
+  flex-direction: column;
   align-items: flex-start;
+  gap: 6px;
+  padding: 10px 0;
   border-bottom: 1px dashed #ff9c73;
-  margin-bottom: 10px;
-  line-height: 28px;
 }
 .form-wrap .form-item .info-list .title {
-  width: 80px;
+  width: 85px;
   color: #2a629a;
   font-weight: 700;
-  margin-right: 10px;
+  flex-shrink: 0;
 }
 .form-wrap .form-item .info-list .content {
-  margin-right: 20px;
   flex: 1;
+  color: #333;
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
 }
-.form-wrap .form-item .info-list .link-row {
+.form-wrap .form-item .info-list .status-info {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   width: 100%;
-  height: 40px;
-  padding-left: 90px;
 }
-.form-wrap .form-item .info-list .link-row .el-button {
-  margin: 6px 0;
+.form-wrap .form-item .info-list .status-info .status-badge {
+  color: #2c3e50;
+  font-weight: 600;
+  background-color: #f0f4f8;
+  padding: 2px 8px;
+  border-radius: 4px;
 }
-.form-wrap .form-item .info-list .link-row .el-button ~ .el-button {
-  margin-left: 10px;
+.form-wrap .form-item .info-list .action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 2px;
+  width: 100%;
+}
+.form-wrap .form-item .info-list .action-buttons .el-button {
+  margin: 0;
+}
+.form-wrap .form-item .bottom-btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid #f0f0f0;
+}
+.form-wrap .form-item .bottom-btn-row .el-button {
+  flex: 1 1 calc(50% - 4px);
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.form-wrap .form-item .bottom-btn-row .el-button.btn-delete {
+  flex: 1 1 100%;
 }
 
 @media (min-width: 768px) {
   .form-wrap .form-item {
     width: calc(50% - 24px);
   }
+  .form-wrap .form-item .bottom-btn-row .el-button {
+    flex: 1;
+  }
+  .form-wrap .form-item .bottom-btn-row .el-button.btn-delete {
+    flex: 1;
+  }
 }
-@media (min-width: 992px) {
+@media (min-width: 1200px) {
   .form-wrap .form-item {
     width: calc(33.3333333333% - 24px);
   }
@@ -1057,60 +1046,220 @@ h3 {
   font-size: 16px;
 }
 
-.stopwork-wrapper {
-  max-width: 720px;
-  background: #fff;
-  border-radius: 10px;
-  padding: 20px 25px;
-}
-.stopwork-wrapper .table-wrapper {
-  overflow-x: auto;
-}
-.stopwork-wrapper .table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  border: 1px solid #ebeef5;
+.custom-dialog {
   border-radius: 8px;
   overflow: hidden;
+}
+.custom-dialog .el-dialog__header {
+  background-color: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 16px 20px;
+}
+.custom-dialog .el-dialog__header .el-dialog__title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #1e293b;
+}
+.custom-dialog .el-dialog__body {
+  padding: 20px;
+}
+.custom-dialog .el-dialog__footer {
+  border-top: 1px solid #f1f5f9;
+  padding: 12px 20px;
+  background-color: #f8fafc;
+}
+
+.attach-dialog-wrapper .attach-tip-box {
+  background-color: #fffbe6;
+  border: 1px solid #ffe58f;
+  border-radius: 6px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+}
+.attach-dialog-wrapper .attach-tip-box .tip-title {
   font-size: 14px;
+  font-weight: 700;
+  color: #d48806;
+  margin-bottom: 6px;
 }
-.stopwork-wrapper .table thead th {
-  background-color: #f9fafc;
-  color: #606266;
-  text-align: center;
-  padding: 10px;
-  border-bottom: 1px solid #ebeef5;
-  font-weight: 600;
+.attach-dialog-wrapper .attach-tip-box .tip-title i {
+  margin-right: 4px;
 }
-.stopwork-wrapper .table tbody tr {
-  transition: background-color 0.2s ease;
+.attach-dialog-wrapper .attach-tip-box .attach-tip-list {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 13px;
+  color: #595959;
+  line-height: 20px;
 }
-.stopwork-wrapper .table tbody tr:hover {
-  background-color: #f5f7fa;
+.attach-dialog-wrapper .attach-tip-box .attach-tip-list b {
+  color: #cf1322;
 }
-.stopwork-wrapper .table tbody tr td {
-  padding: 8px 10px;
-  border-bottom: 1px solid #ebeef5;
-  vertical-align: middle;
+.attach-dialog-wrapper .attach-row {
+  display: flex;
+  flex-wrap: wrap;
 }
-.stopwork-wrapper .table tbody tr td.text-center {
-  text-align: center;
+.attach-dialog-wrapper .attach-row .el-col {
+  display: flex;
+  margin-bottom: 16px;
 }
-.stopwork-wrapper .table tbody tr td.days {
-  text-align: center;
-  color: #409eff;
-  font-weight: bold;
+.attach-dialog-wrapper .upload-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #ffffff;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
 }
-.stopwork-wrapper .table tbody tr td .w100p {
+.attach-dialog-wrapper .upload-card .card-header {
+  padding: 10px 16px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+}
+.attach-dialog-wrapper .upload-card .card-header i {
+  margin-right: 6px;
+  font-size: 16px;
+}
+.attach-dialog-wrapper .upload-card.primary-card .card-header {
+  background-color: #0284c7;
+}
+.attach-dialog-wrapper .upload-card.success-card .card-header {
+  background-color: #059669;
+}
+.attach-dialog-wrapper .upload-card .card-body {
+  padding: 16px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.attach-dialog-wrapper .upload-card .card-body .upload-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.attach-dialog-wrapper .upload-card .el-upload {
   width: 100%;
 }
-.stopwork-wrapper .table tbody .no-data {
+.attach-dialog-wrapper .upload-card .el-upload .el-upload-dragger {
+  width: 100%;
+  height: 130px;
+  border-radius: 6px;
+}
+.attach-dialog-wrapper .upload-card .el-upload .el-upload-dragger .el-icon-upload {
+  margin: 16px 0 8px;
+  font-size: 40px;
+}
+.attach-dialog-wrapper .upload-card .el-upload .el-upload-dragger .el-upload__text {
+  font-size: 13px;
+}
+.attach-dialog-wrapper .upload-card .download-box {
+  margin-top: 12px;
+  padding: 10px 12px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.attach-dialog-wrapper .upload-card .download-box .file-info {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  margin-right: 8px;
+}
+.attach-dialog-wrapper .upload-card .download-box .file-info .text-pdf {
+  color: #ef4444;
+  font-size: 18px;
+  margin-right: 6px;
+  flex-shrink: 0;
+}
+.attach-dialog-wrapper .upload-card .download-box .file-info .file-name {
+  font-size: 13px;
+  color: #334155;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.attach-dialog-wrapper .upload-card .download-box .download-btn {
+  font-size: 12px;
+  color: #0284c7;
+  background-color: #e0f2fe;
+  padding: 4px 10px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 600;
+  flex-shrink: 0;
+  transition: background-color 0.2s;
+}
+.attach-dialog-wrapper .upload-card .download-box .download-btn:hover {
+  background-color: #bae6fd;
+}
+.attach-dialog-wrapper .upload-card .empty-file-tip {
   text-align: center;
-  color: #999;
-  padding: 15px 0;
-  background: #fafafa;
-  font-style: italic;
+  color: #94a3b8;
+  font-size: 13px;
+  padding: 30px 0;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stopwork-wrapper .total-days-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border: 1px solid #bae6fd;
+  border-radius: 6px;
+  padding: 12px 20px;
+  margin-bottom: 16px;
+}
+.stopwork-wrapper .total-days-card .card-label {
+  font-size: 15px;
+  font-weight: 600;
+  color: #0369a1;
+}
+.stopwork-wrapper .total-days-card .card-label i {
+  margin-right: 4px;
+}
+.stopwork-wrapper .total-days-card .card-value {
+  font-size: 14px;
+  color: #0c4a6e;
+}
+.stopwork-wrapper .total-days-card .card-value span {
+  font-size: 22px;
+  font-weight: 700;
+  color: #e11d48;
+  margin-right: 2px;
+}
+.stopwork-wrapper .table-header-custom {
+  background-color: #f1f5f9 !important;
+  color: #334155 !important;
+  font-weight: 700 !important;
+}
+.stopwork-wrapper .text-muted {
+  color: #94a3b8;
+  margin-right: 6px;
+}
+.stopwork-wrapper .day-tag {
+  font-weight: 700;
+  font-size: 13px;
+}
+.stopwork-wrapper .el-table {
+  border-radius: 6px;
+  overflow: hidden;
+}
+.stopwork-wrapper .el-table td,
+.stopwork-wrapper .el-table th {
+  padding: 10px 0;
 }
 
 footer {
