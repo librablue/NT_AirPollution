@@ -38,12 +38,22 @@
 			</el-form-item>
 		</el-form>
 		<vxe-table ref="table" :data="forms" size="small" :loading="loading" max-height="640px" show-overflow border resizable auto-resize keep-source :sort-config="{ trigger: 'cell' }" :edit-config="{ trigger: 'click', mode: 'cell' }" @edit-closed="editClosed">
-			<vxe-table-column title="功能" width="60" align="center" fixed="left">
-				<template v-slot="{ row }">
-					<el-button size="mini" icon="el-icon-search" circle title="查看內容" @click="showDetail(row)"></el-button>
+			<vxe-table-column width="60" align="center" fixed="left">
+				<template #header>檢視<br>案件</template>
+				<template #default="{ row }">
+					<el-button size="mini" icon="el-icon-search" circle title="檢視案件" @click="showDetail(row)"></el-button>
+                </template>
+			</vxe-table-column>
+			<vxe-table-column field="C_NO" title="管制編號" width="140" align="center" sortable>
+				<template #default="{ row }">
+					<span v-if="row.C_NO">{{row.C_NO}}-{{row.SER_NO}}</span>
 				</template>
 			</vxe-table-column>
-			<vxe-table-column field="FormStatus" title="申報進度" width="120" align="center" sortable fixed="left" :edit-render="{ autofocus: '.grid-input' }">
+			<vxe-table-column field="COMP_NAM" title="工程名稱" width="240" align="center"></vxe-table-column>
+            <vxe-table-column field="C_DATE" title="申報日期" width="140" align="center" sortable>
+				<template #default="{ row }">{{ row.C_DATE | datetime }}</template>
+			</vxe-table-column>
+            <vxe-table-column field="FormStatus" title="首期審核進度" width="140" align="center" sortable :edit-render="{ autofocus: '.grid-input' }">
 				<template #default="{ row }">{{row.FormStatus | formStatus}}</template>
 				<template #edit="{ row }">
 					<select class="grid-input" v-model="row.FormStatus">
@@ -51,7 +61,7 @@
 					</select>
 				</template>
 			</vxe-table-column>
-			<vxe-table-column field="VerifyStage1" title="初/複審" width="120" align="center" sortable fixed="left" :edit-render="{ autofocus: '.grid-input' }">
+			<vxe-table-column field="VerifyStage1" title="首期初/複審" width="140" align="center" sortable :edit-render="{ autofocus: '.grid-input' }">
 				<template #default="{ row }">{{row.VerifyStage1 | verifyStage}}</template>
 				<template #edit="{ row }">
 					<select class="grid-input" v-model="row.VerifyStage1">
@@ -61,7 +71,7 @@
 					</select>
 				</template>
 			</vxe-table-column>
-			<vxe-table-column field="CalcStatus" title="結算進度" width="120" align="center" sortable fixed="left" :edit-render="{ autofocus: '.grid-input' }">
+			<vxe-table-column field="CalcStatus" title="結算審核進度" width="140" align="center" sortable :edit-render="{ autofocus: '.grid-input' }">
 				<template #default="{ row }">{{row.CalcStatus | calcStatus}}</template>
 				<template #edit="{ row }">
 					<select class="grid-input" v-model="row.CalcStatus">
@@ -69,7 +79,7 @@
 					</select>
 				</template>
 			</vxe-table-column>
-			<vxe-table-column field="VerifyStage2" title="初/複審" width="120" align="center" sortable fixed="left" :edit-render="{ autofocus: '.grid-input' }">
+			<vxe-table-column field="VerifyStage2" title="結算初/複審" width="140" align="center" sortable :edit-render="{ autofocus: '.grid-input' }">
 				<template #default="{ row }">{{row.VerifyStage2 | verifyStage}}</template>
 				<template #edit="{ row }">
 					<select class="grid-input" v-model="row.VerifyStage2">
@@ -79,32 +89,6 @@
 					</select>
 				</template>
 			</vxe-table-column>
-			<vxe-table-column field="C_NO" title="管制編號" width="140" align="center" sortable fixed="left">
-				<template #default="{ row }">
-					<span v-if="row.C_NO">{{row.C_NO}}-{{row.SER_NO}}</span>
-				</template>
-			</vxe-table-column>
-			<vxe-table-column field="COMP_L" title="工程分級" width="100" align="center"></vxe-table-column>
-			<vxe-table-column field="S_C_NAM" title="業主聯絡人" width="120" align="center"></vxe-table-column>
-			<vxe-table-column field="S_C_TEL" title="業主聯絡電話" width="120" align="center"></vxe-table-column>
-			<vxe-table-column field="COMP_NAM" title="工程名稱" width="180" align="center"></vxe-table-column>
-			<vxe-table-column field="TOWN_NA" title="鄉鎮名稱" width="100" align="center" sortable></vxe-table-column>
-			<vxe-table-column field="S_NAME" title="營建業主名稱" width="160" align="center"></vxe-table-column>
-			<vxe-table-column field="R_NAME" title="承造單位名稱" width="160" align="center"></vxe-table-column>
-			<vxe-table-column field="C_DATE" title="申報日期" width="140" align="center" sortable>
-				<template #default="{ row }">{{ row.C_DATE | datetime }}</template>
-			</vxe-table-column>
-			<vxe-table-column field="M_DATE" title="修改日期" width="140" align="center" sortable>
-				<template #default="{ row }">{{ row.M_DATE | datetime }}</template>
-			</vxe-table-column>
-			<vxe-table-column field="VerifyDate1" title="申報審核日" width="140" align="center" sortable>
-				<template #default="{ row }">{{ row.VerifyDate1 | datetime }}</template>
-			</vxe-table-column>
-			<vxe-table-column field="VerifyDate2" title="結算審核日" width="140" align="center" sortable>
-				<template #default="{ row }">{{ row.VerifyDate2 | datetime }}</template>
-			</vxe-table-column>
-			<vxe-table-column field="FailReason1" title="審核退件原因" width="240" align="center"></vxe-table-column>
-			<vxe-table-column field="FailReason2" title="結算退件原因" width="240" align="center"></vxe-table-column>
 		</vxe-table>
 		<FormModal :show.sync="formModalVisible" :mode="mode" :data="selectRow" @on-updated="onUpdated" />
 	</div>
