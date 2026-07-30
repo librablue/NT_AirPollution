@@ -6,17 +6,216 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/themes/base/jquery-ui.min.css">
     <link rel="stylesheet" href="@Url.Content("~/static/css/member.css")" />
     <style>
-        .el-col {
-            padding: 0 10px;
+        .app-container {
+            max-width: 1000px;
+            margin: 40px auto;
         }
 
-        .btn-icon {
-            width: 32px;
+        .calculator-card {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 0;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
         }
 
-        .txt-day {
-            font-size: 20px;
+        .form-section {
+            padding: 36px 40px;
+        }
+
+        .form-header h2 {
+            margin: 0 0 28px 0;
+            font-size: 22px;
+            color: #1a202c;
             font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .w100p {
+            width: 100%;
+        }
+
+        .el-input__inner {
+            border-radius: 8px;
+            border: 1px solid #cbd5e0;
+            height: 42px;
+            line-height: 42px;
+            transition: all 0.2s ease;
+        }
+
+            .el-input__inner:focus {
+                border-color: #3182ce;
+                box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.15);
+            }
+
+        .datepicker {
+            background-color: #ffffff;
+            cursor: pointer;
+        }
+
+        .conversion-panel {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .panel-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #4a5568;
+            margin-bottom: 12px;
+        }
+
+        .conversion-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 12px;
+            align-items: end;
+            margin-bottom: 12px;
+        }
+
+        .action-wrap {
+            margin-bottom: 22px;
+        }
+
+        .btn-calc {
+            height: 42px;
+        }
+
+        .form-actions {
+            margin-top: 32px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            height: 48px;
+            background: linear-gradient(135deg, #3182ce 0%, #2b6cb0 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: transform 0.1s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 12px rgba(49, 130, 206, 0.3);
+        }
+
+            .btn-submit:hover {
+                box-shadow: 0 6px 16px rgba(49, 130, 206, 0.4);
+            }
+
+            .btn-submit:active {
+                transform: scale(0.99);
+            }
+
+        .result-section {
+            background: #f8fafc;
+            border-left: 1px solid #edf2f7;
+            padding: 36px 28px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .result-header {
+            font-size: 16px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 24px;
+        }
+
+        .result-body {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .result-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+            .result-item .label {
+                font-size: 13px;
+                color: #718096;
+            }
+
+            .result-item .value {
+                font-size: 15px;
+                color: #2d3748;
+                font-weight: 500;
+            }
+
+            .result-item.highlight {
+                margin-top: 12px;
+                padding-top: 20px;
+                border-top: 2px dashed #cbd5e0;
+            }
+
+                .result-item.highlight .label {
+                    color: #c53030;
+                    font-size: 14px;
+                    font-weight: 600;
+                }
+
+                .result-item.highlight .amount {
+                    font-size: 26px;
+                    font-weight: 800;
+                    color: #e53e3e;
+                }
+
+                .result-item.highlight small {
+                    font-size: 13px;
+                    font-weight: 400;
+                    color: #a0aec0;
+                }
+
+        .result-placeholder {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #a0aec0;
+            font-size: 14px;
+        }
+
+        [v-cloak] {
+            display: none;
+        }
+
+        @@media (max-width: 840px) {
+            .calculator-card {
+                grid-template-columns: 1fr;
+            }
+
+            .result-section {
+                border-left: none;
+                border-top: 1px solid #edf2f7;
+            }
+
+            .form-section {
+                padding: 24px;
+            }
+
+            .form-row, .conversion-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .action-wrap {
+                margin-bottom: 0;
+            }
         }
     </style>
 }
@@ -26,100 +225,99 @@
     <script src="@Url.Content("~/static/js/calc.js")"></script>
 }
 
-<div id="app" class="container main">
-    <div class="entry-wrap">
-        <div class="aside">
-            <h1>營建空污費試算</h1>
-            <el-form class="round" ref="form" :rules="rules" :model="form" label-position="top">
+<div id="app" class="app-container">
+    <div class="calculator-card">
+        <!-- 左側：輸入表單區 -->
+        <main class="form-section">
+            <header class="form-header">
+                <h2>營建空污費試算</h2>
+            </header>
+
+            <el-form class="custom-form" ref="form" :rules="rules" :model="form" label-position="top">
                 <el-form-item prop="KIND_NO" label="工程類別">
                     <el-select class="w100p" v-model="form.KIND_NO">
                         <el-option label="請選擇" :value="null"></el-option>
                         <el-option v-for="item in projectCode" :key="item.ID" :label="`${item.ID}. ${item.Name}`" :value="item.ID"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item prop="B_DATE" label="開始日期">
-                    <div class="el-input">
-                        <input type="text" class="el-input__inner datepicker" data-key="B_DATE" v-model="form.B_DATE" readonly />
-                    </div>
-                </el-form-item>
-                <el-form-item prop="E_DATE" label="結束日期">
-                    <div class="el-input">
-                        <input type="text" class="el-input__inner datepicker" data-key="E_DATE" v-model="form.E_DATE" readonly />
-                    </div>
-                </el-form-item>
+
+                <div class="form-row">
+                    <el-form-item prop="B_DATE" label="開始日期">
+                        <div class="el-input">
+                            <input type="text" class="el-input__inner datepicker" data-key="B_DATE" v-model="form.B_DATE" readonly />
+                        </div>
+                    </el-form-item>
+                    <el-form-item prop="E_DATE" label="結束日期">
+                        <div class="el-input">
+                            <input type="text" class="el-input__inner datepicker" data-key="E_DATE" v-model="form.E_DATE" readonly />
+                        </div>
+                    </el-form-item>
+                </div>
+
                 <el-form-item v-if="isShowAREA()" prop="AREA" :label="projectCodeText" v-cloak>
                     <el-input type="number" v-model="form.AREA"></el-input>
                 </el-form-item>
+
                 <el-form-item v-if="form.KIND_NO === '3'" prop="AREA2" :label="projectCodeText" v-cloak>
                     <el-input type="number" v-model="form.AREA2"></el-input>
                 </el-form-item>
+
                 <el-form-item v-if="isShowMONEY()" prop="MONEY" label="工程合約經費(元)" v-cloak>
                     <el-input type="number" v-model="form.MONEY" placeholder="未稅金額(元)"></el-input>
                 </el-form-item>
-                <div v-if="form.KIND_NO === 'B'" v-cloak>
-                    <div style="margin-bottom:10px">鬆方體積換算表</div>
-                    @*<div class="flex-row" style="align-items: flex-end">
-                            <div style="flex:1; padding: 0 10px">
-                                <el-form-item label="實方體積(立方公尺)">
-                                    <el-input type="number" v-model="form.D2"></el-input>
-                                </el-form-item>
-                            </div>
-                            <div style="flex: 1; padding: 0 10px">
-                                <el-form-item label="鬆實方比值">
-                                    <el-input type="number" v-model="form.RATIOLB"></el-input>
-                                </el-form-item>
-                            </div>
-                            <div>
-                                <el-form-item>
-                                    <el-button type="primary" round @@click="calcD2">換算</el-button>
-                                </el-form-item>
-                            </div>
-                        </div>*@
-                    <div class="flex-row" style="align-items: flex-end">
-                        <div style="flex:1; padding: 0 10px">
-                            <el-form-item label="鬆方重量(公噸)">
-                                <el-input type="number" v-model="form.E2"></el-input>
-                            </el-form-item>
-                        </div>
-                        <div style="flex:1; padding: 0 10px">
-                            <el-form-item label="密度">
-                                <el-input type="number" v-model="form.DENSITYL"></el-input>
-                            </el-form-item>
-                        </div>
-                        <div>
-                            <el-form-item>
-                                <el-button type="primary" round @@click="calcE2">換算</el-button>
-                            </el-form-item>
+
+                <!-- 換算功能面板 -->
+                <div v-if="form.KIND_NO === 'B'" class="conversion-panel" v-cloak>
+                    <div class="panel-title">鬆方體積換算</div>
+                    <div class="conversion-grid">
+                        <el-form-item label="鬆方重量(公噸)">
+                            <el-input type="number" v-model="form.E2"></el-input>
+                        </el-form-item>
+                        <el-form-item label="密度">
+                            <el-input type="number" v-model="form.DENSITYL"></el-input>
+                        </el-form-item>
+                        <div class="action-wrap">
+                            <el-button type="primary" class="btn-calc" round @@click="calcE2">換算</el-button>
                         </div>
                     </div>
                     <el-form-item prop="VOLUMEL" label="外運土石體積(立方公尺)">
                         <el-input type="number" v-model="form.VOLUMEL"></el-input>
                     </el-form-item>
                 </div>
-                <div class="bottom-btn-row">
-                    <button type="button" class="btn-send btn-block" @@click="sendForm">試 算</button>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-submit" @@click="sendForm">試 算</button>
                 </div>
             </el-form>
-        </div>
-        <div class="side-form">
-            <ul class="calc-result" v-if="calcResult" v-cloak>
-                <li>
-                    <div class="title">案件工程</div>
-                    <div class="content">{{calcResult.Level}} {{getProjectCodeItem(form.KIND_NO).ID}}.{{getProjectCodeItem(form.KIND_NO).Name}}</div>
-                </li>
-                <li>
-                    <div class="title">施工工期</div>
-                    <div class="content">共 {{totalDays}} 日曆天</div>
-                </li>
-                <li>
-                    <div class="title">營建空污費費率</div>
-                    <div class="content">{{calcResult.Rate}}</div>
-                </li>
-                <li>
-                    <div class="title">需繳納營建空污費</div>
-                    <div class="content">$ {{calcResult.TotalMoney | comma}} 元整(新台幣)</div>
-                </li>
-            </ul>
-        </div>
+        </main>
+
+        <!-- 右側：結果展示區 -->
+        <aside class="result-section">
+            <div class="result-header">計算結果</div>
+
+            <div v-if="calcResult" class="result-body" v-cloak>
+                <div class="result-item">
+                    <span class="label">案件工程</span>
+                    <span class="value">{{calcResult.Level}} {{getProjectCodeItem(form.KIND_NO).ID}}.{{getProjectCodeItem(form.KIND_NO).Name}}</span>
+                </div>
+                <div class="result-item">
+                    <span class="label">施工工期</span>
+                    <span class="value">共 <strong>{{totalDays}}</strong> 日曆天</span>
+                </div>
+                <div class="result-item">
+                    <span class="label">營建空污費費率</span>
+                    <span class="value">{{calcResult.Rate}}</span>
+                </div>
+                <div class="result-item highlight">
+                    <span class="label">需繳納營建空污費</span>
+                    <span class="amount">$ {{calcResult.TotalMoney | comma}} <small>元整 (NTD)</small></span>
+                </div>
+            </div>
+
+            <!-- 未試算時的預設提示 -->
+            <div v-else class="result-placeholder">
+                <p>請於左側填寫工程資訊後點擊「試算」</p>
+            </div>
+        </aside>
     </div>
 </div>

@@ -770,9 +770,6 @@ export default {
 					{ pattern: /[^\s]/, message: '請輸入銀行帳號', trigger: 'blur' }
 				],
 				File: [{ required: true, message: '請上傳存摺照片' }]
-			}),
-			rules3: Object.freeze({
-				File: [{ required: true, message: '請上傳繳費證明' }]
 			})
 		};
 	},

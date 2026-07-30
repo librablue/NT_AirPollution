@@ -189,9 +189,9 @@ input:disabled {
 }
 .prompt-text {
   display: inline-block;
-  font-size: 14px;
+  font-size: 12px;
   color: #3081d0;
-  line-height: 1;
+  line-height: 1.5;
   padding: 4px 0;
 }
 
@@ -637,89 +637,6 @@ h3 {
   margin-top: 2px;
 }
 
-.photo-wrap {
-  position: relative;
-}
-.photo-wrap .btn-remove {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-}
-.photo-wrap img {
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-.img-thumb {
-  width: 64px;
-  height: 64px;
-  margin: 2px;
-  border: 1px solid #ccc;
-}
-
-.img-thumb-list {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.img-thumb-wrap {
-  position: relative;
-  width: 80px;
-  height: 80px;
-  margin: 4px;
-}
-.img-thumb-wrap:before {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  background-color: #000;
-  opacity: 0;
-  border-radius: 4px;
-  transition: all 0.3s;
-}
-.img-thumb-wrap:hover:before {
-  opacity: 0.5;
-}
-.img-thumb-wrap:hover .link-delete {
-  display: inline-block;
-}
-.img-thumb-wrap .link-delete {
-  display: none;
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  font-size: 18px;
-  color: #fff;
-  margin: 0;
-  line-height: 1;
-}
-.img-thumb-wrap img {
-  width: 100%;
-  height: 100%;
-  -o-object-fit: cover;
-     object-fit: cover;
-  border-radius: 4px;
-}
-
-.road-row {
-  position: relative;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  margin-bottom: 10px;
-  padding-top: 22px;
-}
-.road-row .road-col {
-  margin-bottom: 22px;
-}
-.road-row .btn-delete {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-}
-
 @media (min-width: 768px) {
   .verify-card {
     width: 50%;
@@ -957,26 +874,6 @@ h3 {
 
 .el-tabs__nav-wrap::after {
   z-index: 0;
-}
-
-.calc-result {
-  padding: 10px 15px;
-  color: #e6a23c;
-  background-color: #fdf6ec;
-  border: 2px dashed #e6a23c;
-  list-style-type: none;
-}
-.calc-result li {
-  padding: 8px 4px;
-  margin-bottom: 10px;
-  border-bottom: 1px dashed #e6a23c;
-}
-.calc-result li .title {
-  font-size: 14px;
-  margin-bottom: 6px;
-}
-.calc-result li .content {
-  font-size: 18px;
 }
 
 .hint-message {
@@ -1285,6 +1182,108 @@ h3 {
 .formsub-wrapper .el-table td,
 .formsub-wrapper .el-table th {
   padding: 6px 0;
+}
+
+.fail-reason-container {
+  display: flex;
+  align-items: flex-start;
+  background-color: #fef0f0;
+  border: 1px solid #fde2e2;
+  border-radius: 6px;
+  padding: 16px;
+}
+.fail-reason-container .fail-reason-icon {
+  color: #f56c6c;
+  font-size: 20px;
+  margin-right: 12px;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+.fail-reason-container .fail-reason-content {
+  color: #606266;
+  font-size: 14px;
+  line-height: 1.6;
+  word-break: break-word;
+  flex-grow: 1;
+}
+
+/* 拖拽區域樣式微調 */
+.bank-photo-uploader .el-upload {
+  width: 100%;
+  border: 1px dashed #409eff;
+  border-radius: 4px;
+  padding: 20px 0;
+}
+.bank-photo-uploader .el-upload-dragger {
+  width: 100%;
+  height: 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.bank-photo-uploader .el-icon-upload {
+  margin: 0;
+  font-size: 40px;
+  line-height: 1;
+}
+.bank-photo-uploader .el-upload__text {
+  margin-top: 8px;
+  font-size: 13px;
+}
+
+.bank-photo-wrap {
+  position: relative;
+  width: 100%;
+  max-height: 220px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #dcdfe6;
+  background-color: #f5f7fa;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.bank-photo-wrap .photo-img {
+  width: 100%;
+  height: 100%;
+  max-height: 220px;
+  -o-object-fit: contain;
+     object-fit: contain;
+  display: block;
+}
+.bank-photo-wrap {
+  /* 懸浮遮罩 */
+}
+.bank-photo-wrap .photo-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.bank-photo-wrap:hover .photo-mask {
+  opacity: 1;
+}
+.bank-photo-wrap {
+  /* 遮罩內的按鈕 */
+}
+.bank-photo-wrap .mask-btn {
+  color: #fff;
+  font-size: 32px;
+  cursor: pointer;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+.bank-photo-wrap .mask-btn:hover {
+  transform: scale(1.2);
+  color: #f56c6c;
 }
 
 footer {

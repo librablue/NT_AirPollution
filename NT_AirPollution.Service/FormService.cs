@@ -970,37 +970,6 @@ namespace NT_AirPollution.Service
         }
 
         /// <summary>
-        /// 新增補繳費證明
-        /// </summary>
-        /// <param name="proof"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        public bool UpdatePaymentProof(PaymentProof proof)
-        {
-            using (var cn = new SqlConnection(connStr))
-            {
-                try
-                {
-                    var proofInDB = cn.QueryFirstOrDefault<PaymentProof>(@"
-                        SELECT * FROM PaymentProof WHERE FormID=@FormID",
-                        new { FormID = proof.FormID });
-
-                    if (proofInDB == null)
-                        cn.Insert(proof);
-                    else
-                        cn.Update(proof);
-
-                    return true;
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error($"UpdatePaymentProof: {ex.StackTrace}|{ex.Message}");
-                    throw new Exception("系統發生未預期錯誤");
-                }
-            }
-        }
-
-        /// <summary>
         /// 數字轉換為中文
         /// </summary>
         /// <param name="inputNum"></param>

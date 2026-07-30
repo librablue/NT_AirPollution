@@ -607,7 +607,7 @@
         </span>
     </el-dialog>
 
-    <!-- 獨立彈窗 1：附件上傳 -->
+    <!-- 附件上傳 -->
     <el-dialog title="檢附資料上傳"
                :visible.sync="attachDialogVisible"
                width="750px"
@@ -626,7 +626,7 @@
                 </ul>
             </div>
 
-            <!-- 雙欄上傳區塊 (使用 Grid / Flex 排版) -->
+            <!-- 雙欄上傳區塊 -->
             <el-row :gutter="20" class="attach-row">
                 <!-- 首期申報附件 -->
                 <el-col :sm="12" :xs="24">
@@ -711,10 +711,9 @@
         </span>
     </el-dialog>
 
-    <!-- 獨立彈窗 2：停復工紀錄 -->
+    <!-- 停復工紀錄 -->
     <el-dialog title="停復工紀錄" :visible.sync="stopWorkDialogVisible" width="650px" :close-on-click-modal="false" custom-class="custom-dialog stopwork-dialog" v-cloak>
         <div class="stopwork-wrapper">
-            <!-- 頂部總計天數卡片 (增加視覺焦點) -->
             <div class="total-days-card" v-if="selectRow.StopWorks && selectRow.StopWorks.length > 0">
                 <div class="card-label">
                     <i class="el-icon-date"></i> 累計停工總天數
@@ -723,31 +722,25 @@
                     <span>{{ totalStopWorkDays }}</span> 天
                 </div>
             </div>
-
-            <!-- 使用 Element UI 原生表格替換舊有原生 table -->
             <el-table :data="selectRow.StopWorks || []"
                       stripe
                       border
                       header-cell-class-name="table-header-custom"
                       style="width: 100%"
                       empty-text="暫無停復工紀錄">
-
                 <el-table-column label="序號" type="index" width="60" align="center"></el-table-column>
-
                 <el-table-column label="停工日期" min-width="150" align="center">
                     <template slot-scope="scope">
                         <i class="el-icon-time text-muted"></i>
                         <span>{{ scope.row.DOWN_DATE2 | date }}</span>
                     </template>
                 </el-table-column>
-
                 <el-table-column label="復工日期" min-width="150" align="center">
                     <template slot-scope="scope">
                         <i class="el-icon-time text-muted"></i>
                         <span>{{ scope.row.UP_DATE2 | date }}</span>
                     </template>
                 </el-table-column>
-
                 <el-table-column label="停工天數" width="130" align="center">
                     <template slot-scope="scope">
                         <el-tag type="danger" effect="plain" size="medium" class="day-tag">
@@ -757,46 +750,34 @@
                 </el-table-column>
             </el-table>
         </div>
-
         <span slot="footer" class="dialog-footer">
             <el-button icon="el-icon-close" @@click="stopWorkDialogVisible = false">關 閉</el-button>
         </span>
     </el-dialog>
 
-    <!-- 獨立彈窗 3：空污費合併申報 -->
+    <!-- 空污費合併申報 -->
     <el-dialog title="空污費合併申報" :visible.sync="formSubDialogVisible" width="850px" :close-on-click-modal="false" custom-class="custom-dialog" v-cloak>
         <div class="formsub-wrapper">
-            <!-- 操作區 -->
             <div class="action-bar">
                 <el-button type="primary" icon="el-icon-plus" size="small" @@click="addFormSub">新增工程</el-button>
             </div>
-
-            <!-- 表格區 -->
             <el-table :data="selectRow.FormSub || []" size="size" stripe border header-cell-class-name="table-header-custom" style="width: 100%" empty-text="暫無合併申報資料">
                 <el-table-column label="序號" type="index" width="55" align="center"></el-table-column>
-
-                <!-- 工程名稱 -->
                 <el-table-column label="工程名稱" min-width="160" align="center">
                     <template slot-scope="scope">
                         <el-input v-model="scope.row.COMP_NAM" placeholder="請輸入工程名稱" size="small"></el-input>
                     </template>
                 </el-table-column>
-
-                <!-- 工程地址或地號 -->
                 <el-table-column label="工程地址或地號" min-width="180" align="center">
                     <template slot-scope="scope">
                         <el-input v-model="scope.row.ADDR" placeholder="請輸入地址或地號" size="small"></el-input>
                     </template>
                 </el-table-column>
-
-                <!-- 施工面積 M2 -->
                 <el-table-column label="施工面積(㎡)" width="120" align="center">
                     <template slot-scope="scope">
                         <el-input v-decimal v-model="scope.row.AREA" size="small" style="width: 100%"></el-input>
                     </template>
                 </el-table-column>
-
-                <!-- 施工期程(起日) -->
                 <el-table-column label="施工期程(起日)" width="120" align="center">
                     <template slot-scope="scope">
                         <div class="el-input el-input--small">
@@ -804,8 +785,6 @@
                         </div>
                     </template>
                 </el-table-column>
-
-                <!-- 施工期程(迄日) -->
                 <el-table-column label="施工期程(迄日)" width="120" align="center">
                     <template slot-scope="scope">
                         <div class="el-input el-input--small">
@@ -813,8 +792,6 @@
                         </div>
                     </template>
                 </el-table-column>
-
-                <!-- 操作區 -->
                 <el-table-column label="操作" width="70" align="center">
                     <template slot-scope="scope">
                         <el-button type="text" class="btn-delete" icon="el-icon-delete" @@click="removeFormSub(scope.$index)"></el-button>
@@ -822,26 +799,23 @@
                 </el-table-column>
             </el-table>
         </div>
-
         <span slot="footer" class="dialog-footer">
             <el-button icon="el-icon-close" @@click="formSubDialogVisible = false">關 閉</el-button>
         </span>
     </el-dialog>
 
-    <el-dialog title="退件原因" :visible.sync="failReason1DialogVisible" width="30%" custom-class="custom-dialog" v-cloak>
-        <div v-html="selectRow.FailReason1"></div>
+    <!-- 退件原因 -->
+    <el-dialog title="退件原因" :visible.sync="failReasonDialogVisible" width="30%" custom-class="custom-dialog" v-cloak>
+        <div class="fail-reason-container">
+            <i class="el-icon-warning fail-reason-icon"></i>
+            <div class="fail-reason-content" v-html="failReason"></div>
+        </div>
         <span slot="footer" class="dialog-footer">
-            <el-button type="primary" @@click="failReason1DialogVisible = false">確 定</el-button>
+            <el-button type="primary" @@click="failReasonDialogVisible = false">確 定</el-button>
         </span>
     </el-dialog>
 
-    <el-dialog title="退件原因" :visible.sync="failReason2DialogVisible" width="30%" custom-class="custom-dialog" v-cloak>
-        <div v-html="selectRow.FailReason2"></div>
-        <span slot="footer" class="dialog-footer">
-            <el-button type="primary" @@click="failReason2DialogVisible = false">確 定</el-button>
-        </span>
-    </el-dialog>
-
+    <!-- 退款帳戶 -->
     <el-dialog title="退款帳戶" :visible.sync="bankAccountDialogVisible" width="30%" custom-class="custom-dialog" v-cloak>
         <el-form ref="form2" :rules="rules2" :model="selectRow.RefundBank" label-position="top">
             <el-form-item prop="Code" label="銀行代碼">
@@ -854,11 +828,28 @@
                 <el-input v-model="selectRow.RefundBank.Account"></el-input>
             </el-form-item>
             <el-form-item prop="File" label="存摺照片">
-                <div v-if="selectRow.RefundBank.Photo" class="photo-wrap">
-                    <el-button class="btn-remove" type="danger" size="mini" icon="el-icon-delete" circle @@click="deleteBankPhoto"></el-button>
-                    <img class="w100p" :src="`/Option/Download?f=${selectRow.RefundBank.Photo}`" />
+                <div v-if="selectRow.RefundBank.Photo" class="bank-photo-wrap">
+                    <img class="photo-img" :src="`/Option/Download?f=${selectRow.RefundBank.Photo}`" />
+                    <div class="photo-mask">
+                        <!-- 刪除按鈕 -->
+                        <span class="mask-btn" @@click="deleteBankAccountFile">
+                            <i class="el-icon-delete"></i>
+                        </span>
+                    </div>
                 </div>
-                <input v-else type="file" id="fileBA" accept=".jpg,.jpeg,.png" />
+                <el-upload v-else
+                           class="bank-photo-uploader"
+                           action=""
+                           :auto-upload="false"
+                           :show-file-list="true"
+                           :limit="1"
+                           :on-change="bankAccountFileChange"
+                           :on-remove="bankAccountFileRemove"
+                           accept=".jpg,.jpeg,.png">
+                    <i class="el-icon-upload"></i>
+                    <div class="el-upload__text">將檔案拖到此處，或<em>點擊上傳</em></div>
+                    <div class="el-upload__tip" slot="tip">只能上傳 jpg/png 檔案</div>
+                </el-upload>
             </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
@@ -871,27 +862,6 @@
             </template>
         </span>
     </el-dialog>
-
-    @*<el-dialog title="上傳繳費證明" :visible.sync="paymentProofModalVisible" width="30%" v-cloak>
-            <el-form ref="form3" :rules="rules3" :model="selectRow.PaymentProof" label-position="top">
-                <el-form-item prop="File">
-                    <div v-if="selectRow.PaymentProof.ProofFile" class="photo-wrap">
-                        <el-button class="btn-remove" type="danger" size="mini" icon="el-icon-delete" circle @@click="deletePaymentProof"></el-button>
-                        <img class="w100p" :src="`/Option/Download?f=${selectRow.PaymentProof.ProofFile}`" />
-                    </div>
-                    <input v-else type="file" id="filePF" accept=".jpg,.jpeg,.png" />
-                </el-form-item>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
-                <template v-if="selectRow.PaymentProof.ProofFile">
-                    <el-button type="primary" @@click="paymentProofModalVisible = false">確 定</el-button>
-                </template>
-                <template v-else>
-                    <el-button @@click="paymentProofModalVisible = false">取 消</el-button>
-                    <el-button type="primary" @@click="savePaymentProof">上 傳</el-button>
-                </template>
-            </span>
-        </el-dialog>*@
 
     <el-dialog title="請勾選已上傳附件" :visible.sync="selfCheckModalVisible" width="30%" custom-class="custom-dialog" v-cloak>
         <ul class="selfcheck-list">
