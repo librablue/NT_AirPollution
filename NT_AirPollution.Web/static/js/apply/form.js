@@ -52,6 +52,70 @@
 		return result.html();
 	};
 
+	// 整數
+	Vue.directive('integer', {
+		bind(el) {
+			let input;
+			const innerInput = el.querySelector('.el-input__inner');
+			if (innerInput) {
+				input = innerInput;
+			}
+			else {
+				input = el;
+			}
+
+			input.addEventListener('input', () => {
+				let value = input.value;
+				// 使用正則表達式來限制輸入內容為正整數
+				const regex = /^[1-9]\d*$/;
+
+				if (!regex.test(value)) {
+					// 移除非數字字符
+					value = value.replace(/[^0-9]/g, ''); // 只允許數字
+					value = value.replace(/^0+/, ''); // 移除前導零
+
+					// 更新 input 的值
+					input.value = value;
+				}
+			});
+		}
+	});
+
+	// 正數小數
+	Vue.directive('decimal', {
+		bind(el) {
+			let input;
+			const innerInput = el.querySelector('.el-input__inner');
+			if (innerInput) {
+				input = innerInput;
+			}
+			else {
+				input = el;
+			}
+
+			input.addEventListener('keydown', e => {
+				if (e.key === 'e') {
+					e.preventDefault();
+				}
+			});
+			input.addEventListener('input', () => {
+				// 使用正則表達式過濾輸入的內容，只允許小數數字
+				let value = input.value;
+				const regex = /^\d*\.?\d{0,2}$/;
+
+				if (!regex.test(value)) {
+					// 移除不符合格式的字元
+					value = value.replace(/[^0-9.]/g, ''); // 只保留數字和小數點
+					value = value.replace(/(\..*)\./g, '$1'); // 只允許一個小數點
+					value = value.replace(/^0+(\d)/, '$1'); // 移除前導零
+
+					// 更新 input 的值
+					input.value = value;
+				}
+			});
+		}
+	});
+
 	new Vue({
 		el: '#app',
 		filters: {
