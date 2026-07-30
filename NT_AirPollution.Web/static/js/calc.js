@@ -1,64 +1,126 @@
 ﻿document.addEventListener('DOMContentLoaded', () => {
-    $.datepicker.regional['zh-TW'] = {
-        closeText: '關閉',
-        prevText: '&#x3C;上月',
-        nextText: '下月&#x3E;',
-        currentText: '今天',
-        monthNames: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
-        monthNamesShort: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
-        dayNames: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
-        dayNamesShort: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
-        dayNamesMin: ['日', '一', '二', '三', '四', '五', '六'],
-        weekHeader: '周',
-        dateFormat: 'yy/mm/dd',
-        firstDay: 1,
-        isRTL: false,
-        showMonthAfterYear: true,
-        yearSuffix: '年'
-    };
-    $.datepicker.setDefaults($.datepicker.regional['zh-TW']);
-    $.datepicker._phoenixGenerateMonthYearHeader = $.datepicker._generateMonthYearHeader;
-    $.datepicker._generateMonthYearHeader = function (inst, drawMonth, drawYear, minDate, maxDate, secondary, monthNames, monthNamesShort) {
-        var result = $($.datepicker._phoenixGenerateMonthYearHeader(inst, drawMonth, drawYear, minDate, maxDate, secondary, monthNames, monthNamesShort));
-        result
-            .find('select.ui-datepicker-year')
-            .children()
-            .each(function () {
-                $(this).text($(this).text() - 1911 + '年');
-            });
+	$.datepicker.regional['zh-TW'] = {
+		closeText: '關閉',
+		prevText: '&#x3C;上月',
+		nextText: '下月&#x3E;',
+		currentText: '今天',
+		monthNames: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+		monthNamesShort: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+		dayNames: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
+		dayNamesShort: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+		dayNamesMin: ['日', '一', '二', '三', '四', '五', '六'],
+		weekHeader: '周',
+		dateFormat: 'yy/mm/dd',
+		firstDay: 1,
+		isRTL: false,
+		showMonthAfterYear: true,
+		yearSuffix: '年'
+	};
+	$.datepicker.setDefaults($.datepicker.regional['zh-TW']);
+	$.datepicker._phoenixGenerateMonthYearHeader = $.datepicker._generateMonthYearHeader;
+	$.datepicker._generateMonthYearHeader = function (inst, drawMonth, drawYear, minDate, maxDate, secondary, monthNames, monthNamesShort) {
+		var result = $($.datepicker._phoenixGenerateMonthYearHeader(inst, drawMonth, drawYear, minDate, maxDate, secondary, monthNames, monthNamesShort));
+		result
+			.find('select.ui-datepicker-year')
+			.children()
+			.each(function () {
+				$(this).text($(this).text() - 1911 + '年');
+			});
 
-        return result.html();
-    };
+		return result.html();
+	};
+
+	// 整數
+	Vue.directive('integer', {
+		bind(el) {
+			let input;
+			const innerInput = el.querySelector('.el-input__inner');
+			if (innerInput) {
+				input = innerInput;
+			} else {
+				input = el;
+			}
+
+			input.addEventListener('input', () => {
+				let value = input.value;
+				// 使用正則表達式來限制輸入內容為正整數
+				const regex = /^[1-9]\d*$/;
+
+				if (!regex.test(value)) {
+					// 移除非數字字符
+					value = value.replace(/[^0-9]/g, ''); // 只允許數字
+					value = value.replace(/^0+/, ''); // 移除前導零
+
+					// 更新 input 的值
+					input.value = value;
+				}
+			});
+		}
+	});
+
+	// 正數小數
+	Vue.directive('decimal', {
+		bind(el) {
+			let input;
+			const innerInput = el.querySelector('.el-input__inner');
+			if (innerInput) {
+				input = innerInput;
+			} else {
+				input = el;
+			}
+
+			input.addEventListener('keydown', e => {
+				if (e.key === 'e') {
+					e.preventDefault();
+				}
+			});
+			input.addEventListener('input', () => {
+				// 使用正則表達式過濾輸入的內容，只允許小數數字
+				let value = input.value;
+				const regex = /^\d*\.?\d{0,2}$/;
+
+				if (!regex.test(value)) {
+					// 移除不符合格式的字元
+					value = value.replace(/[^0-9.]/g, ''); // 只保留數字和小數點
+					value = value.replace(/(\..*)\./g, '$1'); // 只允許一個小數點
+					value = value.replace(/^0+(\d)/, '$1'); // 移除前導零
+
+					// 更新 input 的值
+					input.value = value;
+				}
+			});
+		}
+	});
 
 	new Vue({
 		el: '#app',
 		filters: {
-            comma: value => {
-                if (!value && value !== 0) return '';
-                return ('' + value).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-            },
+			comma: value => {
+				if (!value && value !== 0) return '';
+				return ('' + value).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+			},
 			date: value => {
 				if (!value || value === '0001-01-01T00:00:00') return '';
 				return moment(value).format('YYYY-MM-DD');
 			}
 		},
 		data() {
-            const checkE_DATE = (rule, value, callback) => {
-                if (!value) {
-                    callback(new Error('請輸入結束日期'));
-                }
+			const checkE_DATE = (rule, value, callback) => {
+				if (!value) {
+					callback(new Error('請輸入結束日期'));
+				}
 
-                if(!this.form.B_DATE) {
-                    callback();
-                }
+				if (!this.form.B_DATE) {
+					callback();
+				}
 
-                const startDate = `${+this.form.B_DATE.substr(0, 3) + 1911}-${this.form.B_DATE.substr(3, 2)}-${this.form.B_DATE.substr(5, 2)}`;
-                const endDate = `${+this.form.E_DATE.substr(0, 3) + 1911}-${this.form.E_DATE.substr(3, 2)}-${this.form.E_DATE.substr(5, 2)}`;
-                if (moment(startDate).isAfter(endDate)) {
-                    callback(new Error('施工期程起始日期不能大於結束日期'));
-                }
-                callback();
-            };
+				const startDate = `${+this.form.B_DATE.substr(0, 3) + 1911}-${this.form.B_DATE.substr(3, 2)}-${this.form.B_DATE.substr(5, 2)}`;
+				const endDate = `${+this.form.E_DATE.substr(0, 3) + 1911}-${this.form.E_DATE.substr(3, 2)}-${this.form.E_DATE.substr(5, 2)}`;
+				if (moment(startDate).isAfter(endDate)) {
+					callback(new Error('施工期程起始日期不能大於結束日期'));
+				}
+				callback();
+			};
 			const checkArea = (rule, value, callback) => {
 				const kindAry = ['1', '2', '4', '5', '6', '7', '8', '9', 'A'];
 				if (kindAry.includes(this.form.KIND_NO) && !value) {
@@ -67,7 +129,7 @@
 				callback();
 			};
 			const checkVolumel = (rule, value, callback) => {
-                if (this.form.KIND_NO === '3' && !value) {
+				if (this.form.KIND_NO === '3' && !value) {
 					callback(new Error('請輸入總樓地板面積'));
 				}
 				if (this.form.KIND_NO === 'B' && !value) {
@@ -91,18 +153,18 @@
 					VOLUMEL: null,
 					B_DATE: null,
 					E_DATE: null,
-                    RATIOLB: 1.31,
-                    DENSITYL: 1.51,
-                    D2: null,
-                    E2: null
+					RATIOLB: 1.31,
+					DENSITYL: 1.51,
+					D2: null,
+					E2: null
 				},
-                CodeBType: 1,
+				CodeBType: 1,
 				calcResult: null,
 				rules: Object.freeze({
 					KIND_NO: [{ required: true, message: '請選擇工程類別', trigger: 'change' }],
 					MONEY: [{ validator: checkMoney }],
 					AREA: [{ validator: checkArea }],
-                    AREA2: [{ required: true, message: '請輸入總樓地板面積', trigger: 'blur' }],
+					AREA2: [{ required: true, message: '請輸入總樓地板面積', trigger: 'blur' }],
 					VOLUMEL: [{ required: true, message: '請輸入外運土石體積', trigger: 'blur' }],
 					B_DATE: [{ required: true, message: '請輸入開始日期', trigger: 'blur' }],
 					E_DATE: [{ validator: checkE_DATE }]
@@ -111,23 +173,23 @@
 		},
 		mounted() {
 			this.getProjectCode();
-            this.initDatePicker();
+			this.initDatePicker();
 		},
 		computed: {
-            totalDays() {
-                if (!this.form.B_DATE || !this.form.E_DATE) return '';
-                const startDate = `${+(this.form.B_DATE.substr(0, 3)) + 1911}-${this.form.B_DATE.substr(3, 2)}-${this.form.B_DATE.substr(5, 2)}`;
-                const endDate = `${+(this.form.E_DATE.substr(0, 3)) + 1911}-${this.form.E_DATE.substr(3, 2)}-${this.form.E_DATE.substr(5, 2)}`;
-                var date1 = new Date(startDate);
-                var date2 = new Date(endDate);
+			totalDays() {
+				if (!this.form.B_DATE || !this.form.E_DATE) return '';
+				const startDate = `${+this.form.B_DATE.substr(0, 3) + 1911}-${this.form.B_DATE.substr(3, 2)}-${this.form.B_DATE.substr(5, 2)}`;
+				const endDate = `${+this.form.E_DATE.substr(0, 3) + 1911}-${this.form.E_DATE.substr(3, 2)}-${this.form.E_DATE.substr(5, 2)}`;
+				var date1 = new Date(startDate);
+				var date2 = new Date(endDate);
 
-                // 計算毫秒差異
-                var diff = Math.abs(date2 - date1 + 1000 * 60 * 60 * 24);
-                // 轉換為天數
-                var dayDiff = Math.ceil(diff / (1000 * 60 * 60 * 24));
+				// 計算毫秒差異
+				var diff = Math.abs(date2 - date1 + 1000 * 60 * 60 * 24);
+				// 轉換為天數
+				var dayDiff = Math.ceil(diff / (1000 * 60 * 60 * 24));
 
-                return dayDiff;
-            },
+				return dayDiff;
+			},
 			projectCodeText() {
 				switch (this.form.KIND_NO) {
 					case '1':
@@ -152,10 +214,11 @@
 			}
 		},
 		methods: {
-            initDatePicker() {
-                $('.datepicker').datepicker({
+			initDatePicker() {
+				const self = this;
+				$('.datepicker').datepicker({
 					dateFormat: 'yy/mm/dd',
-                    yearRange: '-10:+10',
+					yearRange: '-90:+10',
 					changeYear: true,
 					changeMonth: true,
 					beforeShow: function (input, inst) {
@@ -168,30 +231,42 @@
 								defaultDate: `${year}/${month}/${day}`
 							};
 						}
-
 						return {};
 					},
-					onSelect: (dateText, inst) => {
+					onSelect: function (dateText, inst) {
 						var objDate = {
 							y: `${inst.selectedYear - 1911 < 0 ? inst.selectedYear : inst.selectedYear - 1911}`.padStart(3, '0'),
 							m: `${inst.selectedMonth + 1}`.padStart(2, '0'),
 							d: `${inst.selectedDay}`.padStart(2, '0')
 						};
 
-						var dateFormate = `${objDate.y}${objDate.m}${objDate.d}`;
+						const dateFormate = `${objDate.y}${objDate.m}${objDate.d}`;
+
+						// 1. 更新 HTML input 上的顯示文字
 						inst.input.val(dateFormate);
-						this.form[inst.input[0].dataset.key] = dateFormate;
+
+						// 2. 取得 Vue 的 vnode 綁定資訊並自動更新資料
+						const inputEl = inst.input[0];
+						const vnode = inputEl._vnode;
+
+						if (vnode && vnode.data && vnode.data.model) {
+							// 直接執行 Vue 自動生成的雙向綁定 setter 函式
+							vnode.data.model.callback(dateFormate);
+						} else {
+							// 備用方案：如果不是用 v-model 而是改觸發 input 事件
+							inputEl.dispatchEvent(new Event('input', { bubbles: true }));
+						}
 					}
 				});
-            },
+			},
 			getProjectCode() {
 				axios.get('/Option/GetProjectCode').then(res => {
 					this.projectCode = Object.freeze(res.data);
 				});
 			},
-            getProjectCodeItem(id) {
-                return this.projectCode.find(item => item.ID === id);
-            },
+			getProjectCodeItem(id) {
+				return this.projectCode.find(item => item.ID === id);
+			},
 			isShowAREA() {
 				const kindAry = ['1', '2', '4', '5', '6', '7', '8', '9', 'A'];
 				if (kindAry.includes(this.form.KIND_NO)) {
@@ -206,12 +281,12 @@
 				}
 				return false;
 			},
-            calcD2() {
-                this.form.VOLUMEL = this.form.D2 * this.form.RATIOLB;
-            },
-            calcE2() {
-                this.form.VOLUMEL = this.form.E2 / this.form.DENSITYL;
-            },
+			calcD2() {
+				this.form.VOLUMEL = this.form.D2 * this.form.RATIOLB;
+			},
+			calcE2() {
+				this.form.VOLUMEL = this.form.E2 / this.form.DENSITYL;
+			},
 			sendForm() {
 				this.$refs.form.validate(valid => {
 					if (!valid) {
@@ -219,7 +294,7 @@
 						return false;
 					}
 
-                    this.calcResult = null;
+					this.calcResult = null;
 					axios
 						.post('/Home/GetTotalMoney', this.form)
 						.then(res => {
@@ -227,7 +302,7 @@
 								alert(res.data.Message);
 								return;
 							}
-                            this.calcResult = res.data.Message;
+							this.calcResult = res.data.Message;
 						})
 						.catch(err => {
 							alert('系統發生未預期錯誤');

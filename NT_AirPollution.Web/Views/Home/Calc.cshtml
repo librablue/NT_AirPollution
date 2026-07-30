@@ -244,26 +244,26 @@
                 <div class="form-row">
                     <el-form-item prop="B_DATE" label="開始日期">
                         <div class="el-input">
-                            <input type="text" class="el-input__inner datepicker" data-key="B_DATE" v-model="form.B_DATE" readonly />
+                            <input type="text" class="el-input__inner datepicker" v-model="form.B_DATE" readonly />
                         </div>
                     </el-form-item>
                     <el-form-item prop="E_DATE" label="結束日期">
                         <div class="el-input">
-                            <input type="text" class="el-input__inner datepicker" data-key="E_DATE" v-model="form.E_DATE" readonly />
+                            <input type="text" class="el-input__inner datepicker" v-model="form.E_DATE" readonly />
                         </div>
                     </el-form-item>
                 </div>
 
                 <el-form-item v-if="isShowAREA()" prop="AREA" :label="projectCodeText" v-cloak>
-                    <el-input type="number" v-model="form.AREA"></el-input>
+                    <el-input v-decimal v-model="form.AREA"></el-input>
                 </el-form-item>
 
                 <el-form-item v-if="form.KIND_NO === '3'" prop="AREA2" :label="projectCodeText" v-cloak>
-                    <el-input type="number" v-model="form.AREA2"></el-input>
+                    <el-input v-decimal v-model="form.AREA2"></el-input>
                 </el-form-item>
 
                 <el-form-item v-if="isShowMONEY()" prop="MONEY" label="工程合約經費(元)" v-cloak>
-                    <el-input type="number" v-model="form.MONEY" placeholder="未稅金額(元)"></el-input>
+                    <el-input v-integer v-model="form.MONEY" placeholder="未稅金額(元)"></el-input>
                 </el-form-item>
 
                 <!-- 換算功能面板 -->
@@ -271,17 +271,17 @@
                     <div class="panel-title">鬆方體積換算</div>
                     <div class="conversion-grid">
                         <el-form-item label="鬆方重量(公噸)">
-                            <el-input type="number" v-model="form.E2"></el-input>
+                            <el-input v-decimal v-model="form.E2"></el-input>
                         </el-form-item>
                         <el-form-item label="密度">
-                            <el-input type="number" v-model="form.DENSITYL"></el-input>
+                            <el-input v-decimal v-model="form.DENSITYL"></el-input>
                         </el-form-item>
                         <div class="action-wrap">
                             <el-button type="primary" class="btn-calc" round @@click="calcE2">換算</el-button>
                         </div>
                     </div>
                     <el-form-item prop="VOLUMEL" label="外運土石體積(立方公尺)">
-                        <el-input type="number" v-model="form.VOLUMEL"></el-input>
+                        <el-input v-decimal v-model="form.VOLUMEL"></el-input>
                     </el-form-item>
                 </div>
 
