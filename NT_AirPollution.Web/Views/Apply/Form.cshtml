@@ -104,7 +104,7 @@
                             <span class="status-badge">{{getCalcStatus(item)}}</span>
                         </div>
                         <div class="action-buttons">
-                            <el-button size="mini" type="primary" plain round v-if="item.FormStatus === 4 && (item.CalcStatus === 0 || item.CalcStatus === 2)" @@click="SendCalcStatus1(item)">提送審查</el-button>
+                            <el-button size="mini" type="primary" plain round v-if="item.FormStatus === 4 && (item.CalcStatus === 0 || item.CalcStatus === 2)" @@click="sendCalcStatus1(item)">提送審查</el-button>
                             <el-button size="mini" type="primary" plain round v-if="item.FormStatus === 4 && item.CalcStatus > 0" @@click="downloadForm(2, item)">下載結算申報表</el-button>
                             <template v-if="item.VerifyStage2 === 3">
                                 <el-button v-if="item.CalcStatus === 3" type="info" size="mini" plain round @@click="downloadRePayment(item)">下載繳費單</el-button>

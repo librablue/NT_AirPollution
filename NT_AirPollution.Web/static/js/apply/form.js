@@ -1002,7 +1002,7 @@
 					})
 					.catch(err => {
 						loading.close();
-						alert('系統發生未預期錯誤');
+						alert('系統暫時發生錯誤，請稍後再試或聯繫客服。');
 						console.error(err);
 					});
 			},
@@ -1047,7 +1047,8 @@
 				this.selfCheckModalVisible = true;
 			},
 			sendFormStatus1() {
-				if (!confirm('是否確認提送審查?')) return false;
+				if (!confirm('確定要送出資料並提送審查嗎？')) return false;
+
 				axios
 					.post('/Apply/SendFormStatus1', this.selectRow)
 					.then(res => {
@@ -1056,21 +1057,26 @@
 							return;
 						}
 
-						alert('申請資料已送出，繳款金額請依人工審核後之繳費單內容為主。');
+						// 1. 先提示送出成功
+						alert('申請資料已成功送出！最終繳款金額請以人工審核後之繳費單為準。');
 
-						if (confirm('是否儲存此次營建業主之基本資料，下次可以快速申報。')) {
+						// 2. 詢問是否儲存營建業主資料
+						if (confirm('是否儲存本次「營建業主」基本資料，以便下次快速申報？')) {
 							this.addCompany();
 						}
-						if (confirm('是否儲存此次承包商之基本資料，下次可以快速申報。')) {
+
+						// 3. 詢問是否儲存承包商資料
+						if (confirm('是否儲存本次「承包商」基本資料，以便下次快速申報？')) {
 							this.addContractor();
 						}
 
+						// 4. 重置頁面與關閉 Modal
 						this.getForms();
 						this.selfCheckModalVisible = false;
 					})
 					.catch(err => {
-						alert('系統發生未預期錯誤');
-						console.log(err);
+						alert('系統暫時發生錯誤，請稍後再試或聯繫客服。');
+						console.error(err);
 					});
 			},
 			addCompany() {
@@ -1104,7 +1110,7 @@
 					})
 					.catch(err => {
 						loading.close();
-						alert('系統發生未預期錯誤');
+						alert('系統暫時發生錯誤，請稍後再試或聯繫客服。');
 						console.log(err);
 					});
 			},
@@ -1163,7 +1169,7 @@
 					})
 					.catch(err => {
 						loading.close();
-						alert('系統發生未預期錯誤');
+						alert('系統暫時發生錯誤，請稍後再試或聯繫客服。');
 						console.error(err);
 					});
 			},
@@ -1207,7 +1213,7 @@
 					})
 					.catch(err => {
 						loading.close();
-						alert('系統發生未預期錯誤');
+						alert('系統暫時發生錯誤，請稍後再試或聯繫客服。');
 						console.error(err);
 					});
 			},
@@ -1251,7 +1257,7 @@
 					})
 					.catch(err => {
 						loading.close();
-						alert('系統發生未預期錯誤');
+						alert('系統暫時發生錯誤，請稍後再試或聯繫客服。');
 						console.log(err);
 					});
 			},
@@ -1295,16 +1301,18 @@
 					})
 					.catch(err => {
 						loading.close();
-						alert('系統發生未預期錯誤');
+						alert('系統暫時發生錯誤，請稍後再試或聯繫客服。');
 						console.log(err);
 					});
 			},
-			SendCalcStatus1(row) {
+			sendCalcStatus1(row) {
 				if (!row.FileName2) {
-					alert('提出結算申請前，需檢視內容並上傳附件');
+					alert('請先上傳相關附件，再提出結算申請。');
 					return;
 				}
-				if (!confirm('是否確認提出結算申請?')) return;
+
+				if (!confirm('確定要提出結算申請嗎？')) return;
+
 				axios
 					.post('/Apply/SendCalcStatus1', row)
 					.then(res => {
@@ -1313,12 +1321,12 @@
 							return;
 						}
 
-						alert('結算申請已送出，請等候人工審核後 Email 通知');
+						alert('結算申請已成功送出！審核結果將發送至您的電子信箱，請耐心等候。');
 						row.CalcStatus = 1;
 					})
 					.catch(err => {
-						alert('系統發生未預期錯誤');
-						console.log(err);
+						alert('系統暫時發生錯誤，請稍後再試或聯繫客服。');
+						console.error(err); // 建議使用 console.error
 					});
 			},
 			downloadRePayment(row) {
@@ -1361,7 +1369,7 @@
 					})
 					.catch(err => {
 						loading.close();
-						alert('系統發生未預期錯誤');
+						alert('系統暫時發生錯誤，請稍後再試或聯繫客服。');
 						console.log(err);
 					});
 			},
@@ -1426,7 +1434,7 @@
 						})
 						.catch(err => {
 							loading.close();
-							alert('系統發生未預期錯誤');
+							alert('系統暫時發生錯誤，請稍後再試或聯繫客服。');
 							console.log(err);
 						});
 				});
@@ -1471,7 +1479,7 @@
 					})
 					.catch(err => {
 						loading.close();
-						alert('系統發生未預期錯誤');
+						alert('系統暫時發生錯誤，請稍後再試或聯繫客服。');
 						console.log(err);
 					});
 			},
@@ -1503,33 +1511,33 @@
 				this.$nextTick(() => {
 					this.initDatePicker();
 				});
-			},
-			importDataHandler() {
-				this.$refs.importForm.validate((valid, object) => {
-					if (!valid) {
-						alert('欄位驗證錯誤，請檢查修正後重新送出');
-						return false;
-					}
-
-					const loading = this.$loading();
-					axios
-						.post('/Apply/ImportData', this.importForm)
-						.then(res => {
-							loading.close();
-							if (!res.data.Status) {
-								alert(res.data.Message);
-								return;
-							}
-
-							alert('舊資料已匯入，請依條件重新查詢');
-						})
-						.catch(err => {
-							loading.close();
-							alert('系統發生未預期錯誤');
-							console.log(err);
-						});
-				});
 			}
+			// importDataHandler() {
+			// 	this.$refs.importForm.validate((valid, object) => {
+			// 		if (!valid) {
+			// 			alert('欄位驗證錯誤，請檢查修正後重新送出');
+			// 			return false;
+			// 		}
+
+			// 		const loading = this.$loading();
+			// 		axios
+			// 			.post('/Apply/ImportData', this.importForm)
+			// 			.then(res => {
+			// 				loading.close();
+			// 				if (!res.data.Status) {
+			// 					alert(res.data.Message);
+			// 					return;
+			// 				}
+
+			// 				alert('舊資料已匯入，請依條件重新查詢');
+			// 			})
+			// 			.catch(err => {
+			// 				loading.close();
+			// 				alert('系統暫時發生錯誤，請稍後再試或聯繫客服。');
+			// 				console.log(err);
+			// 			});
+			// 	});
+			// }
 		},
 		watch: {
 			'selectRow.PUB_COMP'(val) {
