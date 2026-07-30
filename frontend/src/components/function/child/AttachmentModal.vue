@@ -3,7 +3,7 @@
 		<template #default>
 			<div class="attach-dialog-wrapper">
 				<!-- 提示說明區塊 -->
-				<!-- <div class="attach-tip-box">
+				<div class="attach-tip-box">
 					<div class="tip-title">
 						<i class="el-icon-warning-outline"></i> 上傳注意事項
 					</div>
@@ -22,7 +22,7 @@
 							<b>100MB</b>。
 						</li>
 					</ul>
-				</div> -->
+				</div>
 
 				<!-- 雙欄上傳區塊 (使用 Grid / Flex 排版) -->
 				<el-row :gutter="20" class="attach-row">
@@ -33,6 +33,13 @@
 								<i class="el-icon-upload"></i> 首期申報附件
 							</div>
 							<div class="card-body">
+								<el-upload ref="upload1" drag action="api/Form/UploadFile" :data="{id: data.ID, type: 1}" :show-file-list="false" accept=".pdf" :on-progress="onUploading" :on-success="uploadSuccess1">
+									<i class="el-icon-upload"></i>
+									<div class="el-upload__text">
+										將文件拖曳至此，或
+										<em>點擊上傳</em>
+									</div>
+								</el-upload>
 								<!-- 已上傳檔案下載區塊 -->
 								<div v-if="data.FileName1" class="download-box">
 									<div class="file-info">
@@ -55,6 +62,13 @@
 								<i class="el-icon-finished"></i> 結算申報附件
 							</div>
 							<div class="card-body">
+                                <el-upload ref="upload2" drag action="api/Form/UploadFile" :data="{id: data.ID, type: 2}" :show-file-list="false" accept=".pdf" :on-progress="onUploading" :on-success="uploadSuccess1">
+									<i class="el-icon-upload"></i>
+									<div class="el-upload__text">
+										將文件拖曳至此，或
+										<em>點擊上傳</em>
+									</div>
+								</el-upload>
 								<!-- 已上傳檔案下載區塊 -->
 								<div v-if="data.FileName2" class="download-box">
 									<div class="file-info">
@@ -81,10 +95,37 @@ export default {
 	props: ['show', 'data'],
 	data() {
 		return {
-			visible: false
+			visible: false,
+			loading: null
 		};
 	},
-	methods: {},
+	methods: {
+		onUploading() {
+			this.loading = this.$loading();
+		},
+		uploadSuccess1(res, file, fileList) {
+			this.loading.close();
+			this.$refs.upload1.clearFiles();
+			if (!res.Status) {
+				alert(res.Message);
+				return;
+			}
+			this.data.FileName1 = res.Message;
+			this.data.DisplayName1 = file.name;
+            this.$message.success('上傳完成');
+		},
+		uploadSuccess2(res, file, fileList) {
+			this.loading.close();
+			this.$refs.upload2.clearFiles();
+			if (!res.Status) {
+				alert(res.Message);
+				return;
+			}
+			this.data.FileName2 = res.Message;
+			this.data.DisplayName2 = file.name;
+            this.$message.success('上傳完成');
+		}
+	},
 	watch: {
 		show: {
 			handler(newValue, oldValue) {

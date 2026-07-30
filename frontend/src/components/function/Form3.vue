@@ -37,7 +37,7 @@
 				</el-button>
 			</el-form-item>
 		</el-form>
-		<vxe-table ref="table" :data="forms" size="small" :loading="loading" max-height="640px" show-overflow border resizable auto-resize keep-source :sort-config="{ trigger: 'cell' }" :edit-config="{ trigger: 'click', mode: 'cell' }" @edit-closed="editClosed">
+		<vxe-table ref="table" :data="forms" size="small" :loading="loading" max-height="640px" show-overflow border resizable auto-resize keep-source :row-config="{ isCurrent: true }" :sort-config="{ trigger: 'cell' }" :edit-config="{ trigger: 'click', mode: 'cell' }" @edit-closed="editClosed">
 			<vxe-table-column width="60" align="center" fixed="left">
 				<template #header>
 					檢視

@@ -2059,7 +2059,20 @@ namespace NT_AirPollution.Service
                 doc.Range.Replace("{MONEY}", converter.ToChineseUpper(form.MONEY));
                 doc.Range.Replace("{C_MONEY}", converter.ToChineseUpper(form.C_MONEY ?? 0));
                 doc.Range.Replace("{PERCENT}", form.PERCENT.Value.ToString());
-                doc.Range.Replace("{AREA}", form.AREA.Value.ToString());
+                
+                if(form.KIND_NO == "1" || form.KIND_NO == "2")
+                {
+                    doc.Range.Replace("{AREA}", form.AREA_B.Value.ToString());
+                }
+                else if (form.KIND_NO == "3")
+                {
+                    doc.Range.Replace("{AREA}", form.AREA2.Value.ToString());
+                }
+                else
+                {
+                    doc.Range.Replace("{AREA}", form.AREA.Value.ToString());
+                }
+
                 doc.Range.Replace("{B_DATE}", $"{form.B_DATE.Substring(0, 3)} 年 {form.B_DATE.Substring(3, 2)} 月 {form.B_DATE.Substring(5, 2)} 日");
                 doc.Range.Replace("{E_DATE}", $"{form.E_DATE.Substring(0, 3)} 年 {form.E_DATE.Substring(3, 2)} 月 {form.E_DATE.Substring(5, 2)} 日");
                 var sdate = form.B_DATE.ToWestDate();
@@ -2139,13 +2152,27 @@ namespace NT_AirPollution.Service
                 doc.Range.Replace("{R_B_TIT}", form.R_B_TIT ?? "");
                 doc.Range.Replace("{R_B_ID}", form.R_B_ID ?? "");
                 doc.Range.Replace("{MONEY}", converter.ToChineseUpper(form.MONEY));
-                doc.Range.Replace("{B_DATE}", $"{form.B_DATE.Substring(0, 3)} 年 {form.B_DATE.Substring(3, 2)} 月 {form.B_DATE.Substring(5, 2)} 日");
-                doc.Range.Replace("{E_DATE}", $"{form.E_DATE.Substring(0, 3)} 年 {form.E_DATE.Substring(3, 2)} 月 {form.E_DATE.Substring(5, 2)} 日");
-                var sdate = form.B_DATE.ToWestDate();
-                var edate = form.E_DATE.ToWestDate();
+
+                if (form.FormB.KIND_NO == "1" || form.FormB.KIND_NO == "2")
+                {
+                    doc.Range.Replace("{AREA}", form.FormB.AREA_B.Value.ToString());
+                }
+                else if (form.FormB.KIND_NO == "3")
+                {
+                    doc.Range.Replace("{AREA}", form.FormB.AREA2.Value.ToString());
+                }
+                else
+                {
+                    doc.Range.Replace("{AREA}", form.FormB.AREA.Value.ToString());
+                }
+
+                doc.Range.Replace("{B_DATE}", $"{form.FormB.B_DATE.Substring(0, 3)} 年 {form.FormB.B_DATE.Substring(3, 2)} 月 {form.FormB.B_DATE.Substring(5, 2)} 日");
+                doc.Range.Replace("{E_DATE}", $"{form.FormB.E_DATE.Substring(0, 3)} 年 {form.FormB.E_DATE.Substring(3, 2)} 月 {form.FormB.E_DATE.Substring(5, 2)} 日");
+                var sdate = form.FormB.B_DATE.ToWestDate();
+                var edate = form.FormB.E_DATE.ToWestDate();
                 var totalDays = (edate - sdate).Days + 1;
                 doc.Range.Replace("{TOTAL_DAY}", $"{totalDays}");
-                doc.Range.Replace("{S_AMT}", converter.ToChineseUpper(form.S_AMT.Value));
+                doc.Range.Replace("{S_AMT}", converter.ToChineseUpper(form.FormB.S_AMT.Value));
 
                 if (form.P_AMT.HasValue)
                     doc.Range.Replace("{P_AMT}", converter.ToChineseUpper(form.P_AMT.Value));

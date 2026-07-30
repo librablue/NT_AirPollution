@@ -16,7 +16,7 @@
 				</el-button>
 			</el-form-item>
 		</el-form>
-		<vxe-table :data="forms" size="small" :loading="loading" max-height="640px" show-overflow border resizable auto-resize :sort-config="{ trigger: 'cell' }">
+		<vxe-table :data="forms" size="small" :loading="loading" max-height="640px" show-overflow border resizable auto-resize :sort-config="{ trigger: 'cell' }" :row-config="{ isCurrent: true }">
 			<vxe-table-column width="60" align="center" fixed="left">
 				<template #header>
 					檢視

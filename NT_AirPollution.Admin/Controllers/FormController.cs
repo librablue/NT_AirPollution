@@ -623,6 +623,74 @@ namespace NT_AirPollution.Admin.Controllers
             return response;
         }
 
+        public AjaxResult UploadFile()
+        {
+            try
+            {
+                var request = HttpContext.Current.Request;
+
+                // 1. 取得與驗證 Form 參數
+                if (!long.TryParse(request.Form["id"], out long id))
+                    throw new Exception("缺少或無效的表單 ID");
+
+                if (!int.TryParse(request.Form["type"], out int type))
+                    throw new Exception("缺少或無效的上傳類型");
+
+                // 2. 取得上傳檔案
+                if (request.Files.Count == 0 || request.Files[0] == null || request.Files[0].ContentLength == 0)
+                    throw new Exception("請選擇檔案");
+
+                HttpPostedFile file = request.Files[0];
+
+                // 3. 權限與表單驗證
+                var formInDB = _formService.GetFormByID(id);
+                if (formInDB == null)
+                    throw new Exception("查無此表單資料");
+
+                if (formInDB.ClientUserID != BaseService.CurrentUser.ID)
+                    throw new Exception("無法修改他人申請單");
+
+                // 4. 副檔名與大小檢查
+                List<string> allowExt = new List<string> { ".pdf" };
+                string ext = Path.GetExtension(file.FileName).ToLower();
+                if (!allowExt.Contains(ext))
+                    throw new Exception("附件只允許上傳 pdf 文件");
+
+                if (file.ContentLength > 1024 * 1024 * 100)
+                    throw new Exception("附件大小限制 100MB");
+
+                // 5. 設定資料夾與儲存路徑
+                string absoluteDirPath = _uploadPath;
+                if (!Directory.Exists(absoluteDirPath))
+                    Directory.CreateDirectory(absoluteDirPath);
+
+                string fileName = $"{Guid.NewGuid()}{ext}";
+                string absoluteFilePath = Path.Combine(absoluteDirPath, fileName);
+
+                file.SaveAs(absoluteFilePath);
+
+                // 6. 更新資料庫
+                if (type == 1)
+                {
+                    formInDB.FileName1 = fileName;
+                    formInDB.DisplayName1 = Path.GetFileName(file.FileName);
+                }
+                else
+                {
+                    formInDB.FileName2 = fileName;
+                    formInDB.DisplayName2 = Path.GetFileName(file.FileName);
+                }
+
+                _formService.UpdateForm(formInDB);
+
+                return new AjaxResult { Status = true, Message = fileName };
+            }
+            catch (Exception ex)
+            {
+                return new AjaxResult { Status = false, Message = ex.Message };
+            }
+        }
+
         ///// <summary>
         ///// 下載全部檔案打包壓縮
         ///// </summary>
