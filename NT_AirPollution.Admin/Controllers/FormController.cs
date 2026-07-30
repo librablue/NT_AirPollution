@@ -548,6 +548,60 @@ namespace NT_AirPollution.Admin.Controllers
         }
 
         /// <summary>
+        /// 下載首期申報表
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public HttpResponseMessage DownloadForm1(FormView form)
+        {
+            try
+            {
+                string pdfPath = _formService.CreateFormPDF1(form);
+
+                var stream = new FileStream(pdfPath, FileMode.Open);
+                HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
+                response.Content = new StreamContent(stream);
+                response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+                // 傳到前端的檔名
+                // Uri.EscapeDataString 防中文亂碼
+                response.Content.Headers.Add("file-name", Uri.EscapeDataString(Path.GetFileName(pdfPath)));
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 下載結算申報表
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public HttpResponseMessage DownloadForm2(FormView form)
+        {
+            try
+            {
+                string pdfPath = _formService.CreateFormPDF2(form);
+
+                var stream = new FileStream(pdfPath, FileMode.Open);
+                HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
+                response.Content = new StreamContent(stream);
+                response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+                // 傳到前端的檔名
+                // Uri.EscapeDataString 防中文亂碼
+                response.Content.Headers.Add("file-name", Uri.EscapeDataString(Path.GetFileName(pdfPath)));
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
         /// 下載檔案
         /// </summary>
         /// <param name="f">原始檔名</param>

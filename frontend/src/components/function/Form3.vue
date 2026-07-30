@@ -39,10 +39,40 @@
 		</el-form>
 		<vxe-table ref="table" :data="forms" size="small" :loading="loading" max-height="640px" show-overflow border resizable auto-resize keep-source :sort-config="{ trigger: 'cell' }" :edit-config="{ trigger: 'click', mode: 'cell' }" @edit-closed="editClosed">
 			<vxe-table-column width="60" align="center" fixed="left">
-				<template #header>檢視<br>案件</template>
+				<template #header>
+					檢視
+					<br />案件
+				</template>
 				<template #default="{ row }">
 					<el-button size="mini" icon="el-icon-search" circle title="檢視案件" @click="showDetail(row)"></el-button>
-                </template>
+				</template>
+			</vxe-table-column>
+			<vxe-table-column width="60" align="center" fixed="left">
+				<template #header>
+					檢視
+					<br />附件
+				</template>
+				<template #default="{ row }">
+					<el-button size="mini" icon="el-icon-search" circle title="檢視附件" @click="showAttachment(row)"></el-button>
+				</template>
+			</vxe-table-column>
+			<vxe-table-column width="60" align="center" fixed="left">
+				<template #header>
+					停工
+					<br />復工
+				</template>
+				<template #default="{ row }">
+					<el-button size="mini" icon="el-icon-search" circle title="停復工" @click="showStopWork(row)"></el-button>
+				</template>
+			</vxe-table-column>
+			<vxe-table-column width="60" align="center" fixed="left">
+				<template #header>
+					退款
+					<br />帳戶
+				</template>
+				<template #default="{ row }">
+					<el-button size="mini" icon="el-icon-search" circle title="停復工" @click="showRefund(row)"></el-button>
+				</template>
 			</vxe-table-column>
 			<vxe-table-column field="C_NO" title="管制編號" width="140" align="center" sortable>
 				<template #default="{ row }">
@@ -50,10 +80,10 @@
 				</template>
 			</vxe-table-column>
 			<vxe-table-column field="COMP_NAM" title="工程名稱" width="240" align="center"></vxe-table-column>
-            <vxe-table-column field="C_DATE" title="申報日期" width="140" align="center" sortable>
+			<vxe-table-column field="C_DATE" title="申報日期" width="140" align="center" sortable>
 				<template #default="{ row }">{{ row.C_DATE | datetime }}</template>
 			</vxe-table-column>
-            <vxe-table-column field="FormStatus" title="首期審核進度" width="140" align="center" sortable :edit-render="{ autofocus: '.grid-input' }">
+			<vxe-table-column field="FormStatus" title="首期審核進度" width="140" align="center" sortable :edit-render="{ autofocus: '.grid-input' }">
 				<template #default="{ row }">{{row.FormStatus | formStatus}}</template>
 				<template #edit="{ row }">
 					<select class="grid-input" v-model="row.FormStatus">
@@ -89,19 +119,49 @@
 					</select>
 				</template>
 			</vxe-table-column>
+			<vxe-table-column title="申報表" width="160" align="center">
+				<template #default="{ row }">
+					<el-button v-if="row.FormStatus > 0" type="primary" size="mini" @click="downloadForm(1, row)">首期</el-button>
+					<el-button v-if="row.FormStatus === 4 && row.CalcStatus > 0" type="success" size="mini" @click="downloadForm(2, row)">結算</el-button>
+				</template>
+			</vxe-table-column>
+			<vxe-table-column title="申報證明" width="100" align="center">
+				<template #default="{ row }"></template>
+			</vxe-table-column>
+			<vxe-table-column title="結算退費審核表" width="140" align="center">
+				<template #default="{ row }">
+					<el-button v-if="row.CalcStatus > 2" type="primary" size="mini" @click="exportRefundVerify1(row)">下載</el-button>
+				</template>
+			</vxe-table-column>
+			<vxe-table-column title="結算金額異動原因明細" width="160" align="center">
+				<template #default="{ row }">
+					<el-button v-if="row.CalcStatus > 2" type="primary" size="mini" @click="exportRefundVerify2(row)">下載</el-button>
+				</template>
+			</vxe-table-column>
+			<vxe-table-column title="結清證明" width="100" align="center">
+				<template #default="{ row }">
+					<el-button v-if="row.CalcStatus > 2" type="primary" size="mini" @click="exportClearProof(row)">下載</el-button>
+				</template>
+			</vxe-table-column>
 		</vxe-table>
 		<FormModal :show.sync="formModalVisible" :mode="mode" :data="selectRow" @on-updated="onUpdated" />
+		<AttachmentModal :show.sync="attachmentModalVisible" :data="selectRow" />
+		<StopWorkModal :show.sync="stopWorkModalVisible" :data="selectRow" :readonly="true" />
+		<RefundModal :show.sync="refundModalVisible" :data="selectRow" />
 	</div>
 </template>
 <script>
 import { mapGetters } from 'vuex';
 import { dateTime, form } from '@/mixins/filter';
 import FormModal from '@/components/function/child/FormModal';
+import AttachmentModal from '@/components/function/child/AttachmentModal';
+import StopWorkModal from '@/components/function/child/StopWorkModal';
+import RefundModal from '@/components/function/child/RefundModal';
 
 export default {
 	name: 'forms',
 	mixins: [dateTime, form],
-	components: { FormModal },
+	components: { FormModal, AttachmentModal, StopWorkModal, RefundModal },
 	data() {
 		return {
 			mode: '',
@@ -115,7 +175,10 @@ export default {
 			},
 			forms: [],
 			selectRow: {},
-			formModalVisible: false
+			formModalVisible: false,
+			attachmentModalVisible: false,
+			stopWorkModalVisible: false,
+			refundModalVisible: false
 		};
 	},
 	mounted() {
@@ -160,6 +223,18 @@ export default {
 			this.selectRow = row;
 			this.formModalVisible = true;
 		},
+		showAttachment(row) {
+			this.selectRow = row;
+			this.attachmentModalVisible = true;
+		},
+		showStopWork(row) {
+			this.selectRow = row;
+			this.stopWorkModalVisible = true;
+		},
+		showRefund(row) {
+			this.selectRow = row;
+			this.refundModalVisible = true;
+		},
 		onUpdated() {
 			this.getForms();
 		},
@@ -181,12 +256,104 @@ export default {
 				try {
 					await resetStatus(row.ID, field, cellValue);
 					this.$refs.table.reloadRow(row, null, field);
-                    this.$message.success('修改成功');
+					this.$message.success('修改成功');
 				} catch (err) {
 					this.$refs.table.revertData();
 					this.$message.error(err.response.data.ExceptionMessage);
 				}
 			}
+		},
+		downloadForm(type, row) {
+			const loading = this.$loading();
+			this.axios
+				.post(`api/Form/DownloadForm${type}`, row, {
+					responseType: 'blob'
+				})
+				.then(res => {
+					loading.close();
+					const url = window.URL.createObjectURL(new Blob([res.data]));
+					const link = document.createElement('a');
+					link.href = url;
+					const fileName = decodeURI(res.headers['file-name']);
+					link.setAttribute('download', fileName);
+					document.body.appendChild(link);
+					link.click();
+					link.remove();
+				})
+				.catch(err => {
+					loading.close();
+					alert('系統發生未預期錯誤');
+					console.log(err);
+				});
+		},
+		exportRefundVerify1(row) {
+			const loading = this.$loading();
+			this.axios
+				.post('api/Form/ExportRefundVerify1', row, {
+					responseType: 'blob'
+				})
+				.then(res => {
+					loading.close();
+					const url = window.URL.createObjectURL(new Blob([res.data]));
+					const link = document.createElement('a');
+					link.href = url;
+					const fileName = decodeURI(res.headers['file-name']);
+					link.setAttribute('download', fileName);
+					document.body.appendChild(link);
+					link.click();
+					link.remove();
+				})
+				.catch(err => {
+					loading.close();
+					alert('系統發生未預期錯誤');
+					console.log(err);
+				});
+		},
+		exportRefundVerify2(row) {
+			const loading = this.$loading();
+			this.axios
+				.post('api/Form/ExportRefundVerify2', row, {
+					responseType: 'blob'
+				})
+				.then(res => {
+					loading.close();
+					const url = window.URL.createObjectURL(new Blob([res.data]));
+					const link = document.createElement('a');
+					link.href = url;
+					const fileName = decodeURI(res.headers['file-name']);
+					link.setAttribute('download', fileName);
+					document.body.appendChild(link);
+					link.click();
+					link.remove();
+				})
+				.catch(err => {
+					loading.close();
+					alert('系統發生未預期錯誤');
+					console.log(err);
+				});
+		},
+		exportClearProof(row) {
+			const loading = this.$loading();
+			this.axios
+				.post('api/Form/ExportClearProof', row, {
+					responseType: 'blob'
+				})
+				.then(res => {
+					loading.close();
+					const url = window.URL.createObjectURL(new Blob([res.data]));
+					const link = document.createElement('a');
+					link.href = url;
+					const fileName = decodeURI(res.headers['file-name']);
+					link.setAttribute('download', fileName);
+					document.body.appendChild(link);
+					link.click();
+					link.remove();
+				})
+				.catch(err => {
+					loading.close();
+					alert('系統發生未預期錯誤');
+					console.log(err);
+				});
 		}
 	}
 };

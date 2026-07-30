@@ -1,8 +1,7 @@
 <template>
-	<vxe-modal title="申請案件明細" v-model="visible" width="80%" height="90%" :lock-scroll="false" esc-closable resize :show-footer="mode !== 'Read'">
+	<vxe-modal :title="C_NO" v-model="visible" width="80%" height="90%" :lock-scroll="false" esc-closable resize :show-footer="mode !== 'Read'">
 		<template #default>
 			<el-form inline>
-				<el-form-item label="管制編號">{{C_NO}}</el-form-item>
 				<el-form-item label="申報應繳金額">{{(form.S_AMT === null ? '未結算' : form.S_AMT) | comma}}</el-form-item>
 				<el-form-item label="結算應繳金額">{{(form.S_AMT2 === null ? '未結算' : form.S_AMT2) | comma}}</el-form-item>
 				<el-form-item v-if="form.FormB" label="是否短漏報">
@@ -441,93 +440,6 @@
 						</el-form>
 					</el-card>
 				</el-tab-pane>
-				<el-tab-pane label="檢附資料" name="5">
-					<div class="attach-row">
-						<div class="attach-card">
-							<div class="attach-title">
-								<i class="fa fa-paperclip"></i> 首期申報附件
-							</div>
-							<a v-if="form.FileName1" :href="`api/Form/Download?f=${form.FileName1}&n=${form.DisplayName1}`" class="link-download">
-								<i class="fa fa-download"></i>
-								{{ form.DisplayName1 }}
-							</a>
-							<span v-else class="link-empty">暫無上傳檔案</span>
-						</div>
-
-						<div class="attach-card">
-							<div class="attach-title">
-								<i class="fa fa-paperclip"></i> 結算申報附件
-							</div>
-							<a v-if="form.FileName2" :href="`api/Form/Download?f=${form.FileName2}&n=${form.DisplayName2}`" class="link-download">
-								<i class="fa fa-download"></i>
-								{{ form.DisplayName2 }}
-							</a>
-							<span v-else class="link-empty">暫無上傳檔案</span>
-						</div>
-					</div>
-				</el-tab-pane>
-				<el-tab-pane label="停復工" name="6">
-					<div class="stopwork-wrapper">
-						<div class="toolbar">
-							<el-button type="primary" icon="el-icon-plus" @click="addStopWork()">新 增</el-button>
-						</div>
-						<div class="table-wrapper">
-							<table class="table">
-								<thead>
-									<tr>
-										<th style="width:60px">刪除</th>
-										<th style="width:180px">停工日期</th>
-										<th style="width:180px">復工日期</th>
-										<th style="width:120px; white-space: nowrap">停工天數</th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr v-if="form.StopWorks.length === 0">
-										<td colspan="4" class="no-data">暫無資料</td>
-									</tr>
-									<tr v-for="(item, idx) in form.StopWorks" :key="idx">
-										<td class="text-center">
-											<el-button type="danger" size="mini" icon="el-icon-delete" circle @click="deleteStopWork(idx)"></el-button>
-										</td>
-										<td>
-											<el-date-picker class="w100p" v-model="item.DOWN_DATE2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
-										</td>
-										<td>
-											<el-date-picker class="w100p" v-model="item.UP_DATE2" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
-										</td>
-										<td class="days">{{ getStopDays(item) }}</td>
-									</tr>
-								</tbody>
-							</table>
-						</div>
-					</div>
-				</el-tab-pane>
-				<el-tab-pane label="退款帳戶" name="7">
-					<el-form v-if="form.CalcStatus > 2" inline>
-						<el-form-item>
-							<el-button type="primary" @click="exportRefundVerify1">結算退費審核表</el-button>
-							<el-button type="primary" @click="exportRefundVerify2">結算金額異動原因明細</el-button>
-							<el-button type="primary" @click="exportClearProof">結清證明</el-button>
-						</el-form-item>
-					</el-form>
-					<div class="refund-bank-section">
-						<el-form v-if="form.RefundBank.ID" label-width="100px" class="refund-bank-form">
-							<el-form-item label="銀行代碼">{{ form.RefundBank.Code }}</el-form-item>
-							<el-form-item label="銀行帳號">{{ form.RefundBank.Account }}</el-form-item>
-							<el-form-item label="存摺照片">
-								<div class="photo-card">
-									<img :src="`api/Form/Download?f=${form.RefundBank.Photo}`" alt="存摺照片" />
-								</div>
-							</el-form-item>
-						</el-form>
-						<div v-else class="no-data">暫無資料</div>
-					</div>
-				</el-tab-pane>
-				<!-- <el-tab-pane v-if="form.PaymentProof.ID" label="繳費證明" name="8">
-					<el-form-item label="繳費證明">
-						<img style="width:640px" :src="`api/Option/Download?f=${form.PaymentProof.ProofFile}`" />
-					</el-form-item>
-				</el-tab-pane>-->
 			</el-tabs>
 		</template>
 		<template #footer>
@@ -536,7 +448,7 @@
 			</el-button>
 			<el-button type="primary" icon="el-icon-arrow-left" :disabled="activeTab === '1'" @click="goPrevTab">上一步</el-button>
 			<el-button type="primary" @click="goNextTab">
-				{{activeTab === '7' ? (mode === 'Update' ? '儲存' : '複製') : '下一步'}}
+				{{activeTab === '4' ? (mode === 'Update' ? '儲存' : '複製') : '下一步'}}
 				<i class="el-icon-arrow-right el-icon--right"></i>
 			</el-button>
 		</template>
@@ -1000,33 +912,6 @@ export default {
 				this.attachmentInfo = Object.freeze(res.data);
 			});
 		},
-		getStopDays(row) {
-			if (!row.DOWN_DATE2 || !row.UP_DATE2) return '';
-
-			var date1 = new Date(row.DOWN_DATE2);
-			var date2 = new Date(row.UP_DATE2);
-
-			// 取得兩者毫秒差（絕對值）
-			var diff = Math.abs(date2 - date1);
-
-			// 轉換為天數：除以一天的毫秒數 (1000ms * 60s * 60m * 24h)
-			// 使用 Math.floor 取得完整的整數天數
-			var dayDiff = Math.floor(diff / (1000 * 60 * 60 * 24));
-
-			return dayDiff;
-		},
-		addStopWork() {
-			this.form.StopWorks.push({
-				DOWN_DATE: '',
-				DOWN_DATE2: '',
-				UP_DATE: '',
-				UP_DATE2: ''
-			});
-		},
-		deleteStopWork(idx) {
-			if (!confirm('是否確認刪除?')) return;
-			this.form.StopWorks.splice(idx, 1);
-		},
 		goPrevTab() {
 			let intActiveTab = +this.activeTab;
 			if (intActiveTab > 1) {
@@ -1056,44 +941,39 @@ export default {
 							return false;
 						}
 
-						this.activeTab = (+this.activeTab + 1).toString();
+						if (this.activeTab === '4') {
+							if (!confirm('是否確認繼續?')) return false;
+							const loading = this.$loading();
+							const point = this.LatLon2UTM(this.form.LAT, this.form.LNG, 0, 0);
+							this.form.UTME = point[0];
+							this.form.UTMN = point[1];
+							this.form.LATLNG = `${this.form.LAT},${this.form.LNG}`;
+							this.form.C_MONEY = this.calcC_MONEY;
+							// 1、2類工程面積=建築面積
+							if (this.form.KIND_NO === '1' || this.form.KIND_NO === '2') {
+								this.form.AREA = this.form.AREA_B;
+							}
+							// 3類工程面積=總樓地板面積
+							else if (this.form.KIND_NO === '3') {
+								this.form.AREA = this.form.AREA2;
+							}
+							this.axios
+								.post(`api/Form/${this.mode}Form`, this.form)
+								.then(res => {
+									this.$emit('on-updated');
+									this.$message.success('畫面資料已儲存');
+									this.visible = false;
+									loading.close();
+								})
+								.catch(err => {
+									this.$message.error(err.response.data.ExceptionMessage);
+									loading.close();
+								});
+						} else {
+							this.activeTab = (+this.activeTab + 1).toString();
+						}
 					});
 
-					break;
-				}
-				case '5':
-				case '6': {
-					this.activeTab = (+this.activeTab + 1).toString();
-					break;
-				}
-				case '7': {
-					if (!confirm('是否確認繼續?')) return false;
-					const loading = this.$loading();
-					const point = this.LatLon2UTM(this.form.LAT, this.form.LNG, 0, 0);
-					this.form.UTME = point[0];
-					this.form.UTMN = point[1];
-					this.form.LATLNG = `${this.form.LAT},${this.form.LNG}`;
-					this.form.C_MONEY = this.calcC_MONEY;
-					// 1、2類工程面積=建築面積
-					if (this.form.KIND_NO === '1' || this.form.KIND_NO === '2') {
-						this.form.AREA = this.form.AREA_B;
-					}
-					// 3類工程面積=總樓地板面積
-					else if (this.form.KIND_NO === '3') {
-						this.form.AREA = this.form.AREA2;
-					}
-					this.axios
-						.post(`api/Form/${this.mode}Form`, this.form)
-						.then(res => {
-							this.$emit('on-updated');
-							this.$message.success('畫面資料已儲存');
-							this.visible = false;
-							loading.close();
-						})
-						.catch(err => {
-							this.$message.error(err.response.data.ExceptionMessage);
-							loading.close();
-						});
 					break;
 				}
 			}
@@ -1263,75 +1143,6 @@ export default {
 			pt[0] = Lat;
 			pt[1] = Lon;
 			return pt;
-		},
-		exportRefundVerify1() {
-			const loading = this.$loading();
-			this.axios
-				.post('api/Form/ExportRefundVerify1', this.form, {
-					responseType: 'blob'
-				})
-				.then(res => {
-					loading.close();
-					const url = window.URL.createObjectURL(new Blob([res.data]));
-					const link = document.createElement('a');
-					link.href = url;
-					const fileName = decodeURI(res.headers['file-name']);
-					link.setAttribute('download', fileName);
-					document.body.appendChild(link);
-					link.click();
-					link.remove();
-				})
-				.catch(err => {
-					loading.close();
-					alert('系統發生未預期錯誤');
-					console.log(err);
-				});
-		},
-		exportRefundVerify2() {
-			const loading = this.$loading();
-			this.axios
-				.post('api/Form/ExportRefundVerify2', this.form, {
-					responseType: 'blob'
-				})
-				.then(res => {
-					loading.close();
-					const url = window.URL.createObjectURL(new Blob([res.data]));
-					const link = document.createElement('a');
-					link.href = url;
-					const fileName = decodeURI(res.headers['file-name']);
-					link.setAttribute('download', fileName);
-					document.body.appendChild(link);
-					link.click();
-					link.remove();
-				})
-				.catch(err => {
-					loading.close();
-					alert('系統發生未預期錯誤');
-					console.log(err);
-				});
-		},
-		exportClearProof() {
-			const loading = this.$loading();
-			this.axios
-				.post('api/Form/ExportClearProof', this.form, {
-					responseType: 'blob'
-				})
-				.then(res => {
-					loading.close();
-					const url = window.URL.createObjectURL(new Blob([res.data]));
-					const link = document.createElement('a');
-					link.href = url;
-					const fileName = decodeURI(res.headers['file-name']);
-					link.setAttribute('download', fileName);
-					document.body.appendChild(link);
-					link.click();
-					link.remove();
-				})
-				.catch(err => {
-					loading.close();
-					alert('系統發生未預期錯誤');
-					console.log(err);
-				});
 		}
 	},
 	watch: {
@@ -1377,76 +1188,6 @@ export default {
 	.el-form-item {
 		& ~ .el-form-item {
 			margin-left: 10px;
-		}
-	}
-}
-
-.stopwork-wrapper {
-	max-width: 720px;
-	background: #fff;
-	border-radius: 10px;
-	padding: 20px 25px;
-	.toolbar {
-		display: flex;
-		justify-content: flex-end;
-		margin-bottom: 12px;
-	}
-	.table-wrapper {
-		overflow-x: auto;
-	}
-	.table {
-		width: 100%;
-		border-collapse: separate;
-		border-spacing: 0;
-		border: 1px solid #ebeef5;
-		border-radius: 8px;
-		overflow: hidden;
-		font-size: 14px;
-		thead {
-			th {
-				background-color: #f9fafc;
-				color: #606266;
-				text-align: center;
-				padding: 10px;
-				border-bottom: 1px solid #ebeef5;
-				font-weight: 600;
-			}
-		}
-		tbody {
-			tr {
-				transition: background-color 0.2s ease;
-
-				&:hover {
-					background-color: #f5f7fa;
-				}
-
-				td {
-					padding: 8px 10px;
-					border-bottom: 1px solid #ebeef5;
-					vertical-align: middle;
-
-					&.text-center {
-						text-align: center;
-					}
-
-					&.days {
-						text-align: center;
-						color: #409eff;
-						font-weight: bold;
-					}
-
-					.w100p {
-						width: 100%;
-					}
-				}
-			}
-			.no-data {
-				text-align: center;
-				color: #999;
-				padding: 15px 0;
-				background: #fafafa;
-				font-style: italic;
-			}
 		}
 	}
 }
@@ -1589,56 +1330,6 @@ export default {
 		background: #f9fff9;
 		border: 1px solid #e1f3d8;
 	}
-}
-
-.attach-row {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 1rem;
-	margin-top: 1rem;
-}
-
-.attach-card {
-	flex: 1 1 300px;
-	background: #fff;
-	border: 1px solid #e0e0e0;
-	border-radius: 10px;
-	padding: 1rem 1.25rem;
-	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-	transition: all 0.3s ease;
-	&:hover {
-		box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-		transform: translateY(-2px);
-	}
-}
-
-.attach-title {
-	font-weight: 600;
-	font-size: 1.05rem;
-	color: #333;
-	margin-bottom: 0.75rem;
-	display: flex;
-	align-items: center;
-	gap: 6px;
-	i {
-		color: #007bff;
-	}
-}
-
-.link-download {
-	display: inline-block;
-	color: #007bff;
-	text-decoration: none;
-	font-weight: 500;
-	word-break: break-all;
-	&:hover {
-		text-decoration: underline;
-	}
-}
-
-.link-empty {
-	color: #999;
-	font-style: italic;
 }
 
 /* === 表單細節 === */

@@ -1867,11 +1867,11 @@ namespace NT_AirPollution.Service
                 Aspose.Words.Document doc = new Aspose.Words.Document(templateFile);
 
 
-                doc.Range.Replace("{COMP_NAM}", form.COMP_NAM);
+                doc.Range.Replace("{COMP_NAM}", form.COMP_NAM ?? "");
                 doc.Range.Replace("{C_NO}", $"{form.C_NO}-{form.SER_NO}");
-                doc.Range.Replace("{ADDR}", form.ADDR);
-                doc.Range.Replace("{B_SERNO}", form.B_SERNO);
-                doc.Range.Replace("{S_NAME}", form.S_NAME);
+                doc.Range.Replace("{ADDR}", form.ADDR ?? "");
+                doc.Range.Replace("{B_SERNO}", form.B_SERNO ?? "");
+                doc.Range.Replace("{S_NAME}", form.S_NAME ?? "");
                 doc.Range.Replace("{S_AMT}", form.S_AMT.GetValueOrDefault().ToString("N0"));
                 doc.Range.Replace("{S_AMT2}", form.S_AMT2.GetValueOrDefault().ToString("N0"));
 
@@ -1979,10 +1979,10 @@ namespace NT_AirPollution.Service
                 license.SetLicense($@"{AppDomain.CurrentDomain.BaseDirectory}/license/Aspose.total.lic");
 
                 Aspose.Words.Document doc = new Aspose.Words.Document(templateFile);
-                doc.Range.Replace("{S_NAME}", form.S_NAME);
-                doc.Range.Replace("{COMP_NAM}", form.COMP_NAM);
+                doc.Range.Replace("{S_NAME}", form.S_NAME ?? "");
+                doc.Range.Replace("{COMP_NAM}", form.COMP_NAM ?? "");
                 doc.Range.Replace("{C_NO}", $"{form.C_NO}-{form.SER_NO}");
-                doc.Range.Replace("{B_SERNO}", form.B_SERNO);
+                doc.Range.Replace("{B_SERNO}", form.B_SERNO ?? "");
                 doc.Range.Replace("{P_AMT}", form.P_AMT.Value.ToString("N0"));
                 var payment = form.Payments.FirstOrDefault(o => o.Term == "01");
                 if (payment?.Penalty > 0)
@@ -2025,49 +2025,50 @@ namespace NT_AirPollution.Service
                 license.SetLicense($@"{AppDomain.CurrentDomain.BaseDirectory}/license/Aspose.total.lic");
 
                 Aspose.Words.Document doc = new Aspose.Words.Document(templateFile);
-                doc.Range.Replace("{COMP_NAM}", form.COMP_NAM);
+                doc.Range.Replace("{COMP_NAM}", form.COMP_NAM ?? "");
                 doc.Range.Replace("{C_NO}", string.IsNullOrEmpty(form.C_NO) ? "" : $"{form.C_NO}-{form.SER_NO}");
-                doc.Range.Replace("{ADDR}", form.ADDR);
-                doc.Range.Replace("{B_SERNO}", form.B_SERNO);
-                doc.Range.Replace("{KIND_NO}", form.KIND_NO);
-                doc.Range.Replace("{STATE}", form.STATE);
-                doc.Range.Replace("{S_NAME}", form.S_NAME);
-                doc.Range.Replace("{S_G_NO}", form.S_G_NO);
-                doc.Range.Replace("{S_ADDR1}", form.S_ADDR1);
-                doc.Range.Replace("{S_ADDR2}", form.S_ADDR2);
-                doc.Range.Replace("{S_TEL}", form.S_TEL);
-                doc.Range.Replace("{S_B_NAM}", form.S_B_NAM);
-                doc.Range.Replace("{S_B_TIT}", form.S_B_TIT);
-                doc.Range.Replace("{S_B_ID}", form.S_B_ID);
-                doc.Range.Replace("{S_C_NAM}", form.S_C_NAM);
-                doc.Range.Replace("{S_C_TIT}", form.S_C_TIT);
-                doc.Range.Replace("{S_C_ID}", form.S_C_ID);
-                doc.Range.Replace("{S_C_ADDR}", form.S_C_ADDR);
-                doc.Range.Replace("{S_C_TEL}", form.S_C_TEL);
-                doc.Range.Replace("{R_NAME}", form.R_NAME);
-                doc.Range.Replace("{R_G_NO}", form.R_G_NO);
-                doc.Range.Replace("{R_ADDR1}", form.R_ADDR1);
-                doc.Range.Replace("{R_ADDR2}", form.R_ADDR2);
-                doc.Range.Replace("{R_TEL}", form.R_TEL);
-                doc.Range.Replace("{R_B_NAM}", form.R_B_NAM);
-                doc.Range.Replace("{R_B_TIT}", form.R_B_TIT);
-                doc.Range.Replace("{R_B_ID}", form.R_B_ID);
-                doc.Range.Replace("{R_ADDR3}", form.R_ADDR3);
-                doc.Range.Replace("{R_M_NAM}", form.R_M_NAM);
-                doc.Range.Replace("{R_C_NAM}", form.R_C_NAM);
-                doc.Range.Replace("{R_TEL1}", form.R_TEL1);
+                doc.Range.Replace("{ADDR}", form.ADDR ?? "");
+                doc.Range.Replace("{B_SERNO}", form.B_SERNO ?? "");
+                doc.Range.Replace("{KIND_NO}", form.KIND_NO ?? "");
+                doc.Range.Replace("{STATE}", form.STATE ?? "");
+                doc.Range.Replace("{S_NAME}", form.S_NAME ?? "");
+                doc.Range.Replace("{S_G_NO}", form.S_G_NO ?? "");
+                doc.Range.Replace("{S_ADDR1}", form.S_ADDR1 ?? "");
+                doc.Range.Replace("{S_ADDR2}", form.S_ADDR2 ?? "");
+                doc.Range.Replace("{S_TEL}", form.S_TEL ?? "");
+                doc.Range.Replace("{S_B_NAM}", form.S_B_NAM ?? "");
+                doc.Range.Replace("{S_B_TIT}", form.S_B_TIT ?? "");
+                doc.Range.Replace("{S_B_ID}", form.S_B_ID ?? "");
+                doc.Range.Replace("{S_C_NAM}", form.S_C_NAM ?? "");
+                doc.Range.Replace("{S_C_TIT}", form.S_C_TIT ?? "");
+                doc.Range.Replace("{S_C_ID}", form.S_C_ID ?? "");
+                doc.Range.Replace("{S_C_ADDR}", form.S_C_ADDR ?? "");
+                doc.Range.Replace("{S_C_TEL}", form.S_C_TEL ?? "");
+                doc.Range.Replace("{R_NAME}", form.R_NAME ?? "");
+                doc.Range.Replace("{R_G_NO}", form.R_G_NO ?? "");
+                doc.Range.Replace("{R_ADDR1}", form.R_ADDR1 ?? "");
+                doc.Range.Replace("{R_ADDR2}", form.R_ADDR2 ?? "");
+                doc.Range.Replace("{R_TEL}", form.R_TEL ?? "");
+                doc.Range.Replace("{R_B_NAM}", form.R_B_NAM ?? "");
+                doc.Range.Replace("{R_B_TIT}", form.R_B_TIT ?? "");
+                doc.Range.Replace("{R_B_ID}", form.R_B_ID ?? "");
+                doc.Range.Replace("{R_ADDR3}", form.R_ADDR3 ?? "");
+                doc.Range.Replace("{R_M_NAM}", form.R_M_NAM ?? "");
+                doc.Range.Replace("{R_C_NAM}", form.R_C_NAM ?? "");
+                doc.Range.Replace("{R_TEL1}", form.R_TEL1 ?? "");
                 doc.Range.Replace("{MONEY}", converter.ToChineseUpper(form.MONEY));
                 doc.Range.Replace("{C_MONEY}", converter.ToChineseUpper(form.C_MONEY ?? 0));
                 doc.Range.Replace("{PERCENT}", form.PERCENT.Value.ToString());
+                doc.Range.Replace("{AREA}", form.AREA.Value.ToString());
                 doc.Range.Replace("{B_DATE}", $"{form.B_DATE.Substring(0, 3)} 年 {form.B_DATE.Substring(3, 2)} 月 {form.B_DATE.Substring(5, 2)} 日");
                 doc.Range.Replace("{E_DATE}", $"{form.E_DATE.Substring(0, 3)} 年 {form.E_DATE.Substring(3, 2)} 月 {form.E_DATE.Substring(5, 2)} 日");
                 var sdate = form.B_DATE.ToWestDate();
                 var edate = form.E_DATE.ToWestDate();
                 var totalDays = (edate - sdate).Days + 1;
                 doc.Range.Replace("{TOTAL_DAY}", $"{totalDays}");
-                doc.Range.Replace("{P_KIND}", form.P_KIND);
+                doc.Range.Replace("{P_KIND}", form.P_KIND ?? "");
                 doc.Range.Replace("{P_NUM}", form.P_NUM.ToString());
-                doc.Range.Replace("{REC_YN}", form.REC_YN);
+                doc.Range.Replace("{REC_YN}", form.REC_YN ?? "");
 
                 if(form.S_AMT.HasValue)
                 {
@@ -2112,31 +2113,31 @@ namespace NT_AirPollution.Service
                 license.SetLicense($@"{AppDomain.CurrentDomain.BaseDirectory}/license/Aspose.total.lic");
 
                 Aspose.Words.Document doc = new Aspose.Words.Document(templateFile);
-                doc.Range.Replace("{COMP_NAM}", form.COMP_NAM);
+                doc.Range.Replace("{COMP_NAM}", form.COMP_NAM ?? "");
                 doc.Range.Replace("{C_NO}", $"{form.C_NO}-{form.SER_NO}");
-                doc.Range.Replace("{ADDR}", form.ADDR);
-                doc.Range.Replace("{B_SERNO}", form.B_SERNO);
-                doc.Range.Replace("{S_NAME}", form.S_NAME);
-                doc.Range.Replace("{S_G_NO}", form.S_G_NO);
-                doc.Range.Replace("{S_ADDR1}", form.S_ADDR1);
-                doc.Range.Replace("{S_ADDR2}", form.S_ADDR2);
-                doc.Range.Replace("{S_TEL}", form.S_TEL);
-                doc.Range.Replace("{S_B_NAM}", form.S_B_NAM);
-                doc.Range.Replace("{S_B_TIT}", form.S_B_TIT);
-                doc.Range.Replace("{S_B_ID}", form.S_B_ID);
-                doc.Range.Replace("{S_C_NAM}", form.S_C_NAM);
-                doc.Range.Replace("{S_C_TIT}", form.S_C_TIT);
-                doc.Range.Replace("{S_C_ID}", form.S_C_ID);
-                doc.Range.Replace("{S_C_ADDR}", form.S_C_ADDR);
-                doc.Range.Replace("{S_C_TEL}", form.S_C_TEL);
-                doc.Range.Replace("{R_NAME}", form.R_NAME);
-                doc.Range.Replace("{R_G_NO}", form.R_G_NO);
-                doc.Range.Replace("{R_ADDR1}", form.R_ADDR1);
-                doc.Range.Replace("{R_ADDR2}", form.R_ADDR2);
-                doc.Range.Replace("{R_TEL}", form.R_TEL);
-                doc.Range.Replace("{R_B_NAM}", form.R_B_NAM);
-                doc.Range.Replace("{R_B_TIT}", form.R_B_TIT);
-                doc.Range.Replace("{R_B_ID}", form.R_B_ID);
+                doc.Range.Replace("{ADDR}", form.ADDR ?? "");
+                doc.Range.Replace("{B_SERNO}", form.B_SERNO ?? "");
+                doc.Range.Replace("{S_NAME}", form.S_NAME ?? "" );
+                doc.Range.Replace("{S_G_NO}", form.S_G_NO ?? "");
+                doc.Range.Replace("{S_ADDR1}", form.S_ADDR1 ?? "");
+                doc.Range.Replace("{S_ADDR2}", form.S_ADDR2 ?? "");
+                doc.Range.Replace("{S_TEL}", form.S_TEL ?? "");
+                doc.Range.Replace("{S_B_NAM}", form.S_B_NAM ?? "");
+                doc.Range.Replace("{S_B_TIT}", form.S_B_TIT ?? "");
+                doc.Range.Replace("{S_B_ID}", form.S_B_ID ?? "");
+                doc.Range.Replace("{S_C_NAM}", form.S_C_NAM ?? "");
+                doc.Range.Replace("{S_C_TIT}", form.S_C_TIT ?? "");
+                doc.Range.Replace("{S_C_ID}", form.S_C_ID ?? "");
+                doc.Range.Replace("{S_C_ADDR}", form.S_C_ADDR ?? "");
+                doc.Range.Replace("{S_C_TEL}", form.S_C_TEL ?? "");
+                doc.Range.Replace("{R_NAME}", form.R_NAME ?? "");
+                doc.Range.Replace("{R_G_NO}", form.R_G_NO ?? "");
+                doc.Range.Replace("{R_ADDR1}", form.R_ADDR1 ?? "");
+                doc.Range.Replace("{R_ADDR2}", form.R_ADDR2 ?? "");
+                doc.Range.Replace("{R_TEL}", form.R_TEL ?? "");
+                doc.Range.Replace("{R_B_NAM}", form.R_B_NAM ?? "");
+                doc.Range.Replace("{R_B_TIT}", form.R_B_TIT ?? "");
+                doc.Range.Replace("{R_B_ID}", form.R_B_ID ?? "");
                 doc.Range.Replace("{MONEY}", converter.ToChineseUpper(form.MONEY));
                 doc.Range.Replace("{B_DATE}", $"{form.B_DATE.Substring(0, 3)} 年 {form.B_DATE.Substring(3, 2)} 月 {form.B_DATE.Substring(5, 2)} 日");
                 doc.Range.Replace("{E_DATE}", $"{form.E_DATE.Substring(0, 3)} 年 {form.E_DATE.Substring(3, 2)} 月 {form.E_DATE.Substring(5, 2)} 日");
@@ -2144,6 +2145,7 @@ namespace NT_AirPollution.Service
                 var edate = form.E_DATE.ToWestDate();
                 var totalDays = (edate - sdate).Days + 1;
                 doc.Range.Replace("{TOTAL_DAY}", $"{totalDays}");
+                doc.Range.Replace("{S_AMT}", converter.ToChineseUpper(form.S_AMT.Value));
 
                 if (form.P_AMT.HasValue)
                     doc.Range.Replace("{P_AMT}", converter.ToChineseUpper(form.P_AMT.Value));

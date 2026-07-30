@@ -18,36 +18,66 @@
 		</el-form>
 		<vxe-table :data="forms" size="small" :loading="loading" max-height="640px" show-overflow border resizable auto-resize :sort-config="{ trigger: 'cell' }">
 			<vxe-table-column width="60" align="center" fixed="left">
-				<template #header>檢視<br>案件</template>
+				<template #header>
+					檢視
+					<br />案件
+				</template>
 				<template #default="{ row }">
 					<el-button size="mini" icon="el-icon-search" circle title="檢視案件" @click="showDetail(row)"></el-button>
-                </template>
+				</template>
 			</vxe-table-column>
-            <vxe-table-column width="60" align="center" fixed="left">
-				<template #header>檢視<br>附件</template>
+			<vxe-table-column width="60" align="center" fixed="left">
+				<template #header>
+					檢視
+					<br />附件
+				</template>
 				<template #default="{ row }">
-					<el-button size="mini" icon="el-icon-paperclip" circle title="檢視附件" @click="showDetail(row)"></el-button>
-                </template>
+					<el-button size="mini" icon="el-icon-search" circle title="檢視附件" @click="showAttachment(row)"></el-button>
+				</template>
 			</vxe-table-column>
-            <vxe-table-column width="60" align="center" fixed="left">
-				<template #header>取得<br>管編</template>
+			<vxe-table-column width="60" align="center" fixed="left">
+				<template #header>
+					停工
+					<br />復工
+				</template>
 				<template #default="{ row }">
-					<el-button type="primary" size="mini" icon="el-icon-s-ticket" circle title="取得管編" @click="createC_NO(row)"></el-button>
-                </template>
+					<el-button size="mini" icon="el-icon-search" circle title="停復工" @click="showStopWork(row)"></el-button>
+				</template>
 			</vxe-table-column>
-            <vxe-table-column width="60" align="center" fixed="left">
-				<template #header>刪除<br>案件</template>
+			<vxe-table-column width="60" align="center" fixed="left">
+				<template #header>
+					退款
+					<br />帳戶
+				</template>
+				<template #default="{ row }">
+					<el-button size="mini" icon="el-icon-search" circle title="停復工" @click="showRefund(row)"></el-button>
+				</template>
+			</vxe-table-column>
+			<vxe-table-column width="60" align="center" fixed="left">
+				<template #header>
+					取得
+					<br />管編
+				</template>
+				<template #default="{ row }">
+					<el-button type="primary" size="mini" icon="el-icon-edit" circle title="取得管編" :disabled="row.C_NO !== null" @click="createC_NO(row)"></el-button>
+				</template>
+			</vxe-table-column>
+			<vxe-table-column width="60" align="center" fixed="left">
+				<template #header>
+					刪除
+					<br />案件
+				</template>
 				<template #default="{ row }">
 					<el-button type="danger" size="mini" icon="el-icon-delete" circle title="刪除案件" :disabled="row.C_NO !== null" @click="deleteForm(row)"></el-button>
-                </template>
+				</template>
 			</vxe-table-column>
-            <vxe-table-column field="C_NO" title="管制編號" width="140" align="center" sortable>
+			<vxe-table-column field="C_NO" title="管制編號" width="140" align="center" sortable>
 				<template #default="{ row }">
 					<span v-if="row.C_NO">{{row.C_NO}}-{{row.SER_NO}}</span>
 				</template>
 			</vxe-table-column>
 			<vxe-table-column field="COMP_NAM" title="工程名稱" width="240" align="center"></vxe-table-column>
-            <vxe-table-column field="C_DATE" title="申報日期" width="140" align="center" sortable>
+			<vxe-table-column field="C_DATE" title="申報日期" width="140" align="center" sortable>
 				<template #default="{ row }">{{ row.C_DATE | datetime }}</template>
 			</vxe-table-column>
 			<vxe-table-column field="FormStatus" title="首期審核進度" width="140" align="center" sortable>
@@ -62,24 +92,21 @@
 			<vxe-table-column field="VerifyStage2" title="結算初/複審" width="140" align="center" sortable>
 				<template #default="{ row }">{{row.VerifyStage2 | verifyStage}}</template>
 			</vxe-table-column>
-            <vxe-table-column title="申報表" width="140" align="center">
-				<template #default="{ row }"></template>
+			<vxe-table-column title="申報表" width="160" align="center">
+				<template #default="{ row }">
+					<el-button v-if="row.FormStatus > 0" type="primary" size="mini" @click="downloadForm(1, row)">首期</el-button>
+					<el-button v-if="row.FormStatus === 4 && row.CalcStatus > 0" type="success" size="mini" @click="downloadForm(2, row)">結算</el-button>
+				</template>
 			</vxe-table-column>
-            <vxe-table-column title="申報證明" width="100" align="center">
-				<template #default="{ row }"></template>
-			</vxe-table-column>
-            <vxe-table-column title="結算退費審核表" width="140" align="center">
-				<template #default="{ row }"></template>
-			</vxe-table-column>
-            <vxe-table-column title="結算金額異動原因明細" width="160" align="center">
-				<template #default="{ row }"></template>
-			</vxe-table-column>
-            <vxe-table-column title="結清證明" width="100" align="center">
+			<vxe-table-column title="申報證明" width="100" align="center">
 				<template #default="{ row }"></template>
 			</vxe-table-column>
 		</vxe-table>
 		<FormModal :show.sync="formModalVisible" :mode="mode" :data="selectRow" @on-updated="onUpdated" />
 		<VerifyModal :show.sync="verifyModalVisible" :data="selectRow" @on-updated="onUpdated" />
+		<AttachmentModal :show.sync="attachmentModalVisible" :data="selectRow" />
+		<StopWorkModal :show.sync="stopWorkModalVisible" :data="selectRow" />
+		<RefundModal :show.sync="refundModalVisible" :data="selectRow" />
 	</div>
 </template>
 <script>
@@ -87,11 +114,14 @@ import { mapGetters } from 'vuex';
 import { dateTime, form } from '@/mixins/filter';
 import FormModal from '@/components/function/child/FormModal';
 import VerifyModal from '@/components/function/child/VerifyModal';
+import AttachmentModal from '@/components/function/child/AttachmentModal';
+import StopWorkModal from '@/components/function/child/StopWorkModal';
+import RefundModal from '@/components/function/child/RefundModal';
 
 export default {
 	name: 'forms',
 	mixins: [dateTime, form],
-	components: { FormModal, VerifyModal },
+	components: { FormModal, VerifyModal, AttachmentModal, StopWorkModal, RefundModal },
 	data() {
 		return {
 			mode: '',
@@ -106,7 +136,10 @@ export default {
 			forms: [],
 			selectRow: {},
 			formModalVisible: false,
-			verifyModalVisible: false
+			verifyModalVisible: false,
+			attachmentModalVisible: false,
+			stopWorkModalVisible: false,
+			refundModalVisible: false
 		};
 	},
 	mounted() {
@@ -160,6 +193,18 @@ export default {
 			this.selectRow = row;
 			this.formModalVisible = true;
 		},
+		showAttachment(row) {
+			this.selectRow = row;
+			this.attachmentModalVisible = true;
+		},
+		showStopWork(row) {
+			this.selectRow = row;
+			this.stopWorkModalVisible = true;
+		},
+		showRefund(row) {
+			this.selectRow = row;
+			this.refundModalVisible = true;
+		},
 		copyRow(row) {
 			if (!confirm('是否確認追加序號?')) return;
 			this.mode = 'Copy';
@@ -207,6 +252,29 @@ export default {
 				.catch(err => {
 					this.$message.error(err.response.data.ExceptionMessage);
 					loading.close();
+				});
+		},
+		downloadForm(type, row) {
+			const loading = this.$loading();
+			this.axios
+				.post(`api/Form/DownloadForm${type}`, row, {
+					responseType: 'blob'
+				})
+				.then(res => {
+					loading.close();
+					const url = window.URL.createObjectURL(new Blob([res.data]));
+					const link = document.createElement('a');
+					link.href = url;
+					const fileName = decodeURI(res.headers['file-name']);
+					link.setAttribute('download', fileName);
+					document.body.appendChild(link);
+					link.click();
+					link.remove();
+				})
+				.catch(err => {
+					loading.close();
+					alert('系統發生未預期錯誤');
+					console.log(err);
 				});
 		}
 	}
