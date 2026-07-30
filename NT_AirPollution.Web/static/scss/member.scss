@@ -932,4 +932,36 @@ h3 {
 	}
 }
 
+.formsub-wrapper {
+	.action-bar {
+		margin-bottom: 12px;
+		text-align: right;
+	}
+
+	.table-header-custom {
+		background-color: #f1f5f9 !important;
+		color: #334155 !important;
+		font-weight: 700 !important;
+	}
+
+	.btn-delete {
+		color: #ef4444;
+		font-size: 16px;
+
+		&:hover {
+			color: #dc2626;
+		}
+	}
+
+	.el-table {
+		border-radius: 6px;
+		overflow: hidden;
+
+		td,
+		th {
+			padding: 6px 0;
+		}
+	}
+}
+
 @import './footer';

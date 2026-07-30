@@ -1262,6 +1262,31 @@ h3 {
   padding: 10px 0;
 }
 
+.formsub-wrapper .action-bar {
+  margin-bottom: 12px;
+  text-align: right;
+}
+.formsub-wrapper .table-header-custom {
+  background-color: #f1f5f9 !important;
+  color: #334155 !important;
+  font-weight: 700 !important;
+}
+.formsub-wrapper .btn-delete {
+  color: #ef4444;
+  font-size: 16px;
+}
+.formsub-wrapper .btn-delete:hover {
+  color: #dc2626;
+}
+.formsub-wrapper .el-table {
+  border-radius: 6px;
+  overflow: hidden;
+}
+.formsub-wrapper .el-table td,
+.formsub-wrapper .el-table th {
+  padding: 6px 0;
+}
+
 footer {
   background-color: #ebf5ff;
   padding: 20px 0 0;

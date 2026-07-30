@@ -124,7 +124,7 @@
 								<el-col :md="12" :sm="24">
 									<el-form-item prop="S_B_BDATE" label="生日">
 										<div class="el-input el-input--suffix">
-											<input type="text" class="el-input__inner datepicker" data-key="S_B_BDATE" v-model="form.S_B_BDATE" readonly />
+											<input type="text" class="el-input__inner datepicker" v-model="form.S_B_BDATE" readonly />
 											<span v-if="form.S_B_BDATE && form.FormStatus <= 2" class="el-input__suffix datepicker-suffix" @click="form.S_B_BDATE = ''">
 												<i class="fa fa-times-circle"></i>
 											</span>
@@ -226,7 +226,7 @@
 								<el-col :md="12" :sm="24">
 									<el-form-item prop="R_B_BDATE" label="生日">
 										<div class="el-input el-input--suffix">
-											<input type="text" class="el-input__inner datepicker" data-key="R_B_BDATE" v-model="form.R_B_BDATE" readonly />
+											<input type="text" class="el-input__inner datepicker" v-model="form.R_B_BDATE" readonly />
 											<span v-if="form.R_B_BDATE && form.FormStatus <= 2" class="el-input__suffix datepicker-suffix" @click="form.R_B_BDATE = ''">
 												<i class="fa fa-times-circle"></i>
 											</span>
@@ -328,7 +328,7 @@
 							<div class="flex-row">
 								<el-form-item prop="B_DATE" label="開始日期">
 									<div class="el-input el-input--suffix">
-										<input type="text" class="el-input__inner datepicker" data-key="B_DATE" v-model="form.B_DATE" :disabled="form.FormStatus > 2" readonly />
+										<input type="text" class="el-input__inner datepicker" v-model="form.B_DATE" :disabled="form.FormStatus > 2" readonly />
 										<span v-if="form.B_DATE && form.FormStatus <= 2" class="el-input__suffix datepicker-suffix" @click="form.B_DATE = ''">
 											<i class="fa fa-times-circle"></i>
 										</span>
@@ -336,7 +336,7 @@
 								</el-form-item>
 								<el-form-item prop="E_DATE" label="結束日期">
 									<div class="el-input el-input--suffix">
-										<input type="text" class="el-input__inner datepicker" data-key="E_DATE" v-model="form.E_DATE" :disabled="form.FormStatus > 2" readonly />
+										<input type="text" class="el-input__inner datepicker" v-model="form.E_DATE" :disabled="form.FormStatus > 2" readonly />
 										<span v-if="form.E_DATE && form.FormStatus <= 2" class="el-input__suffix datepicker-suffix" @click="form.E_DATE = ''">
 											<i class="fa fa-times-circle"></i>
 										</span>
@@ -421,7 +421,7 @@
 							<div class="flex-row">
 								<el-form-item prop="B_DATE" label="開始日期">
 									<div class="el-input el-input--suffix">
-										<input type="text" class="el-input__inner datepicker" data-key="FormB.B_DATE" v-model="form.FormB.B_DATE" :disabled="form.CalcStatus > 2" readonly />
+										<input type="text" class="el-input__inner datepicker" v-model="form.FormB.B_DATE" :disabled="form.CalcStatus > 2" readonly />
 										<span v-if="form.FormB.B_DATE && form.CalcStatus <= 2" class="el-input__suffix datepicker-suffix" @click="form.FormB.B_DATE = ''">
 											<i class="fa fa-times-circle"></i>
 										</span>
@@ -429,7 +429,7 @@
 								</el-form-item>
 								<el-form-item prop="E_DATE" label="結束日期">
 									<div class="el-input el-input--suffix">
-										<input type="text" class="el-input__inner datepicker" data-key="FormB.E_DATE" v-model="form.FormB.E_DATE" :disabled="form.CalcStatus > 2" readonly />
+										<input type="text" class="el-input__inner datepicker" v-model="form.FormB.E_DATE" :disabled="form.CalcStatus > 2" readonly />
 										<span v-if="form.FormB.E_DATE && form.CalcStatus <= 2" class="el-input__suffix datepicker-suffix" @click="form.FormB.E_DATE = ''">
 											<i class="fa fa-times-circle"></i>
 										</span>
@@ -843,6 +843,7 @@ export default {
 	},
 	methods: {
 		initDatePicker() {
+			const self = this;
 			$('.datepicker').datepicker({
 				dateFormat: 'yy/mm/dd',
 				yearRange: '-90:+10',
@@ -858,27 +859,30 @@ export default {
 							defaultDate: `${year}/${month}/${day}`
 						};
 					}
-
 					return {};
 				},
-				onSelect: (dateText, inst) => {
+				onSelect: function (dateText, inst) {
 					var objDate = {
 						y: `${inst.selectedYear - 1911 < 0 ? inst.selectedYear : inst.selectedYear - 1911}`.padStart(3, '0'),
 						m: `${inst.selectedMonth + 1}`.padStart(2, '0'),
 						d: `${inst.selectedDay}`.padStart(2, '0')
 					};
 
-					const key = inst.input[0].dataset.key; // 例如 'FormB.S_DATE' 或 'S_DATE'
 					const dateFormate = `${objDate.y}${objDate.m}${objDate.d}`;
+
+					// 1. 更新 HTML input 上的顯示文字
 					inst.input.val(dateFormate);
-					// 根據 key 的值來決定要設值的位置
-					if (key.includes('.')) {
-						// 有階層結構，例如 'FormB.S_DATE'
-						const [parent, child] = key.split('.');
-						this.form[parent][child] = dateFormate;
+
+					// 2. 取得 Vue 的 vnode 綁定資訊並自動更新資料
+					const inputEl = inst.input[0];
+					const vnode = inputEl._vnode;
+
+					if (vnode && vnode.data && vnode.data.model) {
+						// 直接執行 Vue 自動生成的雙向綁定 setter 函式
+						vnode.data.model.callback(dateFormate);
 					} else {
-						// 沒有階層，直接設值
-						this.form[key] = dateFormate;
+						// 備用方案：如果不是用 v-model 而是改觸發 input 事件
+						inputEl.dispatchEvent(new Event('input', { bubbles: true }));
 					}
 				}
 			});

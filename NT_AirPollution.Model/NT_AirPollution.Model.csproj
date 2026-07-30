@@ -64,6 +64,7 @@
     <Compile Include="Domain\Attachment.cs" />
     <Compile Include="Domain\Download.cs" />
     <Compile Include="Domain\FormB.cs" />
+    <Compile Include="Domain\FormSub.cs" />
     <Compile Include="Domain\InterestRate.cs" />
     <Compile Include="Domain\News.cs" />
     <Compile Include="Domain\Payment.cs" />

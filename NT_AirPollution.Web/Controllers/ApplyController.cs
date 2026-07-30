@@ -394,6 +394,12 @@ namespace NT_AirPollution.Web.Controllers
                 _formService.UpdateForm(form);
                 // 更新FormB
                 _formService.AddFormB(form);
+                // 寫入 FormSub
+                foreach (var item in form.FormSub)
+                {
+                    item.FormID = form.ID;
+                }
+                _formService.AddFormSub(form);
 
                 return Json(new AjaxResult { Status = true });
             }

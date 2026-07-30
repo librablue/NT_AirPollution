@@ -19,13 +19,15 @@ namespace NT_AirPollution.Model.View
         [Computed]
         public List<StopWork> StopWorks { get; set; } = new List<StopWork>();
         [Computed]
+        public List<FormSub> FormSub { get; set; } = new List<FormSub>();
+        [Computed]
         public FormB FormB { get; set; }
         [Computed]
         public string Captcha { get; set; }
         [Computed]
         public WorkStatus WorkStatus { get; set; }
-        [Computed]
-        public Commitment Commitment { get; set; }
+        //[Computed]
+        //public Commitment Commitment { get; set; }
 
         /// <summary>
         /// 是否寄送郵件通知

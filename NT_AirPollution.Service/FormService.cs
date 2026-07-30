@@ -73,6 +73,10 @@ namespace NT_AirPollution.Service
                     item.FormB = cn.QueryFirstOrDefault<FormB>(@"
                         SELECT * FROM FormB WHERE FormID=@FormID",
                         new { FormID = item.ID });
+
+                    item.FormSub = cn.Query<FormSub>(@"
+                        SELECT * FROM FormSub WHERE FormID=@FormID",
+                        new { FormID = item.ID }).ToList();
                 }
 
                 return forms;
@@ -116,6 +120,10 @@ namespace NT_AirPollution.Service
                     result.FormB = cn.QueryFirstOrDefault<FormB>(@"
                         SELECT * FROM FormB WHERE FormID=@FormID",
                         new { FormID = result.ID });
+
+                    result.FormSub = cn.Query<FormSub>(@"
+                        SELECT * FROM FormSub WHERE FormID=@FormID",
+                        new { FormID = result.ID }).ToList();
                 }
 
                 return result;
@@ -231,6 +239,10 @@ namespace NT_AirPollution.Service
                             WRONG_AP = "否"
                         };
                     }
+
+                    item.FormSub = cn.Query<FormSub>(@"
+                        SELECT * FROM FormSub WHERE FormID=@FormID",
+                        new { FormID = item.ID }).ToList();
                 }
 
                 return result;
@@ -283,6 +295,10 @@ namespace NT_AirPollution.Service
                     item.FormB = cn.QueryFirstOrDefault<FormB>(@"
                         SELECT * FROM FormB WHERE FormID=@FormID",
                         new { FormID = item.ID });
+
+                    item.FormSub = cn.Query<FormSub>(@"
+                        SELECT * FROM FormSub WHERE FormID=@FormID",
+                        new { FormID = item.ID }).ToList();
 
 
                     // 檢查今天是否在停復工日期範圍內
@@ -355,6 +371,10 @@ namespace NT_AirPollution.Service
                     item.FormB = cn.QueryFirstOrDefault<FormB>(@"
                         SELECT * FROM FormB WHERE FormID=@FormID",
                         new { FormID = item.ID });
+
+                    item.FormSub = cn.Query<FormSub>(@"
+                        SELECT * FROM FormSub WHERE FormID=@FormID",
+                        new { FormID = item.ID }).ToList();
                 }
 
                 return result;
@@ -399,6 +419,10 @@ namespace NT_AirPollution.Service
                     item.FormB = cn.QueryFirstOrDefault<FormB>(@"
                         SELECT * FROM FormB WHERE FormID=@FormID",
                         new { FormID = item.ID });
+
+                    item.FormSub = cn.Query<FormSub>(@"
+                        SELECT * FROM FormSub WHERE FormID=@FormID",
+                        new { FormID = item.ID }).ToList();
                 }
 
                 return result;
@@ -442,26 +466,13 @@ namespace NT_AirPollution.Service
                     form.FormB = cn.QueryFirstOrDefault<FormB>(@"
                         SELECT * FROM FormB WHERE FormID=@FormID",
                         new { FormID = form.ID });
+
+                    form.FormSub = cn.Query<FormSub>(@"
+                        SELECT * FROM FormSub WHERE FormID=@FormID",
+                        new { FormID = form.ID }).ToList();
                 }
 
                 return forms;
-            }
-        }
-
-        /// <summary>
-        /// 取得FormB
-        /// </summary>
-        /// <param name="formID"></param>
-        /// <returns></returns>
-        public FormB GetFormB(long formID)
-        {
-            using (var cn = new SqlConnection(connStr))
-            {
-                var formB = cn.QueryFirstOrDefault<FormB>(@"
-                    SELECT * FROM FormB WHERE FormID=@FormID",
-                    new { FormID = formID });
-
-                return formB;
             }
         }
 
@@ -543,6 +554,7 @@ namespace NT_AirPollution.Service
                         if (form.S_AMT <= 100)
                             B_STAT = "Z已申報結算";
 
+                        // 寫入 FormB
                         form.FormB = new FormB
                         {
                             FormID = form.ID,
@@ -585,6 +597,14 @@ namespace NT_AirPollution.Service
                         };
 
                         cn.Insert(form.FormB, trans);
+
+                        // 寫入 FormSub
+                        foreach (var item in form.FormSub)
+                        {
+                            item.FormID = id;
+                        }
+
+                        cn.Insert(form.FormSub, trans);
 
                         trans.Commit();
                         return id;
@@ -646,6 +666,9 @@ namespace NT_AirPollution.Service
                             new { FormID = form.ID }, trans);
 
                         cn.Execute(@"DELETE FROM dbo.StopWork WHERE FormID=@FormID",
+                            new { FormID = form.ID }, trans);
+
+                        cn.Execute(@"DELETE FROM dbo.FormSub WHERE FormID=@FormID",
                             new { FormID = form.ID }, trans);
 
                         trans.Commit();
@@ -743,6 +766,39 @@ namespace NT_AirPollution.Service
                     {
                         trans.Rollback();
                         Logger.Error($"AddFormB: {ex.StackTrace}|{ex.Message}");
+                        throw new Exception("系統發生未預期錯誤");
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 新增合併申報工程明細資料
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public bool AddFormSub(FormView form)
+        {
+            using (var cn = new SqlConnection(connStr))
+            {
+                cn.Open();
+                using (var trans = cn.BeginTransaction())
+                {
+                    try
+                    {
+                        cn.Execute(@"DELETE FROM dbo.FormSub WHERE FormID=@FormID",
+                            new { FormID = form.ID }, trans);
+
+                        cn.Insert(form.FormSub, trans);
+
+                        trans.Commit();
+                        return true;
+                    }
+                    catch (Exception ex)
+                    {
+                        trans.Rollback();
+                        Logger.Error($"AddFormSub: {ex.StackTrace}|{ex.Message}");
                         throw new Exception("系統發生未預期錯誤");
                     }
                 }

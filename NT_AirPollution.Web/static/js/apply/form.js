@@ -188,6 +188,7 @@
 					P_KIND: '一次全繳',
 					REC_YN: '無',
 					StopWorks: [],
+					FormSubs: [],
 					RefundBank: {},
 					PaymentProof: {},
 					RATIOLB: 1.31,
@@ -201,6 +202,7 @@
 				dialogVisible: false, // 控制基本資料 Dialog
 				attachDialogVisible: false, // 控制附件 Dialog
 				stopWorkDialogVisible: false, // 控制停復工 Dialog
+				formSubDialogVisible: false, // 控制合併申報資料 Dialog
 				failReason1DialogVisible: false,
 				failReason2DialogVisible: false,
 				bankAccountDialogVisible: false,
@@ -439,6 +441,7 @@
 		},
 		methods: {
 			initDatePicker() {
+				const self = this;
 				$('.datepicker').datepicker({
 					dateFormat: 'yy/mm/dd',
 					yearRange: '-90:+10',
@@ -454,28 +457,30 @@
 								defaultDate: `${year}/${month}/${day}`
 							};
 						}
-
 						return {};
 					},
-					onSelect: (dateText, inst) => {
+					onSelect: function (dateText, inst) {
 						var objDate = {
 							y: `${inst.selectedYear - 1911 < 0 ? inst.selectedYear : inst.selectedYear - 1911}`.padStart(3, '0'),
 							m: `${inst.selectedMonth + 1}`.padStart(2, '0'),
 							d: `${inst.selectedDay}`.padStart(2, '0')
 						};
 
-						const key = inst.input[0].dataset.key; // 例如 'FormB.S_DATE' 或 'S_DATE'
-						const model = inst.input[0].dataset.model;
 						const dateFormate = `${objDate.y}${objDate.m}${objDate.d}`;
+
+						// 1. 更新 HTML input 上的顯示文字
 						inst.input.val(dateFormate);
-						// 根據 key 的值來決定要設值的位置
-						if (key.includes('.')) {
-							// 有階層結構，例如 'FormB.S_DATE'
-							const [parent, child] = key.split('.');
-							this[model][parent][child] = dateFormate;
+
+						// 2. 取得 Vue 的 vnode 綁定資訊並自動更新資料
+						const inputEl = inst.input[0];
+						const vnode = inputEl._vnode;
+
+						if (vnode && vnode.data && vnode.data.model) {
+							// 直接執行 Vue 自動生成的雙向綁定 setter 函式
+							vnode.data.model.callback(dateFormate);
 						} else {
-							// 沒有階層，直接設值
-							this[model][key] = dateFormate;
+							// 備用方案：如果不是用 v-model 而是改觸發 input 事件
+							inputEl.dispatchEvent(new Event('input', { bubbles: true }));
 						}
 					}
 				});
@@ -936,15 +941,41 @@
 						console.error(err);
 					});
 			},
-			// 開啟附件彈窗 (提供列表或按鈕呼叫)
+			// 開啟附件彈窗
 			openAttachDialog(row) {
 				this.selectRow = row;
 				this.attachDialogVisible = true;
 			},
-			// 開啟停復工彈窗 (提供列表或按鈕呼叫)
+			// 開啟停復工彈窗
 			openStopWorkDialog(row) {
 				this.selectRow = row;
 				this.stopWorkDialogVisible = true;
+			},
+			// 開啟合併申報彈窗
+			openFormSubDialog(row) {
+				this.selectRow = row;
+				this.formSubDialogVisible = true;
+			},
+			// 新增一筆合併申報
+			addFormSub() {
+				if (!this.selectRow.FormSub) {
+					this.$set(this.selectRow, 'FormSub', []);
+				}
+				this.selectRow.FormSub.push({
+					COMP_NAM: '',
+					ADDR: '',
+					AREA: null,
+					B_DATE: '',
+					E_DATE: ''
+				});
+
+				this.$nextTick(() => {
+					this.initDatePicker();
+				});
+			},
+			// 刪除一筆合併申報
+			removeFormSub(index) {
+				this.selectRow.FormSub.splice(index, 1);
 			},
 			showSelfCheckModal(row) {
 				this.selectRow = Object.assign(this.selectRow, JSON.parse(JSON.stringify(row)));
