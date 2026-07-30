@@ -821,18 +821,18 @@ namespace NT_AirPollution.Web.Controllers
         /// </summary>
         /// <param name="form"></param>
         /// <returns></returns>
-        [HttpPost]
-        public JsonResult ImportData(FormView form)
-        {
-            try
-            {
-                _formService.ImportData(form.C_NO, form.B_DATE);
-                return Json(new AjaxResult { Status = true });
-            }
-            catch (Exception ex)
-            {
-                return Json(new AjaxResult { Status = false, Message = ex.Message });
-            }
-        }
+        //[HttpPost]
+        //public JsonResult ImportData(FormView form)
+        //{
+        //    try
+        //    {
+        //        _formService.ImportData(form.C_NO, form.B_DATE);
+        //        return Json(new AjaxResult { Status = true });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return Json(new AjaxResult { Status = false, Message = ex.Message });
+        //    }
+        //}
     }
 }
