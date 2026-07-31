@@ -59,7 +59,7 @@
 					<br />管編
 				</template>
 				<template #default="{ row }">
-					<el-button type="primary" size="mini" icon="el-icon-edit" circle title="取得管編" :disabled="row.C_NO !== null" @click="createC_NO(row)"></el-button>
+					<el-button type="primary" size="mini" icon="el-icon-edit" circle title="取得管編" :disabled="row.C_NO !== null" @click="showCNOModal(row)"></el-button>
 				</template>
 			</vxe-table-column>
 			<vxe-table-column width="60" align="center" fixed="left">
@@ -107,6 +107,7 @@
 		<AttachmentModal :show.sync="attachmentModalVisible" :data="selectRow" />
 		<StopWorkModal :show.sync="stopWorkModalVisible" :data="selectRow" />
 		<RefundModal :show.sync="refundModalVisible" :data="selectRow" />
+        <CNOModal :show.sync="CNOModalVisible" :data="selectRow" @on-updated="onUpdated" />
 	</div>
 </template>
 <script>
@@ -117,11 +118,12 @@ import VerifyModal from '@/components/function/child/VerifyModal';
 import AttachmentModal from '@/components/function/child/AttachmentModal';
 import StopWorkModal from '@/components/function/child/StopWorkModal';
 import RefundModal from '@/components/function/child/RefundModal';
+import CNOModal from '@/components/function/child/CNOModal';
 
 export default {
 	name: 'forms',
 	mixins: [dateTime, form],
-	components: { FormModal, VerifyModal, AttachmentModal, StopWorkModal, RefundModal },
+	components: { FormModal, VerifyModal, AttachmentModal, StopWorkModal, RefundModal, CNOModal },
 	data() {
 		return {
 			mode: '',
@@ -139,7 +141,8 @@ export default {
 			verifyModalVisible: false,
 			attachmentModalVisible: false,
 			stopWorkModalVisible: false,
-			refundModalVisible: false
+			refundModalVisible: false,
+            CNOModalVisible: false
 		};
 	},
 	mounted() {
@@ -205,6 +208,10 @@ export default {
 			this.selectRow = row;
 			this.refundModalVisible = true;
 		},
+        showCNOModal(row) {
+			this.selectRow = row;
+            this.CNOModalVisible = true;
+        },
 		copyRow(row) {
 			if (!confirm('是否確認追加序號?')) return;
 			this.mode = 'Copy';
@@ -238,21 +245,6 @@ export default {
 		showVerifyModal(row) {
 			this.selectRow = row;
 			this.verifyModalVisible = true;
-		},
-		createC_NO(row) {
-			if (!confirm('管制編號產生後無法修改，是否確認繼續?')) return;
-			const loading = this.$loading();
-			this.axios
-				.post('api/Form/CreateC_NO', row)
-				.then(res => {
-					this.$message.success('管制編號已產生');
-					loading.close();
-					this.getForms();
-				})
-				.catch(err => {
-					this.$message.error(err.response.data.ExceptionMessage);
-					loading.close();
-				});
 		},
 		downloadForm(type, row) {
 			const loading = this.$loading();

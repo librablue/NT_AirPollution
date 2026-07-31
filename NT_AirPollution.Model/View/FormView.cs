@@ -26,8 +26,11 @@ namespace NT_AirPollution.Model.View
         public string Captcha { get; set; }
         [Computed]
         public WorkStatus WorkStatus { get; set; }
-        //[Computed]
-        //public Commitment Commitment { get; set; }
+        /// <summary>
+        /// 後台選擇申請年度用
+        /// </summary>
+        [Computed]
+        public int CNOYear { get; set; }
 
         /// <summary>
         /// 是否寄送郵件通知

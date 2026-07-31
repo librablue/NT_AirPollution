@@ -191,15 +191,16 @@ namespace NT_AirPollution.Admin.Controllers
         {
             try
             {
-                string c_no = _accessService.GetC_NO(form);
-                form.C_NO = c_no;
+                string latestC_NO = _accessService.GetC_NO(form);
+                form.C_NO = latestC_NO;
 
                 // 寫入 Access
                 _accessService.AddABUDF(form);
 
                 _formService.UpdateForm(form);
                 _formService.AddFormB(form);
-                return form.C_NO;
+
+                return latestC_NO;
             }
             catch (Exception ex)
             {

@@ -29,7 +29,6 @@ namespace NT_AirPollution.Service
                 using (var impersonation = new ImpersonationContext(domain, userName, password))
                 {
 #endif
-                string chineseYear = form.C_DATE.Value.AddYears(-1911).ToString("yyy");
                 using (var cn = new OleDbConnection(accessConnStr))
                 {
                     var result = cn.QueryFirstOrDefault(@"
@@ -38,17 +37,17 @@ namespace NT_AirPollution.Service
                         ORDER BY C_NO DESC",
                         new
                         {
-                            C_NO = $"M{chineseYear}{form.TOWN_NO}{form.KIND_NO}"
+                            C_NO = $"M{form.CNOYear}{form.TOWN_NO}{form.KIND_NO}"
                         }, commandTimeout: 180);
 
                     if (result == null)
                     {
-                        return $"M{chineseYear}{form.TOWN_NO}{form.KIND_NO}001";
+                        return $"M{form.CNOYear}{form.TOWN_NO}{form.KIND_NO}001";
                     }
 
                     int SerialNo = Convert.ToInt16(result.C_NO.Substring(7, 3));
                     SerialNo++;
-                    return $"M{chineseYear}{form.TOWN_NO}{form.KIND_NO}{SerialNo.ToString().PadLeft(3, '0')}";
+                    return $"M{form.CNOYear}{form.TOWN_NO}{form.KIND_NO}{SerialNo.ToString().PadLeft(3, '0')}";
                 }
 #if !DEBUG
                 }

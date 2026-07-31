@@ -13,6 +13,14 @@
 					<el-tab-pane label="工地基本資料" name="1">
 						<el-form ref="tab1Form" :rules="tab1Rules" :model="form" label-width="auto">
 							<el-form-item label="管制編號">{{C_NO}}</el-form-item>
+                            <el-form-item label="費率年度">
+                                <el-select prop="YEAR" v-model="form.YEAR">
+									<el-option label="87 年" :value="87"></el-option>
+									<el-option label="87 年" :value="88"></el-option>
+                                    <el-option label="93 年" :value="93"></el-option>
+                                    <el-option label="103 年" :value="103"></el-option>
+								</el-select>
+                            </el-form-item>
 							<el-form-item prop="TOWN_NO" label="鄉鎮分類">
 								<el-select v-model="form.TOWN_NO">
 									<el-option label="請選擇" :value="undefined"></el-option>
