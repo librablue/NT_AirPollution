@@ -80,6 +80,15 @@
 					<el-button type="danger" size="mini" icon="el-icon-delete" circle title="刪除案件" :disabled="row.C_NO !== null" @click="deleteForm(row)"></el-button>
 				</template>
 			</vxe-table-column>
+			<vxe-table-column width="60" align="center" fixed="left">
+				<template #header>
+					同步
+					<br />資料
+				</template>
+				<template #default="{ row }">
+					<el-button type="warning" size="mini" icon="el-icon-refresh" circle title="同步A2021資料" :disabled="!row.C_NO" @click="syncData(row)"></el-button>
+				</template>
+			</vxe-table-column>
 			<vxe-table-column field="C_NO" title="管制編號" width="140" align="center" sortable>
 				<template #default="{ row }">
 					<span v-if="row.C_NO">{{row.C_NO}}-{{row.SER_NO}}</span>
@@ -241,6 +250,21 @@ export default {
 				.post('api/Form/DeleteForm', row)
 				.then(res => {
 					this.$message.success('案件已刪除');
+					loading.close();
+				})
+				.catch(err => {
+					this.$message.error(err.response.data.ExceptionMessage);
+					loading.close();
+				});
+		},
+		syncData(row) {
+			if (!confirm('是否確認將 A2021 資料覆蓋到 Web?')) return;
+			const loading = this.$loading();
+			this.axios
+				.post('api/Form/SyncData', row)
+				.then(res => {
+					this.$message.success('資料已同步');
+                    this.getForms();
 					loading.close();
 				})
 				.catch(err => {

@@ -2605,54 +2605,67 @@ namespace NT_AirPollution.Service
         }
 
         /// <summary>
-        /// 從Access匯入資料到SQL Server
+        /// 從 Access 匯入資料到 SQL Server
         /// </summary>
-        /// <param name="c_no">管制編號</param>
-        /// <param name="ser_no">序號</param>
+        /// <param name="form"></param>
+        /// <returns></returns>
         public bool SyncData(FormView form)
         {
             ABUDF abudf = _accessService.GetABUDF(form.C_NO, form.SER_NO.Value);
             ABUDF_B abudf_b = _accessService.GetABUDF_B(form.C_NO, form.SER_NO.Value);
-            List<ABUDF_1> abudf_1s = _accessService.GetABUDF_1(form.C_NO, form.SER_NO.Value);
-            List<ABUDF_I> abudf_is = _accessService.GetABUDF_I(form.C_NO, form.SER_NO.Value);
+            List<ABUDF_DAY> abudf_day = _accessService.GetABUDF_DAY(form.C_NO, form.SER_NO.Value);
+            //List<ABUDF_1> abudf_1s = _accessService.GetABUDF_1(form.C_NO, form.SER_NO.Value);
+            //List<ABUDF_I> abudf_is = _accessService.GetABUDF_I(form.C_NO, form.SER_NO.Value);
 
-            if (abudf != null)
+            var config1 = new MapperConfiguration(cfg => { cfg.CreateMap<ABUDF, FormView>(); });
+            var mapper1 = config1.CreateMapper();
+            mapper1.Map(abudf, form);
+
+            var config2 = new MapperConfiguration(cfg => cfg.CreateMap<ABUDF_B, FormB>());
+            var mapper2 = config2.CreateMapper();
+            mapper2.Map(abudf_b, form.FormB);
+
+            var config3 = new MapperConfiguration(cfg => cfg.CreateMap<ABUDF_DAY, StopWork>());
+            var mapper3 = config3.CreateMapper();
+            mapper3.Map(abudf_day, form.StopWorks);
+
+            // 特定欄位邏輯
+            form.LATLNG = string.IsNullOrEmpty(abudf.LATLNG) ? "," : abudf.LATLNG;
+            form.AP_DATE1 = form.FormB.AP_DATE1;
+            form.S_AMT2 = form.FormB.S_AMT;
+            form.FormB.FormID = form.ID;
+            foreach (var item in form.StopWorks)
             {
-                // 1. 配置 ABUDF 到 FormView 的映射
-                var config1 = new MapperConfiguration(cfg => { cfg.CreateMap<ABUDF, FormView>(); });
-                var mapper1 = config1.CreateMapper();
-                // 2. 直接將 abudf 資料蓋寫進傳入的 FormView 執行階段物件 (form)
-                mapper1.Map(abudf, form);
-
-                // 3. 處理特殊邏輯
-                form.LATLNG = string.IsNullOrEmpty(abudf.LATLNG) ? "," : abudf.LATLNG;
+                item.FormID = form.ID;
             }
-
-            if (abudf_b != null)
-            {
-                var config2 = new MapperConfiguration(cfg => cfg.CreateMap<ABUDF_B, FormB>());
-                var mapper2 = config2.CreateMapper();
-                mapper2.Map(abudf_b, form.FormB);
-            }
-
-
-
-
-
-
 
             using (var cn = new SqlConnection(connStr))
             {
-                try
+                cn.Open();
+                using (var trans = cn.BeginTransaction())
                 {
+                    try
+                    {
+                        // Form
+                        cn.Update(form, trans);
 
+                        // FormB
+                        cn.Update(form.FormB, trans);
 
-                    return true;
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error($"SyncData: {ex.StackTrace}|{ex.Message}");
-                    throw ex;
+                        // StopWork
+                        cn.Execute(@"DELETE FROM dbo.StopWork WHERE FormID=@FormID",
+                            new { FormID = form.ID }, trans);
+                        cn.Insert(form.StopWorks, trans);
+
+                        trans.Commit();
+                        return true;
+                    }
+                    catch (Exception ex)
+                    {
+                        trans.Rollback();
+                        Logger.Error($"SyncData: {ex.StackTrace}|{ex.Message}");
+                        throw new Exception("系統發生未預期錯誤");
+                    }
                 }
             }
         }

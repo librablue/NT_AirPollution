@@ -1192,5 +1192,30 @@ namespace NT_AirPollution.Service
                 throw ex;
             }
         }
+
+        /// <summary>
+        /// 取得ABUDF_DAY
+        /// </summary>
+        /// <param name="c_no"></param>
+        /// <param name="ser_no"></param>
+        /// <returns></returns>
+        public List<ABUDF_DAY> GetABUDF_DAY(string c_no, int ser_no)
+        {
+#if !DEBUG
+            using (var impersonation = new ImpersonationContext(domain, userName, password))
+            {
+#endif
+            using (var cn = new OleDbConnection(accessConnStr))
+            {
+                var result = cn.Query<ABUDF_DAY>(@"
+                    SELECT * FROM ABUDF_DAY WHERE C_NO=@C_NO AND SER_NO=@SER_NO",
+                    new { C_NO = c_no, SER_NO = ser_no }).ToList();
+
+                return result;
+            }
+#if !DEBUG
+            }
+#endif
+        }
     }
 }

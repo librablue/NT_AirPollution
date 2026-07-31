@@ -53,13 +53,22 @@
 					<el-button size="mini" icon="el-icon-search" circle title="停復工" @click="showRefund(row)"></el-button>
 				</template>
 			</vxe-table-column>
-            <vxe-table-column width="60" align="center" fixed="left">
+			<vxe-table-column width="60" align="center" fixed="left">
 				<template #header>
 					追加
 					<br />序號
 				</template>
 				<template #default="{ row }">
 					<el-button type="success" size="mini" icon="el-icon-copy-document" circle title="追加序號" @click="copyRow(row)"></el-button>
+				</template>
+			</vxe-table-column>
+			<vxe-table-column width="60" align="center" fixed="left">
+				<template #header>
+					同步
+					<br />資料
+				</template>
+				<template #default="{ row }">
+					<el-button type="warning" size="mini" icon="el-icon-refresh" circle title="同步A2021資料" @click="syncData(row)"></el-button>
 				</template>
 			</vxe-table-column>
 			<vxe-table-column field="C_NO" title="管制編號" width="140" align="center" sortable>
@@ -228,6 +237,21 @@ export default {
 				this.selectRow[key] = null;
 			}
 			this.formModalVisible = true;
+		},
+		syncData(row) {
+			if (!confirm('是否確認將 A2021 資料覆蓋到 Web?')) return;
+			const loading = this.$loading();
+			this.axios
+				.post('api/Form/SyncData', row)
+				.then(res => {
+					this.$message.success('資料已同步');
+                    this.getForms();
+					loading.close();
+				})
+				.catch(err => {
+					this.$message.error(err.response.data.ExceptionMessage);
+					loading.close();
+				});
 		},
 		onUpdated() {
 			this.getForms();

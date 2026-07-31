@@ -143,8 +143,8 @@ export default {
 		getStopDays(row) {
 			if (!row.DOWN_DATE2 || !row.UP_DATE2) return 0;
 
-			var date1 = new Date(row.DOWN_DATE2);
-			var date2 = new Date(row.UP_DATE2);
+			var date1 = new Date(moment(row.DOWN_DATE2).format('YYYY-MM-DD'));
+			var date2 = new Date(moment(row.UP_DATE2).format('YYYY-MM-DD'));
 
 			if (date2 < date1) return 0;
 

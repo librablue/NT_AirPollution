@@ -694,6 +694,24 @@ namespace NT_AirPollution.Admin.Controllers
             }
         }
 
+        /// <summary>
+        /// 從 Access 匯入資料到 SQL Server
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        public bool SyncData(FormView form)
+        {
+            try
+            {
+                _formService.SyncData(form);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
         ///// <summary>
         ///// 下載全部檔案打包壓縮
         ///// </summary>
