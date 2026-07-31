@@ -14,6 +14,7 @@ import router from './router';
 import store from './store';
 import authCheck from './router/auth';
 import faCheckbox from './shared/FaCheckbox';
+import '@/directives';
 
 Vue.config.productionTip = false;
 

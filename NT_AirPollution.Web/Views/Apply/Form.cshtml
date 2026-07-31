@@ -165,7 +165,7 @@
                         </el-select>
                     </el-form-item>
                     <el-form-item v-if="selectRow.KIND_NO === '6'">
-                        <el-button round @@click="openFormSubDialog(selectRow)">輸入合併申報內容</el-button>
+                        <el-button round @@click="openFormSubDialog(selectRow)">輸入合併申報內容(共 {{selectRow.FormSub.length}} 筆)</el-button>
                     </el-form-item>
                     <el-form-item prop="ADDR" label="工地地址或地號">
                         <el-input v-model="selectRow.ADDR" maxlength="100"></el-input>
@@ -761,21 +761,21 @@
             <div class="action-bar">
                 <el-button type="primary" icon="el-icon-plus" size="small" @@click="addFormSub">新增工程</el-button>
             </div>
-            <el-table :data="selectRow.FormSub || []" size="size" stripe border header-cell-class-name="table-header-custom" style="width: 100%" empty-text="暫無合併申報資料">
+            <el-table :data="tmpFormSub || []" size="size" stripe border header-cell-class-name="table-header-custom" style="width: 100%" empty-text="暫無合併申報資料">
                 <el-table-column label="序號" type="index" width="55" align="center"></el-table-column>
                 <el-table-column label="工程名稱" min-width="160" align="center">
                     <template slot-scope="scope">
-                        <el-input v-model="scope.row.COMP_NAM" placeholder="請輸入工程名稱" size="small"></el-input>
+                        <el-input v-model="scope.row.COMP_NAM" placeholder="請輸入工程名稱" size="small" maxlength="150"></el-input>
                     </template>
                 </el-table-column>
                 <el-table-column label="工程地址或地號" min-width="180" align="center">
                     <template slot-scope="scope">
-                        <el-input v-model="scope.row.ADDR" placeholder="請輸入地址或地號" size="small"></el-input>
+                        <el-input v-model="scope.row.ADDR" placeholder="請輸入地址或地號" size="small" maxlength="100"></el-input>
                     </template>
                 </el-table-column>
                 <el-table-column label="施工面積(㎡)" width="120" align="center">
                     <template slot-scope="scope">
-                        <el-input v-decimal v-model="scope.row.AREA" size="small" style="width: 100%"></el-input>
+                        <el-input v-decimal v-model="scope.row.AREA" size="small"></el-input>
                     </template>
                 </el-table-column>
                 <el-table-column label="施工期程(起日)" width="120" align="center">
@@ -800,7 +800,8 @@
             </el-table>
         </div>
         <span slot="footer" class="dialog-footer">
-            <el-button icon="el-icon-close" @@click="formSubDialogVisible = false">關 閉</el-button>
+            <el-button @@click="formSubDialogVisible = false">取 消</el-button>
+            <el-button type="primary" @@click="saveFormSub">確 定</el-button>
         </span>
     </el-dialog>
 

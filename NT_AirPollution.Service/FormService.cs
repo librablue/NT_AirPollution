@@ -598,13 +598,17 @@ namespace NT_AirPollution.Service
 
                         cn.Insert(form.FormB, trans);
 
-                        // 寫入 FormSub
-                        foreach (var item in form.FormSub)
+                        // 6.管線開挖工程須多寫入FormSub資料
+                        if (form.KIND_NO == "6")
                         {
-                            item.FormID = id;
-                        }
+                            // 寫入 FormSub
+                            foreach (var item in form.FormSub)
+                            {
+                                item.FormID = id;
+                            }
 
-                        cn.Insert(form.FormSub, trans);
+                            cn.Insert(form.FormSub, trans);
+                        }
 
                         trans.Commit();
                         return id;
@@ -790,7 +794,11 @@ namespace NT_AirPollution.Service
                         cn.Execute(@"DELETE FROM dbo.FormSub WHERE FormID=@FormID",
                             new { FormID = form.ID }, trans);
 
-                        cn.Insert(form.FormSub, trans);
+                        // 6.管線開挖工程須多寫入FormSub資料
+                        if (form.KIND_NO == "6")
+                        {
+                            cn.Insert(form.FormSub, trans);
+                        }
 
                         trans.Commit();
                         return true;
@@ -1900,7 +1908,7 @@ namespace NT_AirPollution.Service
                 doc.Range.Replace("{S_AMT}", form.S_AMT.GetValueOrDefault().ToString("N0"));
                 doc.Range.Replace("{S_AMT2}", form.S_AMT2.GetValueOrDefault().ToString("N0"));
 
-                if(form.S_AMT2.GetValueOrDefault() > form.S_AMT.GetValueOrDefault())
+                if (form.S_AMT2.GetValueOrDefault() > form.S_AMT.GetValueOrDefault())
                 {
                     doc.Range.Replace("{DiffStr}", "結算應補繳交空污費");
                 }
@@ -2084,8 +2092,8 @@ namespace NT_AirPollution.Service
                 doc.Range.Replace("{MONEY}", converter.ToChineseUpper(form.MONEY));
                 doc.Range.Replace("{C_MONEY}", converter.ToChineseUpper(form.C_MONEY ?? 0));
                 doc.Range.Replace("{PERCENT}", form.PERCENT.Value.ToString());
-                
-                if(form.KIND_NO == "1" || form.KIND_NO == "2")
+
+                if (form.KIND_NO == "1" || form.KIND_NO == "2")
                 {
                     doc.Range.Replace("{AREA}", form.AREA_B.Value.ToString());
                 }
@@ -2108,7 +2116,7 @@ namespace NT_AirPollution.Service
                 doc.Range.Replace("{P_NUM}", form.P_NUM.ToString());
                 doc.Range.Replace("{REC_YN}", form.REC_YN ?? "");
 
-                if(form.S_AMT.HasValue)
+                if (form.S_AMT.HasValue)
                 {
                     doc.Range.Replace("{S_AMT}", converter.ToChineseUpper(form.S_AMT.Value));
                     doc.Range.Replace("{P_AMT}", converter.ToChineseUpper(form.P_AMT.Value));
@@ -2118,7 +2126,7 @@ namespace NT_AirPollution.Service
                     doc.Range.Replace("{S_AMT}", "");
                     doc.Range.Replace("{P_AMT}", "");
                 }
-         
+
 
                 doc.Save(resultFile);
 
@@ -2155,7 +2163,7 @@ namespace NT_AirPollution.Service
                 doc.Range.Replace("{C_NO}", $"{form.C_NO}-{form.SER_NO}");
                 doc.Range.Replace("{ADDR}", form.ADDR ?? "");
                 doc.Range.Replace("{B_SERNO}", form.B_SERNO ?? "");
-                doc.Range.Replace("{S_NAME}", form.S_NAME ?? "" );
+                doc.Range.Replace("{S_NAME}", form.S_NAME ?? "");
                 doc.Range.Replace("{S_G_NO}", form.S_G_NO ?? "");
                 doc.Range.Replace("{S_ADDR1}", form.S_ADDR1 ?? "");
                 doc.Range.Replace("{S_ADDR2}", form.S_ADDR2 ?? "");
@@ -2216,7 +2224,7 @@ namespace NT_AirPollution.Service
                     doc.Range.Replace("{DiffStr}", "應繳應退");
                     doc.Range.Replace("{DiffMoney}", "");
                 }
-                
+
 
                 doc.Save(resultFile);
 

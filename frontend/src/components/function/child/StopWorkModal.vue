@@ -98,9 +98,7 @@ export default {
 	data() {
 		return {
 			visible: false,
-			form: {
-				StopWorks: []
-			}
+			form: {}
 		};
 	},
 	computed: {

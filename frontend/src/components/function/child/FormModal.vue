@@ -1,462 +1,469 @@
 <template>
-	<vxe-modal :title="C_NO" v-model="visible" width="80%" height="90%" :lock-scroll="false" esc-closable resize :show-footer="mode !== 'Read'">
-		<template #default>
-			<el-form inline>
-				<el-form-item label="申報應繳金額">{{(form.S_AMT === null ? '未結算' : form.S_AMT) | comma}}</el-form-item>
-				<el-form-item label="結算應繳金額">{{(form.S_AMT2 === null ? '未結算' : form.S_AMT2) | comma}}</el-form-item>
-				<el-form-item v-if="form.FormB" label="是否短漏報">
-					<el-switch active-value="是" inactive-value="否" v-model="form.FormB.WRONG_AP"></el-switch>
-				</el-form-item>
-			</el-form>
-			<el-tabs v-model="activeTab">
-				<el-tab-pane label="工地基本資料" name="1">
-					<el-form ref="tab1Form" :rules="tab1Rules" :model="form" label-width="auto">
-						<el-form-item label="管制編號">{{C_NO}}</el-form-item>
-						<el-form-item prop="TOWN_NO" label="鄉鎮分類">
-							<el-select v-model="form.TOWN_NO">
-								<el-option label="請選擇" :value="undefined"></el-option>
-								<el-option v-for="item in district" :key="item.Code" :label="item.Name" :value="item.Code"></el-option>
-							</el-select>
-						</el-form-item>
-						<el-form-item label="申報日期">{{form.AP_DATE | westDate}}</el-form-item>
-						<el-form-item prop="CreateUserName" label="申請人">
-							<el-input v-model="form.CreateUserName" maxlength="20"></el-input>
-						</el-form-item>
-						<el-form-item prop="CreateUserEmail" label="申請人電子信箱">
-							<el-input type="email" v-model="form.CreateUserEmail" maxlength="50"></el-input>
-						</el-form-item>
-						<el-form-item prop="COMP_NAM" label="工程名稱">
-							<el-input v-model="form.COMP_NAM" maxlength="150"></el-input>
-						</el-form-item>
-						<el-form-item prop="KIND_NO" label="工程類別">
-							<el-select class="w100p" v-model="form.KIND_NO">
-								<el-option label="請選擇" :value="null"></el-option>
-								<el-option v-for="item in projectCode" :key="item.ID" :label="`${item.ID}. ${item.Name}`" :value="item.ID"></el-option>
-							</el-select>
-						</el-form-item>
-						<el-form-item prop="ADDR" label="工地地址或地號">
-							<el-input v-model="form.ADDR" maxlength="100"></el-input>
-						</el-form-item>
-						<div class="flex-row">
-							<el-form-item prop="LAT" label="座標(緯度)">
-								<el-input type="number" v-model="form.LAT" maxlength="20"></el-input>
+	<div>
+		<vxe-modal :title="C_NO" v-model="visible" width="80%" height="90%" :lock-scroll="false" esc-closable resize :show-footer="mode !== 'Read'">
+			<template #default>
+				<el-form inline>
+					<el-form-item label="申報應繳金額">{{(form.S_AMT === null ? '未結算' : form.S_AMT) | comma}}</el-form-item>
+					<el-form-item label="結算應繳金額">{{(form.S_AMT2 === null ? '未結算' : form.S_AMT2) | comma}}</el-form-item>
+					<el-form-item v-if="form.FormB" label="是否短漏報">
+						<el-switch active-value="是" inactive-value="否" v-model="form.FormB.WRONG_AP"></el-switch>
+					</el-form-item>
+				</el-form>
+				<el-tabs v-model="activeTab">
+					<el-tab-pane label="工地基本資料" name="1">
+						<el-form ref="tab1Form" :rules="tab1Rules" :model="form" label-width="auto">
+							<el-form-item label="管制編號">{{C_NO}}</el-form-item>
+							<el-form-item prop="TOWN_NO" label="鄉鎮分類">
+								<el-select v-model="form.TOWN_NO">
+									<el-option label="請選擇" :value="undefined"></el-option>
+									<el-option v-for="item in district" :key="item.Code" :label="item.Name" :value="item.Code"></el-option>
+								</el-select>
 							</el-form-item>
-							<el-form-item prop="LNG" label="座標(經度)">
-								<el-input type="number" v-model="form.LNG" maxlength="20"></el-input>
+							<el-form-item label="申報日期">{{form.AP_DATE | westDate}}</el-form-item>
+							<el-form-item prop="CreateUserName" label="申請人">
+								<el-input v-model="form.CreateUserName" maxlength="20"></el-input>
 							</el-form-item>
-						</div>
-						<el-form-item prop="B_SERNO" label="建照字號或合約編號">
-							<el-input v-model="form.B_SERNO" maxlength="60"></el-input>
-						</el-form-item>
-						<div class="flex-row">
-							<el-form-item prop="UTME" label="座標X">
-								<el-input type="number" v-model="form.UTME" disabled></el-input>
+							<el-form-item prop="CreateUserEmail" label="申請人電子信箱">
+								<el-input type="email" v-model="form.CreateUserEmail" maxlength="50"></el-input>
 							</el-form-item>
-							<el-form-item prop="UTMN" label="座標Y">
-								<el-input type="number" v-model="form.UTMN" disabled></el-input>
+							<el-form-item prop="COMP_NAM" label="工程名稱">
+								<el-input v-model="form.COMP_NAM" maxlength="150"></el-input>
 							</el-form-item>
-						</div>
-						<el-form-item prop="STATE" label="工程內容概述">
-							<el-input v-model="form.STATE" maxlength="200"></el-input>
-						</el-form-item>
-						<el-form-item prop="EIACOMMENTS" label="環評保護對策">
-							<el-input v-model="form.EIACOMMENTS"></el-input>
-						</el-form-item>
-						<el-form-item prop="RECCOMMENTS" label="備註">
-							<el-input v-model="form.RECCOMMENTS"></el-input>
-						</el-form-item>
-					</el-form>
-				</el-tab-pane>
-				<el-tab-pane label="營建業主基本資料" name="2">
-					<el-form ref="tab2Form" :rules="tab2Rules" :model="form" label-width="auto" class="beauty-form">
-						<!-- 營建業主資料 -->
-						<div class="contact-group">
-							<h3 class="group-title">營建業主資料</h3>
-							<el-row :gutter="20">
-								<el-col :md="8" :sm="24">
-									<el-form-item prop="S_NAME" label="營建業主名稱">
-										<el-input v-model="form.S_NAME" maxlength="80"></el-input>
-									</el-form-item>
-								</el-col>
-								<el-col :md="8" :sm="24">
-									<el-form-item prop="S_G_NO" label="營利事業統一編號">
-										<el-input type="number" v-model="form.S_G_NO" maxlength="8"></el-input>
-									</el-form-item>
-								</el-col>
-								<el-col :md="8" :sm="24">
-									<el-form-item prop="S_TEL" label="營建業主電話">
-										<el-input type="tel" v-model="form.S_TEL" maxlength="30"></el-input>
-									</el-form-item>
-								</el-col>
-								<el-col :span="24">
-									<el-form-item prop="S_ADDR1" label="營業地址">
-										<el-input v-model="form.S_ADDR1" maxlength="50"></el-input>
-									</el-form-item>
-								</el-col>
-								<el-col :span="24">
-									<el-form-item prop="S_ADDR2" label="聯絡地址">
-										<el-input v-model="form.S_ADDR2" maxlength="50"></el-input>
-									</el-form-item>
-								</el-col>
-							</el-row>
-						</div>
+							<el-form-item prop="KIND_NO" label="工程類別">
+								<el-select class="w100p" v-model="form.KIND_NO">
+									<el-option label="請選擇" :value="null"></el-option>
+									<el-option v-for="item in projectCode" :key="item.ID" :label="`${item.ID}. ${item.Name}`" :value="item.ID"></el-option>
+								</el-select>
+							</el-form-item>
+							<el-form-item v-if="form.KIND_NO === '6'">
+								<el-button round @click="formSubModalVisible = true">輸入合併申報內容(共 {{form.FormSub.length}} 筆)</el-button>
+							</el-form-item>
+							<el-form-item prop="ADDR" label="工地地址或地號">
+								<el-input v-model="form.ADDR" maxlength="100"></el-input>
+							</el-form-item>
+							<div class="flex-row">
+								<el-form-item prop="LAT" label="座標(緯度)">
+									<el-input type="number" v-model="form.LAT" maxlength="20"></el-input>
+								</el-form-item>
+								<el-form-item prop="LNG" label="座標(經度)">
+									<el-input type="number" v-model="form.LNG" maxlength="20"></el-input>
+								</el-form-item>
+							</div>
+							<el-form-item prop="B_SERNO" label="建照字號或合約編號">
+								<el-input v-model="form.B_SERNO" maxlength="60"></el-input>
+							</el-form-item>
+							<div class="flex-row">
+								<el-form-item prop="UTME" label="座標X">
+									<el-input type="number" v-model="form.UTME" disabled></el-input>
+								</el-form-item>
+								<el-form-item prop="UTMN" label="座標Y">
+									<el-input type="number" v-model="form.UTMN" disabled></el-input>
+								</el-form-item>
+							</div>
+							<el-form-item prop="STATE" label="工程內容概述">
+								<el-input v-model="form.STATE" maxlength="200"></el-input>
+							</el-form-item>
+							<el-form-item prop="EIACOMMENTS" label="環評保護對策">
+								<el-input v-model="form.EIACOMMENTS"></el-input>
+							</el-form-item>
+							<el-form-item prop="RECCOMMENTS" label="備註">
+								<el-input v-model="form.RECCOMMENTS"></el-input>
+							</el-form-item>
+						</el-form>
+					</el-tab-pane>
+					<el-tab-pane label="營建業主基本資料" name="2">
+						<el-form ref="tab2Form" :rules="tab2Rules" :model="form" label-width="auto" class="beauty-form">
+							<!-- 營建業主資料 -->
+							<div class="contact-group">
+								<h3 class="group-title">營建業主資料</h3>
+								<el-row :gutter="20">
+									<el-col :md="8" :sm="24">
+										<el-form-item prop="S_NAME" label="營建業主名稱">
+											<el-input v-model="form.S_NAME" maxlength="80"></el-input>
+										</el-form-item>
+									</el-col>
+									<el-col :md="8" :sm="24">
+										<el-form-item prop="S_G_NO" label="營利事業統一編號">
+											<el-input type="number" v-model="form.S_G_NO" maxlength="8"></el-input>
+										</el-form-item>
+									</el-col>
+									<el-col :md="8" :sm="24">
+										<el-form-item prop="S_TEL" label="營建業主電話">
+											<el-input type="tel" v-model="form.S_TEL" maxlength="30"></el-input>
+										</el-form-item>
+									</el-col>
+									<el-col :span="24">
+										<el-form-item prop="S_ADDR1" label="營業地址">
+											<el-input v-model="form.S_ADDR1" maxlength="50"></el-input>
+										</el-form-item>
+									</el-col>
+									<el-col :span="24">
+										<el-form-item prop="S_ADDR2" label="聯絡地址">
+											<el-input v-model="form.S_ADDR2" maxlength="50"></el-input>
+										</el-form-item>
+									</el-col>
+								</el-row>
+							</div>
 
-						<!-- 負責人資料 -->
-						<div class="contact-group">
-							<h3 class="group-title">負責人資料</h3>
-							<el-row :gutter="20">
-								<el-col :md="12" :sm="24">
-									<el-form-item prop="S_B_NAM" label="負責人姓名">
-										<el-input v-model="form.S_B_NAM" maxlength="20"></el-input>
-									</el-form-item>
-								</el-col>
-								<el-col :md="12" :sm="24">
-									<el-form-item prop="S_B_TIT" label="職稱">
-										<el-input v-model="form.S_B_TIT" maxlength="20"></el-input>
-									</el-form-item>
-								</el-col>
+							<!-- 負責人資料 -->
+							<div class="contact-group">
+								<h3 class="group-title">負責人資料</h3>
+								<el-row :gutter="20">
+									<el-col :md="12" :sm="24">
+										<el-form-item prop="S_B_NAM" label="負責人姓名">
+											<el-input v-model="form.S_B_NAM" maxlength="20"></el-input>
+										</el-form-item>
+									</el-col>
+									<el-col :md="12" :sm="24">
+										<el-form-item prop="S_B_TIT" label="職稱">
+											<el-input v-model="form.S_B_TIT" maxlength="20"></el-input>
+										</el-form-item>
+									</el-col>
 
-								<el-col :md="12" :sm="24">
-									<el-form-item prop="S_B_ID" label="身分證字號" :rules="S_B_IDRules">
-										<el-input v-model="form.S_B_ID" maxlength="20"></el-input>
+									<el-col :md="12" :sm="24">
+										<el-form-item prop="S_B_ID" label="身分證字號" :rules="S_B_IDRules">
+											<el-input v-model="form.S_B_ID" maxlength="20"></el-input>
+										</el-form-item>
+									</el-col>
+									<el-col :md="12" :sm="24">
+										<el-form-item prop="S_B_BDATE" label="生日">
+											<div class="el-input el-input--suffix">
+												<input type="text" class="el-input__inner datepicker" v-model="form.S_B_BDATE" readonly />
+												<span v-if="form.S_B_BDATE && form.FormStatus <= 2" class="el-input__suffix datepicker-suffix" @click="form.S_B_BDATE = ''">
+													<i class="fa fa-times-circle"></i>
+												</span>
+											</div>
+										</el-form-item>
+									</el-col>
+								</el-row>
+							</div>
+
+							<!-- 聯絡人資料 -->
+							<div class="contact-group">
+								<h3 class="group-title">聯絡人資料</h3>
+								<el-row :gutter="20">
+									<el-col :md="12" :sm="24">
+										<el-form-item prop="S_C_NAM" label="聯絡人姓名">
+											<el-input v-model="form.S_C_NAM" maxlength="20"></el-input>
+										</el-form-item>
+									</el-col>
+									<el-col :md="12" :sm="24">
+										<el-form-item prop="S_C_TIT" label="職稱">
+											<el-input v-model="form.S_C_TIT" maxlength="20"></el-input>
+										</el-form-item>
+									</el-col>
+
+									<el-col :md="12" :sm="24">
+										<el-form-item prop="S_C_ID" label="身分證字號" :rules="S_C_IDRules">
+											<el-input v-model="form.S_C_ID" maxlength="20"></el-input>
+										</el-form-item>
+									</el-col>
+									<el-col :md="12" :sm="24">
+										<el-form-item prop="S_C_TEL" label="電話">
+											<el-input type="tel" v-model="form.S_C_TEL" maxlength="30"></el-input>
+										</el-form-item>
+									</el-col>
+
+									<el-col :span="24">
+										<el-form-item prop="S_C_ADDR" label="聯絡人地址">
+											<el-input v-model="form.S_C_ADDR" maxlength="50"></el-input>
+										</el-form-item>
+									</el-col>
+								</el-row>
+							</div>
+						</el-form>
+					</el-tab-pane>
+					<el-tab-pane label="承(包)造單位基本資料" name="3">
+						<el-form ref="tab3Form" :rules="tab3Rules" :model="form" label-width="auto" class="beauty-form">
+							<!-- 承造單位資料 -->
+							<div class="contact-group">
+								<h3 class="group-title">承造單位資料</h3>
+								<el-row :gutter="20">
+									<el-col :md="8" :sm="24">
+										<el-form-item prop="R_NAME" label="承造單位名稱">
+											<el-input v-model="form.R_NAME" maxlength="60"></el-input>
+										</el-form-item>
+									</el-col>
+									<el-col :md="8" :sm="24">
+										<el-form-item prop="R_G_NO" label="營利事業統一編號">
+											<el-input type="number" v-model="form.R_G_NO" maxlength="8"></el-input>
+										</el-form-item>
+									</el-col>
+									<el-col :md="8" :sm="24">
+										<el-form-item prop="R_TEL" label="承造單位電話">
+											<el-input type="tel" v-model="form.R_TEL" maxlength="30"></el-input>
+										</el-form-item>
+									</el-col>
+									<el-col :span="24">
+										<el-form-item prop="R_ADDR1" label="營業地址">
+											<el-input v-model="form.R_ADDR1" maxlength="50"></el-input>
+										</el-form-item>
+									</el-col>
+									<el-col :span="24">
+										<el-form-item prop="R_ADDR2" label="聯絡地址">
+											<el-input v-model="form.R_ADDR2" maxlength="50"></el-input>
+										</el-form-item>
+									</el-col>
+								</el-row>
+							</div>
+
+							<!-- 負責人資料 -->
+							<div class="contact-group">
+								<h3 class="group-title">負責人資料</h3>
+								<el-row :gutter="20">
+									<el-col :md="12" :sm="24">
+										<el-form-item prop="R_B_NAM" label="負責人姓名">
+											<el-input v-model="form.R_B_NAM" maxlength="20"></el-input>
+										</el-form-item>
+									</el-col>
+									<el-col :md="12" :sm="24">
+										<el-form-item prop="R_B_TIT" label="職稱">
+											<el-input v-model="form.R_B_TIT" maxlength="20"></el-input>
+										</el-form-item>
+									</el-col>
+
+									<el-col :md="12" :sm="24">
+										<el-form-item prop="R_B_ID" label="身分證字號" :rules="R_B_IDRules">
+											<el-input v-model="form.R_B_ID" maxlength="30"></el-input>
+										</el-form-item>
+									</el-col>
+									<el-col :md="12" :sm="24">
+										<el-form-item prop="R_B_BDATE" label="生日">
+											<div class="el-input el-input--suffix">
+												<input type="text" class="el-input__inner datepicker" v-model="form.R_B_BDATE" readonly />
+												<span v-if="form.R_B_BDATE && form.FormStatus <= 2" class="el-input__suffix datepicker-suffix" @click="form.R_B_BDATE = ''">
+													<i class="fa fa-times-circle"></i>
+												</span>
+											</div>
+										</el-form-item>
+									</el-col>
+								</el-row>
+							</div>
+
+							<!-- 工地主任 / 工地環保負責人資料 -->
+							<div class="contact-group">
+								<h3 class="group-title">工地管理人員資料</h3>
+								<el-row :gutter="20">
+									<el-col :md="8" :sm="24">
+										<el-form-item prop="R_M_NAM" label="工地主任姓名">
+											<el-input v-model="form.R_M_NAM" maxlength="10"></el-input>
+										</el-form-item>
+									</el-col>
+									<el-col :md="8" :sm="24">
+										<el-form-item prop="R_C_NAM" label="工地環保負責人姓名">
+											<el-input v-model="form.R_C_NAM" maxlength="10"></el-input>
+										</el-form-item>
+									</el-col>
+									<el-col :md="8" :sm="24">
+										<el-form-item prop="R_TEL1" label="電話">
+											<el-input type="tel" v-model="form.R_TEL1" maxlength="30"></el-input>
+										</el-form-item>
+									</el-col>
+									<el-col :span="24">
+										<el-form-item prop="R_ADDR3" label="工務所地址">
+											<el-input v-model="form.R_ADDR3" maxlength="50"></el-input>
+										</el-form-item>
+									</el-col>
+								</el-row>
+							</div>
+						</el-form>
+					</el-tab-pane>
+					<el-tab-pane label="經費資料" name="4">
+						<el-card shadow="hover" class="form-section">
+							<div slot="header" class="clearfix">
+								<span class="form-title primary-title">
+									<i class="el-icon-document"></i> 初次申報資料
+								</span>
+							</div>
+							<el-form ref="tab4Form" :rules="tab4Rules" :model="form" label-width="auto" :disabled="form.FormStatus > 2">
+								<div class="flex-row">
+									<el-form-item prop="MONEY" label="工程合約經費(元)">
+										<el-input type="number" v-model="form.MONEY"></el-input>
 									</el-form-item>
-								</el-col>
-								<el-col :md="12" :sm="24">
-									<el-form-item prop="S_B_BDATE" label="生日">
+									<el-form-item prop="TAX_MONEY" label="工程合約經費營業稅(元)">
+										<el-input type="number" v-model="form.TAX_MONEY"></el-input>
+									</el-form-item>
+									<el-form-item prop="C_MONEY" label="工程環保經費(元)">
+										<div style="min-width:120px">{{calcC_MONEY | comma}}</div>
+									</el-form-item>
+									<el-form-item prop="PERCENT" label="工程合約經費比例">{{form.PERCENT}}%</el-form-item>
+								</div>
+								<div v-if="form.KIND_NO === '1' || form.KIND_NO === '2'" class="flex-row">
+									<el-form-item prop="AREA_F" label="基地面積">
+										<el-input type="number" style="width:120px" v-model="form.AREA_F"></el-input>平方公尺
+									</el-form-item>
+									<el-form-item prop="AREA_B" label="建築面積">
+										<el-input type="number" style="width:120px" v-model="form.AREA_B"></el-input>平方公尺
+									</el-form-item>
+									<el-form-item prop="PERC_B" label="建蔽率">{{calcPERC_B}}%</el-form-item>
+								</div>
+								<div v-else-if="form.KIND_NO === '3'">
+									<el-form-item prop="AREA2" label="總樓地板面積(平方公尺)">
+										<el-input type="number" v-model="form.AREA2"></el-input>
+									</el-form-item>
+								</div>
+								<div v-else>
+									<el-form-item prop="AREA" label="工程面積">
+										<el-input type="number" v-model="form.AREA" style="width:120px"></el-input>平方公尺
+									</el-form-item>
+								</div>
+								<div v-if="form.KIND_NO === 'B'" v-cloak>
+									<div style="margin-bottom:10px">鬆方體積換算表</div>
+									<div class="contact-group">
+										<div class="flex-row" style="justify-content: flex-start; align-items: flex-end">
+											<el-form-item label="鬆方重量(公噸)">
+												<el-input type="number" v-model="form.E2"></el-input>
+											</el-form-item>
+											<el-form-item label="密度">
+												<el-input type="number" v-model="form.DENSITYL"></el-input>
+											</el-form-item>
+											<el-form-item>
+												<el-button type="primary" round @click="calcE2">換算</el-button>
+											</el-form-item>
+										</div>
+									</div>
+									<div class="hint-message">
+										<i class="el-icon-info"></i> 鬆方體積除以實方體積之比值以一‧三一計，鬆方之密度以一‧五一公噸/立方公尺計。營建業主如有現地取樣之實方與鬆方試驗相關數據，得報請地方主管機關同意後，依該數據採計。
+									</div>
+									<el-form-item prop="VOLUMEL" label="外運土石體積(立方公尺)">
+										<el-input type="number" v-model="form.VOLUMEL"></el-input>
+									</el-form-item>
+								</div>
+								<div class="flex-row">
+									<el-form-item prop="B_DATE" label="開始日期">
 										<div class="el-input el-input--suffix">
-											<input type="text" class="el-input__inner datepicker" v-model="form.S_B_BDATE" readonly />
-											<span v-if="form.S_B_BDATE && form.FormStatus <= 2" class="el-input__suffix datepicker-suffix" @click="form.S_B_BDATE = ''">
+											<input type="text" class="el-input__inner datepicker" v-model="form.B_DATE" :disabled="form.FormStatus > 2" readonly />
+											<span v-if="form.B_DATE && form.FormStatus <= 2" class="el-input__suffix datepicker-suffix" @click="form.B_DATE = ''">
 												<i class="fa fa-times-circle"></i>
 											</span>
 										</div>
 									</el-form-item>
-								</el-col>
-							</el-row>
-						</div>
-
-						<!-- 聯絡人資料 -->
-						<div class="contact-group">
-							<h3 class="group-title">聯絡人資料</h3>
-							<el-row :gutter="20">
-								<el-col :md="12" :sm="24">
-									<el-form-item prop="S_C_NAM" label="聯絡人姓名">
-										<el-input v-model="form.S_C_NAM" maxlength="20"></el-input>
-									</el-form-item>
-								</el-col>
-								<el-col :md="12" :sm="24">
-									<el-form-item prop="S_C_TIT" label="職稱">
-										<el-input v-model="form.S_C_TIT" maxlength="20"></el-input>
-									</el-form-item>
-								</el-col>
-
-								<el-col :md="12" :sm="24">
-									<el-form-item prop="S_C_ID" label="身分證字號" :rules="S_C_IDRules">
-										<el-input v-model="form.S_C_ID" maxlength="20"></el-input>
-									</el-form-item>
-								</el-col>
-								<el-col :md="12" :sm="24">
-									<el-form-item prop="S_C_TEL" label="電話">
-										<el-input type="tel" v-model="form.S_C_TEL" maxlength="30"></el-input>
-									</el-form-item>
-								</el-col>
-
-								<el-col :span="24">
-									<el-form-item prop="S_C_ADDR" label="聯絡人地址">
-										<el-input v-model="form.S_C_ADDR" maxlength="50"></el-input>
-									</el-form-item>
-								</el-col>
-							</el-row>
-						</div>
-					</el-form>
-				</el-tab-pane>
-				<el-tab-pane label="承(包)造單位基本資料" name="3">
-					<el-form ref="tab3Form" :rules="tab3Rules" :model="form" label-width="auto" class="beauty-form">
-						<!-- 承造單位資料 -->
-						<div class="contact-group">
-							<h3 class="group-title">承造單位資料</h3>
-							<el-row :gutter="20">
-								<el-col :md="8" :sm="24">
-									<el-form-item prop="R_NAME" label="承造單位名稱">
-										<el-input v-model="form.R_NAME" maxlength="60"></el-input>
-									</el-form-item>
-								</el-col>
-								<el-col :md="8" :sm="24">
-									<el-form-item prop="R_G_NO" label="營利事業統一編號">
-										<el-input type="number" v-model="form.R_G_NO" maxlength="8"></el-input>
-									</el-form-item>
-								</el-col>
-								<el-col :md="8" :sm="24">
-									<el-form-item prop="R_TEL" label="承造單位電話">
-										<el-input type="tel" v-model="form.R_TEL" maxlength="30"></el-input>
-									</el-form-item>
-								</el-col>
-								<el-col :span="24">
-									<el-form-item prop="R_ADDR1" label="營業地址">
-										<el-input v-model="form.R_ADDR1" maxlength="50"></el-input>
-									</el-form-item>
-								</el-col>
-								<el-col :span="24">
-									<el-form-item prop="R_ADDR2" label="聯絡地址">
-										<el-input v-model="form.R_ADDR2" maxlength="50"></el-input>
-									</el-form-item>
-								</el-col>
-							</el-row>
-						</div>
-
-						<!-- 負責人資料 -->
-						<div class="contact-group">
-							<h3 class="group-title">負責人資料</h3>
-							<el-row :gutter="20">
-								<el-col :md="12" :sm="24">
-									<el-form-item prop="R_B_NAM" label="負責人姓名">
-										<el-input v-model="form.R_B_NAM" maxlength="20"></el-input>
-									</el-form-item>
-								</el-col>
-								<el-col :md="12" :sm="24">
-									<el-form-item prop="R_B_TIT" label="職稱">
-										<el-input v-model="form.R_B_TIT" maxlength="20"></el-input>
-									</el-form-item>
-								</el-col>
-
-								<el-col :md="12" :sm="24">
-									<el-form-item prop="R_B_ID" label="身分證字號" :rules="R_B_IDRules">
-										<el-input v-model="form.R_B_ID" maxlength="30"></el-input>
-									</el-form-item>
-								</el-col>
-								<el-col :md="12" :sm="24">
-									<el-form-item prop="R_B_BDATE" label="生日">
+									<el-form-item prop="E_DATE" label="結束日期">
 										<div class="el-input el-input--suffix">
-											<input type="text" class="el-input__inner datepicker" v-model="form.R_B_BDATE" readonly />
-											<span v-if="form.R_B_BDATE && form.FormStatus <= 2" class="el-input__suffix datepicker-suffix" @click="form.R_B_BDATE = ''">
+											<input type="text" class="el-input__inner datepicker" v-model="form.E_DATE" :disabled="form.FormStatus > 2" readonly />
+											<span v-if="form.E_DATE && form.FormStatus <= 2" class="el-input__suffix datepicker-suffix" @click="form.E_DATE = ''">
 												<i class="fa fa-times-circle"></i>
 											</span>
 										</div>
 									</el-form-item>
-								</el-col>
-							</el-row>
-						</div>
-
-						<!-- 工地主任 / 工地環保負責人資料 -->
-						<div class="contact-group">
-							<h3 class="group-title">工地管理人員資料</h3>
-							<el-row :gutter="20">
-								<el-col :md="8" :sm="24">
-									<el-form-item prop="R_M_NAM" label="工地主任姓名">
-										<el-input v-model="form.R_M_NAM" maxlength="10"></el-input>
-									</el-form-item>
-								</el-col>
-								<el-col :md="8" :sm="24">
-									<el-form-item prop="R_C_NAM" label="工地環保負責人姓名">
-										<el-input v-model="form.R_C_NAM" maxlength="10"></el-input>
-									</el-form-item>
-								</el-col>
-								<el-col :md="8" :sm="24">
-									<el-form-item prop="R_TEL1" label="電話">
-										<el-input type="tel" v-model="form.R_TEL1" maxlength="30"></el-input>
-									</el-form-item>
-								</el-col>
-								<el-col :span="24">
-									<el-form-item prop="R_ADDR3" label="工務所地址">
-										<el-input v-model="form.R_ADDR3" maxlength="50"></el-input>
-									</el-form-item>
-								</el-col>
-							</el-row>
-						</div>
-					</el-form>
-				</el-tab-pane>
-				<el-tab-pane label="經費資料" name="4">
-					<el-card shadow="hover" class="form-section">
-						<div slot="header" class="clearfix">
-							<span class="form-title primary-title">
-								<i class="el-icon-document"></i> 初次申報資料
-							</span>
-						</div>
-						<el-form ref="tab4Form" :rules="tab4Rules" :model="form" label-width="auto" :disabled="form.FormStatus > 2">
-							<div class="flex-row">
-								<el-form-item prop="MONEY" label="工程合約經費(元)">
-									<el-input type="number" v-model="form.MONEY"></el-input>
-								</el-form-item>
-								<el-form-item prop="TAX_MONEY" label="工程合約經費營業稅(元)">
-									<el-input type="number" v-model="form.TAX_MONEY"></el-input>
-								</el-form-item>
-								<el-form-item prop="C_MONEY" label="工程環保經費(元)">
-									<div style="min-width:120px">{{calcC_MONEY | comma}}</div>
-								</el-form-item>
-								<el-form-item prop="PERCENT" label="工程合約經費比例">{{form.PERCENT}}%</el-form-item>
-							</div>
-							<div v-if="form.KIND_NO === '1' || form.KIND_NO === '2'" class="flex-row">
-								<el-form-item prop="AREA_F" label="基地面積">
-									<el-input type="number" style="width:120px" v-model="form.AREA_F"></el-input>平方公尺
-								</el-form-item>
-								<el-form-item prop="AREA_B" label="建築面積">
-									<el-input type="number" style="width:120px" v-model="form.AREA_B"></el-input>平方公尺
-								</el-form-item>
-								<el-form-item prop="PERC_B" label="建蔽率">{{calcPERC_B}}%</el-form-item>
-							</div>
-							<div v-else-if="form.KIND_NO === '3'">
-								<el-form-item prop="AREA2" label="總樓地板面積(平方公尺)">
-									<el-input type="number" v-model="form.AREA2"></el-input>
-								</el-form-item>
-							</div>
-							<div v-else>
-								<el-form-item prop="AREA" label="工程面積">
-									<el-input type="number" v-model="form.AREA" style="width:120px"></el-input>平方公尺
-								</el-form-item>
-							</div>
-							<div v-if="form.KIND_NO === 'B'" v-cloak>
-								<div style="margin-bottom:10px">鬆方體積換算表</div>
-								<div class="contact-group">
-									<div class="flex-row" style="justify-content: flex-start; align-items: flex-end">
-										<el-form-item label="鬆方重量(公噸)">
-											<el-input type="number" v-model="form.E2"></el-input>
-										</el-form-item>
-										<el-form-item label="密度">
-											<el-input type="number" v-model="form.DENSITYL"></el-input>
-										</el-form-item>
-										<el-form-item>
-											<el-button type="primary" round @click="calcE2">換算</el-button>
-										</el-form-item>
-									</div>
+									<el-form-item label="預計施工天數">{{totalDays(form.B_DATE, form.E_DATE)}}</el-form-item>
 								</div>
-								<div class="hint-message">
-									<i class="el-icon-info"></i> 鬆方體積除以實方體積之比值以一‧三一計，鬆方之密度以一‧五一公噸/立方公尺計。營建業主如有現地取樣之實方與鬆方試驗相關數據，得報請地方主管機關同意後，依該數據採計。
+								<el-form-item label="規定繳費方式">
+									<el-select v-model="form.P_KIND" :disabled="form.FormStatus >= 3">
+										<el-option label="一次全繳" value="一次全繳"></el-option>
+										<el-option label="分兩次繳清" value="分兩次繳清"></el-option>
+									</el-select>
+								</el-form-item>
+								<el-form-item label="空汙防制措施計畫書">
+									<el-select v-model="form.REC_YN">
+										<el-option label="有" value="有"></el-option>
+										<el-option label="無" value="無"></el-option>
+									</el-select>
+								</el-form-item>
+							</el-form>
+						</el-card>
+						<el-card shadow="hover" class="form-section secondary-section" v-if="form.FormStatus >= 4">
+							<div slot="header" class="clearfix">
+								<span class="form-title secondary-title">
+									<i class="el-icon-finished"></i> 結算申報資料
+								</span>
+							</div>
+							<el-form v-if="form.FormB" ref="tab4BForm" :rules="tab4BRules" :model="form.FormB" label-width="auto" :disabled="form.CalcStatus > 2">
+								<div class="flex-row">
+									<el-form-item prop="MONEY" label="工程合約經費(元)">
+										<el-input type="number" v-model="form.FormB.MONEY"></el-input>
+									</el-form-item>
+									<el-form-item prop="TAX_MONEY" label="工程合約經費營業稅(元)">
+										<el-input type="number" v-model="form.FormB.TAX_MONEY"></el-input>
+									</el-form-item>
+									<el-form-item prop="C_MONEY" label="工程環保經費(元)">
+										<div style="min-width:120px">{{calcC_MONEYB | comma}}</div>
+									</el-form-item>
+									<el-form-item prop="PERCENT" label="工程合約經費比例">{{form.PERCENT}}%</el-form-item>
 								</div>
-								<el-form-item prop="VOLUMEL" label="外運土石體積(立方公尺)">
-									<el-input type="number" v-model="form.VOLUMEL"></el-input>
-								</el-form-item>
-							</div>
-							<div class="flex-row">
-								<el-form-item prop="B_DATE" label="開始日期">
-									<div class="el-input el-input--suffix">
-										<input type="text" class="el-input__inner datepicker" v-model="form.B_DATE" :disabled="form.FormStatus > 2" readonly />
-										<span v-if="form.B_DATE && form.FormStatus <= 2" class="el-input__suffix datepicker-suffix" @click="form.B_DATE = ''">
-											<i class="fa fa-times-circle"></i>
-										</span>
-									</div>
-								</el-form-item>
-								<el-form-item prop="E_DATE" label="結束日期">
-									<div class="el-input el-input--suffix">
-										<input type="text" class="el-input__inner datepicker" v-model="form.E_DATE" :disabled="form.FormStatus > 2" readonly />
-										<span v-if="form.E_DATE && form.FormStatus <= 2" class="el-input__suffix datepicker-suffix" @click="form.E_DATE = ''">
-											<i class="fa fa-times-circle"></i>
-										</span>
-									</div>
-								</el-form-item>
-								<el-form-item label="預計施工天數">{{totalDays(form.B_DATE, form.E_DATE)}}</el-form-item>
-							</div>
-							<el-form-item label="規定繳費方式">
-								<el-select v-model="form.P_KIND" :disabled="form.FormStatus >= 3">
-									<el-option label="一次全繳" value="一次全繳"></el-option>
-									<el-option label="分兩次繳清" value="分兩次繳清"></el-option>
-								</el-select>
-							</el-form-item>
-							<el-form-item label="空汙防制措施計畫書">
-								<el-select v-model="form.REC_YN">
-									<el-option label="有" value="有"></el-option>
-									<el-option label="無" value="無"></el-option>
-								</el-select>
-							</el-form-item>
-						</el-form>
-					</el-card>
-					<el-card shadow="hover" class="form-section secondary-section" v-if="form.FormStatus >= 4">
-						<div slot="header" class="clearfix">
-							<span class="form-title secondary-title">
-								<i class="el-icon-finished"></i> 結算申報資料
-							</span>
-						</div>
-						<el-form v-if="form.FormB" ref="tab4BForm" :rules="tab4BRules" :model="form.FormB" label-width="auto" :disabled="form.CalcStatus > 2">
-							<div class="flex-row">
-								<el-form-item prop="MONEY" label="工程合約經費(元)">
-									<el-input type="number" v-model="form.FormB.MONEY"></el-input>
-								</el-form-item>
-								<el-form-item prop="TAX_MONEY" label="工程合約經費營業稅(元)">
-									<el-input type="number" v-model="form.FormB.TAX_MONEY"></el-input>
-								</el-form-item>
-								<el-form-item prop="C_MONEY" label="工程環保經費(元)">
-									<div style="min-width:120px">{{calcC_MONEYB | comma}}</div>
-								</el-form-item>
-								<el-form-item prop="PERCENT" label="工程合約經費比例">{{form.PERCENT}}%</el-form-item>
-							</div>
-							<div v-if="form.FormB.KIND_NO === '1' || form.FormB.KIND_NO === '2'" class="flex-row">
-								<el-form-item prop="AREA_F" label="基地面積">
-									<el-input type="number" style="width:120px" v-model="form.AREA_F"></el-input>平方公尺
-								</el-form-item>
-								<el-form-item prop="AREA_B" label="建築面積">
-									<el-input type="number" style="width:120px" v-model="form.AREA_B"></el-input>平方公尺
-								</el-form-item>
-								<el-form-item prop="PERC_B" label="建蔽率">{{calcPERC_B2}}%</el-form-item>
-							</div>
-							<div v-else-if="form.KIND_NO === '3'">
-								<el-form-item prop="AREA2" label="總樓地板面積(平方公尺)">
-									<el-input type="number" v-model="form.AREA2" disabled></el-input>
-								</el-form-item>
-							</div>
-							<div v-else>
-								<el-form-item prop="AREA" label="工程面積">
-									<el-input type="number" v-model="form.FormB.AREA" style="width:120px"></el-input>平方公尺
-								</el-form-item>
-							</div>
-							<div v-if="form.KIND_NO === 'B'" v-cloak>
-								<div style="margin-bottom:10px">鬆方體積換算表</div>
-								<div class="contact-group">
-									<div class="flex-row" style="justify-content: flex-start; align-items: flex-end">
-										<el-form-item label="鬆方重量(公噸)">
-											<el-input type="number" v-model="form.E2" disabled></el-input>
-										</el-form-item>
-										<el-form-item label="密度">
-											<el-input type="number" v-model="form.FormB.DENSITYL"></el-input>
-										</el-form-item>
-										<el-form-item>
-											<el-button type="primary" round @click="calcE2_B">換算</el-button>
-										</el-form-item>
-									</div>
+								<div v-if="form.FormB.KIND_NO === '1' || form.FormB.KIND_NO === '2'" class="flex-row">
+									<el-form-item prop="AREA_F" label="基地面積">
+										<el-input type="number" style="width:120px" v-model="form.AREA_F"></el-input>平方公尺
+									</el-form-item>
+									<el-form-item prop="AREA_B" label="建築面積">
+										<el-input type="number" style="width:120px" v-model="form.AREA_B"></el-input>平方公尺
+									</el-form-item>
+									<el-form-item prop="PERC_B" label="建蔽率">{{calcPERC_B2}}%</el-form-item>
 								</div>
-								<div class="hint-message">
-									<i class="el-icon-info"></i> 鬆方體積除以實方體積之比值以一‧三一計，鬆方之密度以一‧五一公噸/立方公尺計。營建業主如有現地取樣之實方與鬆方試驗相關數據，得報請地方主管機關同意後，依該數據採計。
+								<div v-else-if="form.KIND_NO === '3'">
+									<el-form-item prop="AREA2" label="總樓地板面積(平方公尺)">
+										<el-input type="number" v-model="form.AREA2" disabled></el-input>
+									</el-form-item>
 								</div>
-								<el-form-item prop="VOLUMEL" label="外運土石體積(立方公尺)">
-									<el-input type="number" v-model="form.FormB.VOLUMEL"></el-input>
-								</el-form-item>
-							</div>
-							<div class="flex-row">
-								<el-form-item prop="B_DATE" label="開始日期">
-									<div class="el-input el-input--suffix">
-										<input type="text" class="el-input__inner datepicker" v-model="form.FormB.B_DATE" :disabled="form.CalcStatus > 2" readonly />
-										<span v-if="form.FormB.B_DATE && form.CalcStatus <= 2" class="el-input__suffix datepicker-suffix" @click="form.FormB.B_DATE = ''">
-											<i class="fa fa-times-circle"></i>
-										</span>
+								<div v-else>
+									<el-form-item prop="AREA" label="工程面積">
+										<el-input type="number" v-model="form.FormB.AREA" style="width:120px"></el-input>平方公尺
+									</el-form-item>
+								</div>
+								<div v-if="form.KIND_NO === 'B'" v-cloak>
+									<div style="margin-bottom:10px">鬆方體積換算表</div>
+									<div class="contact-group">
+										<div class="flex-row" style="justify-content: flex-start; align-items: flex-end">
+											<el-form-item label="鬆方重量(公噸)">
+												<el-input type="number" v-model="form.E2" disabled></el-input>
+											</el-form-item>
+											<el-form-item label="密度">
+												<el-input type="number" v-model="form.FormB.DENSITYL"></el-input>
+											</el-form-item>
+											<el-form-item>
+												<el-button type="primary" round @click="calcE2_B">換算</el-button>
+											</el-form-item>
+										</div>
 									</div>
-								</el-form-item>
-								<el-form-item prop="E_DATE" label="結束日期">
-									<div class="el-input el-input--suffix">
-										<input type="text" class="el-input__inner datepicker" v-model="form.FormB.E_DATE" :disabled="form.CalcStatus > 2" readonly />
-										<span v-if="form.FormB.E_DATE && form.CalcStatus <= 2" class="el-input__suffix datepicker-suffix" @click="form.FormB.E_DATE = ''">
-											<i class="fa fa-times-circle"></i>
-										</span>
+									<div class="hint-message">
+										<i class="el-icon-info"></i> 鬆方體積除以實方體積之比值以一‧三一計，鬆方之密度以一‧五一公噸/立方公尺計。營建業主如有現地取樣之實方與鬆方試驗相關數據，得報請地方主管機關同意後，依該數據採計。
 									</div>
-								</el-form-item>
-								<el-form-item label="預計施工天數">{{totalDays(form.FormB.B_DATE, form.FormB.E_DATE) - totalStopWorkDays}}</el-form-item>
-							</div>
-						</el-form>
-					</el-card>
-				</el-tab-pane>
-			</el-tabs>
-		</template>
-		<template #footer>
-			<el-button @click="visible = false">
-				<i class="fa fa-ban"></i> 取 消
-			</el-button>
-			<el-button type="primary" icon="el-icon-arrow-left" :disabled="activeTab === '1'" @click="goPrevTab">上一步</el-button>
-			<el-button type="primary" @click="goNextTab">
-				{{activeTab === '4' ? (mode === 'Update' ? '儲存' : '複製') : '下一步'}}
-				<i class="el-icon-arrow-right el-icon--right"></i>
-			</el-button>
-		</template>
-	</vxe-modal>
+									<el-form-item prop="VOLUMEL" label="外運土石體積(立方公尺)">
+										<el-input type="number" v-model="form.FormB.VOLUMEL"></el-input>
+									</el-form-item>
+								</div>
+								<div class="flex-row">
+									<el-form-item prop="B_DATE" label="開始日期">
+										<div class="el-input el-input--suffix">
+											<input type="text" class="el-input__inner datepicker" v-model="form.FormB.B_DATE" :disabled="form.CalcStatus > 2" readonly />
+											<span v-if="form.FormB.B_DATE && form.CalcStatus <= 2" class="el-input__suffix datepicker-suffix" @click="form.FormB.B_DATE = ''">
+												<i class="fa fa-times-circle"></i>
+											</span>
+										</div>
+									</el-form-item>
+									<el-form-item prop="E_DATE" label="結束日期">
+										<div class="el-input el-input--suffix">
+											<input type="text" class="el-input__inner datepicker" v-model="form.FormB.E_DATE" :disabled="form.CalcStatus > 2" readonly />
+											<span v-if="form.FormB.E_DATE && form.CalcStatus <= 2" class="el-input__suffix datepicker-suffix" @click="form.FormB.E_DATE = ''">
+												<i class="fa fa-times-circle"></i>
+											</span>
+										</div>
+									</el-form-item>
+									<el-form-item label="預計施工天數">{{totalDays(form.FormB.B_DATE, form.FormB.E_DATE) - totalStopWorkDays}}</el-form-item>
+								</div>
+							</el-form>
+						</el-card>
+					</el-tab-pane>
+				</el-tabs>
+			</template>
+			<template #footer>
+				<el-button @click="visible = false">
+					<i class="fa fa-ban"></i> 取 消
+				</el-button>
+				<el-button type="primary" icon="el-icon-arrow-left" :disabled="activeTab === '1'" @click="goPrevTab">上一步</el-button>
+				<el-button type="primary" @click="goNextTab">
+					{{activeTab === '4' ? (mode === 'Update' ? '儲存' : '複製') : '下一步'}}
+					<i class="el-icon-arrow-right el-icon--right"></i>
+				</el-button>
+			</template>
+		</vxe-modal>
+        <FormSubModal :show.sync="formSubModalVisible" :data="form" />
+	</div>
 </template>
 <script>
 import { mapGetters } from 'vuex';
 import { dateTime, comma, form } from '@/mixins/filter';
+import FormSubModal from '@/components/function/child/FormSubModal';
 var A1_84 = 6378137.0;
 var B1_84 = 6356752.3141;
 var e2_84 = 0.0066943800355;
@@ -512,6 +519,7 @@ export default {
 	name: 'FormModal',
 	props: ['show', 'mode', 'data'],
 	mixins: [dateTime, comma, form],
+	components: { FormSubModal },
 	filters: {
 		westDate(val) {
 			if (!val) return '';
@@ -615,6 +623,7 @@ export default {
 			projectCode: Object.freeze([]),
 			attachmentInfo: Object.freeze([]),
 			activeTab: '1',
+            formSubModalVisible: false,
 			tab1Rules: Object.freeze({
 				PUB_COMP: [{ required: true, message: '請選擇案件類型', trigger: 'change' }],
 				TOWN_NO: [{ required: true, message: '請選擇鄉鎮分類', trigger: 'change' }],
@@ -762,14 +771,6 @@ export default {
 				VOLUMEL: [{ required: true, message: '請輸入外運土石體積', trigger: 'blur' }],
 				B_DATE: [{ required: true, message: '請輸入開始日期', trigger: 'blur' }],
 				E_DATE: [{ validator: checkE_DATE2, trigger: 'blur' }]
-			}),
-			rules2: Object.freeze({
-				Code: [{ required: true, message: '請選擇銀行代碼', trigger: 'change' }],
-				Account: [
-					{ required: true, message: '請輸入銀行帳號', trigger: 'blur' },
-					{ pattern: /[^\s]/, message: '請輸入銀行帳號', trigger: 'blur' }
-				],
-				File: [{ required: true, message: '請上傳存摺照片' }]
 			})
 		};
 	},
@@ -840,7 +841,6 @@ export default {
 	},
 	methods: {
 		initDatePicker() {
-			const self = this;
 			$('.datepicker').datepicker({
 				dateFormat: 'yy/mm/dd',
 				yearRange: '-90:+10',

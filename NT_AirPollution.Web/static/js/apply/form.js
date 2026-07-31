@@ -250,7 +250,7 @@
 					P_KIND: '一次全繳',
 					REC_YN: '無',
 					StopWorks: [],
-					FormSubs: [],
+					FormSub: [],
 					RefundBank: {},
 					PaymentProof: {},
 					RATIOLB: 1.31,
@@ -260,6 +260,7 @@
 					LAT: null,
 					LNG: null
 				},
+				tmpFormSub: [],
 				banks: Object.freeze(banksAry),
 				dialogVisible: false, // 控制基本資料 Dialog
 				attachDialogVisible: false, // 控制附件 Dialog
@@ -503,7 +504,6 @@
 		},
 		methods: {
 			initDatePicker() {
-				const self = this;
 				$('.datepicker').datepicker({
 					dateFormat: 'yy/mm/dd',
 					yearRange: '-90:+10',
@@ -1019,14 +1019,12 @@
 			// 開啟合併申報彈窗
 			openFormSubDialog(row) {
 				this.selectRow = row;
+				this.tmpFormSub = JSON.parse(JSON.stringify(this.selectRow.FormSub));
 				this.formSubDialogVisible = true;
 			},
 			// 新增一筆合併申報
 			addFormSub() {
-				if (!this.selectRow.FormSub) {
-					this.$set(this.selectRow, 'FormSub', []);
-				}
-				this.selectRow.FormSub.push({
+				this.tmpFormSub.push({
 					COMP_NAM: '',
 					ADDR: '',
 					AREA: null,
@@ -1040,7 +1038,60 @@
 			},
 			// 刪除一筆合併申報
 			removeFormSub(index) {
-				this.selectRow.FormSub.splice(index, 1);
+				this.tmpFormSub.splice(index, 1);
+			},
+			saveFormSub() {
+				const list = this.tmpFormSub || [];
+
+				// 1. 檢查是否有資料
+				if (list.length === 0) {
+					this.$message.warning('請至少新增一筆工程資料');
+					return;
+				}
+
+				// 2. 逐筆驗證欄位資料
+				for (let i = 0; i < list.length; i++) {
+					const item = list[i];
+					const rowNum = i + 1; // 顯示對應的序號
+
+					// 必填檢查：工程名稱
+					if (!item.COMP_NAM || !item.COMP_NAM.trim()) {
+						this.$message.warning(`第 ${rowNum} 筆資料：請輸入工程名稱`);
+						return;
+					}
+
+					// 必填檢查：工程地址或地號
+					if (!item.ADDR || !item.ADDR.trim()) {
+						this.$message.warning(`第 ${rowNum} 筆資料：請輸入工程地址或地號`);
+						return;
+					}
+
+					// 數值檢查：施工面積 (不可為空、必須大於 0)
+					if (item.AREA === null || item.AREA === '' || isNaN(item.AREA) || Number(item.AREA) <= 0) {
+						this.$message.warning(`第 ${rowNum} 筆資料：請輸入有效的施工面積（需大於 0）`);
+						return;
+					}
+
+					// 必填檢查：施工期程起日與迄日
+					if (!item.B_DATE) {
+						this.$message.warning(`第 ${rowNum} 筆資料：請選擇施工期程(起日)`);
+						return;
+					}
+					if (!item.E_DATE) {
+						this.$message.warning(`第 ${rowNum} 筆資料：請選擇施工期程(迄日)`);
+						return;
+					}
+
+					// 邏輯檢查：起日不可大於迄日 (格式為民國年 YYMMDD，字串或數字比對皆適用)
+					if (item.B_DATE > item.E_DATE) {
+						this.$message.warning(`第 ${rowNum} 筆資料：施工期程起日不可大於迄日`);
+						return;
+					}
+				}
+
+				// 驗證通過，回寫資料並關閉彈窗
+				this.selectRow.FormSub = JSON.parse(JSON.stringify(this.tmpFormSub));
+				this.formSubDialogVisible = false;
 			},
 			showSelfCheckModal(row) {
 				this.selectRow = Object.assign(this.selectRow, JSON.parse(JSON.stringify(row)));

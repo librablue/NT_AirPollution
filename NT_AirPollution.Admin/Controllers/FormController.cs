@@ -149,6 +149,8 @@ namespace NT_AirPollution.Admin.Controllers
                 _formService.UpdateForm(form);
                 // 更新FormB
                 _formService.AddFormB(form);
+                // 寫入 FormSub
+                _formService.AddFormSub(form);
                 // 更新停工天數
                 _formService.UpdateStopWork(form);
                 _accessService.AddABUDFDay(form);
