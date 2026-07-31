@@ -175,6 +175,7 @@
     <Content Include="connectionStrings.config" />
     <Content Include="App_Data\Payment\Template\結算申報表.docx" />
     <Content Include="App_Data\Payment\Template\首期申報表.docx" />
+    <Content Include="App_Data\Payment\Template\申報證明.docx" />
     <None Include="NLog.xsd">
       <SubType>Designer</SubType>
     </None>

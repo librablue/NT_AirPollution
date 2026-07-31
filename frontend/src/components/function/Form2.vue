@@ -53,13 +53,13 @@
 					<el-button size="mini" icon="el-icon-search" circle title="停復工" @click="showRefund(row)"></el-button>
 				</template>
 			</vxe-table-column>
-			<vxe-table-column width="60" align="center" fixed="left">
+            <vxe-table-column width="60" align="center" fixed="left">
 				<template #header>
-					刪除
-					<br />案件
+					追加
+					<br />序號
 				</template>
 				<template #default="{ row }">
-					<el-button type="danger" size="mini" icon="el-icon-delete" circle title="刪除案件" :disabled="row.C_NO !== null" @click="deleteForm(row)"></el-button>
+					<el-button type="success" size="mini" icon="el-icon-copy-document" circle title="追加序號" @click="copyRow(row)"></el-button>
 				</template>
 			</vxe-table-column>
 			<vxe-table-column field="C_NO" title="管制編號" width="140" align="center" sortable>
@@ -223,25 +223,11 @@ export default {
 			this.selectRow.FormStatus = 0;
 			this.selectRow.calcStatus = 0;
 			this.selectRow.StopWorks.length = 0;
-			const clearAry = ['SER_NO', 'AP_DATE', 'C_DATE', 'S_AMT', 'S_AMT2'];
+			const clearAry = ['SER_NO', 'S_AMT', 'S_AMT2', 'C_DATE'];
 			for (const key of clearAry) {
 				this.selectRow[key] = null;
 			}
 			this.formModalVisible = true;
-		},
-		deleteForm(row) {
-			if (!confirm('案件刪除後無法回復，是否確認繼續?')) return;
-			const loading = this.$loading();
-			this.axios
-				.post('api/Form/DeleteForm', row)
-				.then(res => {
-					this.$message.success('案件已刪除');
-					loading.close();
-				})
-				.catch(err => {
-					this.$message.error(err.response.data.ExceptionMessage);
-					loading.close();
-				});
 		},
 		onUpdated() {
 			this.getForms();

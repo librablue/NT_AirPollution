@@ -481,12 +481,24 @@ namespace NT_AirPollution.Service
         /// </summary>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public long GetFormsCount()
+        public long GetFormsCount(DateTime? startDate = null, DateTime? endDate = null)
         {
+            // 將 DateTime 轉為 7 碼民國年字串 (例: 2026-01-01 -> "1150101")
+            string startTaiwanDate = startDate.HasValue
+                ? $"{startDate.Value.AddYears(-1911).ToString("yyyMMdd")}"
+                : null;
+
+            string endTaiwanDate = endDate.HasValue
+                ? $"{endDate.Value.AddYears(-1911).ToString("yyyMMdd")}"
+                : null;
+
             using (var cn = new SqlConnection(connStr))
             {
                 var result = cn.QuerySingle<long>(@"
-                    SELECT COUNT(*) FROM Form");
+                    SELECT COUNT(*) FROM Form
+                    WHERE (@startDate IS NULL OR AP_DATE >= @startDate)
+                        AND (@endDate IS NULL OR AP_DATE <= @endDate)",
+                    new { startDate = startTaiwanDate, endDate = endTaiwanDate });
 
                 return result;
             }
@@ -496,13 +508,15 @@ namespace NT_AirPollution.Service
         /// 取得繳費人數
         /// </summary>
         /// <returns></returns>
-        public long GetPaymentCount()
+        public long GetPaymentCount(DateTime? startDate = null, DateTime? endDate = null)
         {
             using (var cn = new SqlConnection(connStr))
             {
                 var result = cn.QuerySingle<long>(@"
                     SELECT COUNT(*) FROM Payment
-                    WHERE BankLog IS NOT NULL");
+                    WHERE BankLog IS NOT NULL
+                      AND (@startDate IS NULL OR PayDate >= @startDate)
+                      AND (@endDate IS NULL OR PayDate <= @endDate)", new { startDate, endDate });
 
                 return result;
             }
@@ -512,15 +526,36 @@ namespace NT_AirPollution.Service
         /// 取得減碳量
         /// </summary>
         /// <returns></returns>
-        public double GetCarbon()
+        public double GetCarbon(DateTime? startDate = null, DateTime? endDate = null)
         {
+            // 將 DateTime 轉為 7 碼民國年字串 (例: 2026-01-01 -> "1150101")
+            string startTaiwanDate = startDate.HasValue
+                ? $"{startDate.Value.AddYears(-1911).ToString("yyyMMdd")}"
+                : null;
+
+            string endTaiwanDate = endDate.HasValue
+                ? $"{endDate.Value.AddYears(-1911).ToString("yyyMMdd")}"
+                : null;
+
             using (var cn = new SqlConnection(connStr))
             {
-                // 首期減碳1次，結算減碳1次
                 var result = cn.QuerySingle<double>(@"
-                    SELECT SUM(a2.Carbon*(1 + (CASE WHEN AP_DATE1 IS NOT NULL THEN 1 ELSE 0 END)))
+                    SELECT ISNULL(SUM(
+                        a2.Carbon * (
+                            (CASE WHEN a1.AP_DATE IS NOT NULL 
+                                   AND (@startDate IS NULL OR a1.AP_DATE >= @startDate) 
+                                   AND (@endDate IS NULL OR a1.AP_DATE <= @endDate) 
+                                  THEN 1 ELSE 0 END)
+                            +
+                            (CASE WHEN a1.AP_DATE1 IS NOT NULL 
+                                   AND (@startDate IS NULL OR a1.AP_DATE1 >= @startDate) 
+                                   AND (@endDate IS NULL OR a1.AP_DATE1 <= @endDate) 
+                                  THEN 1 ELSE 0 END)
+                        )
+                    ), 0)
                     FROM Form AS a1
-                    INNER JOIN District AS a2 ON a1.TOWN_NO=a2.Code");
+                    INNER JOIN District AS a2 ON a1.TOWN_NO = a2.Code",
+                    new { startDate = startTaiwanDate, endDate = endTaiwanDate });
 
                 return result;
             }
@@ -1675,10 +1710,19 @@ namespace NT_AirPollution.Service
                     info.ApplyDate = form.AP_DATE1.ToWestDate();
                     info.VerifyDate = form.VerifyDate2.Value;
                     info.TotalPrice = form.S_AMT2.Value;
-                    info.CurrentPrice = form.S_AMT2.Value - form.P_AMT.Value;
+
+                    // 如果申報金額小於100免繳費，結算金額大於100則以結算金額為繳費金額，否則以結算金額-申報金額為繳費金額
+                    if (form.P_AMT.Value <= 100 && form.S_AMT2.Value > 100)
+                    {
+                        info.CurrentPrice = form.S_AMT2.Value;
+                    }
+                    else
+                    {
+                        info.CurrentPrice = form.S_AMT2.Value - form.P_AMT.Value;
+                    }
                 }
 
-                // 計算繳費資訊
+                // 計算繳費資訊(回傳原物件)
                 var res = CalcPayment(info);
                 // 結算沒有滯納金&利息，繳費期限為結算日+60天
                 if (!string.IsNullOrEmpty(form.AP_DATE1))
@@ -2232,13 +2276,68 @@ namespace NT_AirPollution.Service
             }
             catch (Exception ex)
             {
-                Logger.Error($"CreateFormPDF1: {ex.StackTrace}|{ex.Message}");
+                Logger.Error($"CreateFormPDF2: {ex.StackTrace}|{ex.Message}");
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 產生申報證明
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns>檔案完整路徑</returns>
+        public string CreateFormPDF3(FormView form)
+        {
+            try
+            {
+                double downDays = form.StopWorks.Sum(o => (o.UP_DATE2 - o.DOWN_DATE2).TotalDays);
+                var result = CalcTotalMoney(form, downDays);
+
+                // 範本檔
+                string templateFile = $@"{_paymentPath}\Template\申報證明.docx";
+                // 結果檔
+                string resultFile = $@"{_paymentPath}\Download\{(string.IsNullOrEmpty(form.C_NO) ? "" : $"{form.C_NO}-{form.SER_NO}")}申報證明.pdf";
+
+                Aspose.Words.License license = new Aspose.Words.License();
+                license.SetLicense($@"{AppDomain.CurrentDomain.BaseDirectory}/license/Aspose.total.lic");
+
+                Aspose.Words.Document doc = new Aspose.Words.Document(templateFile);
+                doc.Range.Replace("{COMP_NAM}", form.COMP_NAM ?? "");
+                doc.Range.Replace("{C_NO}", $"{form.C_NO}-{form.SER_NO}");
+                doc.Range.Replace("{ADDR}", form.ADDR ?? "");
+                doc.Range.Replace("{B_SERNO}", form.B_SERNO ?? "");
+                doc.Range.Replace("{S_NAME}", form.S_NAME ?? "");
+                doc.Range.Replace("{Level}", result.Level);
+                doc.Range.Replace("{MONEY}", $"{form.MONEY.ToString("N0")}");
+                doc.Range.Replace("{C_MONEY}", $"{(form.C_MONEY?.ToString("N0") ?? "")}");
+
+                if (form.FormB.KIND_NO == "1" || form.FormB.KIND_NO == "2")
+                {
+                    doc.Range.Replace("{AREA}", form.FormB.AREA_B.Value.ToString());
+                }
+                else if (form.FormB.KIND_NO == "3")
+                {
+                    doc.Range.Replace("{AREA}", form.FormB.AREA2.Value.ToString());
+                }
+                else
+                {
+                    doc.Range.Replace("{AREA}", form.FormB.AREA.Value.ToString());
+                }
+
+                doc.Save(resultFile);
+
+                return resultFile;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"CreateFormPDF3: {ex.StackTrace}|{ex.Message}");
                 throw ex;
             }
         }
 
         /// <summary>
         /// 計算繳費相關資訊
+        /// 回傳原物件
         /// </summary>
         /// <param name="info"></param>
         public PaymentInfo CalcPayment(PaymentInfo info)

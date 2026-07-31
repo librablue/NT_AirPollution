@@ -8,52 +8,57 @@ export default new Router({
 		{
 			path: '/login',
 			name: 'login',
-			component: (resolve) => require(['@/components/Login'], resolve)
+			component: resolve => require(['@/components/Login'], resolve)
 		},
 		{
 			path: '/',
-			component: (resolve) => require(['@/components/Main'], resolve),
+			component: resolve => require(['@/components/Main'], resolve),
 			children: [
 				{ path: '', redirect: '/function/news' },
 				{
 					path: '/function/form1',
 					name: 'function_form1',
-					component: (resolve) => require(['@/components/function/Form1'], resolve)
+					component: resolve => require(['@/components/function/Form1'], resolve)
 				},
-                {
+				{
 					path: '/function/form2',
 					name: 'function_form2',
-					component: (resolve) => require(['@/components/function/Form2'], resolve)
+					component: resolve => require(['@/components/function/Form2'], resolve)
 				},
-                {
+				{
 					path: '/function/form3',
 					name: 'function_form3',
-					component: (resolve) => require(['@/components/function/Form3'], resolve)
+					component: resolve => require(['@/components/function/Form3'], resolve)
 				},
-                {
+				{
 					path: '/function/news',
 					name: 'function_news',
-					component: (resolve) => require(['@/components/function/News'], resolve)
+					component: resolve => require(['@/components/function/News'], resolve)
 				},
-                {
+				{
 					path: '/function/rate',
 					name: 'function_rate',
-					component: (resolve) => require(['@/components/function/Rate'], resolve)
+					component: resolve => require(['@/components/function/Rate'], resolve)
 				},
-                {
+				{
 					path: '/function/download',
 					name: 'function_download',
-					component: (resolve) => require(['@/components/function/Download'], resolve)
+					component: resolve => require(['@/components/function/Download'], resolve)
 				},
-                {
+				{
+					path: '/function/statistic',
+					name: 'function_statistic',
+					component: resolve => require(['@/components/function/Statistic'], resolve)
+				},
+				{
 					path: '/manage/clientuser',
 					name: 'manage_clientuser',
-					component: (resolve) => require(['@/components/manage/ClientUser'], resolve)
+					component: resolve => require(['@/components/manage/ClientUser'], resolve)
 				},
-                {
+				{
 					path: '/manage/adminuser',
 					name: 'manage_adminuser',
-					component: (resolve) => require(['@/components/manage/AdminUser'], resolve)
+					component: resolve => require(['@/components/manage/AdminUser'], resolve)
 				}
 			]
 		}

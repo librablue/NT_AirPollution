@@ -64,6 +64,15 @@
 			</vxe-table-column>
 			<vxe-table-column width="60" align="center" fixed="left">
 				<template #header>
+					追加
+					<br />序號
+				</template>
+				<template #default="{ row }">
+					<el-button type="success" size="mini" icon="el-icon-copy-document" circle title="追加序號" @click="copyRow(row)"></el-button>
+				</template>
+			</vxe-table-column>
+			<vxe-table-column width="60" align="center" fixed="left">
+				<template #header>
 					刪除
 					<br />案件
 				</template>
@@ -107,7 +116,7 @@
 		<AttachmentModal :show.sync="attachmentModalVisible" :data="selectRow" />
 		<StopWorkModal :show.sync="stopWorkModalVisible" :data="selectRow" />
 		<RefundModal :show.sync="refundModalVisible" :data="selectRow" />
-        <CNOModal :show.sync="CNOModalVisible" :data="selectRow" @on-updated="onUpdated" />
+		<CNOModal :show.sync="CNOModalVisible" :data="selectRow" @on-updated="onUpdated" />
 	</div>
 </template>
 <script>
@@ -142,7 +151,7 @@ export default {
 			attachmentModalVisible: false,
 			stopWorkModalVisible: false,
 			refundModalVisible: false,
-            CNOModalVisible: false
+			CNOModalVisible: false
 		};
 	},
 	mounted() {
@@ -208,10 +217,10 @@ export default {
 			this.selectRow = row;
 			this.refundModalVisible = true;
 		},
-        showCNOModal(row) {
+		showCNOModal(row) {
 			this.selectRow = row;
-            this.CNOModalVisible = true;
-        },
+			this.CNOModalVisible = true;
+		},
 		copyRow(row) {
 			if (!confirm('是否確認追加序號?')) return;
 			this.mode = 'Copy';

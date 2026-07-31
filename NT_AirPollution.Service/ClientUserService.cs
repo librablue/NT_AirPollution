@@ -97,12 +97,16 @@ namespace NT_AirPollution.Service
         /// </summary>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public long GetUserCount()
+        public long GetUserCount(DateTime? startDate = null, DateTime? endDate = null)
         {
             using (var cn = new SqlConnection(connStr))
             {
                 var counter = cn.QuerySingle<long>(@"
-                        SELECT COUNT(*) FROM ClientUser");
+                    SELECT COUNT(*) 
+                    FROM ClientUser
+                    WHERE (@startDate IS NULL OR CreateDate >= @startDate)
+                      AND (@endDate IS NULL OR CreateDate <= @endDate)",
+                    new { startDate, endDate });
 
                 return counter;
             }
