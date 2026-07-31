@@ -2603,5 +2603,58 @@ namespace NT_AirPollution.Service
                 }
             }
         }
+
+        /// <summary>
+        /// 從Access匯入資料到SQL Server
+        /// </summary>
+        /// <param name="c_no">管制編號</param>
+        /// <param name="ser_no">序號</param>
+        public bool SyncData(FormView form)
+        {
+            ABUDF abudf = _accessService.GetABUDF(form.C_NO, form.SER_NO.Value);
+            ABUDF_B abudf_b = _accessService.GetABUDF_B(form.C_NO, form.SER_NO.Value);
+            List<ABUDF_1> abudf_1s = _accessService.GetABUDF_1(form.C_NO, form.SER_NO.Value);
+            List<ABUDF_I> abudf_is = _accessService.GetABUDF_I(form.C_NO, form.SER_NO.Value);
+
+            if (abudf != null)
+            {
+                // 1. 配置 ABUDF 到 FormView 的映射
+                var config1 = new MapperConfiguration(cfg => { cfg.CreateMap<ABUDF, FormView>(); });
+                var mapper1 = config1.CreateMapper();
+                // 2. 直接將 abudf 資料蓋寫進傳入的 FormView 執行階段物件 (form)
+                mapper1.Map(abudf, form);
+
+                // 3. 處理特殊邏輯
+                form.LATLNG = string.IsNullOrEmpty(abudf.LATLNG) ? "," : abudf.LATLNG;
+            }
+
+            if (abudf_b != null)
+            {
+                var config2 = new MapperConfiguration(cfg => cfg.CreateMap<ABUDF_B, FormB>());
+                var mapper2 = config2.CreateMapper();
+                mapper2.Map(abudf_b, form.FormB);
+            }
+
+
+
+
+
+
+
+            using (var cn = new SqlConnection(connStr))
+            {
+                try
+                {
+
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"SyncData: {ex.StackTrace}|{ex.Message}");
+                    throw ex;
+                }
+            }
+        }
     }
 }
