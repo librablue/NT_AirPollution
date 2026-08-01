@@ -137,13 +137,15 @@ namespace NT_AirPollution.Admin.Controllers
                 form.A_KIND = allProjectCode.First(o => o.ID == form.KIND_NO).Kind;
                 form.M_DATE = DateTime.Now;
 
-                // 有管制編號才更新Access
-                if (!string.IsNullOrEmpty(form.C_NO))
-                {
-                    _accessService.UpdateABUDF(form);
-                    // 更新ABUDF_B
-                    _accessService.AddABUDF_B(form);
-                }
+                //// 有管制編號才更新Access(20260801改版取號後就不再同步)
+                //if (!string.IsNullOrEmpty(form.C_NO))
+                //{
+                //    _accessService.UpdateABUDF(form);
+                //    // 更新ABUDF_B
+                //    _accessService.AddABUDF_B(form);
+                //    // 更新ABUDFDay
+                //    _accessService.AddABUDFDay(form);
+                //}
 
 
                 _formService.UpdateForm(form);
@@ -153,7 +155,6 @@ namespace NT_AirPollution.Admin.Controllers
                 _formService.AddFormSub(form);
                 // 更新停工天數
                 _formService.UpdateStopWork(form);
-                _accessService.AddABUDFDay(form);
 
                 return true;
             }
@@ -209,7 +210,7 @@ namespace NT_AirPollution.Admin.Controllers
         }
 
         /// <summary>
-        /// 更新申請進度
+        /// 更新申請進度(20260801改版Web只審核不計算，資料全由A2021回讀)
         /// </summary>
         /// <param name="form"></param>
         /// <returns></returns>
@@ -219,7 +220,13 @@ namespace NT_AirPollution.Admin.Controllers
             {
                 var admin = BaseService.CurrentAdmin;
 
-                // --- 1. 角色權限邏輯分流 ---
+                // 1. 如果狀態大於待補件，則同步資料到 SQL Server
+                if (form.FormStatus > FormStatus.待補件 || form.CalcStatus > CalcStatus.待補件)
+                {
+                    _formService.SyncData(form);
+                }
+
+                // 2. 角色權限邏輯分流
                 if (admin.RoleID == 1) // 初審
                 {
                     HandleFirstVerify(form);
@@ -227,20 +234,6 @@ namespace NT_AirPollution.Admin.Controllers
                 else if (admin.RoleID == 2) // 複審
                 {
                     HandleSecondVerify(form);
-                }
-
-                // --- 2. 持久化與外部系統同步 ---
-                _formService.UpdateForm(form);
-                _formService.SendStatusMail(form);
-
-                // --- 3. 繳費單產生 ---
-                // 狀態大於待補件(2)則新增ABUDF_B，並產生 PDF
-                if (form.FormStatus > FormStatus.待補件)
-                {
-                    _accessService.AddABUDF_B(form);
-                    _formService.AddFormB(form);
-
-                    _formService.CreatePaymentPDF("", form);
                 }
 
                 return true;
@@ -293,8 +286,6 @@ namespace NT_AirPollution.Admin.Controllers
         {
             // 系統時間
             DateTime now = DateTime.Now;
-            // 系統時間轉民國年
-            string taiwanDate = now.ToTaiwanDate();
 
             // 1. 處理申請狀態複審
             if (form.FormStatus == FormStatus.待補件)
@@ -303,7 +294,6 @@ namespace NT_AirPollution.Admin.Controllers
             }
             else if (form.FormStatus == FormStatus.通過待繳費)
             {
-                form.FormB.B_KIND1 = "無";
                 form.VerifyDate1 = now;
                 form.VerifyStage1 = VerifyStage.複審通過;
 
@@ -313,17 +303,6 @@ namespace NT_AirPollution.Admin.Controllers
             // 2. 處理結算與金額計算
             if (form.CalcStatus == CalcStatus.通過待繳費)
             {
-                double downDays = form.StopWorks.Sum(o => (o.UP_DATE2 - o.DOWN_DATE2).TotalDays);
-                var result = _formService.CalcTotalMoney(form, downDays);
-
-                form.S_AMT2 = result.TotalMoney;
-                form.COMP_L = result.Level;
-                form.FormB.AP_DATE1 = taiwanDate;
-                form.FormB.OPINION = _formService.GenerateRefundComment(form);
-                // 如果短漏報金額要變2倍
-                if (form.FormB.WRONG_AP == "是")
-                    form.S_AMT2 *= 2;
-
                 // 判定結算後的新狀態
                 var diff = form.P_AMT - form.S_AMT2;
                 if (form.S_AMT2 > form.P_AMT) form.CalcStatus = CalcStatus.通過待繳費;
@@ -336,12 +315,6 @@ namespace NT_AirPollution.Admin.Controllers
             {
                 form.VerifyDate2 = now;
                 form.VerifyStage2 = VerifyStage.複審通過;
-
-                form.FIN_COM = taiwanDate;
-                form.FIN_DATE = taiwanDate;
-                // 同步外部資料庫
-                _accessService.UpdateABUDFByColumn(form.C_NO, form.SER_NO.Value, "FIN_COM", taiwanDate);
-                _accessService.UpdateABUDFByColumn(form.C_NO, form.SER_NO.Value, "FIN_DATE", taiwanDate);
             }
             else
             {
