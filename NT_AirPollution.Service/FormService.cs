@@ -1827,10 +1827,6 @@ namespace NT_AirPollution.Service
                 #endregion
 
 
-                // 如果沒傳入檔名就不做PDF轉檔
-                if (string.IsNullOrEmpty(fileName)) return "";
-
-
                 var wb = new XLWorkbook(templateFile);
                 var ws = wb.Worksheet(1);
                 ws.Cell("B2").SetValue(ws.Cell("B2").GetText().Replace("#VerifyDate#", pdate.AddYears(-1911).ToString("yyy年MM月dd日")));

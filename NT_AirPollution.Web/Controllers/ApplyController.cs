@@ -7,11 +7,9 @@ using NT_AirPollution.Web.ActionFilter;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Web;
-using System.Web.Hosting;
 using System.Web.Mvc;
 
 namespace NT_AirPollution.Web.Controllers
