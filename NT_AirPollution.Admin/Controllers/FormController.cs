@@ -220,13 +220,13 @@ namespace NT_AirPollution.Admin.Controllers
             {
                 var admin = BaseService.CurrentAdmin;
 
-                // 1. 如果狀態大於待補件，則同步資料到 SQL Server
+                // 2. 如果狀態大於待補件，則同步資料到 SQL Server
                 if (form.FormStatus > FormStatus.待補件 || form.CalcStatus > CalcStatus.待補件)
                 {
                     _formService.SyncData(form);
                 }
 
-                // 2. 角色權限邏輯分流
+                // 1. 角色權限邏輯分流
                 if (admin.RoleID == 1) // 初審
                 {
                     HandleFirstVerify(form);
@@ -235,6 +235,9 @@ namespace NT_AirPollution.Admin.Controllers
                 {
                     HandleSecondVerify(form);
                 }
+
+                // 再次更新SQL
+                _formService.UpdateForm(form);
 
                 return true;
             }
