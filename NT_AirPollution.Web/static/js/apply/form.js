@@ -1555,12 +1555,50 @@
 
 				return dayDiff;
 			},
-			showImportModal() {
-				this.importModalVisible = true;
-				this.$nextTick(() => {
-					this.initDatePicker();
-				});
+            // 是否能下載繳費單
+			canPaymentFileDownload(item) {
+				if (!item) return false;
+
+				// 條件 1：金額 > 100 且 FormStatus === 3
+				if (item.S_AMT > 100 && item.FormStatus === 3) {
+					return true;
+				}
+
+				// 條件 2：金額 <= 100 且 AP_DATE >= B_DATE
+				if (item.S_AMT > 0 &&  item.S_AMT <= 100) {
+					// 前景補 0 確保字串長度均為 7 碼
+					const apdate = String(item.AP_DATE).padStart(7, '0');
+					const bdate = String(item.B_DATE).padStart(7, '0');
+					return apdate >= bdate;
+				}
+
+				return false;
+			},
+            // 是否能下載申報證明
+			canApplyProofDownload(item) {
+				if (!item) return false;
+
+                // 條件 1：FormStatus === 4
+				if (item.FormStatus === 4) {
+					return true;
+				}
+
+                // 條件 2：金額 <= 100 且 AP_DATE < B_DATE
+				if (item.S_AMT > 0 && item.S_AMT <= 100) {
+					// 前景補 0 確保字串長度均為 7 碼
+					const apdate = String(item.AP_DATE).padStart(7, '0');
+					const bdate = String(item.B_DATE).padStart(7, '0');
+					return apdate < bdate;
+				}
+
+                return false;
 			}
+			// showImportModal() {
+			// 	this.importModalVisible = true;
+			// 	this.$nextTick(() => {
+			// 		this.initDatePicker();
+			// 	});
+			// }
 			// importDataHandler() {
 			// 	this.$refs.importForm.validate((valid, object) => {
 			// 		if (!valid) {

@@ -300,7 +300,7 @@ namespace NT_AirPollution.Admin.Controllers
                 form.VerifyDate1 = now;
                 form.VerifyStage1 = VerifyStage.複審通過;
 
-                if (form.S_AMT <= 100) form.FormStatus = FormStatus.免繳費;
+                if (form.S_AMT ==0) form.FormStatus = FormStatus.免繳費;
             }
 
             // 2. 處理結算與金額計算

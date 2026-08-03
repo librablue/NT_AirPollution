@@ -87,12 +87,12 @@
                             <span class="status-badge">{{getFormStatus(item)}}</span>
                         </div>
                         <div class="action-buttons">
-                            <el-button size="mini" type="primary" plain round v-if="item.FormStatus === 0 || item.FormStatus === 2" @@click="showSelfCheckModal(item)">提送審查</el-button>
-                            <el-button size="mini" type="primary" plain round v-if="item.FormStatus > 0" @@click="downloadForm(1, item)">下載首期申報表</el-button>
+                            <el-button v-if="item.FormStatus === 0 || item.FormStatus === 2" type="primary" size="mini" plain round @@click="showSelfCheckModal(item)">提送審查</el-button>
+                            <el-button v-if="item.FormStatus > 0" type="primary" size="mini" plain round @@click="downloadForm(1, item)">下載首期申報表</el-button>
                             <template v-if="item.VerifyStage1 === 3">
-                                <el-button type="primary" size="mini" plain round @@click="downloadForm(3, item)">下載申報證明</el-button>
-                                <el-button v-if="item.FormStatus === 3" type="primary" size="mini" plain round @@click="downloadPayment(item)">下載繳費單</el-button>
+                                <el-button v-if="canPaymentFileDownload(item)" type="primary" size="mini" plain round @@click="downloadPayment(item)">下載繳費單</el-button>
                                 <el-button v-if="item.FormStatus === 4" type="primary" size="mini" plain round @@click="downloadPaymentProof(item)">下載繳費證明</el-button>
+                                <el-button v-if="canApplyProofDownload(item)" type="primary" size="mini" plain round @@click="downloadForm(3, item)">下載申報證明</el-button>
                                 <el-button v-if="item.FormStatus === 5" type="primary" size="mini" plain round @@click="downloadFreeProof(item)">下載免徵證明</el-button>
                             </template>
                         </div>
@@ -105,12 +105,14 @@
                             <span class="status-badge">{{getCalcStatus(item)}}</span>
                         </div>
                         <div class="action-buttons">
-                            <el-button size="mini" type="primary" plain round v-if="item.FormStatus === 4 && (item.CalcStatus === 0 || item.CalcStatus === 2)" @@click="sendCalcStatus1(item)">提送審查</el-button>
-                            <el-button size="mini" type="primary" plain round v-if="item.FormStatus === 4 && item.CalcStatus > 0" @@click="downloadForm(2, item)">下載結算申報表</el-button>
+                            <el-button v-if="item.FormStatus === 4 && (item.CalcStatus === 0 || item.CalcStatus === 2)" type="primary" size="mini" plain round @@click="sendCalcStatus1(item)">提送審查</el-button>
                             <template v-if="item.VerifyStage2 === 3">
                                 <el-button v-if="item.CalcStatus === 3" type="primary" size="mini" plain round @@click="downloadRePayment(item)">下載繳費單</el-button>
                                 <el-button v-if="item.CalcStatus === 5" type="primary" size="mini" plain round @@click="showBankAccountModal(item)">退費帳戶</el-button>
-                                <el-button v-if="item.CalcStatus > 3" type="primary" size="mini" plain round @@click="downloadClearProof(item)">下載結清證明</el-button>
+                                @*結算金額大於0元且結算狀態大於已繳費完成(0元只需在申報時下載免徵證明)*@
+                                <el-button v-if="item.S_AMT2 > 0 && item.CalcStatus > 3" type="primary" size="mini" plain round @@click="downloadForm(2, item)">下載結算申報表</el-button>
+                                <el-button v-if="item.S_AMT2 > 0 && item.CalcStatus > 3" type="primary" size="mini" plain round @@click="downloadClearProof(item)">下載結清證明</el-button>
+                                @*結算金額大於0元且結算狀態大於已繳費完成(0元只需在申報時下載免徵證明)*@
                             </template>
                         </div>
                     </li>
