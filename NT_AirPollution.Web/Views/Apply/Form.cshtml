@@ -92,7 +92,7 @@
                             <template v-if="item.VerifyStage1 === 3">
                                 <el-button v-if="canPaymentFileDownload(item)" type="primary" size="mini" plain round @@click="downloadPayment(item)">下載繳費單</el-button>
                                 <el-button v-if="item.FormStatus === 4" type="primary" size="mini" plain round @@click="downloadPaymentProof(item)">下載繳費證明</el-button>
-                                <el-button v-if="canApplyProofDownload(item)" type="primary" size="mini" plain round @@click="downloadForm(3, item)">下載申報證明</el-button>
+                                <el-button v-if="item.FormStatus === 3 || item.FormStatus === 4" type="primary" size="mini" plain round @@click="downloadForm(3, item)">下載申報證明</el-button>
                                 <el-button v-if="item.FormStatus === 5" type="primary" size="mini" plain round @@click="downloadFreeProof(item)">下載免徵證明</el-button>
                             </template>
                         </div>
