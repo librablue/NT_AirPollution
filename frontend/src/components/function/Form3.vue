@@ -5,6 +5,10 @@
 			<el-form-item label="管制編號">
 				<el-input style="width: 140px" v-model="filter.C_NO"></el-input>
 			</el-form-item>
+			<el-form-item label="申報日期">
+				<el-date-picker style="width:140px" v-model="filter.StartDate" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>~
+				<el-date-picker style="width:140px" v-model="filter.EndDate" type="date" value-format="yyyy-MM-dd" placeholder="請選擇日期"></el-date-picker>
+			</el-form-item>
 			<el-form-item label="申報進度">
 				<el-select style="width: 140px" v-model="filter.FormStatus">
 					<el-option v-for="item in formStatusList" :key="item.value" :label="item.label" :value="item.value"></el-option>
@@ -168,6 +172,8 @@ export default {
 			loading: false,
 			filter: {
 				C_NO: '',
+                StartDate: moment().format('YYYY-MM-01'),
+                EndDate: moment().format('YYYY-MM-DD'),
 				FormStatus: -1,
 				CalcStatus: -1,
 				VerifyStage1: -1,

@@ -16,8 +16,8 @@ namespace NT_AirPollution.Model.View
         public bool? PUB_COMP { get; set; }
         public string COMP_NAM { get; set; }
         public string CreateUserName { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
         public long ClientUserID { get; set; }
         public string CreateUserEmail { get; set; }
         public FormStatus FormStatus { get; set; }
@@ -29,6 +29,5 @@ namespace NT_AirPollution.Model.View
         /// </summary>
         public string CompanyID { get; set; }
         public WorkStatus WorkStatus { get; set; }
-        public Commitment Commitment { get; set; }
     }
 }

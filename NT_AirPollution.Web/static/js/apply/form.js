@@ -647,6 +647,9 @@
 				}
 			},
 			getForms() {
+				if (!this.filter.StartDate || !this.filter.EndDate) {
+					return alert('請選擇建立日期');
+				}
 				const loading = this.$loading();
 				axios
 					.post('/Apply/GetForms', this.filter)

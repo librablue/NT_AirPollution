@@ -222,6 +222,8 @@ namespace NT_AirPollution.Web.Controllers
         [HttpPost]
         public JsonResult GetForms(FormFilter filter)
         {
+            if (filter.StartDate == null || filter.EndDate == null) return Json(new List<FormView>());
+
             filter.ClientUserID = BaseService.CurrentUser.ID;
             var result = _formService.GetFormsByUser(filter);
             return Json(result);
@@ -454,7 +456,7 @@ namespace NT_AirPollution.Web.Controllers
                 if (formInDB.ClientUserID != BaseService.CurrentUser.ID)
                     throw new Exception("無法修改他人申請單");
 
-                
+
                 // 設定資料夾
                 string absoluteDirPath = $"{_uploadPath}";
                 if (!Directory.Exists(absoluteDirPath))
@@ -477,7 +479,7 @@ namespace NT_AirPollution.Web.Controllers
                 file.SaveAs(absoluteFilePath);
 
                 // 更新附件
-                if(type == 1)
+                if (type == 1)
                 {
                     formInDB.FileName1 = fileName;
                     formInDB.DisplayName1 = file.FileName;

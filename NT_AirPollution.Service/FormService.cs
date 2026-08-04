@@ -36,6 +36,7 @@ namespace NT_AirPollution.Service
                 var forms = cn.Query<FormView>(@"
                     SELECT * FROM Form
                     WHERE (@C_NO='' OR C_NO=@C_NO)
+                        AND (@StartDate IS NULL OR @EndDate IS NULL OR AP_DATE BETWEEN @StartDate AND @EndDate)
                         AND (@FormStatus=-1 OR FormStatus=@FormStatus)
                         AND (@CalcStatus=-1 OR CalcStatus=@CalcStatus)
                         AND (@VerifyStage1=-1 OR VerifyStage1=@VerifyStage1)
@@ -43,6 +44,8 @@ namespace NT_AirPollution.Service
                     new
                     {
                         C_NO = filter.C_NO ?? "",
+                        StartDate = filter.StartDate?.AddYears(-1911).ToString("yyyMMdd"),
+                        EndDate = filter.EndDate?.AddYears(-1911).ToString("yyyMMdd"),
                         FormStatus = filter.FormStatus,
                         CalcStatus = filter.CalcStatus,
                         VerifyStage1 = filter.VerifyStage1,
@@ -153,8 +156,8 @@ namespace NT_AirPollution.Service
                         PUB_COMP = filter.PUB_COMP,
                         COMP_NAM = filter.COMP_NAM ?? "",
                         CreateUserName = filter.CreateUserName ?? "",
-                        StartDate = filter.StartDate,
-                        EndDate = filter.EndDate.ToString("yyyy-MM-dd 23:59:59"),
+                        StartDate = filter.StartDate.Value,
+                        EndDate = filter.EndDate.Value.ToString("yyyy-MM-dd 23:59:59"),
                         ClientUserID = filter.ClientUserID
                     }).ToList();
 
