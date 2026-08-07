@@ -69,11 +69,17 @@ namespace NT_AirPollution.WriteOffTask
                             string account = lines[i].Substring(8, 16);
                             // 對帳日期(格式為 "yyMMdd"，只有六碼，所以前面要補"1")
                             string fdate = $"1{lines[i].Substring(24, 6)}";
-                            int payAmount = Convert.ToInt32(lines[i].Substring(100, 10));
+                            int payAmount = 0;
+                            int actualPayAmount = Convert.ToInt32(lines[i].Substring(100, 10));
+                            payAmount = actualPayAmount;
                             DateTime payDate = Convert.ToDateTime($"{2011 + Convert.ToInt32(lines[i].Substring(93, 2))}-{lines[i].Substring(95, 2)}-{lines[i].Substring(97, 2)}");
+                            if (lines[i].Substring(99, 1) == "U")
+                            {
+                                payAmount = BotHelper.GetOriginalAmount(actualPayAmount);
+                            }
 
                             // 取得 SQL 付款資訊
-                            var paymentsInDB = _formService.GetPaymentByPaymentID(account);
+                            var paymentsInDB = _formService.GetPaymentByPaymentID(account, payAmount);
                             if (paymentsInDB == null)
                                 throw new Exception($"虛擬帳號 {account} 在資料庫中不存在。");
 
@@ -100,7 +106,7 @@ namespace NT_AirPollution.WriteOffTask
                             _formService.SendStatusMail(form);
 
                             // --- 更新付款資訊 ---
-                            paymentsInDB.PayAmount = payAmount;
+                            paymentsInDB.PayAmount = actualPayAmount;
                             paymentsInDB.PayDate = payDate;
                             paymentsInDB.BankLog = lines[i];
                             _formService.UpdatePayment(paymentsInDB);

@@ -852,19 +852,25 @@ namespace NT_AirPollution.Service
         }
 
         /// <summary>
-        /// 取得申請單所有銷帳單號
+        /// 取得申請單繳費資訊
         /// </summary>
         /// <param name="paymentID"></param>
+        /// <param name="payAmount"></param>
         /// <returns></returns>
-        public Payment GetPaymentByPaymentID(string paymentID)
+        public Payment GetPaymentByPaymentID(string paymentID, double payAmount)
         {
             using (var cn = new SqlConnection(connStr))
             {
                 // 找出銷帳檔的那筆銷帳單號
                 var payment = cn.QueryFirstOrDefault<Payment>(@"
                     SELECT * FROM dbo.Payment
-                    WHERE PaymentID=@PaymentID OR PostPaymentID=@PaymentID",
-                    new { PaymentID = paymentID });
+                    WHERE (PaymentID=@PaymentID OR PostPaymentID=@PaymentID)
+                        AND (PayableAmount=@PayAmount)",
+                    new
+                    {
+                        PaymentID = paymentID,
+                        PayAmount = payAmount
+                    });
 
                 return payment;
             }
@@ -1791,12 +1797,12 @@ namespace NT_AirPollution.Service
                 string barcodeMarketB = abudf_1.FLNO;
                 string barcodeMarketC = BotHelper.GetMarketAmt("0032", sumPrice.ToString(), abudf_1.FLNO, abudf_1.E_DATE);
                 string barcodePostA = "19834251";
-                string barcodePostB = BotHelper.GetPostNo(transNo, abudf_1.F_AMT.ToString(), abudf_1.E_DATE);
-                string barcodePostC = BotHelper.GetPostAmt(abudf_1.F_AMT.ToString());
+                string barcodePostB = BotHelper.GetPostNo(transNo, sumPrice.ToString(), abudf_1.E_DATE);
+                string barcodePostC = BotHelper.GetPostAmt(sumPrice.ToString());
 
 
                 #region 寫入Payment
-                var payment = this.GetPaymentByPaymentID(abudf_1.FLNO);
+                var payment = this.GetPaymentByPaymentID(abudf_1.FLNO, sumPrice);
                 if (payment == null)
                 {
                     payment = new Payment
