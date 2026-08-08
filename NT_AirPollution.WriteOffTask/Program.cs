@@ -113,79 +113,79 @@ namespace NT_AirPollution.WriteOffTask
                                 form.IsMailCalcStatus = true;
                             }
 
-                            //_formService.UpdateForm(form);
-                            //_formService.SendStatusMail(form);
+                            _formService.UpdateForm(form);
+                            _formService.SendStatusMail(form);
 
-                            //// --- 更新付款資訊 ---
-                            //paymentsInDB.PayAmount = actualPayAmount;
-                            //paymentsInDB.PayDate = payDate;
-                            //paymentsInDB.BankLog = lines[i];
-                            //_formService.UpdatePayment(paymentsInDB);
+                            // --- 更新付款資訊 ---
+                            paymentsInDB.PayAmount = actualPayAmount;
+                            paymentsInDB.PayDate = payDate;
+                            paymentsInDB.BankLog = lines[i];
+                            _formService.UpdatePayment(paymentsInDB);
 
-                            //// --- 更新 ABUDF_1 ---
-                            //var abudf_1 = new ABUDF_1
-                            //{
-                            //    F_DATE = fdate,
-                            //    F_AMT = payAmount,
-                            //    PM_DATE = payDate.AddYears(-1911).ToString("yyyMMdd"),
-                            //    A_DATE = taiwanDate,
-                            //    M_DATE = DateTime.Now,
-                            //    FLNO = paymentsInDB.PaymentID,
-                            //    C_NO = form.C_NO
-                            //};
-                            //_accessService.UpdateABUDF_1(abudf_1, account);
+                            // --- 更新 ABUDF_1 ---
+                            var abudf_1 = new ABUDF_1
+                            {
+                                F_DATE = fdate,
+                                F_AMT = payAmount,
+                                PM_DATE = payDate.AddYears(-1911).ToString("yyyMMdd"),
+                                A_DATE = taiwanDate,
+                                M_DATE = DateTime.Now,
+                                FLNO = paymentsInDB.PaymentID,
+                                C_NO = form.C_NO
+                            };
+                            _accessService.UpdateABUDF_1(abudf_1, account);
 
-                            //// --- 計算繳費資訊與寫入 ABUDF_I ---
-                            //PaymentInfo info = new PaymentInfo
-                            //{
-                            //    Today = payDate,
-                            //    IsPublic = form.PUB_COMP,
-                            //    StartDate = form.B_DATE.ToWestDate()
-                            //};
+                            // --- 計算繳費資訊與寫入 ABUDF_I ---
+                            PaymentInfo info = new PaymentInfo
+                            {
+                                Today = payDate,
+                                IsPublic = form.PUB_COMP,
+                                StartDate = form.B_DATE.ToWestDate()
+                            };
 
-                            //if (string.IsNullOrEmpty(form.AP_DATE1))
-                            //{
-                            //    info.ApplyDate = form.AP_DATE.ToWestDate();
-                            //    info.VerifyDate = form.VerifyDate1.Value;
-                            //    info.TotalPrice = form.S_AMT.Value;
-                            //    info.CurrentPrice = form.P_AMT.Value;
-                            //}
-                            //else
-                            //{
-                            //    info.ApplyDate = form.AP_DATE1.ToWestDate();
-                            //    info.VerifyDate = form.VerifyDate2.Value;
-                            //    info.TotalPrice = form.S_AMT2.Value;
-                            //    info.CurrentPrice = form.S_AMT2.Value - form.P_AMT.Value;
-                            //}
+                            if (string.IsNullOrEmpty(form.AP_DATE1))
+                            {
+                                info.ApplyDate = form.AP_DATE.ToWestDate();
+                                info.VerifyDate = form.VerifyDate1.Value;
+                                info.TotalPrice = form.S_AMT.Value;
+                                info.CurrentPrice = form.P_AMT.Value;
+                            }
+                            else
+                            {
+                                info.ApplyDate = form.AP_DATE1.ToWestDate();
+                                info.VerifyDate = form.VerifyDate2.Value;
+                                info.TotalPrice = form.S_AMT2.Value;
+                                info.CurrentPrice = form.S_AMT2.Value - form.P_AMT.Value;
+                            }
 
-                            //var res = _formService.CalcPayment(info);
-                            //if (!string.IsNullOrEmpty(form.AP_DATE1))
-                            //{
-                            //    res.Interest = 0;
-                            //    res.Penalty = 0;
-                            //}
+                            var res = _formService.CalcPayment(info);
+                            if (!string.IsNullOrEmpty(form.AP_DATE1))
+                            {
+                                res.Interest = 0;
+                                res.Penalty = 0;
+                            }
 
 
-                            //if (string.IsNullOrEmpty(form.AP_DATE1) && (res.Interest > 0 || res.Penalty > 0))
-                            //{
-                            //    ABUDF_I abudf_I = new ABUDF_I
-                            //    {
-                            //        C_NO = form.C_NO,
-                            //        SER_NO = form.SER_NO,
-                            //        P_TIME = string.IsNullOrEmpty(form.AP_DATE1) ? "01" : "02",
-                            //        S_DATE = res.StartDate.AddDays(res.ApplyDate <= res.StartDate ? 0 : 1).AddYears(-1911).ToString("yyyMMdd"),
-                            //        E_DATE = payDate.AddYears(-1911).ToString("yyyMMdd"),
-                            //        PERCENT = res.Rate,
-                            //        F_AMT = res.CurrentPrice,
-                            //        I_AMT = res.Interest + res.Penalty,
-                            //        PEN_AMT = res.Penalty,
-                            //        PEN_RATE = res.Penalty > 0 ? 0.5 : (double?)null,
-                            //        KEYIN = "EPB02",
-                            //        C_DATE = DateTime.Now,
-                            //        M_DATE = DateTime.Now
-                            //    };
-                            //    _accessService.AddABUDF_I(abudf_I);
-                            //}
+                            if (string.IsNullOrEmpty(form.AP_DATE1) && (res.Interest > 0 || res.Penalty > 0))
+                            {
+                                ABUDF_I abudf_I = new ABUDF_I
+                                {
+                                    C_NO = form.C_NO,
+                                    SER_NO = form.SER_NO,
+                                    P_TIME = string.IsNullOrEmpty(form.AP_DATE1) ? "01" : "02",
+                                    S_DATE = res.StartDate.AddDays(res.ApplyDate <= res.StartDate ? 0 : 1).AddYears(-1911).ToString("yyyMMdd"),
+                                    E_DATE = payDate.AddYears(-1911).ToString("yyyMMdd"),
+                                    PERCENT = res.Rate,
+                                    F_AMT = res.CurrentPrice,
+                                    I_AMT = res.Interest + res.Penalty,
+                                    PEN_AMT = res.Penalty,
+                                    PEN_RATE = res.Penalty > 0 ? 0.5 : (double?)null,
+                                    KEYIN = "EPB02",
+                                    C_DATE = DateTime.Now,
+                                    M_DATE = DateTime.Now
+                                };
+                                _accessService.AddABUDF_I(abudf_I);
+                            }
                         }
                         catch (Exception lineEx)
                         {
