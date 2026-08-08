@@ -9,7 +9,6 @@ using System;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.IO;
-using System.Linq;
 
 namespace NT_AirPollution.WriteOffTask
 {
@@ -69,17 +68,29 @@ namespace NT_AirPollution.WriteOffTask
                             string account = lines[i].Substring(8, 16);
                             // 對帳日期(格式為 "yyMMdd"，只有六碼，所以前面要補"1")
                             string fdate = $"1{lines[i].Substring(24, 6)}";
-                            int payAmount = 0;
+                            /* 付款方式 C:現金 M:轉帳 A:自動櫃員機 R: 匯款E: EDI轉帳 V:電話銀行 I:網路銀行 B:批次扣繳
+                             * H/G:全國性繳費自行 F/P: 全國性繳費跨行 K:統一 L:萊爾富 N:全家 O:OK T:中信
+                             * Q:聯信(e政府) X: 財金 U:郵局 J:行動支付*/
+                            string payType = lines[i].Substring(99, 1);
+                            // 繳費期限(銷帳檔範例: 150827，所以要加2011才會變2026)
+                            DateTime payEndDate = Convert.ToDateTime($"{2011 + Convert.ToInt32(lines[i].Substring(39, 2))}-{lines[i].Substring(41, 2)}-{lines[i].Substring(43, 2)}");
+                            // 實際繳費金額
                             int actualPayAmount = Convert.ToInt32(lines[i].Substring(100, 10));
-                            payAmount = actualPayAmount;
+                            // 繳費日期(銷帳檔範例: 150721，所以要加2011才會變2026)
                             DateTime payDate = Convert.ToDateTime($"{2011 + Convert.ToInt32(lines[i].Substring(93, 2))}-{lines[i].Substring(95, 2)}-{lines[i].Substring(97, 2)}");
-                            if (lines[i].Substring(99, 1) == "U")
+
+                            // 繳費單的繳費金額
+                            int payAmount = actualPayAmount;
+
+                            // 如果是郵局的話，實際繳費金額會包含手續費，所以要取得原始金額
+                            if (payType == "U")
                             {
                                 payAmount = BotHelper.GetOriginalAmount(actualPayAmount);
                             }
 
+
                             // 取得 SQL 付款資訊
-                            var paymentsInDB = _formService.GetPaymentByPaymentID(account, payAmount);
+                            var paymentsInDB = _formService.GetPayment(account, payType, payEndDate, payAmount);
                             if (paymentsInDB == null)
                                 throw new Exception($"虛擬帳號 {account} 在資料庫中不存在。");
 

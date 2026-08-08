@@ -855,9 +855,10 @@ namespace NT_AirPollution.Service
         /// 取得申請單繳費資訊
         /// </summary>
         /// <param name="paymentID"></param>
+        /// <param name="payEndDate"></param>
         /// <param name="payAmount"></param>
         /// <returns></returns>
-        public Payment GetPaymentByPaymentID(string paymentID, double payAmount)
+        public Payment GetPayment(string paymentID, DateTime payEndDate, double payAmount)
         {
             using (var cn = new SqlConnection(connStr))
             {
@@ -865,11 +866,47 @@ namespace NT_AirPollution.Service
                 var payment = cn.QueryFirstOrDefault<Payment>(@"
                     SELECT * FROM dbo.Payment
                     WHERE (PaymentID=@PaymentID OR PostPaymentID=@PaymentID)
+                        AND PayEndDate=@PayEndDate
                         AND (PayableAmount=@PayAmount)",
                     new
                     {
                         PaymentID = paymentID,
+                        PayEndDate = payEndDate,
                         PayAmount = payAmount
+                    });
+
+                return payment;
+            }
+        }
+
+        /// <summary>
+        /// 取得申請單繳費資訊
+        /// </summary>
+        /// <param name="paymentID">銷帳編號</param>
+        /// <param name="payType">繳費方式</param>
+        /// <param name="payEndDate">繳費期限</param>
+        /// <param name="payAmount">繳費金額</param>
+        /// <returns></returns>
+        public Payment GetPayment(string paymentID, string payType, DateTime payEndDate, double payAmount)
+        {
+            string payEndDateCondition = "";
+            if(payType != "U" && payType != "C" && payType != "M")
+            {
+                payEndDateCondition = " AND PayEndDate=@PayEndDate";
+            }
+
+            using (var cn = new SqlConnection(connStr))
+            {
+                // 找出銷帳檔的那筆銷帳單號
+                var payment = cn.QueryFirstOrDefault<Payment>(@"
+                    SELECT * FROM dbo.Payment
+                    WHERE (PaymentID=@PaymentID OR PostPaymentID=@PaymentID)
+                        AND (PayableAmount=@PayAmount)" + payEndDateCondition,
+                    new
+                    {
+                        PaymentID = paymentID,
+                        PayAmount = payAmount,
+                        PayEndDate = payEndDate.ToString("yyyy-MM-dd 23:59:59")
                     });
 
                 return payment;
@@ -1802,7 +1839,7 @@ namespace NT_AirPollution.Service
 
 
                 #region 寫入Payment
-                var payment = this.GetPaymentByPaymentID(abudf_1.FLNO, sumPrice);
+                var payment = this.GetPayment(abudf_1.FLNO, res.PayEndDate, sumPrice);
                 if (payment == null)
                 {
                     payment = new Payment
