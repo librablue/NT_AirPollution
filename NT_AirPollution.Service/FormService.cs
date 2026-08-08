@@ -887,12 +887,14 @@ namespace NT_AirPollution.Service
         /// <param name="payEndDate">繳費期限</param>
         /// <param name="payAmount">繳費金額</param>
         /// <returns></returns>
-        public Payment GetPayment(string paymentID, string payType, DateTime payEndDate, double payAmount)
+        public Payment GetPayment(string paymentID, string payType, string payEndDate, double payAmount)
         {
+            DateTime dtPayEndDate = DateTime.Now;
             string payEndDateCondition = "";
             if(payType != "U" && payType != "C" && payType != "M")
             {
                 payEndDateCondition = " AND PayEndDate=@PayEndDate";
+                dtPayEndDate = Convert.ToDateTime($"{2011 + Convert.ToInt32(payEndDate.Substring(0, 2))}-{payEndDate.Substring(2, 2)}-{payEndDate.Substring(4, 2)}");
             }
 
             using (var cn = new SqlConnection(connStr))
@@ -906,7 +908,7 @@ namespace NT_AirPollution.Service
                     {
                         PaymentID = paymentID,
                         PayAmount = payAmount,
-                        PayEndDate = payEndDate.ToString("yyyy-MM-dd 23:59:59")
+                        PayEndDate = dtPayEndDate.ToString("yyyy-MM-dd 23:59:59")
                     });
 
                 return payment;
