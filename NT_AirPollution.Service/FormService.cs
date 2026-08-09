@@ -77,6 +77,8 @@ namespace NT_AirPollution.Service
                         SELECT * FROM FormB WHERE FormID=@FormID",
                         new { FormID = item.ID });
 
+                    GetDefaultFormB(item);
+
                     item.FormSub = cn.Query<FormSub>(@"
                         SELECT * FROM FormSub WHERE FormID=@FormID",
                         new { FormID = item.ID }).ToList();
@@ -123,6 +125,8 @@ namespace NT_AirPollution.Service
                     result.FormB = cn.QueryFirstOrDefault<FormB>(@"
                         SELECT * FROM FormB WHERE FormID=@FormID",
                         new { FormID = result.ID });
+
+                    GetDefaultFormB(result);
 
                     result.FormSub = cn.Query<FormSub>(@"
                         SELECT * FROM FormSub WHERE FormID=@FormID",
@@ -186,62 +190,7 @@ namespace NT_AirPollution.Service
                         SELECT * FROM FormB WHERE FormID=@FormID",
                         new { FormID = item.ID });
 
-                    if (item.FormB == null)
-                    {
-                        double workDays = (item.E_DATE.ToWestDate() - item.B_DATE.ToWestDate()).TotalDays + 1;
-                        double downDays = item.StopWorks.Sum(o => o.DOWN_DAY);
-
-                        string B_STAT;
-                        if (item.P_KIND == "一次全繳")
-                            B_STAT = "A一次繳清無結算";
-                        else
-                            B_STAT = "B分期繳交待結算";
-
-                        if (item.S_AMT <= 100)
-                            B_STAT = "Z已申報結算";
-
-                        item.FormB = new FormB
-                        {
-                            FormID = item.ID,
-                            C_NO = item.C_NO,
-                            SER_NO = item.SER_NO,
-                            AP_DATE1 = null,
-                            B_STAT = B_STAT,
-                            B_CSTAT = "",
-                            KIND_NO = item.KIND_NO,
-                            KIND = item.KIND,
-                            YEAR = item.YEAR,
-                            A_KIND = item.A_KIND,
-                            MONEY = item.MONEY,
-                            AREA = item.AREA,
-                            AREA2 = item.AREA2,
-                            VOLUMEL = item.VOLUMEL,
-                            RATIOLB = item.RATIOLB,
-                            DENSITYL = item.DENSITYL,
-                            B_DATE = item.B_DATE,
-                            E_DATE = item.E_DATE,
-                            B_YEAR = Math.Round((workDays - downDays) / 365, 2, MidpointRounding.AwayFromZero),
-                            S_AMT = item.S_AMT2,
-                            T_DAY = workDays - downDays,
-                            AREA_B = item.AREA_B,
-                            AREA_F = item.AREA_F,
-                            PERC_B = item.PERC_B,
-                            PRE_C_AMT = item.S_AMT > item.S_AMT2 ? item.S_AMT - item.S_AMT2 : 0,
-                            PRE_C_AMT1 = item.S_AMT2 > item.S_AMT ? item.S_AMT2 - item.S_AMT : 0,
-                            B_KIND1 = "無",
-                            B_KIND2 = "無",
-                            ID_DOC1 = "無",
-                            ID_DOC2 = "無",
-                            ID_DOC3 = "無",
-                            COMP_DOC1 = "無",
-                            COMP_DOC2 = "無",
-                            COMP_DOC3 = "無",
-                            BUD_DOC1 = "無",
-                            BUD_DOC2 = "無",
-                            BUD_DOC3 = "無",
-                            WRONG_AP = "否"
-                        };
-                    }
+                    GetDefaultFormB(item);
 
                     item.FormSub = cn.Query<FormSub>(@"
                         SELECT * FROM FormSub WHERE FormID=@FormID",
@@ -298,6 +247,8 @@ namespace NT_AirPollution.Service
                     item.FormB = cn.QueryFirstOrDefault<FormB>(@"
                         SELECT * FROM FormB WHERE FormID=@FormID",
                         new { FormID = item.ID });
+
+                    GetDefaultFormB(item);
 
                     item.FormSub = cn.Query<FormSub>(@"
                         SELECT * FROM FormSub WHERE FormID=@FormID",
@@ -375,6 +326,8 @@ namespace NT_AirPollution.Service
                         SELECT * FROM FormB WHERE FormID=@FormID",
                         new { FormID = item.ID });
 
+                    GetDefaultFormB(item);
+
                     item.FormSub = cn.Query<FormSub>(@"
                         SELECT * FROM FormSub WHERE FormID=@FormID",
                         new { FormID = item.ID }).ToList();
@@ -423,6 +376,8 @@ namespace NT_AirPollution.Service
                         SELECT * FROM FormB WHERE FormID=@FormID",
                         new { FormID = item.ID });
 
+                    GetDefaultFormB(item);
+
                     item.FormSub = cn.Query<FormSub>(@"
                         SELECT * FROM FormSub WHERE FormID=@FormID",
                         new { FormID = item.ID }).ToList();
@@ -470,12 +425,74 @@ namespace NT_AirPollution.Service
                         SELECT * FROM FormB WHERE FormID=@FormID",
                         new { FormID = form.ID });
 
+                    GetDefaultFormB(form);
+
                     form.FormSub = cn.Query<FormSub>(@"
                         SELECT * FROM FormSub WHERE FormID=@FormID",
                         new { FormID = form.ID }).ToList();
                 }
 
                 return forms;
+            }
+        }
+
+        private void GetDefaultFormB(FormView form)
+        {
+            if (form.FormB == null)
+            {
+                double workDays = (form.E_DATE.ToWestDate() - form.B_DATE.ToWestDate()).TotalDays + 1;
+                double downDays = form.StopWorks.Sum(o => o.DOWN_DAY);
+
+                string B_STAT;
+                if (form.P_KIND == "一次全繳")
+                    B_STAT = "A一次繳清無結算";
+                else
+                    B_STAT = "B分期繳交待結算";
+
+                if (form.S_AMT <= 100)
+                    B_STAT = "Z已申報結算";
+
+                form.FormB = new FormB
+                {
+                    FormID = form.ID,
+                    C_NO = form.C_NO,
+                    SER_NO = form.SER_NO,
+                    AP_DATE1 = null,
+                    B_STAT = B_STAT,
+                    B_CSTAT = "",
+                    KIND_NO = form.KIND_NO,
+                    KIND = form.KIND,
+                    YEAR = form.YEAR,
+                    A_KIND = form.A_KIND,
+                    MONEY = form.MONEY,
+                    AREA = form.AREA,
+                    AREA2 = form.AREA2,
+                    VOLUMEL = form.VOLUMEL,
+                    RATIOLB = form.RATIOLB,
+                    DENSITYL = form.DENSITYL,
+                    B_DATE = form.B_DATE,
+                    E_DATE = form.E_DATE,
+                    B_YEAR = Math.Round((workDays - downDays) / 365, 2, MidpointRounding.AwayFromZero),
+                    S_AMT = form.S_AMT2,
+                    T_DAY = workDays - downDays,
+                    AREA_B = form.AREA_B,
+                    AREA_F = form.AREA_F,
+                    PERC_B = form.PERC_B,
+                    PRE_C_AMT = form.S_AMT > form.S_AMT2 ? form.S_AMT - form.S_AMT2 : 0,
+                    PRE_C_AMT1 = form.S_AMT2 > form.S_AMT ? form.S_AMT2 - form.S_AMT : 0,
+                    B_KIND1 = "無",
+                    B_KIND2 = "無",
+                    ID_DOC1 = "無",
+                    ID_DOC2 = "無",
+                    ID_DOC3 = "無",
+                    COMP_DOC1 = "無",
+                    COMP_DOC2 = "無",
+                    COMP_DOC3 = "無",
+                    BUD_DOC1 = "無",
+                    BUD_DOC2 = "無",
+                    BUD_DOC3 = "無",
+                    WRONG_AP = "否"
+                };
             }
         }
 
