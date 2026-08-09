@@ -239,6 +239,14 @@ namespace NT_AirPollution.Admin.Controllers
                 // 再次更新SQL
                 _formService.UpdateForm(form);
 
+                // --- 3. 繳費單產生 ---
+                // 狀態大於待補件(2)則新增ABUDF_B，並產生 PDF
+                if (form.FormStatus > FormStatus.待補件)
+                {
+                    _formService.CreatePaymentPDF("", form);
+                }
+
+
                 return true;
             }
             catch (Exception ex)
