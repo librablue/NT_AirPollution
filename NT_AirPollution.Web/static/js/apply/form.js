@@ -1097,6 +1097,9 @@
 				this.formSubDialogVisible = false;
 			},
 			showSelfCheckModal(row) {
+                if(!this.selectRow.FileName1) {
+                    return alert('請先上傳「首期申報附件」，再提送審查。');
+                }
 				this.selectRow = Object.assign(this.selectRow, JSON.parse(JSON.stringify(row)));
 				this.selfCheckModalVisible = true;
 			},
@@ -1359,8 +1362,7 @@
 			},
 			sendCalcStatus1(row) {
 				if (!row.FileName2) {
-					alert('請先上傳相關附件，再提出結算申請。');
-					return;
+					return alert('請先上傳「結算申報附件」，再提送審查。');
 				}
 
 				if (!confirm('確定要提出結算申請嗎？')) return;

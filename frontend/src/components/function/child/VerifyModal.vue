@@ -120,11 +120,6 @@ export default {
 			if (this.form.FormStatus > 2 && !this.form.C_NO) {
 				return alert('若要通過審核，請先產生管制編號');
 			}
-            // 這裡的 == null 同時涵蓋了 null 與 undefined，但不會攔截 0
-			if (this.form.FormStatus > 2 && this.form.S_AMT == null) {
-				// 這裡的 == null 同時涵蓋了 null 與 undefined，但不會攔截 0
-				return alert('若要通過審核，請先開啟案件瀏覽並儲存，才會產生繳費金額');
-			}
 
 			if (!confirm('是否確認繼續?')) return false;
 			const loading = this.$loading();
