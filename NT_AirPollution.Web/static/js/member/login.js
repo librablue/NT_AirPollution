@@ -35,8 +35,9 @@
                     axios
                         .post('/Member/Login', this.form)
                         .then(res => {
-                            loading.close();
                             if (!res.data.Status) {
+                                // 驗證失敗時，關閉 loading 遮罩並重置驗證碼
+                                loading.close();
                                 turnstile.reset();
                                 this.form.Captcha = '';
                                 alert(res.data.Message);
