@@ -2390,6 +2390,10 @@ namespace NT_AirPollution.Service
                     doc.Range.Replace("{AREA}", form.FormB.AREA.Value.ToString());
                 }
 
+                doc.Range.Replace("{Year}", DateTime.Now.AddYears(-1911).ToString("yyy"));
+                doc.Range.Replace("{Month}", DateTime.Now.ToString("MM"));
+                doc.Range.Replace("{Date}", DateTime.Now.ToString("dd"));
+
                 doc.Save(resultFile);
 
                 return resultFile;
