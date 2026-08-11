@@ -170,40 +170,69 @@
 				}
 				callback();
 			};
+
+			// 南投縣邊界經緯度範圍 (Bounding Box)
+			const NANTOU_BOUNDS = {
+				MIN_LAT: 23.56,
+				MAX_LAT: 24.25,
+				MIN_LNG: 120.61,
+				MAX_LNG: 121.37
+			};
+
+			// 輔助函式：判斷座標是否落在南投範圍內
+			const isInNantou = (lat, lng) => {
+				return lat >= NANTOU_BOUNDS.MIN_LAT && lat <= NANTOU_BOUNDS.MAX_LAT && lng >= NANTOU_BOUNDS.MIN_LNG && lng <= NANTOU_BOUNDS.MAX_LNG;
+			};
+
+			// 緯度校驗
 			const checkLAT = (rule, value, callback) => {
 				// 如果不是在執行表單提交/validate 期間，直接放行不校驗
 				if (!this.isSubmitting) {
 					return callback();
 				}
-				if (isNaN(value)) {
-					callback(new Error('緯度格式錯誤'));
-				}
-				if (+value < -90 || +value > 90) {
-					callback(new Error('緯度格式錯誤'));
+
+				if (value === '' || value === null || value === undefined) {
+					return callback(new Error('請輸入緯度'));
 				}
 
-				const point = this.LatLon2UTM(this.selectRow.LAT, this.selectRow.LNG, 0, 0);
-				if (!String(point[0]).startsWith('2') || !String(point[1]).startsWith('2')) {
-					callback(new Error('座標不在南投範圍內'));
+				const lat = Number(value);
+				if (isNaN(lat) || lat < -90 || lat > 90) {
+					return callback(new Error('緯度格式錯誤'));
 				}
+
+				// 取得經度進行綜合位置判斷（若經度尚未輸入則先通過格式檢查）
+				const lng = Number(this.selectRow.LNG);
+				if (!isNaN(lng) && lng !== 0) {
+					if (!isInNantou(lat, lng)) {
+						return callback(new Error('座標不在南投範圍內'));
+					}
+				}
+
 				callback();
 			};
+			// 經度校驗
 			const checkLNG = (rule, value, callback) => {
-				// 如果不是在執行表單提交/validate 期間，直接放行不校驗
 				if (!this.isSubmitting) {
 					return callback();
 				}
-				if (isNaN(value)) {
-					callback(new Error('經度格式錯誤'));
-				}
-				if (+value < -180 || +value > 180) {
-					callback(new Error('經度格式錯誤'));
+
+				if (value === '' || value === null || value === undefined) {
+					return callback(new Error('請輸入經度'));
 				}
 
-				const point = this.LatLon2UTM(this.selectRow.LAT, this.selectRow.LNG, 0, 0);
-				if (!String(point[0]).startsWith('2') || !String(point[1]).startsWith('2')) {
-					callback(new Error('座標不在南投範圍內'));
+				const lng = Number(value);
+				if (isNaN(lng) || lng < -180 || lng > 180) {
+					return callback(new Error('經度格式錯誤'));
 				}
+
+				// 取得緯度進行綜合位置判斷（若緯度尚未輸入則先通過格式檢查）
+				const lat = Number(this.selectRow.LAT);
+				if (!isNaN(lat) && lat !== 0) {
+					if (!isInNantou(lat, lng)) {
+						return callback(new Error('座標不在南投範圍內'));
+					}
+				}
+
 				callback();
 			};
 			const checkS_B_ID = (rule, value, callback) => {
@@ -942,14 +971,14 @@
 				if (intActiveTab > 1) {
 					intActiveTab -= 1;
 					this.activeTab = intActiveTab.toString();
-                    this.isSubmitting = false;
+					this.isSubmitting = false;
 				}
 			},
 			goNextTab() {
 				// 1. 特殊邏輯計算
-                if(this.activeTab === '1') {
-                    this.isSubmitting = true;
-                }
+				if (this.activeTab === '1') {
+					this.isSubmitting = true;
+				}
 				if (this.activeTab === '2') {
 					this.selectRow.PERCENT = this.selectRow.PUB_COMP ? 4 : 3;
 				}
@@ -1101,9 +1130,9 @@
 				this.formSubDialogVisible = false;
 			},
 			showSelfCheckModal(row) {
-                if(!this.selectRow.FileName1) {
-                    return alert('請先上傳「首期申報附件」，再提送審查。');
-                }
+				if (!this.selectRow.FileName1) {
+					return alert('請先上傳「首期申報附件」，再提送審查。');
+				}
 				this.selectRow = Object.assign(this.selectRow, JSON.parse(JSON.stringify(row)));
 				this.selfCheckModalVisible = true;
 			},
@@ -1564,7 +1593,7 @@
 
 				return dayDiff;
 			},
-            // 是否能下載繳費單
+			// 是否能下載繳費單
 			canPaymentFileDownload(item) {
 				if (!item) return false;
 
@@ -1574,7 +1603,7 @@
 				}
 
 				// 條件 2：金額 <= 100 且 AP_DATE >= B_DATE
-				if (item.S_AMT > 0 &&  item.S_AMT <= 100) {
+				if (item.S_AMT > 0 && item.S_AMT <= 100) {
 					// 前景補 0 確保字串長度均為 7 碼
 					const apdate = String(item.AP_DATE).padStart(7, '0');
 					const bdate = String(item.B_DATE).padStart(7, '0');
@@ -1582,17 +1611,17 @@
 				}
 
 				return false;
-			},
-            // 是否能下載申報證明
+			}
+			// 是否能下載申報證明
 			// canApplyProofDownload(item) {
 			// 	if (!item) return false;
 
-            //     // 條件 1：FormStatus === 4
+			//     // 條件 1：FormStatus === 4
 			// 	if (item.FormStatus === 4) {
 			// 		return true;
 			// 	}
 
-            //     // 條件 2：金額 <= 100 且 AP_DATE < B_DATE
+			//     // 條件 2：金額 <= 100 且 AP_DATE < B_DATE
 			// 	if (item.S_AMT > 0 && item.S_AMT <= 100) {
 			// 		// 前景補 0 確保字串長度均為 7 碼
 			// 		const apdate = String(item.AP_DATE).padStart(7, '0');
@@ -1600,7 +1629,7 @@
 			// 		return apdate < bdate;
 			// 	}
 
-            //     return false;
+			//     return false;
 			// }
 			// showImportModal() {
 			// 	this.importModalVisible = true;
