@@ -942,10 +942,14 @@
 				if (intActiveTab > 1) {
 					intActiveTab -= 1;
 					this.activeTab = intActiveTab.toString();
+                    this.isSubmitting = false;
 				}
 			},
 			goNextTab() {
 				// 1. 特殊邏輯計算
+                if(this.activeTab === '1') {
+                    this.isSubmitting = true;
+                }
 				if (this.activeTab === '2') {
 					this.selectRow.PERCENT = this.selectRow.PUB_COMP ? 4 : 3;
 				}
