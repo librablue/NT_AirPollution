@@ -195,9 +195,10 @@
                     <el-form-item prop="EIACOMMENTS" label="環評保護對策">
                         <el-input v-model="selectRow.EIACOMMENTS"></el-input>
                     </el-form-item>
-                    <el-form-item prop="RECCOMMENTS" label="備註">
+                    @*前台不顯示*@
+                    @*<el-form-item prop="RECCOMMENTS" label="備註">
                         <el-input v-model="selectRow.RECCOMMENTS"></el-input>
-                    </el-form-item>
+                    </el-form-item>*@
                 </el-form>
             </el-tab-pane>
             <el-tab-pane label="營建業主基本資料" name="2" :disabled="selectRow.FormStatus <= 2">

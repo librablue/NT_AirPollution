@@ -1803,6 +1803,10 @@ namespace NT_AirPollution.Service
                 }
 
                 double sumPrice = Math.Round(res.CurrentPrice + res.Interest + res.Penalty, 0);
+                // 不用繳費後續不用處理
+                if (sumPrice <= 0)
+                    return null;
+
                 ABUDF_1 abudf_1InDB = _accessService.GetABUDF_1(form);
                 string transNo = ((abudf_1InDB?.FLNO?.Length == 16) ? abudf_1InDB?.FLNO?.Substring(10, 6) : "000000");
 
@@ -1894,7 +1898,7 @@ namespace NT_AirPollution.Service
 
 
                 // 如果沒傳入檔名就不做PDF轉檔
-                if (string.IsNullOrEmpty(fileName)) return "";
+                if (string.IsNullOrEmpty(fileName)) return null;
 
 
                 var wb = new XLWorkbook(templateFile);

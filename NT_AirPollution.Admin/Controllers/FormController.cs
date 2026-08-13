@@ -239,7 +239,7 @@ namespace NT_AirPollution.Admin.Controllers
                 // 再次更新SQL
                 _formService.UpdateForm(form);
 
-                // 狀態大於待補件(2)則並產生PDF，並新增 ABUDF_1
+                // 狀態大於待補件(2)則呼叫產生PDF方法，為了新增 ABUDF_1
                 if (form.FormStatus > FormStatus.待補件)
                 {
                     _formService.CreatePaymentPDF("", form);

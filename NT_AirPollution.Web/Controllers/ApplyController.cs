@@ -264,6 +264,7 @@ namespace NT_AirPollution.Web.Controllers
                 form.CalcStatus = CalcStatus.未申請;
                 form.VerifyStage1 = VerifyStage.未申請;
                 form.VerifyStage2 = VerifyStage.未申請;
+                form.RECCOMMENTS = "屬新網路申報案件";
 
                 if (form.KIND_NO == "1" || form.KIND_NO == "2")
                 {
