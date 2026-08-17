@@ -2446,6 +2446,8 @@ namespace NT_AirPollution.Service
 
                 if (info.Today > result.PayEndDate)
                 {
+                    // 超過繳費期限時，繳費期限 = 當天
+                    result.PayEndDate = info.Today;
                     // 延遲天數 = 今天 - 開工日
                     result.DelayDays = (info.Today - result.StartDate).Days;
                 }
