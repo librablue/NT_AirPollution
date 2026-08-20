@@ -389,7 +389,7 @@
 							</div>
 							<div v-else-if="form.KIND_NO === '3'">
 								<el-form-item prop="AREA2" label="總樓地板面積(平方公尺)">
-									<el-input type="number" v-model="form.AREA2" disabled></el-input>
+									<el-input type="number" v-model="form.FormB.AREA2"></el-input>
 								</el-form-item>
 							</div>
 							<div v-else>

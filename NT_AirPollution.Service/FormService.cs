@@ -754,15 +754,22 @@ namespace NT_AirPollution.Service
         /// </summary>
         /// <param name="paymentID"></param>
         /// <returns></returns>
-        public Payment GetPaymentByPaymentID(string paymentID)
+        public Payment GetPayment(string paymentID, DateTime payEndDate, double payAmount)
         {
             using (var cn = new SqlConnection(connStr))
             {
                 // 找出銷帳檔的那筆銷帳單號
                 var payment = cn.QueryFirstOrDefault<Payment>(@"
                     SELECT * FROM dbo.Payment
-                    WHERE PaymentID=@PaymentID OR PostPaymentID=@PaymentID",
-                    new { PaymentID = paymentID });
+                    WHERE (PaymentID=@PaymentID OR PostPaymentID=@PaymentID)
+                        AND PayEndDate=@PayEndDate
+                        AND (PayableAmount=@PayAmount)",
+                    new
+                    {
+                        PaymentID = paymentID,
+                        PayEndDate = payEndDate,
+                        PayAmount = payAmount
+                    });
 
                 return payment;
             }
@@ -1642,10 +1649,19 @@ namespace NT_AirPollution.Service
                     info.ApplyDate = form.AP_DATE1.ToWestDate();
                     info.VerifyDate = form.VerifyDate2.Value;
                     info.TotalPrice = form.S_AMT2.Value;
-                    info.CurrentPrice = form.S_AMT2.Value - form.P_AMT.Value;
+
+                    // 如果申報金額小於100免繳費，結算金額大於100則以結算金額為繳費金額，否則以結算金額-申報金額為繳費金額
+                    if (form.P_AMT.Value <= 100 && form.S_AMT2.Value > 100)
+                    {
+                        info.CurrentPrice = form.S_AMT2.Value;
+                    }
+                    else
+                    {
+                        info.CurrentPrice = form.S_AMT2.Value - form.P_AMT.Value;
+                    }
                 }
 
-                // 計算繳費資訊
+                // 計算繳費資訊(回傳原物件)
                 var res = CalcPayment(info);
                 // 結算沒有滯納金&利息，繳費期限為結算日+60天
                 if (!string.IsNullOrEmpty(form.AP_DATE1))
@@ -1661,6 +1677,10 @@ namespace NT_AirPollution.Service
                 }
 
                 double sumPrice = Math.Round(res.CurrentPrice + res.Interest + res.Penalty, 0);
+                // 不用繳費後續不用處理
+                if (sumPrice <= 0)
+                    return null;
+
                 ABUDF_1 abudf_1InDB = _accessService.GetABUDF_1(form);
                 string transNo = ((abudf_1InDB?.FLNO?.Length == 16) ? abudf_1InDB?.FLNO?.Substring(10, 6) : "000000");
 
@@ -1711,12 +1731,12 @@ namespace NT_AirPollution.Service
                 string barcodeMarketB = abudf_1.FLNO;
                 string barcodeMarketC = BotHelper.GetMarketAmt("0032", sumPrice.ToString(), abudf_1.FLNO, abudf_1.E_DATE);
                 string barcodePostA = "19834251";
-                string barcodePostB = BotHelper.GetPostNo(transNo, abudf_1.F_AMT.ToString(), abudf_1.E_DATE);
-                string barcodePostC = BotHelper.GetPostAmt(abudf_1.F_AMT.ToString());
+                string barcodePostB = BotHelper.GetPostNo(transNo, sumPrice.ToString(), abudf_1.E_DATE);
+                string barcodePostC = BotHelper.GetPostAmt(sumPrice.ToString());
 
 
                 #region 寫入Payment
-                var payment = this.GetPaymentByPaymentID(abudf_1.FLNO);
+                var payment = this.GetPayment(abudf_1.FLNO, res.PayEndDate, sumPrice);
                 if (payment == null)
                 {
                     payment = new Payment
@@ -1750,8 +1770,9 @@ namespace NT_AirPollution.Service
                 #endregion
 
 
+
                 // 如果沒傳入檔名就不做PDF轉檔
-                if (string.IsNullOrEmpty(fileName)) return "";
+                if (string.IsNullOrEmpty(fileName)) return null;
 
 
                 var wb = new XLWorkbook(templateFile);

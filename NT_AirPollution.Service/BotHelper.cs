@@ -185,6 +185,11 @@ namespace NT_AirPollution.Service
             return amt.PadLeft(6, '0');
         }
 
+        /// <summary>
+        /// 取得郵局手續費
+        /// </summary>
+        /// <param name="amt"></param>
+        /// <returns></returns>
         public static int GetPostFee(string amt)
         {
             if (int.Parse(amt) <= 95)
@@ -196,6 +201,28 @@ namespace NT_AirPollution.Service
                 return 10;
             }
             return 15;
+        }
+
+        /// <summary>
+        /// 取得原始金額，因為郵局會加收手續費，所以要扣掉手續費
+        /// </summary>
+        /// <param name="totalAmt"></param>
+        /// <returns></returns>
+        public static int GetOriginalAmount(int totalAmt)
+        {
+            if (totalAmt <= 0)
+            {
+                return 0;
+            }
+            if (totalAmt <= 100)
+            {
+                return totalAmt - 5;
+            }
+            if (totalAmt <= 1000)
+            {
+                return totalAmt - 10;
+            }
+            return totalAmt - 15;
         }
     }
 }
