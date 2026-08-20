@@ -391,16 +391,16 @@
 								</div>
 								<div v-if="form.FormB.KIND_NO === '1' || form.FormB.KIND_NO === '2'" class="flex-row">
 									<el-form-item prop="AREA_F" label="基地面積">
-										<el-input type="number" style="width:120px" v-model="form.AREA_F"></el-input>平方公尺
+										<el-input type="number" style="width:120px" v-model="form.FormB.AREA_F"></el-input>平方公尺
 									</el-form-item>
 									<el-form-item prop="AREA_B" label="建築面積">
-										<el-input type="number" style="width:120px" v-model="form.AREA_B"></el-input>平方公尺
+										<el-input type="number" style="width:120px" v-model="form.FormB.AREA_B"></el-input>平方公尺
 									</el-form-item>
 									<el-form-item prop="PERC_B" label="建蔽率">{{calcPERC_B2}}%</el-form-item>
 								</div>
 								<div v-else-if="form.KIND_NO === '3'">
 									<el-form-item prop="AREA2" label="總樓地板面積(平方公尺)">
-										<el-input type="number" v-model="form.AREA2" disabled></el-input>
+										<el-input type="number" v-model="form.FormB.AREA2"></el-input>
 									</el-form-item>
 								</div>
 								<div v-else>
