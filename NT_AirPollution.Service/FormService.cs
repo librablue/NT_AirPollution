@@ -750,9 +750,11 @@ namespace NT_AirPollution.Service
         }
 
         /// <summary>
-        /// 取得申請單所有銷帳單號
+        /// 取得申請單繳費資訊
         /// </summary>
         /// <param name="paymentID"></param>
+        /// <param name="payEndDate"></param>
+        /// <param name="payAmount"></param>
         /// <returns></returns>
         public Payment GetPayment(string paymentID, DateTime payEndDate, double payAmount)
         {
@@ -769,6 +771,42 @@ namespace NT_AirPollution.Service
                         PaymentID = paymentID,
                         PayEndDate = payEndDate,
                         PayAmount = payAmount
+                    });
+
+                return payment;
+            }
+        }
+
+        /// <summary>
+        /// 取得申請單繳費資訊
+        /// </summary>
+        /// <param name="paymentID">銷帳編號</param>
+        /// <param name="payType">繳費方式</param>
+        /// <param name="payEndDate">繳費期限</param>
+        /// <param name="payAmount">繳費金額</param>
+        /// <returns></returns>
+        public Payment GetPayment(string paymentID, string payType, string payEndDate, double payAmount)
+        {
+            DateTime dtPayEndDate = DateTime.Now;
+            string payEndDateCondition = "";
+            if (payType != "U" && payType != "C" && payType != "M")
+            {
+                payEndDateCondition = " AND PayEndDate=@PayEndDate";
+                dtPayEndDate = Convert.ToDateTime($"{2011 + Convert.ToInt32(payEndDate.Substring(0, 2))}-{payEndDate.Substring(2, 2)}-{payEndDate.Substring(4, 2)}");
+            }
+
+            using (var cn = new SqlConnection(connStr))
+            {
+                // 找出銷帳檔的那筆銷帳單號
+                var payment = cn.QueryFirstOrDefault<Payment>(@"
+                    SELECT * FROM dbo.Payment
+                    WHERE (PaymentID=@PaymentID OR PostPaymentID=@PaymentID)
+                        AND (PayableAmount=@PayAmount)" + payEndDateCondition,
+                    new
+                    {
+                        PaymentID = paymentID,
+                        PayAmount = payAmount,
+                        PayEndDate = dtPayEndDate.ToString("yyyy-MM-dd 23:59:59")
                     });
 
                 return payment;
