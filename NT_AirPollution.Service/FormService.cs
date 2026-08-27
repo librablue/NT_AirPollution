@@ -1917,9 +1917,9 @@ namespace NT_AirPollution.Service
                 ws.Cell("F7").SetValue(ws.Cell("F7").GetText().Replace("#P_NUM#", form.P_KIND == "一次全繳" ? "1" : "2").Replace("#P_TIME#", abudf_1.P_TIME));
                 ws.Cell("O7").SetValue(ws.Cell("O7").GetText().Replace("#P_NUM#", form.P_KIND == "一次全繳" ? "1" : "2").Replace("#P_TIME#", abudf_1.P_TIME));
                 ws.Cell("D8").SetValue(ws.Cell("D8").GetText().Replace("#PayEndDate#", res.PayEndDate.AddYears(-1911).ToString("yyy年MM月dd日")));
-                ws.Cell("O8").SetValue(res.TotalPrice.ToString("N0"));
+                ws.Cell("O8").SetValue(sumPrice.ToString("N0"));
                 ws.Cell("D9").SetValue(res.CurrentPrice.ToString("N0"));
-                ws.Cell("O9").SetValue(this.GetChineseMoney(res.TotalPrice.ToString()));
+                ws.Cell("O9").SetValue(this.GetChineseMoney(sumPrice.ToString()));
                 ws.Cell("D10").SetValue(res.Penalty.ToString("N0"));
                 ws.Cell("D11").SetValue(res.Interest.ToString("N0"));
                 ws.Cell("D12").SetValue(sumPrice.ToString("N0"));
