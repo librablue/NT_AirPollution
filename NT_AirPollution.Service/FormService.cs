@@ -1754,48 +1754,40 @@ namespace NT_AirPollution.Service
                 string tempFile = $@"{_paymentPath}\Download\{fileName}.xlsx";
                 string pdfFile = $@"{_paymentPath}\Download\{fileName}.pdf";
 
-                PaymentInfo info = new PaymentInfo
+                // 1. 狀態標記與基礎變數準備
+                bool isFinal = !string.IsNullOrEmpty(form.AP_DATE1); // 是否為結算階段
+                DateTime pdate = (isFinal ? form.AP_DATE1 : form.AP_DATE).ToWestDate();
+
+                // 2. 構建 PaymentInfo 運算物件
+                var info = new PaymentInfo
                 {
                     Today = DateTime.Now,
                     IsPublic = form.PUB_COMP,
-                    StartDate = form.B_DATE.ToWestDate()
+                    StartDate = form.B_DATE.ToWestDate(),
+                    ApplyDate = pdate,
+                    VerifyDate = isFinal ? form.VerifyDate2.Value : form.VerifyDate1.Value,
+                    TotalPrice = isFinal ? form.S_AMT2.Value : form.S_AMT.Value
                 };
 
-                // 申報
-                if (string.IsNullOrEmpty(form.AP_DATE1))
+                if (isFinal)
                 {
-                    info.ApplyDate = form.AP_DATE.ToWestDate();
-                    info.VerifyDate = form.VerifyDate1.Value;
-                    info.TotalPrice = form.S_AMT.Value;
-                    info.CurrentPrice = form.P_AMT.Value;
+                    // 申報金額 <= 100 免繳費且結算金額 > 100 則以結算金額計算，否則扣除申報金額
+                    bool isApplyExempt = form.P_AMT.Value <= 100 && form.S_AMT2.Value > 100;
+                    info.CurrentPrice = isApplyExempt ? form.S_AMT2.Value : (form.S_AMT2.Value - form.P_AMT.Value);
                 }
-                // 結算
                 else
                 {
-                    info.ApplyDate = form.AP_DATE1.ToWestDate();
-                    info.VerifyDate = form.VerifyDate2.Value;
-                    info.TotalPrice = form.S_AMT2.Value;
-
-                    // 如果申報金額小於100免繳費，結算金額大於100則以結算金額為繳費金額，否則以結算金額-申報金額為繳費金額
-                    if (form.P_AMT.Value <= 100 && form.S_AMT2.Value > 100)
-                    {
-                        info.CurrentPrice = form.S_AMT2.Value;
-                    }
-                    else
-                    {
-                        info.CurrentPrice = form.S_AMT2.Value - form.P_AMT.Value;
-                    }
+                    info.CurrentPrice = form.P_AMT.Value;
                 }
 
-                // 計算繳費資訊(回傳原物件)
+                // 3. 試算繳費與期限
                 var res = CalcPayment(info);
-                // 結算沒有滯納金&利息，繳費期限為結算日+60天
-                if (!string.IsNullOrEmpty(form.AP_DATE1))
+                if (isFinal)
                 {
                     res.Interest = 0;
                     res.Penalty = 0;
                     res.PayEndDate = info.ApplyDate.AddDays(60);
-                    // 如果超過60天就以今天為繳費期限
+
                     if (DateTime.Now.Date > res.PayEndDate.Date)
                     {
                         res.PayEndDate = DateTime.Now;
@@ -1803,56 +1795,38 @@ namespace NT_AirPollution.Service
                 }
 
                 double sumPrice = Math.Round(res.CurrentPrice + res.Interest + res.Penalty, 0);
-                // 不用繳費後續不用處理
-                if (sumPrice <= 0)
-                    return null;
 
+                // 4. 寫入 ABUDF_1
                 ABUDF_1 abudf_1InDB = _accessService.GetABUDF_1(form);
-                string transNo = ((abudf_1InDB?.FLNO?.Length == 16) ? abudf_1InDB?.FLNO?.Substring(10, 6) : "000000");
+                string transNo = (abudf_1InDB?.FLNO?.Length == 16) ? abudf_1InDB.FLNO.Substring(10, 6) : "000000";
 
-                // 填發日期
-                DateTime pdate;
-
-                #region 寫入ABUDF_1
-                ABUDF_1 abudf_1 = new ABUDF_1();
-                abudf_1.C_NO = form.C_NO;
-                abudf_1.SER_NO = form.SER_NO;
-                abudf_1.P_TIME = string.IsNullOrEmpty(form.AP_DATE1) ? "01" : "02";
-
-                // 結算的填發日要用審核結算通過的那天
-                if (string.IsNullOrEmpty(form.AP_DATE1))
-                {
-                    pdate = form.AP_DATE.ToWestDate();
-                    abudf_1.P_DATE = pdate.AddYears(-1911).ToString("yyyMMdd");
-                }
-                else
-                {
-                    pdate = form.AP_DATE1.ToWestDate();
-                    abudf_1.P_DATE = form.FIN_DATE;
-                }
-
-                // 退費不用填繳費期限
-                abudf_1.E_DATE = sumPrice > 0 ? res.PayEndDate.AddYears(-1911).ToString("yyyMMdd") : null;
-
-                // transNo為預設值或超過繳費期限，要重新產生銷帳單號
+                // 預設單號或已逾期時重新取號
                 if (transNo == "000000" || DateTime.Now.Date > res.PayEndDate.Date)
                 {
-                    // 產生新的聯單序號
                     transNo = _accessService.GetFLNo(pdate.AddYears(-1911).ToString("yyyMMdd"));
                 }
 
-                abudf_1.FLNO = BotHelper.GetPayNo(transNo, sumPrice.ToString(), abudf_1.E_DATE);
-                abudf_1.F_AMT = sumPrice > 0 ? sumPrice : 0;
-                abudf_1.B_AMT = sumPrice > 0 ? 0 : Math.Abs(sumPrice);
-                abudf_1.KEYIN = "EPB02";
-                abudf_1.C_DATE = DateTime.Now;
-                abudf_1.M_DATE = DateTime.Now;
-                // 寫入 ABUDF_1
+                ABUDF_1 abudf_1 = new ABUDF_1
+                {
+                    C_NO = form.C_NO,
+                    SER_NO = form.SER_NO,
+                    P_TIME = isFinal ? "02" : "01",
+                    P_DATE = isFinal ? form.FIN_DATE : pdate.AddYears(-1911).ToString("yyyMMdd"),
+                    E_DATE = sumPrice > 0 ? res.PayEndDate.AddYears(-1911).ToString("yyyMMdd") : null,
+                    FLNO = sumPrice > 0 ? BotHelper.GetPayNo(transNo, sumPrice.ToString(), res.PayEndDate.AddYears(-1911).ToString("yyyMMdd")) : null,
+                    F_AMT = sumPrice > 0 ? sumPrice : 0,
+                    B_AMT = sumPrice > 0 ? 0 : Math.Abs(sumPrice),
+                    KEYIN = "EPB02",
+                    C_DATE = DateTime.Now,
+                    M_DATE = DateTime.Now
+                };
+
                 _accessService.AddABUDF_1(abudf_1);
-                #endregion
 
+                // 免繳費則直接中斷後續處理
+                if (sumPrice <= 0) return null;
 
-                // 產生條碼
+                // 5. 產生條碼與寫入 Payment 資料表
                 string barcodeMarketA = BotHelper.GetMarketNo(abudf_1.E_DATE);
                 string barcodeMarketB = abudf_1.FLNO;
                 string barcodeMarketC = BotHelper.GetMarketAmt("0032", sumPrice.ToString(), abudf_1.FLNO, abudf_1.E_DATE);
@@ -1860,119 +1834,137 @@ namespace NT_AirPollution.Service
                 string barcodePostB = BotHelper.GetPostNo(transNo, sumPrice.ToString(), abudf_1.E_DATE);
                 string barcodePostC = BotHelper.GetPostAmt(sumPrice.ToString());
 
-
-                #region 寫入Payment
-                var payment = this.GetPayment(abudf_1.FLNO, res.PayEndDate, sumPrice);
-                if (payment == null)
-                {
-                    payment = new Payment
-                    {
-                        ID = 0,
-                        FormID = form.ID,
-                        Term = abudf_1.P_TIME,
-                        PayEndDate = res.PayEndDate,
-                        PaymentID = barcodeMarketB,
-                        PostPaymentID = barcodePostB,
-                        PayableAmount = sumPrice,
-                        Penalty = res.Penalty,
-                        Interest = res.Interest,
-                        Percent = res.Rate,
-                        CreateDate = DateTime.Now
-                    };
-                }
-                else
-                {
-                    payment.FormID = form.ID;
-                    payment.Term = abudf_1.P_TIME;
-                    payment.PayEndDate = res.PayEndDate;
-                    payment.PayableAmount = sumPrice;
-                    payment.Penalty = res.Penalty;
-                    payment.Interest = res.Interest;
-                    payment.Percent = res.Rate;
-                    payment.CreateDate = DateTime.Now;
-                }
+                Payment payment = this.GetPayment(abudf_1.FLNO, res.PayEndDate, sumPrice) ?? new Payment { ID = 0 };
+                payment.FormID = form.ID;
+                payment.Term = abudf_1.P_TIME;
+                payment.PayEndDate = res.PayEndDate;
+                payment.PaymentID = barcodeMarketB;
+                payment.PostPaymentID = barcodePostB;
+                payment.PayableAmount = sumPrice;
+                payment.Penalty = res.Penalty;
+                payment.Interest = res.Interest;
+                payment.Percent = res.Rate;
+                payment.CreateDate = DateTime.Now;
 
                 this.AddPayment(payment);
-                #endregion
 
-
-
-                // 如果沒傳入檔名就不做PDF轉檔
                 if (string.IsNullOrEmpty(fileName)) return null;
 
+                // 6. 填寫 Excel 樣板 (使用 Local Function 減少冗長程式碼)
+                using (var wb = new XLWorkbook(templateFile))
+                {
+                    var ws = wb.Worksheet(1);
 
-                var wb = new XLWorkbook(templateFile);
-                var ws = wb.Worksheet(1);
-                ws.Cell("B2").SetValue(ws.Cell("B2").GetText().Replace("#VerifyDate#", pdate.AddYears(-1911).ToString("yyy年MM月dd日")));
-                ws.Cell("M2").SetValue(ws.Cell("M2").GetText().Replace("#VerifyDate#", pdate.AddYears(-1911).ToString("yyy年MM月dd日")));
-                ws.Cell("D3").SetValue($"{form.C_NO}-{form.SER_NO}");
-                ws.Cell("O3").SetValue($"{form.C_NO}-{form.SER_NO}");
-                ws.Cell("D4").SetValue(form.COMP_NAM);
-                ws.Cell("O4").SetValue(form.S_NAME);
-                ws.Cell("D5").SetValue(form.S_NAME);
-                ws.Cell("O5").SetValue(form.COMP_NAM);
-                ws.Cell("F2").SetValue(ws.Cell("F2").GetText().Replace("#PAY_NO#", barcodeMarketB));
-                ws.Cell("F6").SetValue(form.B_SERNO);
-                ws.Cell("D7").SetValue(form.P_KIND);
-                ws.Cell("F7").SetValue(ws.Cell("F7").GetText().Replace("#P_NUM#", form.P_KIND == "一次全繳" ? "1" : "2").Replace("#P_TIME#", abudf_1.P_TIME));
-                ws.Cell("O7").SetValue(ws.Cell("O7").GetText().Replace("#P_NUM#", form.P_KIND == "一次全繳" ? "1" : "2").Replace("#P_TIME#", abudf_1.P_TIME));
-                ws.Cell("D8").SetValue(ws.Cell("D8").GetText().Replace("#PayEndDate#", res.PayEndDate.AddYears(-1911).ToString("yyy年MM月dd日")));
-                ws.Cell("O8").SetValue(sumPrice.ToString("N0"));
-                ws.Cell("D9").SetValue(res.CurrentPrice.ToString("N0"));
-                ws.Cell("O9").SetValue(this.GetChineseMoney(sumPrice.ToString()));
-                ws.Cell("D10").SetValue(res.Penalty.ToString("N0"));
-                ws.Cell("D11").SetValue(res.Interest.ToString("N0"));
-                ws.Cell("D12").SetValue(sumPrice.ToString("N0"));
-                ws.Cell("M12").SetValue(form.B_SERNO);
-                ws.Cell("D13").SetValue(this.GetChineseMoney(sumPrice.ToString()));
-                ws.Cell("B17").SetValue(ws.Cell("B17").GetText().Replace("#VerifyDate#", pdate.AddYears(-1911).ToString("yyy年MM月dd日")));
-                ws.Cell("M17").SetValue(ws.Cell("M17").GetText().Replace("#PAY_NO#", barcodeMarketB));
-                ws.Cell("D18").SetValue($"{form.C_NO}-{form.SER_NO}");
-                ws.Cell("I18").SetValue(form.COMP_NAM);
-                ws.Cell("D19").SetValue(form.S_NAME);
-                ws.Cell("P19").SetValue(form.B_SERNO);
-                ws.Cell("D20").SetValue(form.P_KIND);
-                ws.Cell("F20").SetValue(ws.Cell("F20").GetText().Replace("#P_NUM#", form.P_KIND == "一次全繳" ? "1" : "2").Replace("#P_TIME#", abudf_1.P_TIME));
-                ws.Cell("D21").SetValue(ws.Cell("D21").GetText().Replace("#PayEndDate#", res.PayEndDate.AddYears(-1911).ToString("yyy年MM月dd日")));
-                ws.Cell("D22").SetValue(res.CurrentPrice.ToString("N0"));
-                ws.Cell("D23").SetValue(res.Penalty.ToString("N0"));
-                ws.Cell("I23").SetValue(res.Interest.ToString("N0"));
-                ws.Cell("D24").SetValue(sumPrice.ToString("N0"));
-                ws.Cell("D25").SetValue(this.GetChineseMoney(sumPrice.ToString()));
-                ws.Cell("B29").SetValue(ws.Cell("B29").GetText().Replace("#VerifyDate#", pdate.AddYears(-1911).ToString("yyy年MM月dd日")));
-                ws.Cell("D30").SetValue($"{form.C_NO}-{form.SER_NO}");
-                ws.Cell("I30").SetValue(form.COMP_NAM);
-                ws.Cell("D31").SetValue(form.S_NAME);
-                ws.Cell("P31").SetValue(form.B_SERNO);
-                ws.Cell("D32").SetValue(form.P_KIND);
-                ws.Cell("F32").SetValue(ws.Cell("F32").GetText().Replace("#P_NUM#", form.P_KIND == "一次全繳" ? "1" : "2").Replace("#P_TIME#", abudf_1.P_TIME));
-                ws.Cell("O32").SetValue(res.PayEndDate.AddYears(-1911).ToString("yyy年MM月dd日"));
-                ws.Cell("D34").SetValue(res.CurrentPrice.ToString("N0"));
-                ws.Cell("I34").SetValue(res.Penalty.ToString("N0"));
-                ws.Cell("O34").SetValue(res.Interest.ToString("N0"));
-                ws.Cell("D35").SetValue(sumPrice.ToString("N0"));
-                ws.Cell("G35").SetValue(ws.Cell("G35").GetText().Replace("#F_AMTC#", this.GetChineseMoney(sumPrice.ToString())));
-                ws.Cell("I36").SetValue(barcodeMarketB);
-                ws.Cell("C37").SetValue($"*{abudf_1.FLNO}*");
-                ws.Cell("K37").SetValue($"*{barcodeMarketA}*");
-                ws.Cell("K38").SetValue(barcodeMarketA);
-                ws.Cell("K39").SetValue($"*{barcodeMarketB}*");
-                ws.Cell("K40").SetValue(barcodeMarketB);
-                ws.Cell("K41").SetValue($"*{barcodeMarketC}*");
-                ws.Cell("K42").SetValue(barcodeMarketC);
-                ws.Cell("K45").SetValue($"*{barcodePostB}*");
-                ws.Cell("K46").SetValue(barcodePostB);
-                ws.Cell("K47").SetValue($"*{barcodePostC}*");
-                ws.Cell("K48").SetValue(barcodePostC);
-                wb.SaveAs(tempFile);
+                    void ReplaceCellText(string address, string oldValue, string newValue)
+                    {
+                        ws.Cell(address).SetValue(ws.Cell(address).GetText().Replace(oldValue, newValue));
+                    }
 
-                // 轉PDF
-                Aspose.Cells.License license = new Aspose.Cells.License();
+                    string verifyDateStr = pdate.AddYears(-1911).ToString("yyy年MM月dd日");
+                    string payEndDateStr = res.PayEndDate.AddYears(-1911).ToString("yyy年MM月dd日");
+                    string pNumStr = form.P_KIND == "一次全繳" ? "1" : "2";
+                    string sumPriceStr = sumPrice.ToString("N0");
+                    string currentPriceStr = res.CurrentPrice.ToString("N0");
+                    string penaltyStr = res.Penalty.ToString("N0");
+                    string interestStr = res.Interest.ToString("N0");
+                    string chineseMoney = this.GetChineseMoney(sumPrice.ToString());
+                    string companySerNo = $"{form.C_NO}-{form.SER_NO}";
+
+                    // 文字替換
+                    ReplaceCellText("B2", "#VerifyDate#", verifyDateStr);
+                    ReplaceCellText("M2", "#VerifyDate#", verifyDateStr);
+                    ReplaceCellText("B17", "#VerifyDate#", verifyDateStr);
+                    ReplaceCellText("B29", "#VerifyDate#", verifyDateStr);
+
+                    ReplaceCellText("F2", "#PAY_NO#", barcodeMarketB);
+                    ReplaceCellText("M17", "#PAY_NO#", barcodeMarketB);
+
+                    ReplaceCellText("F7", "#P_NUM#", pNumStr);
+                    ReplaceCellText("F7", "#P_TIME#", abudf_1.P_TIME);
+                    ReplaceCellText("O7", "#P_NUM#", pNumStr);
+                    ReplaceCellText("O7", "#P_TIME#", abudf_1.P_TIME);
+                    ReplaceCellText("F20", "#P_NUM#", pNumStr);
+                    ReplaceCellText("F20", "#P_TIME#", abudf_1.P_TIME);
+                    ReplaceCellText("F32", "#P_NUM#", pNumStr);
+                    ReplaceCellText("F32", "#P_TIME#", abudf_1.P_TIME);
+
+                    ReplaceCellText("D8", "#PayEndDate#", payEndDateStr);
+                    ReplaceCellText("D21", "#PayEndDate#", payEndDateStr);
+                    ReplaceCellText("G35", "#F_AMTC#", chineseMoney);
+
+                    // 直接填值
+                    ws.Cell("D3").SetValue(companySerNo);
+                    ws.Cell("O3").SetValue(companySerNo);
+                    ws.Cell("D18").SetValue(companySerNo);
+                    ws.Cell("D30").SetValue(companySerNo);
+
+                    ws.Cell("D4").SetValue(form.COMP_NAM);
+                    ws.Cell("O5").SetValue(form.COMP_NAM);
+                    ws.Cell("I18").SetValue(form.COMP_NAM);
+                    ws.Cell("I30").SetValue(form.COMP_NAM);
+
+                    ws.Cell("O4").SetValue(form.S_NAME);
+                    ws.Cell("D5").SetValue(form.S_NAME);
+                    ws.Cell("D19").SetValue(form.S_NAME);
+                    ws.Cell("D31").SetValue(form.S_NAME);
+
+                    ws.Cell("F6").SetValue(form.B_SERNO);
+                    ws.Cell("M12").SetValue(form.B_SERNO);
+                    ws.Cell("P19").SetValue(form.B_SERNO);
+                    ws.Cell("P31").SetValue(form.B_SERNO);
+
+                    ws.Cell("D7").SetValue(form.P_KIND);
+                    ws.Cell("D20").SetValue(form.P_KIND);
+                    ws.Cell("D32").SetValue(form.P_KIND);
+
+                    ws.Cell("O8").SetValue(sumPriceStr);
+                    ws.Cell("D12").SetValue(sumPriceStr);
+                    ws.Cell("D24").SetValue(sumPriceStr);
+                    ws.Cell("D35").SetValue(sumPriceStr);
+
+                    ws.Cell("D9").SetValue(currentPriceStr);
+                    ws.Cell("D22").SetValue(currentPriceStr);
+                    ws.Cell("D34").SetValue(currentPriceStr);
+
+                    ws.Cell("D10").SetValue(penaltyStr);
+                    ws.Cell("D23").SetValue(penaltyStr);
+                    ws.Cell("I34").SetValue(penaltyStr);
+
+                    ws.Cell("D11").SetValue(interestStr);
+                    ws.Cell("I23").SetValue(interestStr);
+                    ws.Cell("O34").SetValue(interestStr);
+
+                    ws.Cell("O9").SetValue(chineseMoney);
+                    ws.Cell("D13").SetValue(chineseMoney);
+                    ws.Cell("D25").SetValue(chineseMoney);
+
+                    ws.Cell("O32").SetValue(payEndDateStr);
+                    ws.Cell("I36").SetValue(barcodeMarketB);
+                    ws.Cell("C37").SetValue($"*{abudf_1.FLNO}*");
+
+                    // 條碼區域
+                    ws.Cell("K37").SetValue($"*{barcodeMarketA}*");
+                    ws.Cell("K38").SetValue(barcodeMarketA);
+                    ws.Cell("K39").SetValue($"*{barcodeMarketB}*");
+                    ws.Cell("K40").SetValue(barcodeMarketB);
+                    ws.Cell("K41").SetValue($"*{barcodeMarketC}*");
+                    ws.Cell("K42").SetValue(barcodeMarketC);
+                    ws.Cell("K45").SetValue($"*{barcodePostB}*");
+                    ws.Cell("K46").SetValue(barcodePostB);
+                    ws.Cell("K47").SetValue($"*{barcodePostC}*");
+                    ws.Cell("K48").SetValue(barcodePostC);
+
+                    wb.SaveAs(tempFile);
+                }
+
+                // 7. 轉換為 PDF 檔案
+                var license = new Aspose.Cells.License();
                 license.SetLicense($@"{AppDomain.CurrentDomain.BaseDirectory}/license/Aspose.total.lic");
+
                 var workbook = new Aspose.Cells.Workbook(tempFile);
                 foreach (Aspose.Cells.Worksheet worksheet in workbook.Worksheets)
                 {
-                    Aspose.Cells.PageSetup pageSetup = worksheet.PageSetup;
+                    var pageSetup = worksheet.PageSetup;
                     pageSetup.TopMargin = 1;
                     pageSetup.RightMargin = 0;
                     pageSetup.BottomMargin = 1;
@@ -1985,12 +1977,13 @@ namespace NT_AirPollution.Service
 
                 FontConfigs.SetFontFolder($@"{_paymentPath}\Template", false);
                 workbook.Save(pdfFile);
+
                 return pdfFile;
             }
             catch (Exception ex)
             {
                 Logger.Error($"CreatePaymentPDF: {ex.StackTrace}|{ex.Message}");
-                throw ex;
+                throw; // 保留原始 StackTrace
             }
         }
 
