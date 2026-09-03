@@ -77,7 +77,7 @@
 					<br />序號
 				</template>
 				<template #default="{ row }">
-					<el-button type="success" size="mini" icon="el-icon-copy-document" circle title="追加序號" @click="copyRow(row)"></el-button>
+					<el-button type="success" size="mini" icon="el-icon-copy-document" circle title="追加序號" :disabled="row.C_NO === null" @click="copyRow(row)"></el-button>
 				</template>
 			</vxe-table-column>
 			<vxe-table-column width="60" align="center" fixed="left">

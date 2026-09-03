@@ -13,14 +13,14 @@
 					<el-tab-pane label="工地基本資料" name="1">
 						<el-form ref="tab1Form" :rules="tab1Rules" :model="form" label-width="auto">
 							<el-form-item label="管制編號">{{C_NO}}</el-form-item>
-                            <el-form-item label="費率年度">
-                                <el-select prop="YEAR" v-model="form.YEAR">
+							<el-form-item label="費率年度">
+								<el-select prop="YEAR" v-model="form.YEAR">
 									<el-option label="87 年" :value="87"></el-option>
 									<el-option label="87 年" :value="88"></el-option>
-                                    <el-option label="93 年" :value="93"></el-option>
-                                    <el-option label="103 年" :value="103"></el-option>
+									<el-option label="93 年" :value="93"></el-option>
+									<el-option label="103 年" :value="103"></el-option>
 								</el-select>
-                            </el-form-item>
+							</el-form-item>
 							<el-form-item prop="TOWN_NO" label="鄉鎮分類">
 								<el-select v-model="form.TOWN_NO">
 									<el-option label="請選擇" :value="undefined"></el-option>
@@ -298,10 +298,10 @@
 								</div>
 								<div v-if="form.KIND_NO === '1' || form.KIND_NO === '2'" class="flex-row">
 									<el-form-item prop="AREA_F" label="基地面積">
-										<el-input type="number" style="width:120px" v-model="form.AREA_F"></el-input>平方公尺
+										<el-input type="number" style="width:120px" v-model="form.AREA_F"></el-input>&nbsp;平方公尺
 									</el-form-item>
 									<el-form-item prop="AREA_B" label="建築面積">
-										<el-input type="number" style="width:120px" v-model="form.AREA_B"></el-input>平方公尺
+										<el-input type="number" style="width:120px" v-model="form.AREA_B"></el-input>&nbsp;平方公尺
 									</el-form-item>
 									<el-form-item prop="PERC_B" label="建蔽率">{{calcPERC_B}}%</el-form-item>
 								</div>
@@ -312,7 +312,7 @@
 								</div>
 								<div v-else>
 									<el-form-item prop="AREA" label="工程面積">
-										<el-input type="number" v-model="form.AREA" style="width:120px"></el-input>平方公尺
+										<el-input type="number" v-model="form.AREA" style="width:120px"></el-input>&nbsp;平方公尺
 									</el-form-item>
 								</div>
 								<div v-if="form.KIND_NO === 'B'" v-cloak>
@@ -391,10 +391,10 @@
 								</div>
 								<div v-if="form.FormB.KIND_NO === '1' || form.FormB.KIND_NO === '2'" class="flex-row">
 									<el-form-item prop="AREA_F" label="基地面積">
-										<el-input type="number" style="width:120px" v-model="form.FormB.AREA_F"></el-input>平方公尺
+										<el-input type="number" style="width:120px" v-model="form.FormB.AREA_F"></el-input>&nbsp;平方公尺
 									</el-form-item>
 									<el-form-item prop="AREA_B" label="建築面積">
-										<el-input type="number" style="width:120px" v-model="form.FormB.AREA_B"></el-input>平方公尺
+										<el-input type="number" style="width:120px" v-model="form.FormB.AREA_B"></el-input>&nbsp;平方公尺
 									</el-form-item>
 									<el-form-item prop="PERC_B" label="建蔽率">{{calcPERC_B2}}%</el-form-item>
 								</div>
@@ -405,7 +405,7 @@
 								</div>
 								<div v-else>
 									<el-form-item prop="AREA" label="工程面積">
-										<el-input type="number" v-model="form.FormB.AREA" style="width:120px"></el-input>平方公尺
+										<el-input type="number" v-model="form.FormB.AREA" style="width:120px"></el-input>&nbsp;平方公尺
 									</el-form-item>
 								</div>
 								<div v-if="form.KIND_NO === 'B'" v-cloak>
@@ -465,7 +465,7 @@
 				</el-button>
 			</template>
 		</vxe-modal>
-        <FormSubModal :show.sync="formSubModalVisible" :data="form" />
+		<FormSubModal :show.sync="formSubModalVisible" :data="form" />
 	</div>
 </template>
 <script>
@@ -631,7 +631,7 @@ export default {
 			projectCode: Object.freeze([]),
 			attachmentInfo: Object.freeze([]),
 			activeTab: '1',
-            formSubModalVisible: false,
+			formSubModalVisible: false,
 			tab1Rules: Object.freeze({
 				PUB_COMP: [{ required: true, message: '請選擇案件類型', trigger: 'change' }],
 				TOWN_NO: [{ required: true, message: '請選擇鄉鎮分類', trigger: 'change' }],
