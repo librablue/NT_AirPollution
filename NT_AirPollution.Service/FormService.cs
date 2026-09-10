@@ -823,19 +823,32 @@ namespace NT_AirPollution.Service
         {
             using (var cn = new SqlConnection(connStr))
             {
-                try
+                cn.Open();
+                using (var trans = cn.BeginTransaction())
                 {
-                    if (payment.ID == 0)
-                        cn.Insert(payment);
-                    else
-                        cn.Update(payment);
+                    try
+                    {
+                        if (payment.ID == 0)
+                        {
+                            cn.Query(@"
+                                DELETE FROM dbo.Payment
+                                WHERE FormID=@FormID AND Term=@Term AND BankLog IS NULL",
+                                new { FormID = payment.FormID, Term = payment.Term }, trans);
 
-                    return true;
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error($"AddPayment: {ex.StackTrace}|{ex.Message}");
-                    throw new Exception("系統發生未預期錯誤");
+                            cn.Insert(payment, trans);
+                        }
+                        else
+                            cn.Update(payment, trans);
+
+                        trans.Commit();
+                        return true;
+                    }
+                    catch (Exception ex)
+                    {
+                        trans.Rollback();
+                        Logger.Error($"AddPayment: {ex.StackTrace}|{ex.Message}");
+                        throw new Exception("系統發生未預期錯誤");
+                    }
                 }
             }
         }
