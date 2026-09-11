@@ -1,6 +1,7 @@
 ﻿using NT_AirPollution.Model.Domain;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -12,17 +13,20 @@ namespace NT_AirPollution.MailTask
 {
     public class MailHelper
     {
+        private static readonly string MailAccount = ConfigurationManager.AppSettings["MailAccount"].ToString();
+        private static readonly string MailPassword = ConfigurationManager.AppSettings["MailPassword"].ToString();
+
         /// <summary>
         /// 寄送郵件
         /// </summary>
         /// <param name="mail"></param>
         public void SendMail(MailModel mail)
         {
-            string strMailFrom = "recycle@chuangjing.com.tw";
+            string strMailFrom = MailAccount;
             string strMailFromShowName = "南投縣政府環境保護局";
             string strSmtpServer = "smtp.gmail.com";
-            string strAccount = "recycle@chuangjing.com.tw";
-            string strPassword = "vbqw ryow uxld eidk";
+            string strAccount = MailAccount;
+            string strPassword = MailPassword;
             int intPort = 587;
 
             MailMessage msg = new MailMessage();
