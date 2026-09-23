@@ -214,7 +214,7 @@ namespace NT_AirPollution.WriteOffTask
                 {
                     Logger.Error($"處理檔案 {file} 時發生嚴重錯誤: {fileEx.Message}");
                     // 如果需要，也可以針對整個檔案讀取失敗發送通知
-                    // Send2GovUser(file, $"檔案讀取失敗: {fileEx.Message}");
+                    Send2GovUser(file, $"檔案讀取失敗: {fileEx.Message}");
                 }
             }
         }

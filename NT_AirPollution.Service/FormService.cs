@@ -908,7 +908,7 @@ namespace NT_AirPollution.Service
         {
             DateTime dtPayEndDate = DateTime.Now;
             string payEndDateCondition = "";
-            if (payType != "U" && payType != "C" && payType != "M")
+            if (payType != "A" && payType != "U" && payType != "C" && payType != "M")
             {
                 payEndDateCondition = " AND PayEndDate=@PayEndDate";
                 dtPayEndDate = Convert.ToDateTime($"{2011 + Convert.ToInt32(payEndDate.Substring(0, 2))}-{payEndDate.Substring(2, 2)}-{payEndDate.Substring(4, 2)}");
