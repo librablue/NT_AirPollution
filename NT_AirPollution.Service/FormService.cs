@@ -2078,7 +2078,20 @@ namespace NT_AirPollution.Service
                 ws.Cell("C4").SetValue(form.ADDR);
                 ws.Cell("C5").SetValue(form.B_SERNO);
                 ws.Cell("C6").SetValue(form.S_NAME);
+                ws.Cell("E23").SetValue(DateTime.Now.AddYears(-1911).ToString("yyy"));
+                ws.Cell("I23").SetValue(DateTime.Now.ToString("MM"));
+                ws.Cell("M23").SetValue(DateTime.Now.ToString("dd"));
 
+                //if (form.S_AMT == 0)
+                //{
+                //    ws.Cell("C7").SetValue("■");
+                //}
+                //else if (form.S_AMT <= 100)
+                //{
+                //    ws.Cell("C9").SetValue("■");
+                //    ws.Cell("D10").SetValue("■");
+                //}
+                // 20260926改成判斷NOLEVY
                 if (form.NOLEVY == "A.100元以下")
                 {
                     ws.Cell("D10").SetValue("■");
@@ -2090,20 +2103,6 @@ namespace NT_AirPollution.Service
                 if (form.NOLEVY == "Z.其他")
                 {
                     ws.Cell("C7").SetValue("■");
-                }
-
-                ws.Cell("E23").SetValue(DateTime.Now.AddYears(-1911).ToString("yyy"));
-                ws.Cell("I23").SetValue(DateTime.Now.ToString("MM"));
-                ws.Cell("M23").SetValue(DateTime.Now.ToString("dd"));
-
-                if (form.S_AMT == 0)
-                {
-                    ws.Cell("C7").SetValue("■");
-                }
-                else if (form.S_AMT <= 100)
-                {
-                    ws.Cell("C9").SetValue("■");
-                    ws.Cell("D10").SetValue("■");
                 }
 
                 string tempFile = $@"{_paymentPath}\Download\免徵證明{form.C_NO}-{form.SER_NO}.xlsx";
