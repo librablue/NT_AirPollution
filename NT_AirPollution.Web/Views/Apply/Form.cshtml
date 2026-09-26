@@ -55,6 +55,7 @@
             <div v-if="forms.length === 0" class="empty" v-cloak>
                 <img src="@Url.Content("~/static/image/illu-empty.png")" alt="無資料" />
                 <div class="empty-text">查無任何申報資料</div>
+                <div class="empty-text-sub">如欲查詢歷史案件，請設定建立日期區間後進行查詢，即可查詢歷史案件資料。</div>
             </div>
 
             <div class="form-item" v-for="(item, idx) in forms" :key="idx" v-cloak>

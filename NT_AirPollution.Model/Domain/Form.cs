@@ -591,5 +591,9 @@ namespace NT_AirPollution.Model.Domain
         /// 結算附件顯示檔名
         /// </summary>
         public string DisplayName2 { get; set; }
+        /// <summary>
+        /// 是否強制讀取A2021不由Web計算
+        /// </summary>
+        public bool ForceUpdate { get; set; }
     }
 }

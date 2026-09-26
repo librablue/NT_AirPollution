@@ -2078,6 +2078,20 @@ namespace NT_AirPollution.Service
                 ws.Cell("C4").SetValue(form.ADDR);
                 ws.Cell("C5").SetValue(form.B_SERNO);
                 ws.Cell("C6").SetValue(form.S_NAME);
+
+                if (form.NOLEVY == "A.100元以下")
+                {
+                    ws.Cell("D10").SetValue("■");
+                }
+                if (form.NOLEVY == "B.重大天災")
+                {
+                    ws.Cell("D11").SetValue("■");
+                }
+                if (form.NOLEVY == "Z.其他")
+                {
+                    ws.Cell("C7").SetValue("■");
+                }
+
                 ws.Cell("E23").SetValue(DateTime.Now.AddYears(-1911).ToString("yyy"));
                 ws.Cell("I23").SetValue(DateTime.Now.ToString("MM"));
                 ws.Cell("M23").SetValue(DateTime.Now.ToString("dd"));

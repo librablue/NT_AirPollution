@@ -189,9 +189,9 @@ input:disabled {
 }
 .prompt-text {
   display: inline-block;
-  font-size: 12px;
+  font-size: 14px;
   color: #3081d0;
-  line-height: 1.5;
+  line-height: 1;
   padding: 4px 0;
 }
 
@@ -832,4 +832,4 @@ footer .bottom ul {
   footer .contact-row {
     justify-content: space-around;
   }
-}/*# sourceMappingURL=index.css.map */
+}/*# sourceMappingURL=index.css.map */*/

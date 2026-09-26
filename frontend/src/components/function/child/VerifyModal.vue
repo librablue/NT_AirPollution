@@ -1,5 +1,5 @@
 <template>
-	<vxe-modal title="案件審核" v-model="visible" width="360px" :lock-scroll="false" esc-closable resize show-footer>
+	<vxe-modal title="案件審核" v-model="visible" width="420px" :lock-scroll="false" esc-closable resize show-footer>
 		<template #default>
 			<el-form ref="form" :model="form" label-width="80px">
 				<el-form-item label="管制編號">{{C_NO}}</el-form-item>
@@ -11,6 +11,9 @@
 					</el-form-item>
 					<el-form-item v-if="form.FormStatus === 2" prop="FailReason1" label="退件原因">
 						<el-input type="textarea" :autosize="{ minRows: 3, maxRows: 6 }" v-model="form.FailReason1" />
+					</el-form-item>
+                    <el-form-item v-if="form.FormStatus === 3" prop="ForceUpdate">
+						<el-checkbox v-model="form.ForceUpdate" label="不自動計算繳費金額" border></el-checkbox>
 					</el-form-item>
 					<el-form-item>
 						<el-checkbox v-model="form.IsMailFormStatus" label="郵件通知" border></el-checkbox>

@@ -469,6 +469,7 @@
 			};
 		},
 		mounted() {
+			this.getForms();
 			this.getDistrict();
 			this.getProjectCode();
 			this.getCompanies();
