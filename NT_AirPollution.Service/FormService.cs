@@ -1349,8 +1349,8 @@ namespace NT_AirPollution.Service
                         basicNumFomulaText = $"{form.FormB.AREA.Value} ╳ {diffDays} / 30";
                         break;
                     case "3":
-                        basicNum = form.AREA2.Value;
-                        basicNumFomulaText = $"{form.AREA2.Value}";
+                        basicNum = form.FormB.AREA2.Value;
+                        basicNumFomulaText = $"{form.FormB.AREA2.Value}";
                         break;
                     case "B":
                         basicNum = form.FormB.VOLUMEL.Value;
