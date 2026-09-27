@@ -1819,6 +1819,29 @@ namespace NT_AirPollution.Service
                     transNo = _accessService.GetFLNo(pdate.AddYears(-1911).ToString("yyyMMdd"));
                 }
 
+                // 如果不自動計算金額
+                if (form.ForceUpdate)
+                {
+                    // 繳費期限為審核通過日期+30天
+                    if (isFinal)
+                        res.PayEndDate = form.VerifyDate2.Value.AddDays(30);
+                    else
+                        res.PayEndDate = form.VerifyDate1.Value.AddDays(30);
+
+
+                    if (DateTime.Now.Date > res.PayEndDate.Date)
+                    {
+                        res.PayEndDate = DateTime.Now;
+                    }
+
+                    // 繳費金額讀取A2021
+                    res.CurrentPrice = abudf_1InDB.F_AMT;
+                    res.Interest = 0;
+                    res.Penalty = 0;
+                    sumPrice = Math.Round(res.CurrentPrice + res.Interest + res.Penalty, 0);
+                }
+
+
                 ABUDF_1 abudf_1 = new ABUDF_1
                 {
                     C_NO = form.C_NO,
@@ -1834,12 +1857,41 @@ namespace NT_AirPollution.Service
                     M_DATE = DateTime.Now
                 };
 
-                _accessService.AddABUDF_1(abudf_1);
+
+                // 如果不自動計算金額，更新繳費單號回A2021
+                if (form.ForceUpdate)
+                    _accessService.UpdateFLNO(abudf_1);
+                else
+                    _accessService.AddABUDF_1(abudf_1);
+
+
+                // 5. 寫入 ABUDF_I
+                if (!isFinal && (res.Interest > 0 || res.Penalty > 0))
+                {
+                    ABUDF_I abudf_I = new ABUDF_I
+                    {
+                        C_NO = form.C_NO,
+                        SER_NO = form.SER_NO,
+                        P_TIME = isFinal ? "02" : "01",
+                        S_DATE = res.StartDate.AddDays(res.ApplyDate <= res.StartDate ? 0 : 1).AddYears(-1911).ToString("yyyMMdd"),
+                        E_DATE = res.PayEndDate.AddYears(-1911).ToString("yyyMMdd"),
+                        PERCENT = res.Rate,
+                        F_AMT = res.CurrentPrice,
+                        I_AMT = res.Interest + res.Penalty,
+                        PEN_AMT = res.Penalty,
+                        PEN_RATE = res.Penalty > 0 ? 0.5 : (double?)null,
+                        KEYIN = "EPB02",
+                        C_DATE = DateTime.Now,
+                        M_DATE = DateTime.Now
+                    };
+                    _accessService.AddABUDF_I(abudf_I);
+                }
+
 
                 // 免繳費則直接中斷後續處理
                 if (sumPrice <= 0) return null;
 
-                // 5. 產生條碼與寫入 Payment 資料表
+                // 6. 產生條碼與寫入 Payment 資料表
                 string barcodeMarketA = BotHelper.GetMarketNo(abudf_1.E_DATE);
                 string barcodeMarketB = abudf_1.FLNO;
                 string barcodeMarketC = BotHelper.GetMarketAmt("0032", sumPrice.ToString(), abudf_1.FLNO, abudf_1.E_DATE);
@@ -1863,7 +1915,7 @@ namespace NT_AirPollution.Service
 
                 if (string.IsNullOrEmpty(fileName)) return null;
 
-                // 6. 填寫 Excel 樣板 (使用 Local Function 減少冗長程式碼)
+                // 7. 填寫 Excel 樣板 (使用 Local Function 減少冗長程式碼)
                 using (var wb = new XLWorkbook(templateFile))
                 {
                     var ws = wb.Worksheet(1);
@@ -2599,105 +2651,105 @@ namespace NT_AirPollution.Service
         /// </summary>
         /// <param name="c_no">管制編號</param>
         /// <param name="bdate">開工日期</param>
-        public bool ImportData(string c_no, string bdate)
-        {
-            ABUDF abudf = _accessService.GetABUDF(c_no, bdate);
-            ABUDF_B abudf_b = _accessService.GetABUDF_B(c_no, abudf.SER_NO);
-            List<ABUDF_1> abudf_1s = _accessService.GetABUDF_1(c_no, abudf.SER_NO);
-            List<ABUDF_I> abudf_is = _accessService.GetABUDF_I(c_no, abudf.SER_NO);
+        //public bool ImportData(string c_no, string bdate)
+        //{
+        //    ABUDF abudf = _accessService.GetABUDF(c_no, bdate);
+        //    ABUDF_B abudf_b = _accessService.GetABUDF_B(c_no, abudf.SER_NO);
+        //    List<ABUDF_1> abudf_1s = _accessService.GetABUDF_1(c_no, abudf.SER_NO);
+        //    List<ABUDF_I> abudf_is = _accessService.GetABUDF_I(c_no, abudf.SER_NO);
 
-            // 1. 設定 AutoMapper 配置
-            var config1 = new MapperConfiguration(cfg => cfg.CreateMap<ABUDF, Form>());
-            var mapper1 = config1.CreateMapper();
-            var form = mapper1.Map<Form>(abudf);
+        //    // 1. 設定 AutoMapper 配置
+        //    var config1 = new MapperConfiguration(cfg => cfg.CreateMap<ABUDF, Form>());
+        //    var mapper1 = config1.CreateMapper();
+        //    var form = mapper1.Map<Form>(abudf);
 
-            var config2 = new MapperConfiguration(cfg => cfg.CreateMap<ABUDF_B, FormB>());
-            var mapper2 = config2.CreateMapper();
-            var formB = mapper2.Map<FormB>(abudf_b);
+        //    var config2 = new MapperConfiguration(cfg => cfg.CreateMap<ABUDF_B, FormB>());
+        //    var mapper2 = config2.CreateMapper();
+        //    var formB = mapper2.Map<FormB>(abudf_b);
 
-            form.ClientUserID = CurrentUser.ID;
-            form.CreateUserEmail = CurrentUser.Email;
-            form.CreateUserName = CurrentUser.UserName;
-            form.LATLNG = string.IsNullOrEmpty(abudf.LATLNG) ? "," : abudf.LATLNG;
-
-
-
-            var abudf1 = abudf_1s.FirstOrDefault(o => o.P_TIME == "01");
-
-            /* 申請狀態 */
-            // 現場作業是通過才會建資料
-            form.VerifyDate1 = abudf.C_DATE;
-            form.VerifyStage1 = VerifyStage.複審通過;
-
-            if (abudf.S_AMT > 0 && string.IsNullOrEmpty(abudf.FIN_DATE))
-                form.FormStatus = FormStatus.通過待繳費;
-            else if (abudf.S_AMT == 0 && string.IsNullOrEmpty(abudf.FIN_DATE))
-                form.FormStatus = FormStatus.免繳費;
-            else if (abudf1 != null && !string.IsNullOrEmpty(abudf1.F_DATE))
-                form.FormStatus = FormStatus.已繳費完成;
+        //    form.ClientUserID = CurrentUser.ID;
+        //    form.CreateUserEmail = CurrentUser.Email;
+        //    form.CreateUserName = CurrentUser.UserName;
+        //    form.LATLNG = string.IsNullOrEmpty(abudf.LATLNG) ? "," : abudf.LATLNG;
 
 
-            /* 結算狀態 */
-            form.CalcStatus = CalcStatus.未申請;
 
-            if (!string.IsNullOrEmpty(abudf_b.AP_DATE1))
-            {
-                form.CalcStatus = CalcStatus.通過待繳費;
-                form.VerifyDate2 = abudf_b.AP_DATE1.ToWestDate();
-                form.VerifyStage2 = VerifyStage.複審通過;
-            }
+        //    var abudf1 = abudf_1s.FirstOrDefault(o => o.P_TIME == "01");
 
-            if (!string.IsNullOrEmpty(abudf_b.AP_DATE1) && abudf_b.PRE_C_AMT < 4000)
-                form.CalcStatus = CalcStatus.通過待退費小於4000;
-            else if (!string.IsNullOrEmpty(abudf_b.AP_DATE1) && abudf_b.PRE_C_AMT >= 4000)
-                form.CalcStatus = CalcStatus.通過待退費大於4000;
-            else if (!string.IsNullOrEmpty(abudf.FIN_DATE))
-                form.CalcStatus = CalcStatus.繳退費完成;
+        //    /* 申請狀態 */
+        //    // 現場作業是通過才會建資料
+        //    form.VerifyDate1 = abudf.C_DATE;
+        //    form.VerifyStage1 = VerifyStage.複審通過;
+
+        //    if (abudf.S_AMT > 0 && string.IsNullOrEmpty(abudf.FIN_DATE))
+        //        form.FormStatus = FormStatus.通過待繳費;
+        //    else if (abudf.S_AMT == 0 && string.IsNullOrEmpty(abudf.FIN_DATE))
+        //        form.FormStatus = FormStatus.免繳費;
+        //    else if (abudf1 != null && !string.IsNullOrEmpty(abudf1.F_DATE))
+        //        form.FormStatus = FormStatus.已繳費完成;
 
 
-            using (var cn = new SqlConnection(connStr))
-            {
-                try
-                {
-                    long formID = cn.Insert(form);
-                    formB.FormID = formID;
-                    long formBID = cn.Insert(formB);
+        //    /* 結算狀態 */
+        //    form.CalcStatus = CalcStatus.未申請;
 
-                    for (int i = 1; i <= 2; i++)
-                    {
-                        var abudf_1 = abudf_1s.FirstOrDefault(o => o.P_TIME == $"0{i}");
-                        var abudf_i = abudf_is.FirstOrDefault(o => o.P_TIME == $"0{i}");
+        //    if (!string.IsNullOrEmpty(abudf_b.AP_DATE1))
+        //    {
+        //        form.CalcStatus = CalcStatus.通過待繳費;
+        //        form.VerifyDate2 = abudf_b.AP_DATE1.ToWestDate();
+        //        form.VerifyStage2 = VerifyStage.複審通過;
+        //    }
 
-                        if (abudf_1 == null) continue;
+        //    if (!string.IsNullOrEmpty(abudf_b.AP_DATE1) && abudf_b.PRE_C_AMT < 4000)
+        //        form.CalcStatus = CalcStatus.通過待退費小於4000;
+        //    else if (!string.IsNullOrEmpty(abudf_b.AP_DATE1) && abudf_b.PRE_C_AMT >= 4000)
+        //        form.CalcStatus = CalcStatus.通過待退費大於4000;
+        //    else if (!string.IsNullOrEmpty(abudf.FIN_DATE))
+        //        form.CalcStatus = CalcStatus.繳退費完成;
 
-                        Payment payment = new Payment
-                        {
-                            FormID = formBID,
-                            Term = $"{i}",
-                            PayEndDate = string.IsNullOrEmpty(abudf_1.E_DATE) ? DateTime.Now : abudf_1.E_DATE.ToWestDate(),
-                            PaymentID = abudf_1?.FLNO,
-                            PayableAmount = abudf.P_AMT,
-                            Penalty = abudf_i?.PEN_AMT,
-                            Interest = abudf_i?.I_AMT,
-                            Percent = abudf_i?.PERCENT ?? 1.725,
-                            PayAmount = abudf_1.F_AMT,
-                            PayDate = string.IsNullOrEmpty(abudf_1.PM_DATE) ? (DateTime?)null : abudf_1.PM_DATE.ToWestDate(),
-                            CreateDate = abudf_1.C_DATE,
-                            ModifyDate = abudf_1.M_DATE
-                        };
 
-                        cn.Insert(payment);
-                    }
+        //    using (var cn = new SqlConnection(connStr))
+        //    {
+        //        try
+        //        {
+        //            long formID = cn.Insert(form);
+        //            formB.FormID = formID;
+        //            long formBID = cn.Insert(formB);
 
-                    return true;
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error($"ImportData: {ex.StackTrace}|{ex.Message}");
-                    throw ex;
-                }
-            }
-        }
+        //            for (int i = 1; i <= 2; i++)
+        //            {
+        //                var abudf_1 = abudf_1s.FirstOrDefault(o => o.P_TIME == $"0{i}");
+        //                var abudf_i = abudf_is.FirstOrDefault(o => o.P_TIME == $"0{i}");
+
+        //                if (abudf_1 == null) continue;
+
+        //                Payment payment = new Payment
+        //                {
+        //                    FormID = formBID,
+        //                    Term = $"{i}",
+        //                    PayEndDate = string.IsNullOrEmpty(abudf_1.E_DATE) ? DateTime.Now : abudf_1.E_DATE.ToWestDate(),
+        //                    PaymentID = abudf_1?.FLNO,
+        //                    PayableAmount = abudf.P_AMT,
+        //                    Penalty = abudf_i?.PEN_AMT,
+        //                    Interest = abudf_i?.I_AMT,
+        //                    Percent = abudf_i?.PERCENT ?? 1.725,
+        //                    PayAmount = abudf_1.F_AMT,
+        //                    PayDate = string.IsNullOrEmpty(abudf_1.PM_DATE) ? (DateTime?)null : abudf_1.PM_DATE.ToWestDate(),
+        //                    CreateDate = abudf_1.C_DATE,
+        //                    ModifyDate = abudf_1.M_DATE
+        //                };
+
+        //                cn.Insert(payment);
+        //            }
+
+        //            return true;
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            Logger.Error($"ImportData: {ex.StackTrace}|{ex.Message}");
+        //            throw ex;
+        //        }
+        //    }
+        //}
 
         /// <summary>
         /// 從 Access 匯入資料到 SQL Server
