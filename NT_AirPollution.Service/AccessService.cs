@@ -1004,48 +1004,6 @@ namespace NT_AirPollution.Service
         }
 
         /// <summary>
-        /// 更新ABUDF_1的FLNO、E_DATE欄位
-        /// </summary>
-        /// <param name="abudf_1"></param>
-        /// <returns></returns>
-        public bool UpdateFLNO(ABUDF_1 abudf_1)
-        {
-            try
-            {
-#if !DEBUG
-                using (var impersonation = new ImpersonationContext(domain, userName, password))
-                {
-#endif
-                using (var cn = new OleDbConnection(accessConnStr))
-                {
-                    cn.Execute(@"
-                        UPDATE ABUDF_1
-                            SET [FLNO]=@FLNO,
-                                [E_DATE]=@E_DATE
-                        WHERE [C_NO]=@C_NO AND [SER_NO]=@SER_NO AND [P_TIME]=@P_TIME",
-                        new
-                        {
-                            FLNO = abudf_1.FLNO,
-                            E_DATE = abudf_1.E_DATE,
-                            C_NO = abudf_1.C_NO,
-                            SER_NO = abudf_1.SER_NO,
-                            P_TIME = abudf_1.P_TIME
-                        }, commandTimeout: 180);
-
-                    return true;
-                }
-#if !DEBUG
-                }
-#endif
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex.StackTrace);
-                throw ex;
-            }
-        }
-
-        /// <summary>
         /// 更新ABUDF_1
         /// </summary>
         /// <param name="abudf_1"></param>

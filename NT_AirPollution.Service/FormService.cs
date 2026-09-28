@@ -1774,7 +1774,7 @@ namespace NT_AirPollution.Service
                 // 2. 構建 PaymentInfo 運算物件
                 var info = new PaymentInfo
                 {
-                    Today = DateTime.Now,
+                    Today = DateTime.Now.Date,
                     IsPublic = form.PUB_COMP,
                     StartDate = form.B_DATE.ToWestDate(),
                     ApplyDate = pdate,
@@ -1793,7 +1793,7 @@ namespace NT_AirPollution.Service
                     info.CurrentPrice = form.P_AMT.Value;
                 }
 
-                // 3. 試算繳費與期限
+                // 3. 試算繳費金額與期限
                 var res = CalcPayment(info);
                 if (isFinal)
                 {
@@ -1819,9 +1819,12 @@ namespace NT_AirPollution.Service
                     transNo = _accessService.GetFLNo(pdate.AddYears(-1911).ToString("yyyMMdd"));
                 }
 
-                // 如果不自動計算金額
+                // 如果是強制更新
                 if (form.ForceUpdate)
                 {
+                    var abudfInDB = _accessService.GetABUDF(form.C_NO, form.SER_NO.Value);
+                    var abudf_bInDB = _accessService.GetABUDF_B(form.C_NO, form.SER_NO.Value);
+
                     // 繳費期限為審核通過日期+30天
                     if (isFinal)
                         res.PayEndDate = form.VerifyDate2.Value.AddDays(30);
@@ -1829,15 +1832,22 @@ namespace NT_AirPollution.Service
                         res.PayEndDate = form.VerifyDate1.Value.AddDays(30);
 
 
+                    var resTemp = CalcPaymentByForceUpdate(new PaymentInfo
+                    {
+                        Today = DateTime.Now.Date,
+                        StartDate = res.PayEndDate,
+                        TotalPrice = isFinal ? abudf_bInDB.S_AMT : abudfInDB.S_AMT
+                    });
+
                     if (DateTime.Now.Date > res.PayEndDate.Date)
                     {
                         res.PayEndDate = DateTime.Now;
                     }
 
                     // 繳費金額讀取A2021
-                    res.CurrentPrice = abudf_1InDB.F_AMT;
-                    res.Interest = 0;
-                    res.Penalty = 0;
+                    res.CurrentPrice = isFinal ? abudf_bInDB.S_AMT : abudfInDB.S_AMT;
+                    res.Interest = resTemp.Interest;
+                    res.Penalty = resTemp.Penalty;
                     sumPrice = Math.Round(res.CurrentPrice + res.Interest + res.Penalty, 0);
                 }
 
@@ -1857,12 +1867,7 @@ namespace NT_AirPollution.Service
                     M_DATE = DateTime.Now
                 };
 
-
-                // 如果不自動計算金額，更新繳費單號回A2021
-                if (form.ForceUpdate)
-                    _accessService.UpdateFLNO(abudf_1);
-                else
-                    _accessService.AddABUDF_1(abudf_1);
+                _accessService.AddABUDF_1(abudf_1);
 
 
                 // 5. 寫入 ABUDF_I
@@ -2563,6 +2568,56 @@ namespace NT_AirPollution.Service
 
             // 繳費期限當天最後一秒
             result.PayEndDate = result.PayEndDate.Date.AddDays(1).AddSeconds(-1);
+            return result;
+        }
+
+        /// <summary>
+        /// 計算繳費相關資訊
+        /// 繳費期限為審核通過日+30天
+        /// 超過30天才開始算滯納金
+        /// </summary>
+        /// <param name="info"></param>
+        /// <returns></returns>
+        public PaymentInfo CalcPaymentByForceUpdate(PaymentInfo info)
+        {
+            // 深拷貝
+            PaymentInfo result = base.DeepCopy<PaymentInfo>(info);
+
+            if (info.Today > info.StartDate)
+            {
+                // 延遲天數 = 今天 - 開工日
+                result.DelayDays = (info.Today - result.StartDate).Days;
+                if (result.DelayDays <= 30)
+                {
+                    // 滯納金－每逾一日按滯納之金額加徵百分之○．五滯納金
+                    result.Penalty = Math.Round(result.TotalPrice * 0.005 * result.DelayDays, 0, MidpointRounding.AwayFromZero);
+                    // 30天內只算滯納金
+                    result.Interest = 0;
+                }
+                else
+                {
+                    var interestRate = _optionService.GetRates().FirstOrDefault();
+                    if (interestRate != null)
+                        result.Rate = interestRate.Rate;
+
+                    // 30天內只算滯納金
+                    // 滯納金－每逾一日按滯納之金額加徵百分之○．五滯納金
+                    result.Penalty = Math.Round(result.TotalPrice * 0.005 * 30, 0, MidpointRounding.AwayFromZero);
+
+                    // 30天後算利息
+                    // 106/03 前:(應繳金額+滯納金)*郵局儲匯局定存利率(浮動)*(逾期天數-30)/365
+                    // 106/03 後:(應繳金額)*郵局儲匯局定存利率(浮動)*(逾期天數-30)/365
+                    if (DateTime.Now < new DateTime(2016, 3, 1))
+                    {
+                        result.Interest = Math.Round((result.TotalPrice + result.Penalty) * result.Rate / 100 * (result.DelayDays - 30) / 365, 0, MidpointRounding.AwayFromZero);
+                    }
+                    else
+                    {
+                        result.Interest = Math.Round(result.TotalPrice * result.Rate / 100 * (result.DelayDays - 30) / 365, 0, MidpointRounding.AwayFromZero);
+                    }
+                }
+            }
+            
             return result;
         }
 
