@@ -140,14 +140,19 @@ h3 {
 			align-items: center;
 			padding: 26px 24px 18px;
 			border-bottom: 1px solid #878787;
+            gap: 10px;
 		}
 		.title {
+            flex: 1;
 			font-size: 20px;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
 		}
 		.date {
 			font-size: 24px;
 			color: #999;
-			margin-right: 10px;
+			width: 132px;
 		}
 	}
 	.index-download-list {
@@ -203,26 +208,26 @@ h3 {
 @media (min-width: 768px) {
 	.news-wrapper,
 	.download-wrapper {
-        padding: 120px 0;
-        h3 {
-            font-size: 56px;
-        }
-        .index-news-list {
-            .title {
-                font-size: 32px;
-            }
-        }
-        .index-download-list {
-            .title {
-                font-size: 32px;
-            }
-        }
-        .btn-more {
-            padding: 22px 40px 23px;
-        }
-        .btn-download {
-            padding: 10px 20px;
-        }
+		padding: 120px 0;
+		h3 {
+			font-size: 56px;
+		}
+		.index-news-list {
+			.title {
+				font-size: 32px;
+			}
+		}
+		.index-download-list {
+			.title {
+				font-size: 32px;
+			}
+		}
+		.btn-more {
+			padding: 22px 40px 23px;
+		}
+		.btn-download {
+			padding: 10px 20px;
+		}
 	}
 }
 
@@ -345,9 +350,9 @@ h3 {
 }
 
 .empty {
-    width: 100%;
-    border: 2px dashed #ccc;
-    padding: 20px 15px;
+	width: 100%;
+	border: 2px dashed #ccc;
+	padding: 20px 15px;
 	img {
 		display: block;
 		margin: 0 auto;

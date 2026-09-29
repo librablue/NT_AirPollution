@@ -30,7 +30,7 @@
                 @foreach (var item in ViewBag.News)
                 {
                     <li>
-                        <a href="@Url.Content($"~/News/Content?id={item.ID}")" class="title">@item.Title</a>
+                        <a href="@Url.Content($"~/News/Content?id={item.ID}")" class="title" title="@item.Title">@item.Title</a>
                         <span class="date">@item.CreateDate.ToString("yyyy-MM-dd")</span>
                     </li>
                 }
