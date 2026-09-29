@@ -1836,7 +1836,7 @@ namespace NT_AirPollution.Service
                     {
                         Today = DateTime.Now.Date,
                         StartDate = res.PayEndDate,
-                        TotalPrice = isFinal ? abudf_bInDB.S_AMT : abudfInDB.S_AMT
+                        TotalPrice = isFinal ? (abudf_bInDB?.S_AMT ?? 0) : (abudfInDB?.S_AMT ?? 0)
                     });
 
                     if (DateTime.Now.Date > res.PayEndDate.Date)
@@ -1845,7 +1845,7 @@ namespace NT_AirPollution.Service
                     }
 
                     // 繳費金額讀取A2021
-                    res.CurrentPrice = isFinal ? abudf_bInDB.S_AMT : abudfInDB.S_AMT;
+                    res.CurrentPrice = isFinal ? (abudf_bInDB?.S_AMT ?? 0) : (abudfInDB?.S_AMT ?? 0);
                     res.Interest = resTemp.Interest;
                     res.Penalty = resTemp.Penalty;
                     sumPrice = Math.Round(res.CurrentPrice + res.Interest + res.Penalty, 0);
@@ -2617,7 +2617,7 @@ namespace NT_AirPollution.Service
                     }
                 }
             }
-            
+
             return result;
         }
 
