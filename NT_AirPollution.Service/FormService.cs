@@ -2823,7 +2823,8 @@ namespace NT_AirPollution.Service
             var mapper1 = config1.CreateMapper();
             mapper1.Map(abudf, form);
 
-            var config2 = new MapperConfiguration(cfg => cfg.CreateMap<ABUDF_B, FormB>());
+            // 特別指定TAX_MONEY欄位不做映射，不然套件會自動把ABUDF_B.MONEY映射到FormB.TAX_MONEY
+            var config2 = new MapperConfiguration(cfg => cfg.CreateMap<ABUDF_B, FormB>().ForMember(dest => dest.TAX_MONEY, opt => opt.Ignore()));
             var mapper2 = config2.CreateMapper();
             mapper2.Map(abudf_b, form.FormB);
 
