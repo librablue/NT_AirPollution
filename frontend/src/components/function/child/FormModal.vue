@@ -38,7 +38,7 @@
 								<el-input v-model="form.COMP_NAM" maxlength="150"></el-input>
 							</el-form-item>
 							<el-form-item prop="KIND_NO" label="工程類別">
-								<el-select class="w100p" v-model="form.KIND_NO">
+								<el-select class="w100p" v-model="form.KIND_NO" @change="kindNoChange">
 									<el-option label="請選擇" :value="null"></el-option>
 									<el-option v-for="item in projectCode" :key="item.ID" :label="`${item.ID}. ${item.Name}`" :value="item.ID"></el-option>
 								</el-select>
@@ -902,6 +902,10 @@ export default {
 				this.projectCode = Object.freeze(res.data);
 			});
 		},
+        kindNoChange() {
+            const project = this.projectCode.find(item => item.ID === this.form.KIND_NO) ;
+            this.form.KIND = project.Kind;
+        },
 		isShowAREA() {
 			const kindAry = ['1', '2', '4', '5', '6', '7', '8', '9', 'A', 'Z'];
 			if (kindAry.includes(this.form.KIND_NO)) {
