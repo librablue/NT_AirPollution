@@ -2819,7 +2819,8 @@ namespace NT_AirPollution.Service
             //List<ABUDF_1> abudf_1s = _accessService.GetABUDF_1(form.C_NO, form.SER_NO.Value);
             //List<ABUDF_I> abudf_is = _accessService.GetABUDF_I(form.C_NO, form.SER_NO.Value);
 
-            var config1 = new MapperConfiguration(cfg => { cfg.CreateMap<ABUDF, FormView>(); });
+            // 特別指定TAX_MONEY欄位不做映射，不然套件會自動把ABUDF.MONEY映射到Form.TAX_MONEY
+            var config1 = new MapperConfiguration(cfg => cfg.CreateMap<ABUDF, FormView>().ForMember(dest => dest.TAX_MONEY, opt => opt.Ignore()));
             var mapper1 = config1.CreateMapper();
             mapper1.Map(abudf, form);
 
