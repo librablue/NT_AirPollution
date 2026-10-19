@@ -236,7 +236,7 @@ namespace NT_AirPollution.Service
                             EIACOMMENTS = form.EIACOMMENTS,
                             C_DATE = form.C_DATE?.ToString("yyyy-MM-dd HH:mm:ss"),
                             M_DATE = form.M_DATE?.ToString("yyyy-MM-dd HH:mm:ss"),
-                            KEYIN = "EPB02",
+                            KEYIN = "WEB",
                             RECCOMMENTS = form.RECCOMMENTS
                         },
                         commandTimeout: 180
@@ -755,7 +755,7 @@ namespace NT_AirPollution.Service
                             PRE_C_AMT1 = form.S_AMT2 > form.S_AMT ? form.S_AMT2 - form.S_AMT : 0,
                             OPINION = formB.OPINION,
                             WRONG_AP = formB.WRONG_AP,
-                            KEYIN = "EPB02",
+                            KEYIN = "WEB",
                             C_DATE = now.ToString("yyyy-MM-dd HH:mm:ss"),
                             M_DATE = now.ToString("yyyy-MM-dd HH:mm:ss")
                         },
@@ -956,7 +956,7 @@ namespace NT_AirPollution.Service
                                 FLNO = abudf_1.FLNO,
                                 F_AMT = abudf_1.F_AMT,
                                 B_AMT = abudf_1.B_AMT,
-                                KEYIN = "EPB02",
+                                KEYIN = "WEB",
                                 M_DATE = abudf_1.M_DATE.ToString("yyyy-MM-dd HH:mm:ss"),
                                 C_NO = abudf_1.C_NO,
                                 SER_NO = abudf_1.SER_NO,
@@ -985,7 +985,7 @@ namespace NT_AirPollution.Service
                                 FLNO = abudf_1.FLNO,
                                 F_AMT = abudf_1.F_AMT,
                                 B_AMT = abudf_1.B_AMT,
-                                KEYIN = "EPB02",
+                                KEYIN = "WEB",
                                 C_DATE = abudf_1.C_DATE.ToString("yyyy-MM-dd HH:mm:ss"),
                                 M_DATE = abudf_1.M_DATE.ToString("yyyy-MM-dd HH:mm:ss")
                             }, commandTimeout: 180);
@@ -1123,7 +1123,7 @@ namespace NT_AirPollution.Service
                             I_AMT = abudf_I.I_AMT,
                             PEN_AMT = abudf_I.PEN_AMT,
                             PEN_RATE = abudf_I.PEN_RATE,
-                            KEYIN = "EPB02",
+                            KEYIN = "WEB",
                             C_DATE = abudf_I.C_DATE.ToString("yyyy-MM-dd HH:mm:ss"),
                             M_DATE = abudf_I.M_DATE.ToString("yyyy-MM-dd HH:mm:ss")
                         }, commandTimeout: 180);
@@ -1176,7 +1176,7 @@ namespace NT_AirPollution.Service
                                 DOWN_DATE = item.DOWN_DATE,
                                 UP_DATE = item.UP_DATE,
                                 DOWN_DAY = item.DOWN_DAY,
-                                KEYIN = "EPB02",
+                                KEYIN = "WEB",
                                 C_DATE = item.C_DATE?.ToString("yyyy-MM-dd HH:mm:ss"),
                                 M_DATE = item.M_DATE?.ToString("yyyy-MM-dd HH:mm:ss")
                             }, commandTimeout: 180);

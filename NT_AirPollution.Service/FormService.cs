@@ -803,7 +803,7 @@ namespace NT_AirPollution.Service
             formB.T_DAY = workDays - downDays;
             formB.PRE_C_AMT = form.S_AMT > form.S_AMT2 ? form.S_AMT - form.S_AMT2 : 0;
             formB.PRE_C_AMT1 = form.S_AMT2 > form.S_AMT ? form.S_AMT2 - form.S_AMT : 0;
-            formB.KEYIN = "EPB02";
+            formB.KEYIN = "WEB";
             formB.C_DATE = DateTime.Now;
 
             using (var cn = new SqlConnection(connStr))
@@ -1862,7 +1862,7 @@ namespace NT_AirPollution.Service
                     FLNO = sumPrice > 0 ? BotHelper.GetPayNo(transNo, sumPrice.ToString(), res.PayEndDate.AddYears(-1911).ToString("yyyMMdd")) : null,
                     F_AMT = sumPrice > 0 ? sumPrice : 0,
                     B_AMT = sumPrice > 0 ? 0 : Math.Abs(sumPrice),
-                    KEYIN = "EPB02",
+                    KEYIN = "WEB",
                     C_DATE = DateTime.Now,
                     M_DATE = DateTime.Now
                 };
@@ -1885,7 +1885,7 @@ namespace NT_AirPollution.Service
                         I_AMT = res.Interest + res.Penalty,
                         PEN_AMT = res.Penalty,
                         PEN_RATE = res.Penalty > 0 ? 0.5 : (double?)null,
-                        KEYIN = "EPB02",
+                        KEYIN = "WEB",
                         C_DATE = DateTime.Now,
                         M_DATE = DateTime.Now
                     };
