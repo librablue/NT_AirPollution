@@ -904,7 +904,7 @@ export default {
 		},
         kindNoChange() {
             const project = this.projectCode.find(item => item.ID === this.form.KIND_NO) ;
-            this.form.KIND = project.Kind;
+            this.form.KIND = project.Name;
         },
 		isShowAREA() {
 			const kindAry = ['1', '2', '4', '5', '6', '7', '8', '9', 'A', 'Z'];
