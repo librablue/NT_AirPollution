@@ -197,6 +197,7 @@ namespace NT_AirPollution.Admin.Controllers
 
                 // 寫入 Access
                 _accessService.AddABUDF(form);
+                _accessService.AddABUDF_B(form);
 
                 _formService.UpdateForm(form);
                 _formService.AddFormB(form);

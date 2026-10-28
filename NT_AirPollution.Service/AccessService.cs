@@ -406,7 +406,6 @@ namespace NT_AirPollution.Service
                             [RC_DATE]=@RC_DATE,
                             [RC_SERNO]=@RC_SERNO,
                             [RCE]=@RCE,
-                            [COMMENT]=@COMMENT,
                             [EIACOMMENTS]=@EIACOMMENTS,
                             [M_DATE]=@M_DATE
                         WHERE [C_NO]=@C_NO AND [SER_NO]=@SER_NO",
@@ -501,7 +500,6 @@ namespace NT_AirPollution.Service
                             RC_DATE = form.RC_DATE,
                             RC_SERNO = form.RC_SERNO,
                             RCE = form.RCE,
-                            COMMENT = form.COMMENT,
                             EIACOMMENTS = form.EIACOMMENTS,
                             M_DATE = form.M_DATE?.ToString("yyyy-MM-dd HH:mm:ss"),
                             C_NO = form.C_NO,
