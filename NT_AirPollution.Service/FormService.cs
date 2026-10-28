@@ -910,7 +910,8 @@ namespace NT_AirPollution.Service
             string payEndDateCondition = "";
             if (payType != "A" && payType != "U" && payType != "C" && payType != "M")
             {
-                payEndDateCondition = " AND PayEndDate=@PayEndDate";
+                // 只比對日期，不含時間
+                payEndDateCondition = " AND CAST(PayEndDate AS DATE) = @PayEndDate";
                 dtPayEndDate = Convert.ToDateTime($"{2011 + Convert.ToInt32(payEndDate.Substring(0, 2))}-{payEndDate.Substring(2, 2)}-{payEndDate.Substring(4, 2)}");
             }
 
@@ -925,7 +926,7 @@ namespace NT_AirPollution.Service
                     {
                         PaymentID = paymentID,
                         PayAmount = payAmount,
-                        PayEndDate = dtPayEndDate.ToString("yyyy-MM-dd 23:59:59")
+                        PayEndDate = dtPayEndDate.ToString("yyyy-MM-dd")
                     });
 
                 return payment;
