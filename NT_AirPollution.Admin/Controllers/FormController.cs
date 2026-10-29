@@ -194,6 +194,7 @@ namespace NT_AirPollution.Admin.Controllers
             {
                 string latestC_NO = _accessService.GetC_NO(form);
                 form.C_NO = latestC_NO;
+                form.FormB.C_NO = latestC_NO;
 
                 // 寫入 Access
                 _accessService.AddABUDF(form);
