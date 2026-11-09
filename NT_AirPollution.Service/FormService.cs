@@ -2645,7 +2645,7 @@ namespace NT_AirPollution.Service
             double applyWorkDays = (form.E_DATE.ToWestDate() - form.B_DATE.ToWestDate()).TotalDays + 1;
             double calcWorkDays = (form.FormB.E_DATE.ToWestDate() - form.FormB.B_DATE.ToWestDate()).TotalDays + 1;
 
-            double diffDays = (calcWorkDays - downDays) - applyWorkDays; // 工期差
+            double diffDays = Math.Round((calcWorkDays - downDays) - applyWorkDays, 0); // 工期差
             double diffArea = (form.FormB.AREA ?? 0) - (form.AREA ?? 0);   // 面積差
             double diffMoney = (form.FormB.MONEY ?? 0) - (form.MONEY);     // 經費差
             double diffVOLUMEL = (form.FormB.VOLUMEL ?? 0) - (form.VOLUMEL ?? 0); // 土石外運差
