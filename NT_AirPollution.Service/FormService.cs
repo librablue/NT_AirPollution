@@ -904,11 +904,11 @@ namespace NT_AirPollution.Service
         /// <param name="payEndDate">繳費期限</param>
         /// <param name="payAmount">繳費金額</param>
         /// <returns></returns>
-        public Payment GetPayment(string paymentID, string payType, string payEndDate, double payAmount)
+        public List<Payment> GetPayment(string paymentID, string payType, string payEndDate, double payAmount)
         {
             DateTime dtPayEndDate = DateTime.Now;
             string payEndDateCondition = "";
-            if (payType != "A" && payType != "U" && payType != "C" && payType != "M")
+            if (payType != "00000")
             {
                 // 只比對日期，不含時間
                 payEndDateCondition = " AND CAST(PayEndDate AS DATE) = @PayEndDate";
@@ -918,7 +918,7 @@ namespace NT_AirPollution.Service
             using (var cn = new SqlConnection(connStr))
             {
                 // 找出銷帳檔的那筆銷帳單號
-                var payment = cn.QueryFirstOrDefault<Payment>(@"
+                var payments = cn.Query<Payment>(@"
                     SELECT * FROM dbo.Payment
                     WHERE (PaymentID=@PaymentID OR PostPaymentID=@PaymentID)
                         AND (PayableAmount=@PayAmount)" + payEndDateCondition,
@@ -927,9 +927,9 @@ namespace NT_AirPollution.Service
                         PaymentID = paymentID,
                         PayAmount = payAmount,
                         PayEndDate = dtPayEndDate.ToString("yyyy-MM-dd")
-                    });
+                    }).ToList();
 
-                return payment;
+                return payments;
             }
         }
 

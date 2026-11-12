@@ -91,22 +91,23 @@ namespace NT_AirPollution.WriteOffTask
 
                             // 取得 SQL 付款資訊
                             var paymentsInDB = _formService.GetPayment(account, payType, payEndDate, payAmount);
-                            if (paymentsInDB == null)
-                                throw new Exception($"虛擬帳號 {account} 在資料庫中不存在。");
+                            if (paymentsInDB.Count == 0 || paymentsInDB.Count > 1)
+                                throw new Exception($"虛擬帳號 {account} 在資料庫中筆數異常。");
 
+                            var paymentInDB = paymentsInDB[0];
                             // 取得申請單
-                            var form = _formService.GetFormByID(paymentsInDB.FormID);
+                            var form = _formService.GetFormByID(paymentInDB.FormID);
                             if (form == null)
-                                throw new Exception($"找不到對應的申請單 (FormID: {paymentsInDB.FormID})。");
+                                throw new Exception($"找不到對應的申請單 (FormID: {paymentInDB.FormID})。");
 
 
-                            if (paymentsInDB.Term == "01")
+                            if (paymentInDB.Term == "01")
                             {
                                 form.FormStatus = FormStatus.已繳費完成;
                                 form.VerifyStage1 = VerifyStage.複審通過;
                                 form.IsMailFormStatus = true;
                             }
-                            else if (paymentsInDB.Term == "02")
+                            else if (paymentInDB.Term == "02")
                             {
                                 form.CalcStatus = CalcStatus.繳退費完成;
                                 form.VerifyStage2 = VerifyStage.複審通過;
@@ -117,10 +118,10 @@ namespace NT_AirPollution.WriteOffTask
                             _formService.SendStatusMail(form);
 
                             // --- 更新付款資訊 ---
-                            paymentsInDB.PayAmount = actualPayAmount;
-                            paymentsInDB.PayDate = payDate;
-                            paymentsInDB.BankLog = lines[i];
-                            _formService.UpdatePayment(paymentsInDB);
+                            paymentInDB.PayAmount = actualPayAmount;
+                            paymentInDB.PayDate = payDate;
+                            paymentInDB.BankLog = lines[i];
+                            _formService.UpdatePayment(paymentInDB);
 
                             // --- 更新 ABUDF_1 ---
                             var abudf_1 = new ABUDF_1
@@ -130,7 +131,7 @@ namespace NT_AirPollution.WriteOffTask
                                 PM_DATE = payDate.AddYears(-1911).ToString("yyyMMdd"),
                                 A_DATE = taiwanDate,
                                 M_DATE = DateTime.Now,
-                                FLNO = paymentsInDB.PaymentID,
+                                FLNO = paymentInDB.PaymentID,
                                 C_NO = form.C_NO
                             };
                             _accessService.UpdateABUDF_1(abudf_1, account);
