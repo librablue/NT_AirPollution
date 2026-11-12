@@ -58,9 +58,36 @@ namespace NT_AirPollution.Admin.Controllers
 
                 int currentSER_NO = _accessService.GetMaxSER_NOByC_NO(form);
                 form.SER_NO = currentSER_NO + 1;
+
+                var allDists = _optionService.GetDistrict();
+                var allProjectCode = _optionService.GetProjectCode();
+                // 依工程類別重算
+                form.TOWN_NA = allDists.First(o => o.Code == form.TOWN_NO).Name;
+                form.KIND = allProjectCode.First(o => o.ID == form.KIND_NO).Name;
+                form.A_KIND = allProjectCode.First(o => o.ID == form.KIND_NO).Kind;
+
+                if (form.KIND_NO == "1" || form.KIND_NO == "2")
+                {
+                    // 1、2類工程面積=建築面積
+                    form.AREA = form.AREA_B;
+                    // 建蔽率=(建築面積AREA_B)/(基地面積AREA_F)*100%
+                    form.PERC_B = Math.Round((double)(form.AREA_B / form.AREA_F * 100), 2, MidpointRounding.AwayFromZero);
+                }
+                else if (form.KIND_NO == "3")
+                {
+                    // 3類工程面積=總樓地板面積
+                    form.AREA = form.AREA2;
+                }
+                else
+                {
+                    form.AREA_F = null;
+                    form.AREA_B = null;
+                    form.PERC_B = null;
+                }
+
                 // 寫入 Access
                 _accessService.AddABUDF(form);
-
+                _accessService.AddABUDF_B(form);
                 _formService.AddForm(form);
 
                 return true;
@@ -367,7 +394,7 @@ namespace NT_AirPollution.Admin.Controllers
                     ws.Cell("E2").SetValue(DateTime.Now.AddYears(-1911).ToString("yyy年MM月dd日"));
                     ws.Cell("B3").SetValue(form.COMP_NAM);
                     ws.Cell("E3").SetValue($"{form.C_NO}-{form.SER_NO}");
-                    ws.Cell("B4").SetValue(form.R_ADDR3);
+                    ws.Cell("B4").SetValue(form.ADDR);
                     ws.Cell("D4").SetValue(form.B_SERNO);
                     ws.Cell("B5").SetValue(form.S_NAME);
                     ws.Cell("B6").SetValue(form.S_ADDR2);

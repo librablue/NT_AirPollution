@@ -551,8 +551,8 @@ export default {
 				callback();
 			}
 
-			const startDate = `${this.form.B_DATE.substr(0, 3) + 1911}-${this.form.B_DATE.substr(3, 2)}-${this.form.B_DATE.substr(5, 2)}`;
-			const endDate = `${this.form.E_DATE.substr(0, 3) + 1911}-${this.form.E_DATE.substr(3, 2)}-${this.form.E_DATE.substr(5, 2)}`;
+			const startDate = `${+this.form.B_DATE.substr(0, 3) + 1911}-${this.form.B_DATE.substr(3, 2)}-${this.form.B_DATE.substr(5, 2)}`;
+			const endDate = `${+this.form.E_DATE.substr(0, 3) + 1911}-${this.form.E_DATE.substr(3, 2)}-${this.form.E_DATE.substr(5, 2)}`;
 			if (moment(startDate).isAfter(endDate)) {
 				callback(new Error('施工期程起始日期不能大於結束日期'));
 			}
@@ -905,6 +905,7 @@ export default {
         kindNoChange() {
             const project = this.projectCode.find(item => item.ID === this.form.KIND_NO) ;
             this.form.KIND = project.Name;
+            this.form.A_KIND = project.Kind;
         },
 		isShowAREA() {
 			const kindAry = ['1', '2', '4', '5', '6', '7', '8', '9', 'A', 'Z'];
