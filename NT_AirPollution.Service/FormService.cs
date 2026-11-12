@@ -908,7 +908,10 @@ namespace NT_AirPollution.Service
         {
             DateTime dtPayEndDate = DateTime.Now;
             string payEndDateCondition = "";
-            if (payType != "00000")
+
+            // 期限條件不看通路，改看銀行檔期限欄是否為 000000（例如網銀 I 不比期限），
+            // 避免 Convert.ToDateTime("2011-00-00") 產生例外
+            if (payEndDate != "000000")
             {
                 // 只比對日期，不含時間
                 payEndDateCondition = " AND CAST(PayEndDate AS DATE) = @PayEndDate";
@@ -917,7 +920,7 @@ namespace NT_AirPollution.Service
 
             using (var cn = new SqlConnection(connStr))
             {
-                // 找出銷帳檔的那筆銷帳單號
+                // 找出銷帳檔的那筆銷帳單號；可能回傳 0 筆或多筆，由呼叫端判斷是否改人工處理
                 var payments = cn.Query<Payment>(@"
                     SELECT * FROM dbo.Payment
                     WHERE (PaymentID=@PaymentID OR PostPaymentID=@PaymentID)

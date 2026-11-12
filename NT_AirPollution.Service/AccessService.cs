@@ -6,6 +6,7 @@ using NT_AirPollution.Service.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Data.OleDb;
+using System.Data.SqlClient;
 using System.Linq;
 
 namespace NT_AirPollution.Service
@@ -786,28 +787,31 @@ namespace NT_AirPollution.Service
                 {
 #endif
                 int no = 1;
+                string yymm = pdate.Substring(2, 3);
+
                 using (var cn = new OleDbConnection(accessConnStr))
                 {
-                    var result = cn.QueryFirstOrDefault(@"
-                        SELECT TOP 1 FLNO FROM ABUDF_1
-                        WHERE P_DATE=@P_DATE AND LEFT(FLNO,4)=@BotCode
-                        ORDER BY C_DATE DESC, M_DATE DESC",
-                        new { P_DATE = pdate, BotCode = base.botCode }, commandTimeout: 180);
+                    // 維持現行格式，改為同年月取最大序號（FLNO 末 6 碼為 transNo：年尾1碼+月2碼+流水3碼）
+                    string maxNo = cn.QueryFirstOrDefault<string>(@"
+                        SELECT MAX(Right(FLNO,3)) AS MaxNo FROM ABUDF_1
+                        WHERE LEFT(FLNO,4)=@BotCode AND Mid(FLNO, Len(FLNO)-5, 3)=@YYM",
+                        new { BotCode = base.botCode, YYM = yymm }, commandTimeout: 180);
 
-                    string flnoStr = result?.FLNO;
-
-                    // 檢查是否為空，且長度是否足夠截取後3碼
-                    if (!string.IsNullOrEmpty(flnoStr) && flnoStr.Length >= 3)
+                    if (int.TryParse(maxNo, out int parsedNo))
                     {
-                        string last3 = flnoStr.Substring(flnoStr.Length - 3, 3);
-                        if (int.TryParse(last3, out int parsedNo))
-                        {
-                            no = parsedNo + 1;
-                        }
+                        no = parsedNo + 1;
                     }
-
-                    return pdate.Substring(2, 3) + no.ToString().PadLeft(3, '0');
                 }
+
+                // 產號後確認 A2021 與 SQL Payment 都未使用，重複就取下一號
+                string transNo;
+                do
+                {
+                    transNo = yymm + no.ToString().PadLeft(3, '0');
+                    no++;
+                } while (ExistsTransNo(transNo));
+
+                return transNo;
 #if !DEBUG
                 }
 #endif
@@ -817,6 +821,37 @@ namespace NT_AirPollution.Service
                 Logger.Error(ex.StackTrace);
                 throw ex;
             }
+        }
+
+        /// <summary>
+        /// 檢查 transNo 是否已被 A2021 或 SQL Payment 使用
+        /// </summary>
+        /// <param name="transNo">6 碼流水號（年尾1碼+月2碼+流水3碼）</param>
+        /// <returns></returns>
+        private bool ExistsTransNo(string transNo)
+        {
+            using (var cn = new OleDbConnection(accessConnStr))
+            {
+                int accessCount = cn.QueryFirstOrDefault<int>(@"
+                    SELECT COUNT(*) FROM ABUDF_1 WHERE Right(FLNO,6)=@TransNo",
+                    new { TransNo = transNo }, commandTimeout: 180);
+
+                if (accessCount > 0)
+                    return true;
+            }
+
+            using (var cn = new SqlConnection(connStr))
+            {
+                int paymentCount = cn.QueryFirstOrDefault<int>(@"
+                    SELECT COUNT(*) FROM dbo.Payment
+                    WHERE Right(PaymentID,6)=@TransNo OR Right(PostPaymentID,6)=@TransNo",
+                    new { TransNo = transNo });
+
+                if (paymentCount > 0)
+                    return true;
+            }
+
+            return false;
         }
 
         /// <summary>

@@ -91,8 +91,11 @@ namespace NT_AirPollution.WriteOffTask
 
                             // 取得 SQL 付款資訊
                             var paymentsInDB = _formService.GetPayment(account, payType, payEndDate, payAmount);
-                            if (paymentsInDB.Count == 0 || paymentsInDB.Count > 1)
-                                throw new Exception($"虛擬帳號 {account} 在資料庫中筆數異常。");
+                            // 0 筆或多筆都不自動銷帳，列入人工處理
+                            if (paymentsInDB.Count == 0)
+                                throw new Exception($"虛擬帳號 {account} 查無對應繳費資料，待人工處理。");
+                            if (paymentsInDB.Count > 1)
+                                throw new Exception($"虛擬帳號 {account} 對應 {paymentsInDB.Count} 筆繳費資料，待人工處理。");
 
                             var paymentInDB = paymentsInDB[0];
                             // 取得申請單
