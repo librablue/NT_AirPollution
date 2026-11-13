@@ -2111,7 +2111,14 @@ namespace NT_AirPollution.Service
                 doc.Range.Replace("{DiffAmt}", Math.Abs(form.S_AMT.GetValueOrDefault() - form.S_AMT2.GetValueOrDefault()).ToString("N0"));
 
                 var payment = form.Payments.FirstOrDefault(o => o.Term == "01");
-                doc.Range.Replace("{Penalty}", (payment.Penalty.GetValueOrDefault() + payment.Interest.GetValueOrDefault()).ToString("N0"));
+                if(payment != null && payment.Penalty.HasValue)
+                {
+                    doc.Range.Replace("{Penalty}", $"(不含滯納金及利息 {(payment.Penalty.GetValueOrDefault() + payment.Interest.GetValueOrDefault()).ToString("N0")} 元)");
+                }
+                else
+                {
+                    doc.Range.Replace("{Penalty}", "");
+                }
 
                 doc.Range.Replace("{Year}", DateTime.Now.AddYears(-1911).ToString("yyy"));
                 doc.Range.Replace("{Month}", DateTime.Now.ToString("MM"));
