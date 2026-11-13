@@ -791,11 +791,15 @@ namespace NT_AirPollution.Service
 
                 using (var cn = new OleDbConnection(accessConnStr))
                 {
-                    // 維持現行格式，改為同年月取最大序號（FLNO 末 6 碼為 transNo：年尾1碼+月2碼+流水3碼）
+                    // 抓取4750開頭、中間不限長度、pdate年月3碼+3碼
                     string maxNo = cn.QueryFirstOrDefault<string>(@"
-                        SELECT MAX(Right(FLNO,3)) AS MaxNo FROM ABUDF_1
-                        WHERE LEFT(FLNO,4)=@BotCode AND Mid(FLNO, Len(FLNO)-5, 3)=@YYM",
-                        new { BotCode = base.botCode, YYM = yymm }, commandTimeout: 180);
+                        SELECT MAX(Right(CStr(IIf(IsNull(FLNO), '', FLNO)), 3)) AS MaxNo 
+                            FROM ABUDF_1
+                            WHERE IIf(IsNull(FLNO), False, 
+                                      LEFT(CStr(FLNO), 4) = @BotCode
+                                      AND Len(CStr(FLNO)) >= 6 
+                                      AND Mid(CStr(FLNO), Len(CStr(FLNO)) - 5, 3) = @ymm)",
+                        new { BotCode = base.botCode, ymm = yymm }, commandTimeout: 180);
 
                     if (int.TryParse(maxNo, out int parsedNo))
                     {

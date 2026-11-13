@@ -994,13 +994,13 @@ namespace NT_AirPollution.Service
                             PayDate=@PayDate,
                             ModifyDate=GETDATE(),
                             BankLog=@BankLog
-                        WHERE FormID=@FormID",
+                        WHERE ID=@ID",
                         new
                         {
                             PayAmount = payment.PayAmount,
                             PayDate = payment.PayDate,
                             BankLog = payment.BankLog,
-                            FormID = payment.FormID
+                            ID = payment.ID
                         });
 
                     return true;
@@ -1763,16 +1763,27 @@ namespace NT_AirPollution.Service
         /// <param name="fileName">產生檔名</param>
         /// <param name="form"></param>
         /// <returns>文件完整路徑</returns>
-        public string CreatePaymentPDF(string fileName, Form form)
+        public string CreatePaymentPDF(string fileName, FormView form, string pTime = null)
         {
             try
             {
+                string term = !string.IsNullOrEmpty(pTime) ? pTime : (!string.IsNullOrEmpty(form.AP_DATE1) ? "02" : "01");
+
+                bool paidInSql = form.Payments?.Any(p => p.Term == term &&
+                    (p.PayDate != null || !string.IsNullOrEmpty(p.BankLog))) == true;
+                var abudf_1List = string.IsNullOrEmpty(form.C_NO) ? null : _accessService.GetABUDF_1(form.C_NO, form.SER_NO.GetValueOrDefault());
+                ABUDF_1 abudf_1InDB = abudf_1List?.FirstOrDefault(o => o.P_TIME == term);
+                bool paidInA2021 = abudf_1InDB != null && !string.IsNullOrEmpty(abudf_1InDB.PM_DATE);
+
+                if (paidInSql || paidInA2021)
+                    return null;
+
                 string templateFile = $@"{_paymentPath}\Template\Payment.xlsx";
                 string tempFile = $@"{_paymentPath}\Download\{fileName}.xlsx";
                 string pdfFile = $@"{_paymentPath}\Download\{fileName}.pdf";
 
                 // 1. 狀態標記與基礎變數準備
-                bool isFinal = !string.IsNullOrEmpty(form.AP_DATE1); // 是否為結算階段
+                bool isFinal = term == "02";
                 DateTime pdate = (isFinal ? form.AP_DATE1 : form.AP_DATE).ToWestDate();
 
                 // 2. 構建 PaymentInfo 運算物件
@@ -1814,7 +1825,6 @@ namespace NT_AirPollution.Service
                 double sumPrice = Math.Round(res.CurrentPrice + res.Interest + res.Penalty, 0);
 
                 // 4. 寫入 ABUDF_1
-                ABUDF_1 abudf_1InDB = _accessService.GetABUDF_1(form);
                 string transNo = (abudf_1InDB?.FLNO?.Length == 16) ? abudf_1InDB.FLNO.Substring(10, 6) : "000000";
 
                 // 預設單號或已逾期時重新取號
@@ -2818,6 +2828,9 @@ namespace NT_AirPollution.Service
         public bool SyncData(FormView form)
         {
             ABUDF abudf = _accessService.GetABUDF(form.C_NO, form.SER_NO.Value);
+            if (abudf == null)
+                throw new Exception($"A2021 查無此申請單（{form.C_NO}-{form.SER_NO}），已中止同步。");
+
             ABUDF_B abudf_b = _accessService.GetABUDF_B(form.C_NO, form.SER_NO.Value);
             List<ABUDF_DAY> abudf_day = _accessService.GetABUDF_DAY(form.C_NO, form.SER_NO.Value);
             //List<ABUDF_1> abudf_1s = _accessService.GetABUDF_1(form.C_NO, form.SER_NO.Value);
@@ -2828,10 +2841,16 @@ namespace NT_AirPollution.Service
             var mapper1 = config1.CreateMapper();
             mapper1.Map(abudf, form);
 
-            // 特別指定TAX_MONEY欄位不做映射，不然套件會自動把ABUDF_B.MONEY映射到FormB.TAX_MONEY
-            var config2 = new MapperConfiguration(cfg => cfg.CreateMap<ABUDF_B, FormB>().ForMember(dest => dest.TAX_MONEY, opt => opt.Ignore()));
-            var mapper2 = config2.CreateMapper();
-            mapper2.Map(abudf_b, form.FormB);
+            if (abudf_b != null)
+            {
+                // 特別指定TAX_MONEY欄位不做映射，不然套件會自動把ABUDF_B.MONEY映射到FormB.TAX_MONEY
+                var config2 = new MapperConfiguration(cfg => cfg.CreateMap<ABUDF_B, FormB>().ForMember(dest => dest.TAX_MONEY, opt => opt.Ignore()));
+                var mapper2 = config2.CreateMapper();
+                mapper2.Map(abudf_b, form.FormB);
+
+                form.AP_DATE1 = form.FormB.AP_DATE1;
+                form.S_AMT2 = form.FormB.S_AMT;
+            }
 
             var config3 = new MapperConfiguration(cfg => cfg.CreateMap<ABUDF_DAY, StopWork>());
             var mapper3 = config3.CreateMapper();
@@ -2839,8 +2858,6 @@ namespace NT_AirPollution.Service
 
             // 特定欄位邏輯
             form.LATLNG = string.IsNullOrEmpty(abudf.LATLNG) ? "," : abudf.LATLNG;
-            form.AP_DATE1 = form.FormB.AP_DATE1;
-            form.S_AMT2 = form.FormB.S_AMT;
             form.FormB.FormID = form.ID;
             foreach (var item in form.StopWorks)
             {

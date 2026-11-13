@@ -587,7 +587,9 @@ namespace NT_AirPollution.Web.Controllers
                     throw new Exception("申請單不存在");
 
                 string fileName = $"繳款單{form.C_NO}-{form.SER_NO}({(form.P_KIND == "一次繳清" ? "一次繳清" : "第一期")})";
-                string pdfPath = _formService.CreatePaymentPDF(fileName, formInDB);
+                string pdfPath = _formService.CreatePaymentPDF(fileName, formInDB, "01");
+                if (string.IsNullOrEmpty(pdfPath))
+                    throw new Exception("此期已繳費，無法重新產生繳款單");
 
                 // 傳到前端的檔名
                 // Uri.EscapeDataString 防中文亂碼
@@ -615,7 +617,9 @@ namespace NT_AirPollution.Web.Controllers
                     throw new Exception("申請單不存在");
 
                 string fileName = $"繳款單{form.C_NO}-{form.SER_NO}(結算補繳)";
-                string pdfPath = _formService.CreatePaymentPDF(fileName, formInDB);
+                string pdfPath = _formService.CreatePaymentPDF(fileName, formInDB, "02");
+                if (string.IsNullOrEmpty(pdfPath))
+                    throw new Exception("此期已繳費，無法重新產生繳款單");
 
                 // 傳到前端的檔名
                 // Uri.EscapeDataString 防中文亂碼

@@ -249,6 +249,10 @@ namespace NT_AirPollution.Admin.Controllers
             {
                 var admin = BaseService.CurrentAdmin;
 
+                var formBefore = _formService.GetFormByID(form.ID);
+                if (formBefore == null)
+                    throw new Exception("申請單不存在");
+
                 // 2. 如果狀態大於待補件，則同步資料到 SQL Server
                 if (form.FormStatus > FormStatus.待補件 || form.CalcStatus > CalcStatus.待補件)
                 {
@@ -268,10 +272,16 @@ namespace NT_AirPollution.Admin.Controllers
                 // 再次更新SQL
                 _formService.UpdateForm(form);
 
-                // 狀態大於待補件(2)則呼叫產生PDF方法，為了新增 ABUDF_1
-                if (form.FormStatus > FormStatus.待補件)
+                var terms = new List<string>();
+                if (formBefore.FormStatus != FormStatus.通過待繳費 && form.FormStatus == FormStatus.通過待繳費)
+                    terms.Add("01");
+                if (formBefore.CalcStatus != CalcStatus.通過待繳費 && form.CalcStatus == CalcStatus.通過待繳費)
+                    terms.Add("02");
+
+                foreach (var term in terms)
                 {
-                    _formService.CreatePaymentPDF("", form);
+                    form.Payments = formBefore.Payments;
+                    _formService.CreatePaymentPDF("", form, term);
                 }
 
                 return true;

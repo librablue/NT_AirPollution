@@ -20,17 +20,25 @@ namespace NT_AirPollution.AccessWorker
                 foreach (var form in forms)
                 {
                     string fileName = "";
+                    string term = "";
                     if(form.VerifyStage1 == VerifyStage.複審通過 && form.FormStatus == FormStatus.通過待繳費)
                     {
                         fileName = $"繳款單{form.C_NO}-{form.SER_NO}({(form.P_KIND == "一次繳清" ? "一次繳清" : "第一期")})";
+                        term = "01";
                     }
                     if (form.VerifyStage2 == VerifyStage.複審通過 && form.CalcStatus == CalcStatus.通過待繳費)
                     {
                         fileName = $"繳款單{form.C_NO}-{form.SER_NO}(結算補繳)";
+                        term = "02";
                     }
 
                     Console.WriteLine($@"產生繳款單: {form.C_NO}-{form.SER_NO}");
-                    string pdfPath = _formService.CreatePaymentPDF(fileName, form);
+                    string pdfPath = _formService.CreatePaymentPDF(fileName, form, term);
+                    if (string.IsNullOrEmpty(pdfPath))
+                    {
+                        Console.WriteLine($@"略過已繳費: {form.C_NO}-{form.SER_NO}");
+                        continue;
+                    }
                     Console.WriteLine($@"已產生繳款單: {form.C_NO}-{form.SER_NO}");
                 }
             }
