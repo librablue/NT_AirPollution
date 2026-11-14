@@ -2865,6 +2865,8 @@ namespace NT_AirPollution.Service
 
             // 特定欄位邏輯
             form.LATLNG = string.IsNullOrEmpty(abudf.LATLNG) ? "," : abudf.LATLNG;
+            // A2021的MONEY是扣除TAX_MONEY後的金額，所以要加回去
+            form.MONEY += form.TAX_MONEY;
             form.FormB.FormID = form.ID;
             foreach (var item in form.StopWorks)
             {
