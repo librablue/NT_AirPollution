@@ -2868,6 +2868,7 @@ namespace NT_AirPollution.Service
             // A2021的MONEY是扣除TAX_MONEY後的金額，所以要加回去
             form.MONEY += form.TAX_MONEY;
             form.FormB.FormID = form.ID;
+            form.FormB.MONEY += form.TAX_MONEY;
             foreach (var item in form.StopWorks)
             {
                 item.FormID = form.ID;
