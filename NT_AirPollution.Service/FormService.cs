@@ -1193,8 +1193,7 @@ namespace NT_AirPollution.Service
                         break;
                     case "Z":
                         double money = isApDate1Empty ? form.MONEY : form.FormB.MONEY.Value;
-                        double taxMoney = isApDate1Empty ? form.TAX_MONEY : (form.FormB.TAX_MONEY ?? 0);
-                        basicNum = money - taxMoney;
+                        basicNum = money;
                         break;
                 }
 
@@ -1277,9 +1276,9 @@ namespace NT_AirPollution.Service
                         basicNumFomulaText = $"{form.VOLUMEL.Value}";
                         break;
                     case "Z":
-                        // 工程合約經費要-營業稅
-                        basicNum = form.MONEY - form.TAX_MONEY;
-                        basicNumFomulaText = $"{form.MONEY - form.TAX_MONEY}";
+                        // 工程合約經費
+                        basicNum = form.MONEY;
+                        basicNumFomulaText = $"{form.MONEY}";
                         break;
                 }
 
@@ -1362,8 +1361,8 @@ namespace NT_AirPollution.Service
                         break;
                     case "Z":
                         // 工程合約經費要-營業稅
-                        basicNum = (form.FormB.MONEY ?? 0) - (form.FormB.TAX_MONEY ?? 0);
-                        basicNumFomulaText = $"{(form.FormB.MONEY ?? 0) - (form.FormB.TAX_MONEY ?? 0)}";
+                        basicNum = form.FormB.MONEY ?? 0;
+                        basicNumFomulaText = $"{(form.FormB.MONEY ?? 0)}";
                         break;
                 }
 
@@ -2844,14 +2843,14 @@ namespace NT_AirPollution.Service
             //List<ABUDF_I> abudf_is = _accessService.GetABUDF_I(form.C_NO, form.SER_NO.Value);
 
             // 特別指定TAX_MONEY欄位不做映射，不然套件會自動把ABUDF.MONEY映射到Form.TAX_MONEY
-            var config1 = new MapperConfiguration(cfg => cfg.CreateMap<ABUDF, FormView>().ForMember(dest => dest.TAX_MONEY, opt => opt.Ignore()));
+            var config1 = new MapperConfiguration(cfg => cfg.CreateMap<ABUDF, FormView>());
             var mapper1 = config1.CreateMapper();
             mapper1.Map(abudf, form);
 
             if (abudf_b != null)
             {
                 // 特別指定TAX_MONEY欄位不做映射，不然套件會自動把ABUDF_B.MONEY映射到FormB.TAX_MONEY
-                var config2 = new MapperConfiguration(cfg => cfg.CreateMap<ABUDF_B, FormB>().ForMember(dest => dest.TAX_MONEY, opt => opt.Ignore()));
+                var config2 = new MapperConfiguration(cfg => cfg.CreateMap<ABUDF_B, FormB>());
                 var mapper2 = config2.CreateMapper();
                 mapper2.Map(abudf_b, form.FormB);
 

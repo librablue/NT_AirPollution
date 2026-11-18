@@ -285,12 +285,12 @@
 							</div>
 							<el-form ref="tab4Form" :rules="tab4Rules" :model="form" label-width="auto" :disabled="form.FormStatus > 2">
 								<div class="flex-row">
-									<el-form-item prop="MONEY" label="工程合約經費(元)">
+									<el-form-item prop="MONEY" label="稅後工程合約經費(元)">
 										<el-input type="number" v-model="form.MONEY"></el-input>
 									</el-form-item>
-									<el-form-item prop="TAX_MONEY" label="工程合約經費營業稅(元)">
+									<!-- <el-form-item prop="TAX_MONEY" label="工程合約經費營業稅(元)">
 										<el-input type="number" v-model="form.TAX_MONEY"></el-input>
-									</el-form-item>
+									</el-form-item> -->
 									<el-form-item prop="C_MONEY" label="工程環保經費(元)">
 										<div style="min-width:120px">{{calcC_MONEY | comma}}</div>
 									</el-form-item>
@@ -378,12 +378,12 @@
 							</div>
 							<el-form v-if="form.FormB" ref="tab4BForm" :rules="tab4BRules" :model="form.FormB" label-width="auto" :disabled="form.CalcStatus > 2">
 								<div class="flex-row">
-									<el-form-item prop="MONEY" label="工程合約經費(元)">
+									<el-form-item prop="MONEY" label="稅後工程合約經費(元)">
 										<el-input type="number" v-model="form.FormB.MONEY"></el-input>
 									</el-form-item>
-									<el-form-item prop="TAX_MONEY" label="工程合約經費營業稅(元)">
+									<!-- <el-form-item prop="TAX_MONEY" label="工程合約經費營業稅(元)">
 										<el-input type="number" v-model="form.FormB.TAX_MONEY"></el-input>
-									</el-form-item>
+									</el-form-item> -->
 									<el-form-item prop="C_MONEY" label="工程環保經費(元)">
 										<div style="min-width:120px">{{calcC_MONEYB | comma}}</div>
 									</el-form-item>
@@ -762,7 +762,7 @@ export default {
 			}),
 			tab4Rules: Object.freeze({
 				MONEY: [{ required: true, message: '請輸入工程合約經費', trigger: 'blur' }],
-				TAX_MONEY: [{ required: true, message: '請輸入工程合約經費營業稅', trigger: 'blur' }],
+				//TAX_MONEY: [{ required: true, message: '請輸入工程合約經費營業稅', trigger: 'blur' }],
 				C_MONEY: [{ required: true, message: '請輸入工程環保經費', trigger: 'blur' }],
 				AREA: [{ validator: checkArea, trigger: 'blur' }],
 				AREA_F: [{ validator: checkAreaF, trigger: 'blur' }],

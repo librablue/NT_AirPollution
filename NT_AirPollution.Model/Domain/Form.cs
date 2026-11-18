@@ -243,7 +243,7 @@ namespace NT_AirPollution.Model.Domain
         /// <summary>
         /// 工程合約經費營業稅
         /// </summary>
-        public double TAX_MONEY { get; set; }
+        //public double TAX_MONEY { get; set; }
 
         /// <summary>
         /// 工程環保經費
